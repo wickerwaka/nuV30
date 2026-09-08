@@ -15,7 +15,7 @@ create_timing_netlist -model slow
 read_sdc
 update_timing_netlist
 
-set fh [open [lindex $quartus(args) 0] w]
+set fh [open [lindex $quartus(args) 2] w]   # 2, not 0 -- args are {proj rev out}
 proc emit {fh s} { puts $fh $s ; puts $s }
 
 emit $fh "=== sta_phase_split_diag ==="
