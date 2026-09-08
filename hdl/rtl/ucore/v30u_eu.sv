@@ -590,20 +590,84 @@ endfunction
 // NO SDC EDIT IS NEEDED OR TAKEN: `dec_q` is declared here, so its post-fit
 // node is `...|v30u_eu:u_eu|dec_q[*]`, which `nec_test.sdc`'s $v30u_regs glob
 // already selects, and it is `ce`-gated exactly as every other EU register.
+//
+//---------------------------------------------------------------------------
+// L2 -- AND SO IS THE ROW, ON THE SAME EDGE, FROM THE SAME BANK.
+//
+// `ucrom`'s address is {dec_bank, upc_loc[1:0]} -- ELEVEN BITS, and AFTER L1
+// EVERY ONE OF THEM IS A REGISTER OF THE ONE BANK BELOW, committed by the one
+// condition `if (ss_we || srst || ce)`.  That is L1's precondition exactly, so
+// L1's construction applies to the SECOND table verbatim:
+//
+//    row(c) = ucrom[{dec_bank(c), upc_loc(c)[1:0]}]
+//           = ucrom[{dec_bank_next(c-1), upc_loc_sel(c-1)[1:0]}]
+//           = row_q(c)
+//
+// -- because `dec_q` is committed UNCONDITIONALLY inside the bank (L1 put the
+// `srst` mirroring inside `dec_addr_next`) and `upc_loc` is committed by THE
+// COMMIT's own selection.  `rom_addr_next` (assigned beside THE COMMIT, below)
+// is that pair and nothing else.  When the bank does not commit, neither
+// `dec_q` nor `upc_loc` moves, and `row_q` does not move either, because it is
+// committed by the same condition.
+//
+// ⚠ WHAT L2 COSTS, NAMED IN ADVANCE AND MEASURED RATHER THAN ARGUED.
+// `dec_bank_next` is the COMBINATIONAL `ucdecode` output at `dec_addr_next`,
+// so `row_q`'s D pin is
+//     upc_* -> dec_addr_next -> ucdecode -> dec_bank_next -> ucrom -> row_q
+// -- BOTH TABLES IN SERIES, which is the chain L1 broke on the Q side.  The
+// trade is deliberate and it is a trade: that chain is now a D-PIN path with
+// NOTHING AFTER IT, where before it was the HEAD of the EU's twelve-position
+// chain.  The bar is `docs/notes/l2_registered_row_prereg_2026-09-08.md` L-8,
+// measured on a no-exception fit by `sw/sta_l2_rowq_probe.tcl`; if that class
+// binds, L2 in this form is refuted.
+//
+// ⚠ AND IT IS STILL NOT THE BANNED M10K CONVERSION.  A block memory's address
+// is ALWAYS registered, so an M10K cannot serve a COMBINATIONAL
+// `dec_bank_next` -- L1's `ucdecode` inference may therefore be LOST, and
+// whatever Quartus does with it is RECORDED, not engineered.  What is
+// FORBIDDEN is the other repair: registering `{dec_bank, upc_loc[1:0]}` and
+// letting Quartus infer an address-registered AND output-registered M10K.
+// That is TWO clocks of latency and it puts the row a cycle LATE -- exactly
+// the conversion `v30u_ucrom.sv`'s header and L1's comment above both name.
+//
+// ⚠ THE ONE CLOCK WHERE IT IS NOT IDENTICAL IS THE ONE L1 NAMED, AND HERE IT
+// IS MASKED TWICE OVER.  Before the first commit `row_q` reads its power-up 0
+// where the combinational read would give `ucrom[0]`, which F44's own probe
+// proves is non-zero -- but `dec_q` powers up 0 too, so `dec_valid` is 0,
+// `row_nop` is 1, and EVERY FIELD OF THE ROW IS TAKEN THROUGH `row_nop`
+// (`e_s1` .. `e_hasc`, below).  And, as L1 already argued, every harness
+// asserts `srst` before it observes anything and `srst` forces the commit.
+// Falsifier: the whole pin-sensitive ladder.
+//
+// ⚠ `dec_bank` NOW HAS NO CONSUMER IN SYNTHESIS.  It was read in exactly ONE
+// place -- this instantiation's `rom_addr` -- and `rom_addr_next` sources the
+// bank from `dec_bank_next` instead, one clock earlier, by construction.  So
+// `dec_q[8:0]` is expected to be PRUNED and only `dec_q[9]` (`dec_valid`) to
+// survive.  IT IS DELIBERATELY NOT NARROWED HERE: narrowing renames the
+// save-state whitelist entry `dec_q`, and this wave's registered bar L-3 is
+// that the whitelist grows by EXACTLY `row_q`'s entry.  BOOKED, NOT TAKEN.
+//
+// NO SDC EDIT IS NEEDED OR TAKEN, FOR L1'S REASON: `row_q` is declared here,
+// so its post-fit node is `...|v30u_eu:u_eu|row_q[*]`, which `nec_test.sdc`'s
+// $v30u_regs glob already selects, and it is `ce`-gated like every other EU
+// register.
 wire [12:0] dec_addr_next;          // assigned beside THE COMMIT, below
+wire [10:0] rom_addr_next;          // L2: likewise, beside THE COMMIT, below
 wire        dec_valid_next;
 wire  [8:0] dec_bank_next;
+wire [28:0] row_next;
 reg   [9:0] dec_q;
+reg  [28:0] row_q;
 wire        dec_valid = dec_q[9];
-wire  [8:0] dec_bank  = dec_q[8:0];
-wire [28:0] row;
+wire  [8:0] dec_bank  = dec_q[8:0];  // L2: no consumer now -- see the note above
+wire [28:0] row       = row_q;
 
 v30u_ucrom u_ucrom (
     .dec_addr (dec_addr_next),
     .dec_valid(dec_valid_next),
     .dec_bank (dec_bank_next),
-    .rom_addr ({dec_bank, upc_loc[1:0]}),
-    .rom_word (row)
+    .rom_addr (rom_addr_next),
+    .rom_word (row_next)
 );
 
 // sw/ucore_tables.py::MicroOp -- the field positions, verbatim
@@ -3845,6 +3909,25 @@ assign dec_addr_next = (srst && !ss_we)
         ? {upc_page_r, upc_opc_r, upc_loc_r[3:2]}
         : {upc_page_n, upc_opc_n, upc_loc_n[3:2]};
 
+// L2 -- THE ROW'S ADDRESS, AND IT IS THE COMMIT'S OWN SELECTION TOO.
+//
+// Its LOW TWO BITS are character for character the `upc_loc` line in THE
+// COMMIT below; its HIGH NINE are `dec_bank_next`, character for character
+// what that block's `dec_q` line stores into `dec_bank`.  So `row_q` cannot
+// disagree with `{dec_bank, upc_loc[1:0]}` on any clock without those two
+// lines disagreeing with themselves.  Placed HERE, next to the block it
+// mirrors and beside L1's line, rather than at `u_ucrom` where it is consumed,
+// because the mirroring is the whole of the correctness argument.
+//
+// FALSIFIER, one grep, and it is L1's: this expression's `upc_loc` arm and THE
+// COMMIT's `upc_loc` line must select on the SAME condition (`srst && !ss_we`)
+// and from the SAME pair of sources (`upc_loc_r`, `upc_loc_n`); and its bank
+// arm must be the SAME wire `dec_q`'s commit line is built from
+// (`dec_bank_next`).  If a future edit gives `upc_loc` or `dec_q` a third arm
+// -- as `psw` has for the read's data edge -- this line must gain it too.
+assign rom_addr_next = {dec_bank_next,
+        (srst && !ss_we) ? upc_loc_r[1:0] : upc_loc_n[1:0]};
+
 //--------------------------------------------------------------------------
 // THE COMMIT -- the ONLY place an EU state register is written, and the only
 // place `ce` appears.  This is the clock-enable port.
@@ -3900,6 +3983,12 @@ always @(posedge clk) begin
         // so it is DERIVED and whitelisted rather than SSA-mapped, which would
         // give one fact two sources of truth.  See the header at u_ucrom.
         dec_q <= {dec_valid_next, dec_bank_next};
+        // L2: ...and the ROW that decode selects, taken on this same edge from
+        // the same two expressions.  Like `dec_q` it is not state -- it is
+        // `ucrom` of the state, one clock early -- so it is DERIVED and
+        // whitelisted rather than SSA-mapped, which would give one fact two
+        // sources of truth.  See the header at u_ucrom.
+        row_q <= row_next;
         seg_override <= (srst && !ss_we) ? seg_override_r : seg_override_n;
         seg_ovr <= (srst && !ss_we) ? seg_ovr_r : seg_ovr_n;
         rep_kind <= (srst && !ss_we) ? rep_kind_r : rep_kind_n;

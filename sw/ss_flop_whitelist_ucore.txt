@@ -55,3 +55,4 @@ ending       # WRITE-ONLY: assigned at v30u_eu.sv:1529 and step.svh:398/641/682,
 # commit block, in one place, and that the entry names that place.  Do NOT put
 # a register here because it is inconvenient to map.
 dec_q        # DERIVED: {dec_valid,dec_bank} = ucdecode[dec_addr_next], and `dec_addr_next` (v30u_eu.sv, immediately above THE COMMIT) is character for character the commit's own upc_page/upc_opc/upc_loc selection. L1, docs/notes/adcone_l1_prereg_2026-08-13.md §1.
+row_q        # DERIVED: row_q = ucrom[rom_addr_next], and `rom_addr_next` (v30u_eu.sv, immediately below `dec_addr_next` and immediately above THE COMMIT) is {dec_bank_next, the commit's own upc_loc selection} -- i.e. character for character the two lines of THE COMMIT that produce `dec_bank` and `upc_loc`, one clock early. Both are SSA-mapped, so a restore that writes them reconstructs row_q on that very edge. L2, docs/notes/l2_registered_row_prereg_2026-09-08.md §1.5.
