@@ -89,7 +89,7 @@ case("C      the shadow is LOAD-BEARING (one bit perturbed)",
      [("hdl/rtl/ucore/v30u_eu.sv",
        "        } = s1q;",
        "        } = s1q ^ 495'd1;   // P-8(c) PERTURBATION PROBE")],
-     [r"PHASE-SPLIT PREMISE VIOLATED|FAIL|MISMATCH|mismatch"],
+     [r"first-div:"],   # check_core prints this ONLY on a failing case
      "python3 sw/check_core.py --core ucore --opcodes 90 --cases 5")
 
 def main():
