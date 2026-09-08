@@ -78,9 +78,18 @@ def summarise(path):
     print(f"  {wo.get('quotable_as')}")
     for p in d.get('per_seed', []):
         cd = p.get('core_domain') or {}
+        # ⚠ `off_class` IS A LIST OF CLASS-NAME STRINGS, not of dicts.  The
+        # first version of this printer indexed it as dicts and died with
+        # `TypeError: string indices must be integers` AFTER the sweep and
+        # AFTER the `finally` had restored the SDC -- so the measurement
+        # survived and only the summary was lost.  Recorded rather than quietly
+        # fixed: it is the same class as every other accepted-and-ignored
+        # finding in this repo, a tool doing what it was told where what it was
+        # told was wrong.
         off = cd.get('off_class') or []
-        offs = ", ".join(f"{o['class']} k={o['k']} (nominal {o['k_nominal']})"
-                         for o in off) or "EMPTY  <<< THE DELETION DID NOT REACH THE COMPILER"
+        km, kn = cd.get('k_measured') or {}, cd.get('k_nominal')
+        offs = ", ".join(f"{c} k={km.get(c)} (nominal {kn})" for c in off) \
+            or "EMPTY  <<< THE DELETION DID NOT REACH THE COMPILER"
         print(f"    seed {p['seed']}: Fmax {p.get('fmax_mhz')}  "
               f"worst_setup {p.get('worst_setup_ns')}  "
               f"verdict {p.get('verdict')}  off_class: {offs}")
@@ -94,6 +103,14 @@ def main():
     ap.add_argument('--configs', default='control,retention')
     ap.add_argument('--dry-run', action='store_true',
                     help='patch the SDC, print the diff, restore, and exit 0')
+    ap.add_argument('--probe', metavar='OUTPREFIX', default=None,
+                    help='BUILD NOTHING.  Patch the SDC, run the two STA '
+                         'probes against the fitted `hdl/db` ALREADY ON DISK, '
+                         'and restore.  ⚠ THE PATCH IS WHAT MAKES THE PROBE '
+                         'HONEST: `read_sdc` reads the file as it stands, so '
+                         'probing a no-exception FIT with the exception '
+                         'restored would report every ce->ce slack under a '
+                         '2.0-period budget the netlist was not fitted to.')
     a = ap.parse_args()
 
     dirty = sh("git status --porcelain hdl/ | grep -v '^??'").stdout.strip()
@@ -122,6 +139,19 @@ def main():
             return 2
         if a.dry_run:
             print(sh(f"git diff -- {SDC}").stdout)
+            return 0
+        if a.probe:
+            q = os.path.expanduser('~/intelFPGA_lite/17.1/quartus/bin')
+            out = os.path.abspath(a.probe)
+            os.makedirs(os.path.dirname(out), exist_ok=True)
+            for script, extra in (('sw/sta_phase_split_scan.tcl', ' 50'),
+                                  ('sw/sta_l2_rowq_probe.tcl', '')):
+                cmd = (f"cd {ROOT}/hdl && {q}/quartus_sta -t {ROOT}/{script} "
+                       f"nec_test nec_test_ucore {out}{extra}")
+                print(f"\n=== {script} ===", flush=True)
+                r = sh(cmd)
+                print(r.stdout[-20000:])
+                print(f"[{script}] exit {r.returncode}")
             return 0
         n = a.seeds
         for cfg in [c.strip() for c in a.configs.split(',') if c.strip()]:
