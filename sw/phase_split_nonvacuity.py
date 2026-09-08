@@ -79,7 +79,14 @@ case("B      S-1 $fatal, naming the EU",
      [("hdl/tb/tb_v30_core.sv",
        "    ce_half <= !ss_park && (ce_cnt == (ce_div / 2) - 1);",
        "    ce_half <= 1'b0;   // P-8(b) NON-VACUITY PROBE: withhold CE_HALF")],
-     [r"REQUIREMENT VIOLATED \(S-1\)", r"STAGE-1 capture edge"],
+     # ⚠ THE SECOND CLAUSE IS GONE WITH THE LANDING.  P-8(b) registered that
+     # S-1's message must name the EU's dependence and not only
+     # `t1_half2`/`ad_oe_data`; it was DEMONSTRATED on the landed tree
+     # (`c720fbde54`, the message contained "STAGE-1 capture edge") and REVERTED
+     # with it under P-9, because on a tree with no phase split the EU has no
+     # such dependence and saying it would be saying something false.  What
+     # remains checkable here is that S-1 still `$fatal`s at all.
+     [r"REQUIREMENT VIOLATED \(S-1\)"],
      RUN)
 
 # C -- the shadow is LOAD-BEARING.  Flip ONE BIT of it on its way out and a

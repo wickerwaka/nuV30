@@ -52,6 +52,16 @@ def main():
     unpacks = re.findall(r'\{([^{}]*?)\}\s*=\s*s1q\s*;', src, re.S)
     print("  pack sites   : %d" % len(packs))
     print("  unpack sites : %d" % len(unpacks))
+    if not packs and not unpacks:
+        print("  the phase split is NOT IN THIS TREE -- no `s1_bus = {...}` and no\n"
+              "  `{...} = s1q`.  This lint has nothing to check and says so rather\n"
+              "  than passing: **exit 2, COULD NOT RUN**, never exit 0.  The WAVE 2\n"
+              "  landing was REVERTED under its own P-9 when G6 came back RED\n"
+              "  (docs/notes/phase_split_landing_results_2026-09-08.md); this file is\n"
+              "  retained because the next attempt needs it, not because it gates\n"
+              "  this tree.")
+        print("\n=== phase_split_lint: COULD NOT RUN (the split is absent)")
+        return 2
     if len(packs) != 1:
         bad.append("L1: expected exactly 1 `s1_bus = {...};`, found %d" % len(packs))
     if len(unpacks) != 1:

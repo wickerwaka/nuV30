@@ -49,21 +49,14 @@
 //  `V30_MUXED_AD` decides whether the MULTIPLEXED VIEW exists at all.  It is
 //  orthogonal to `SYNTHESIS` (which selects fabric-vs-sim); this one is the
 //  bus shape, and the rig defines BOTH.
-//    defined   -- AD / AD_OE are ports, `v30u_biu` carries `t1_half2` and the
-//                 `ad_oe_*` enables, `ad_o` is COMPOSED from
-//                 ADDR_O/DATA_O/STATUS_O, and behaviour is byte-identical to
-//                 the pre-2026-08-14 core.
-//    undefined -- those two ports DO NOT EXIST on this module, `t1_half2` and
-//                 the `ad_oe_*` PORTS go with them, and read data arrives on
-//                 DATA_I instead of on AD.  A de-muxed build is a DIFFERENT
+//    defined   -- AD / AD_OE / CE_HALF are ports, `v30u_biu` carries
+//                 `t1_half2` and the `ad_oe_*` enables, `ad_o` is COMPOSED
+//                 from ADDR_O/DATA_O/STATUS_O, and behaviour is byte-identical
+//                 to the pre-2026-08-14 core.
+//    undefined -- those three ports DO NOT EXIST on this module, `t1_half2`
+//                 and the `ad_oe_*` PORTS go with them, and read data arrives
+//                 on DATA_I instead of on AD.  A de-muxed build is a DIFFERENT
 //                 SAVE-STATE STREAM (`SSA_B_T1_HALF2` has no flop behind it).
-//  ⚠ 2026-09-08: `CE_HALF` USED TO BE THE THIRD PORT ON THAT LIST AND IS NOT
-//  ANY MORE.  The ce/ce_half PHASE SPLIT gives the EU's next-state cone a
-//  STAGE 1 captured on `ce_half`, so `ce_half` is a CORE CLOCKING input in
-//  every configuration, not bus-shape machinery.  A de-muxed integrator that
-//  did not connect it will now fail to elaborate, and that refusal is the
-//  intended, surfaced consequence -- the same shape as the
-//  `SYNTHESIS`-without-`V30_MUXED_AD` refusal E-6 records.
 //  ⚠ The define removes the PINS, not the drive: `v30u_biu` still computes
 //  what the core would put on shared pads, because F58 makes a HALT
 //  pseudo-cycle PUBLISH the AD output latch and that makes the drive machine
@@ -87,19 +80,10 @@
 module v30_core (
     input             CLK,
     input             CE,        // clock-enable: advance core state this clk
-    // CE_HALF -- THE CORE'S SECOND CLOCKING PHASE, AND IT IS UNCONDITIONAL.
-    // It was a `V30_MUXED_AD` port until the ce/ce_half PHASE SPLIT (WAVE 2,
-    // 2026-09-08), on the reading that its only consumer was `v30u_biu`'s
-    // `t1_half2`, the T1 AD address->data turnaround -- multiplexed-bus
-    // machinery.  THAT READING IS NOW FALSE: the EU's next-state cone is split
-    // across the two phases, so `ce_half` captures STAGE 1 in EVERY
-    // configuration.  `V30_MUXED_AD` governs the BUS SHAPE (see THE BUS SHAPE
-    // above, which already says the define is not about clocking); a core
-    // clocking input is orthogonal to it and does not belong under it.
-    // `docs/notes/phase_split_landing_prereg_2026-09-08.md` §4.
+`ifdef V30_MUXED_AD
     input             CE_HALF,   // clock-enable marking the CPU clock's HALF
-                                 // cycle: STAGE 1's capture edge, and (muxed
-                                 // bus only) the T1 AD address->data turnaround
+                                 // cycle: the T1 AD address->data turnaround
+`endif
     input             RESET,
     input             READY,
     input             INT,
@@ -257,26 +241,18 @@ assign SS_BUS_QUIET = ss_biu_bus_quiet;
 // NON-VACUITY is a registered deliverable, not a hope:
 // `docs/notes/ce_contract_correction_prereg_2026-08-13.md` §3, P-1.
 //
-// ⚠ 2026-08-14 SUPERSEDED, 2026-09-08.  This paragraph used to read *"BOTH
-// CLAUSES NAME `CE_HALF`, SO BOTH LIVE UNDER `V30_MUXED_AD` WITH THE PIN ...
+// ⚠ 2026-08-14: BOTH CLAUSES NAME `CE_HALF`, SO BOTH LIVE UNDER
+// `V30_MUXED_AD` WITH THE PIN.  Without the multiplexed bus there is no
+// `CE_HALF` port, and C-a -- "they are never asserted on the same fabric
+// clock" -- is VACUOUS BY CONSTRUCTION: there is no second enable to coincide
+// with.  S-1 goes with it for the same reason, and it loses nothing, because
 // what S-1 protects is `t1_half2`, the T1 address->data turnaround, which a
 // de-muxed bus does not have.  A de-muxed integrator's only enable contract is
-// `CE`."*  **EVERY SENTENCE OF THAT IS NOW FALSE.**  The ce/ce_half PHASE
-// SPLIT (WAVE 2) gives `v30u_eu` a STAGE 1 captured on `ce_half`, so `CE_HALF`
-// is an unconditional port and BOTH clauses are asserted in EVERY
-// configuration.  S-1 in particular is no longer about the BIU's turnaround
-// alone: without a `CE_HALF` between two `CE`s the EU consumes a STALE STAGE 1
-// and the core computes the wrong next state.  It was "no stronger than the
-// core works"; it still is, and it now says so about the EU as well.
+// `CE`, and the core has no clause to state about a single enable.
 `ifndef SYNTHESIS
+`ifdef V30_MUXED_AD
 // has a CE_HALF been seen since the last CE?  Starts asserted so a run's FIRST
 // CE is never reported -- there is no preceding CE for it to be too close to.
-// ⚠ AND THAT IS EXACTLY WHY THE PHASE-SPLIT SHADOW MAY NOT DEPEND ON HAVING
-// BEEN CAPTURED BEFORE THE FIRST CE.  It does not: the shadow's commit
-// condition is `(ss_we || srst || ce_half)` and RESET is asserted at the head
-// of every run, so the shadow tracks stage 1 on every reset clock and is
-// current at the first CE whether or not a CE_HALF preceded it.  See THE
-// PHASE SPLIT in v30u_eu.sv.
 logic ce_half_since_ce = 1'b1;
 
 always @(posedge CLK) begin
@@ -285,37 +261,57 @@ always @(posedge CLK) begin
                $time);
 
     if (CE && !ce_half_since_ce)
-        $fatal(1, "v30_core: ce/ce_half REQUIREMENT VIOLATED (S-1) at %0t -- two CEs with NO CE_HALF between them.  CE_HALF is v30u_eu's STAGE-1 capture edge (THE PHASE SPLIT, v30u_eu.sv): with no CE_HALF between two CEs the EU consumes a STALE stage 1 and computes the wrong next state.  It is ALSO the only enable on t1_half2, the T1 address->data turnaround gating ad_oe_data, so on a muxed bus the BIU additionally leaves the ADDRESS on AD for a whole write cycle.",
+        $fatal(1, "v30_core: ce/ce_half REQUIREMENT VIOLATED (S-1) at %0t -- two CEs with NO CE_HALF between them.  CE_HALF is the only enable on t1_half2, which is the T1 address->data turnaround gating ad_oe_data: without it the BIU leaves the ADDRESS on AD for a whole write cycle.",
                $time);
 
     if (CE_HALF)  ce_half_since_ce <= 1'b1;
     else if (CE)  ce_half_since_ce <= 1'b0;
+
+    // USER RULING 1 (2026-09-08): THE SAVE-STATE FREEZE CLAUSE IS EXTENDED TO
+    // `CE_HALF`.  The freeze a save-state write assumes is a freeze of the
+    // WHOLE core, and the core has TWO enables, not one.  These two clauses
+    // mirror the `CE` pair in the SS block below, one phase over:
+    //   * `SS_WE && CE_HALF` -- a half-cycle advance during a stream write is
+    //     the same defect as a full one: the core is not frozen.
+    //   * `CE_HALF && ss_we_q` -- the A2 resume-drain contract, which says the
+    //     platform must not re-enable an ENABLE until the SS command staging
+    //     has drained.  It said `CE`; there is no reason it meant only `CE`.
+    //
+    // ⚠ WHY THEY ARE HERE, UNDER `V30_MUXED_AD`, AND NOT IN THE SS BLOCK BELOW.
+    // The SS block is bus-shape independent and these two clauses are not:
+    // WITHOUT the define there is no `CE_HALF` PORT, so both are VACUOUS BY
+    // CONSTRUCTION -- exactly the reason C-a and S-1 live here, stated in the
+    // paragraph above.  The ce/ce_half PHASE-SPLIT LANDING (WAVE 2,
+    // `docs/notes/phase_split_landing_results_2026-09-08.md`) would have made
+    // `CE_HALF` an unconditional port and let these move down; that landing was
+    // REVERTED when its G6 came back RED (5 of 5 CONTROL draws), so the port is
+    // still bus-shape machinery and so are these.  **THE RULING IS SATISFIED IN
+    // EVERY CONFIGURATION IN WHICH IT CAN BE STATED**, and the configuration in
+    // which it cannot is the one with no second enable to state it about.
+    //
+    // NON-VACUITY IS A DELIVERABLE, NOT A HOPE: `sw/phase_split_nonvacuity.py`
+    // cases A1 and A2 construct each condition by a temporary, reverted probe
+    // and require the message.  ⚠ THEY NEED TWO PROBES AND NOT ONE, because
+    // VERILATOR TREATS A PROCEDURAL `$error` AS AN ASSERTION AND `$stop`s ON
+    // THE FIRST ONE -- a single probe fires A1 and the run ends there.
+    if (SS_WE && CE_HALF)
+        $error("SS_WE asserted while CE_HALF high (core not frozen -- a half-cycle enable advances t1_half2 during a stream write).  USER RULING 2026-09-08.");
+    if (CE_HALF && ss_we_q)
+        $error("CE_HALF resumed with SS command staging undrained (ss_we_q high) -- the A2 resume-drain contract governs BOTH enables, not only CE.  USER RULING 2026-09-08.");
 end
+`endif
 
 // The SAVE-STATE contract is bus-shape independent and is asserted in every
 // configuration.  (It was in the block above until 2026-08-14, when the two
-// ce/ce_half clauses moved under `V30_MUXED_AD` and it could not follow them.
-// ⚠ 2026-09-08: THAT SPLIT IS UNDONE.  `CE_HALF` is an unconditional port
-// now, so the two blocks are one `ifndef SYNTHESIS` again and the SS clauses
-// can finally name it -- which is what USER RULING 1 of 2026-09-08 asks for.)
-//
-// USER RULING 1 (2026-09-08): THE FREEZE CLAUSE IS EXTENDED TO `CE_HALF`.
-// The freeze that a save-state write assumes is a freeze of the WHOLE core,
-// and since the phase split the core advances on TWO enables, not one.  A
-// `CE_HALF` during an SS write would re-capture the phase-split shadow from a
-// half-restored register file; a `CE_HALF` with the command staging still
-// undrained would capture stage 1 evaluated in the `ss_we` arm.  Both are the
-// same defect the two `CE` clauses already name, one phase over.
+// ce/ce_half clauses moved under `V30_MUXED_AD` and it could not follow them.)
 always @(posedge CLK) begin
-    if (SS_WE && CE)      $error("SS_WE asserted while CE high (core not frozen)");
-    if (SS_WE && CE_HALF) $error("SS_WE asserted while CE_HALF high (core not frozen -- the phase-split shadow would re-capture from a half-restored register file).  USER RULING 2026-09-08.");
-    if (SS_WE && RESET)   $error("SS_WE asserted during RESET");
+    if (SS_WE && CE)    $error("SS_WE asserted while CE high (core not frozen)");
+    if (SS_WE && RESET) $error("SS_WE asserted during RESET");
     // Resume-drain contract (A2): the platform must NOT re-enable CE until the
     // SS command staging has drained.  ss_we_q still high at a CE cycle means
     // the core takes its `if (ss_we)` branch and SKIPS its state advance -> a
     // phantom wait on resume.
-    if (CE && ss_we_q)      $error("CE resumed with SS command staging undrained (ss_we_q high)");
-    if (CE_HALF && ss_we_q) $error("CE_HALF resumed with SS command staging undrained (ss_we_q high) -- the shadow would capture stage 1 as evaluated in the ss_we arm.  USER RULING 2026-09-08.");
+    if (CE && ss_we_q)  $error("CE resumed with SS command staging undrained (ss_we_q high)");
 end
 `endif
 
@@ -432,8 +428,6 @@ v30u_biu u_biu (
 v30u_eu u_eu (
     .clk        (CLK),
     .ce         (CE),
-    // THE PHASE SPLIT: stage 1's capture edge.  Unconditional, like the port.
-    .ce_half    (CE_HALF),
     .srst       (RESET),
     .q_byte     (q_byte),
     .q_ripe     (q_ripe),
