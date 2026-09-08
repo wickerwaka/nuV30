@@ -1,0 +1,17 @@
+=== sta_phase_split_frontier: nec_test / nec_test_ucore ===
+$v30u_ce 2084   LIVE_NARROW registers 45
+
+--- POSITIVE CONTROL ---
+  node: emu|system_large|u_core|u_biu|flush_direct~1|combout
+  live registers that reach it: 1 of 45
+CONTROL PASSED
+
+=== ATTRIBUTION ===
+
+  node: emu|system_large|u_core|u_eu|dec_addr_next[2]~21|combout
+    live sources reaching it: 1 of 45
+      emu:emu|system_large:system_large|c_reset_q
+
+  node: emu|system_large|u_core|u_eu|dec_addr_next[2]~22|combout
+    live sources reaching it: 1 of 45
+      emu:emu|system_large:system_large|c_reset_q

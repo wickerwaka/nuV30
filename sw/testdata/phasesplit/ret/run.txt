@@ -1,0 +1,7 @@
+configuration_requested: RETENTION
+verilog_macro: --verilog_macro=X1_AD_RETENTION=1
+git_head: c2a4f42eef670f92626d4094b38519f3820400a2
+git_dirty_tracked_hdl: 1
+seeds: 1
+started: 2026-09-08T17:32:21Z
+completed: 2026-09-08T17:41:57Z

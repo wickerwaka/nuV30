@@ -1,0 +1,24 @@
+configuration_requested: CONTROL
+verilog_macro: <none>
+git_head: c2a4f42eef670f92626d4094b38519f3820400a2
+git_dirty_tracked_hdl: 1
+seeds: 1 2 3
+started: 2026-09-08T17:04:09Z
+completed: 2026-09-08T17:32:21Z
+
+NOTE ON WHAT IS AND IS NOT IN THIS DIRECTORY.
+The `quartus_map` / `quartus_fit` / `quartus_sta` STAGE LOGS were removed after
+the run; they are ~1.5 MB of tool chatter and nothing in
+`phase_split_anatomy_2026-09-08.md` is derived from them.  What IS retained is
+every file a figure is read from: the scan outputs (`seed*.phasesplit.txt`),
+the per-class ceiling probe (`seed*.truefmax.txt`), the frontier attribution
+(`seed1.frontier.txt`), Quartus's own timing summary (`seed*.sta.summary`) and
+the fitter's seed echo (`seed*.seedecho.txt`).
+
+⚠ THIS IS NOT A RECEIPT AND THIS DIRECTORY IS NOT A GATE ARTIFACT.  The
+quotable Fmax numbers come from `sw/quartus_gate.py`; `seed*.truefmax.txt` is
+one draw of one probe and `standing_gates.md` §A governs.
+
+The `seed1.frontier.txt` in this directory was taken on a SEPARATE re-fit of
+CONTROL seed 1 (same map, same `--seed=1 --recompile=off`), run after the three
+scan draws because each fit overwrites `hdl/db`.
