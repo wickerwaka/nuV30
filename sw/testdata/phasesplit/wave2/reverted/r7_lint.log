@@ -1,0 +1,18 @@
+r7_lint: core=ucore  hdl/rtl/ucore
+  BIU -> EU nets: 20
+
+  --- (a) live-READY carriers into the EU ---
+  carriers found      : 1 (eu_rd_edge)
+  declared exceptions : eu_rd_edge
+  OK: no undeclared carrier
+
+  --- (b) `stop` under a live-READY condition ---
+  tainted signals     : 3 (eu_rd_edge, rd_edge_psw_take, rd_edge_take_raw)
+  `stop` sites      : 51 in v30u_eu_step.svh, v30u_eu_row.svh
+  OK: no `stop` sits under a live-READY condition
+
+=== r7_lint: PASS   (0 undeclared carrier(s), 0 undeclared unresolved, 0 `stop` site(s))
+
+real	0m0.243s
+user	0m0.234s
+sys	0m0.008s

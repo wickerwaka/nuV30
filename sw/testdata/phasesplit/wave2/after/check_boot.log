@@ -1,0 +1,10 @@
+  RTL leg hdl/tb/obj_dir_ucore/Vtb_v30_core  receipt af94f3d9b3dcdd65…
+
+loop CODE T1 @00100: real [26, 90, 154, 218] sim [26, 90, 154, 218]
+real loop period 64; sim loop period 64
+
+BOOT REPLAY MATCHES over 220 rows from RESET release
+
+real	0m0.151s
+user	0m0.125s
+sys	0m0.027s

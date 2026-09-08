@@ -1,0 +1,177 @@
+
+[1] BUILD, RECEIPT, and the CONTENT-ADDRESSED KEY
+
+[2] MUTATION -- spec §6 first half
+========================================================================
+  ARTIFACT LAYER -- STALE -- /home/wickerwaka/.cache/artifact_selftest_eeadfvip/obj/out.bin
+========================================================================
+  asked for by : test
+  receipt      : /home/wickerwaka/.cache/artifact_selftest_eeadfvip/obj/out.bin.receipt.json
+  receipt id   : b83aa271ff061367…
+  built        : 2026-09-08T21:50:39Z
+  
+  1 declared file(s) DO NOT MATCH THE TREE:
+    INPUT   /home/wickerwaka/.cache/artifact_selftest_eeadfvip/src/a.txt
+            receipt cb1ad2119d8fafb6…   tree c50128cf99c06e86…
+  
+  The number this scorer was about to produce would not have been
+  a number about this tree.  REBUILD, then re-run.
+========================================================================
+========================================================================
+  ARTIFACT LAYER -- STALE -- /home/wickerwaka/.cache/artifact_selftest_eeadfvip/obj/out.bin
+========================================================================
+  asked for by : a scorer
+  receipt      : /home/wickerwaka/.cache/artifact_selftest_eeadfvip/obj/out.bin.receipt.json
+  receipt id   : b83aa271ff061367…
+  built        : 2026-09-08T21:50:39Z
+  
+  1 declared file(s) DO NOT MATCH THE TREE:
+    INPUT   /home/wickerwaka/.cache/artifact_selftest_eeadfvip/src/a.txt
+            receipt cb1ad2119d8fafb6…   tree c50128cf99c06e86…
+  
+  The number this scorer was about to produce would not have been
+  a number about this tree.  REBUILD, then re-run.
+========================================================================
+
+[3] STALE ARTIFACT -- spec §6 second half, on the REAL fixture
+========================================================================
+  ARTIFACT LAYER -- STALE -- /home/wickerwaka/.cache/artifact_selftest_eeadfvip/obj/out.bin
+========================================================================
+  asked for by : test
+  receipt      : /home/wickerwaka/.cache/artifact_selftest_eeadfvip/obj/out.bin.receipt.json
+  receipt id   : 18b9d37082943784…
+  built        : 2026-09-08T21:50:39Z
+  
+  1 declared file(s) DO NOT MATCH THE TREE:
+    OUTPUT  /home/wickerwaka/.cache/artifact_selftest_eeadfvip/obj/out.bin
+            receipt 80ea94cdc6e8a55a…   tree 44a2bb8e06582f04…
+  
+  The number this scorer was about to produce would not have been
+  a number about this tree.  REBUILD, then re-run.
+========================================================================
+========================================================================
+  ARTIFACT LAYER -- STALE -- /home/wickerwaka/.cache/artifact_selftest_eeadfvip/obj/out.bin
+========================================================================
+  asked for by : a scorer
+  receipt      : /home/wickerwaka/.cache/artifact_selftest_eeadfvip/obj/out.bin.receipt.json
+  receipt id   : 18b9d37082943784…
+  built        : 2026-09-08T21:50:39Z
+  
+  1 declared file(s) DO NOT MATCH THE TREE:
+    OUTPUT  /home/wickerwaka/.cache/artifact_selftest_eeadfvip/obj/out.bin
+            receipt 80ea94cdc6e8a55a…   tree 44a2bb8e06582f04…
+  
+  The number this scorer was about to produce would not have been
+  a number about this tree.  REBUILD, then re-run.
+========================================================================
+      restored under the published name: a synthetic old binary (the tb_sys.stale-s6 fixture is absent)
+
+[4] NO RECEIPT -- the state all seven incarnations lived in
+========================================================================
+  ARTIFACT LAYER -- NO RECEIPT -- /home/wickerwaka/.cache/artifact_selftest_eeadfvip/obj/out.bin
+========================================================================
+  asked for by: test
+  expected     /home/wickerwaka/.cache/artifact_selftest_eeadfvip/obj/out.bin.receipt.json
+  
+  This binary was not built through the artifact layer, so NOTHING
+  in the tree says what it is a function of.  That is precisely the
+  state in which all seven incarnations of the vacuous-gate pattern
+  happened.  Rebuild it through its recipe.
+========================================================================
+
+[5] ARTIFACT ABSENT
+========================================================================
+  ARTIFACT LAYER -- ARTIFACT ABSENT -- /home/wickerwaka/.cache/artifact_selftest_eeadfvip/obj/out.bin
+========================================================================
+  asked for by: test
+  there is nothing at that path to run.
+========================================================================
+
+[6] WRONG OUTPUT NAME -- incarnations 2 and 7, as a unit test
+========================================================================
+  ARTIFACT LAYER -- BUILD FAILED -- /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/obj/out.bin
+========================================================================
+  recipe   test_artifact/selftest
+  command  python3 -c import sys,pathlib;o=pathlib.Path(sys.argv[1]);n=sys.argv[2];o.mkdir(parents=True,exist_ok=True);(o/n).write_bytes(b''.join(pathlib.Path(p).read_bytes() for p in sys.argv[3:] if not p.startswith('--'))) /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/.obj.staging.112076 Vout.bin /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/src/a.txt /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/src/b.txt
+  rc       0
+  OUTPUT   /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/obj/out.bin: NOT WRITTEN (the command wrote somewhere else, or under another name)
+  staging  /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/.obj.staging.112076
+           holds: Vout.bin
+  
+  NOTHING WAS PROMOTED.  The previous artifact and its receipt are untouched.
+========================================================================
+========================================================================
+  ARTIFACT LAYER -- BUILD FAILED -- /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/obj/out.bin
+========================================================================
+  recipe   test_artifact/selftest
+  command  python3 -c import sys,pathlib;o=pathlib.Path(sys.argv[1]);n=sys.argv[2];o.mkdir(parents=True,exist_ok=True);(o/n).write_bytes(b''.join(pathlib.Path(p).read_bytes() for p in sys.argv[3:] if not p.startswith('--'))) /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/.obj.staging.112076 Vout.bin /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/src/a.txt /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/src/b.txt
+  rc       0
+  OUTPUT   /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/obj/out.bin: NOT WRITTEN (the command wrote somewhere else, or under another name)
+  staging  /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/.obj.staging.112076
+           holds: Vout.bin
+  
+  NOTHING WAS PROMOTED.  The previous artifact and its receipt are untouched.
+========================================================================
+========================================================================
+  ARTIFACT LAYER -- STALE -- /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/obj/out.bin
+========================================================================
+  asked for by : test
+  receipt      : /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/obj/out.bin.receipt.json
+  receipt id   : b02405a611497096…
+  built        : 2026-09-08T21:50:39Z
+  
+  1 declared file(s) DO NOT MATCH THE TREE:
+    INPUT   /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/src/a.txt
+            receipt cb1ad2119d8fafb6…   tree 9eb84a5cb87f596c…
+  
+  The number this scorer was about to produce would not have been
+  a number about this tree.  REBUILD, then re-run.
+========================================================================
+
+[7] BUILD RC != 0, and a MISSING DECLARED INPUT
+========================================================================
+  ARTIFACT LAYER -- BUILD FAILED -- /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/obj/out.bin
+========================================================================
+  recipe   test_artifact/selftest
+  command  python3 -c import sys;sys.exit(3) /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/.obj.staging.112076 out.bin /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/src/a.txt /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/src/b.txt
+  rc       3
+  OUTPUT   /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/obj/out.bin: NOT WRITTEN (the command wrote somewhere else, or under another name)
+  staging  /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/.obj.staging.112076
+           holds: 
+  
+  NOTHING WAS PROMOTED.  The previous artifact and its receipt are untouched.
+========================================================================
+========================================================================
+  ARTIFACT LAYER -- DECLARED INPUT MISSING -- /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/obj/out.bin
+========================================================================
+  recipe test_artifact/selftest
+  these declared inputs do not exist:
+      /home/wickerwaka/.cache/artifact_selftest_eeadfvip/wn/src/gone.txt
+========================================================================
+
+[8] TOOL VERSION (deviation D-2)
+========================================================================
+  ARTIFACT LAYER -- STALE -- /home/wickerwaka/.cache/artifact_selftest_eeadfvip/tv/obj/out.bin
+========================================================================
+  asked for by : test
+  receipt      : /home/wickerwaka/.cache/artifact_selftest_eeadfvip/tv/obj/out.bin.receipt.json
+  receipt id   : 301e595812b2c2cf…
+  built        : 2026-09-08T21:50:39Z
+  
+  1 declared file(s) DO NOT MATCH THE TREE:
+    TOOL    receipt 'python3 0.0.0-from-1998'   now 'Python 3.14.4'
+  
+  The number this scorer was about to produce would not have been
+  a number about this tree.  REBUILD, then re-run.
+========================================================================
+
+[9] THE A/B DELTA MANIFEST -- spec §5
+
+=== test_artifact: 45/45 checks pass
+=== the layer rejects a perturbed input, a stale artifact, a receipt-less
+    artifact, a wrong-named output and a mismatched tool -- and runs
+    through an irrelevant change.  NON-VACUOUS.
+
+real	0m0.612s
+user	0m0.453s
+sys	0m0.255s

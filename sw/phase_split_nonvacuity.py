@@ -69,8 +69,8 @@ case("A1     SS_WE && CE_HALF", [PARK_PROBE],
 case("A2     CE_HALF && ss_we_q  (with A1 silenced so it can be reached)",
      [PARK_PROBE,
       ("hdl/rtl/ucore/v30_core.sv",
-       '    if (SS_WE && CE_HALF) $error("SS_WE asserted while CE_HALF high',
-       '    if (1\'b0)            $error("SS_WE asserted while CE_HALF high')],
+       "    if (SS_WE && CE_HALF)\n        $error(\"SS_WE asserted while CE_HALF high",
+       "    if (1'b0)                 // P-8(a) PROBE A2: A1 silenced\n        $error(\"SS_WE asserted while CE_HALF high")],
      [r"CE_HALF resumed with SS command staging undrained"], RUN_SS)
 
 # B -- withhold CE_HALF entirely: S-1 must fire, and its message must name the

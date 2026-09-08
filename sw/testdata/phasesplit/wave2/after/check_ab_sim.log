@@ -1,0 +1,10 @@
+== check_ab_sim: ucore core inside system_large, vs the chip's own boot capture ==
+   artifact hdl/tb/obj_dir_ab_ucore/tb_ab  receipt 248b15cac3b057d0…
+
+loop CODE T1 @00100: real [26, 90, 154] core [26, 90, 154]
+
+AB SIM MATCHES CHIP BOOT over 187 rows from RESET release
+
+real	0m0.171s
+user	0m0.145s
+sys	0m0.026s

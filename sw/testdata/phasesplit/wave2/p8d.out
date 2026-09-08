@@ -1,0 +1,25 @@
+quartus_gate: removing pre-existing receipt /home/wickerwaka/src/nec_test/hdl/output_files_ucore/quartus_gate.json (a receipt is an OUTPUT; the history is /home/wickerwaka/src/nec_test/sw/testdata/receipts/quartus_bitstream.jsonl)
+quartus_gate: E1 gen_ucore_qsf --check -> PASS: gen_ucore_qsf: nec_test_ucore.qsf is up to date
+quartus_gate: /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sh --flow compile nec_test -c nec_test_ucore   (cwd /home/wickerwaka/src/nec_test/hdl)
+quartus_gate:   rc=0 in 498s
+quartus_gate: compile rc=0 in 498s (log sw/testdata/phasesplit/wave2/p8d_mcp_restored.log)
+quartus_gate: configuration CONTROL/DEFAULT (no X1_AD_RETENTION) -- DERIVED from hdl/output_files_ucore/nec_test_ucore.flow.rpt, hdl/output_files_ucore/nec_test_ucore.map.rpt
+
+  --- quartus_gate (G6) ---
+  tool     : Version 17.1.0 Build 590 10/25/2017 SJ Lite Edition
+  config   : CONTROL/DEFAULT (no X1_AD_RETENTION) -- DERIVED from hdl/output_files_ucore/nec_test_ucore.flow.rpt, hdl/output_files_ucore/nec_test_ucore.map.rpt
+  inputs   : 89 files, sha256 75ae2ea2b962a113…
+  reports  : 9 files, sha256 fcb832729c1deaf0…
+  git      : d867b3d4cd-dirty  (tree DIRTY)
+  PASS E2_zero_errors   {'stage_errors': 0, 'error_lines': 0, 'map': 'Successful - Tue Sep  8 13:42:35 2026', 'fit': 'Successful - Tue Sep  8 13:48:06 2026', 'asm': True}
+  PASS E3_fmax          39.23
+  PASS E4_worst_setup   7.002
+  PASS E5_tns           []
+  PASS E7_input_stability {'pre_sha256': '75ae2ea2b962a113e3495f82f6d1bdf71d48b37bd5fe3d6a3df4d616eb3d022b', 'post_sha256': '75ae2ea2b962a113e3495f82f6d1bdf71d48b37bd5fe3d6a3df4d616eb3d022b', 'n_moved': 0, 'moved': [], 'moved_exempt': [], 'moved_offending': [], 'exemptions': ['hdl/nec_test_ucore.qsf']}
+  ALMs 10,130 / 41,910 ( 24 % )   latches 0   lpm_divide 0
+  receipt id : 2cea84f898ea2cd0…   (history /home/wickerwaka/src/nec_test/sw/testdata/receipts/quartus_bitstream.jsonl)
+=== quartus_gate: PASS   receipt /home/wickerwaka/src/nec_test/hdl/output_files_ucore/quartus_gate.json
+
+
+
+hdl/nec_test.sdc restored: CLEAN

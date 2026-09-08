@@ -1,0 +1,12 @@
+HLT.INT: 200/200 full  (cycles 200, arch 200)
+HLT.RES: 200/200 full  (cycles 200, arch 200)
+INT.90: 200/200 full  (cycles 200, arch 200)
+INT.9D: 200/200 full  (cycles 200, arch 200)
+INT.F3AA: 200/200 full  (cycles 200, arch 200)
+NMI.90: 200/200 full  (cycles 200, arch 200)
+
+TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+
+real	0m1.974s
+user	0m1.890s
+sys	0m0.070s

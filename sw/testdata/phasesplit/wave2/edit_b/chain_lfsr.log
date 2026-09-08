@@ -1,0 +1,36 @@
+chain_lfsr_gate: CHAIN_MAX = 7 (read from v30u_eu.sv), 4 seeds x 400000 fabric clocks
+artifact: BUILD verilator_binary/hdl/tb/obj_dir_chain_lfsr/Vtb_chain_lfsr
+  verilator --binary --timing -DV30_MUXED_AD -Wall -Wno-UNUSEDSIGNAL -Wno-VARHIDDEN -Wno-TIMESCALEMOD -Wno-WIDTHEXPAND -Wno-BLKSEQ -Wno-DECLFILENAME -Wno-UNUSEDPARAM -Wno-MULTIDRIVEN -Wno-UNOPTFLAT -Wno-CASEINCOMPLETE --top-module tb_chain_lfsr -I/home/wickerwaka/src/nec_test/hdl/rtl/ucore -Mdir /home/wickerwaka/src/nec_test/hdl/tb/.obj_dir_chain_lfsr.staging.2978652 /home/wickerwaka/src/nec_test/hdl/tb/tb_chain_lfsr.sv /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_ss_pkg.sv /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30_core.sv /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_biu.sv /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_ucrom.sv /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu.sv
+make: Entering directory '/home/wickerwaka/src/nec_test/hdl/tb/.obj_dir_chain_lfsr.staging.2978652'
+g++ -Os  -I.  -MMD -I/usr/share/verilator/include -I/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=1 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -DVL_TIME_CONTEXT   -fcoroutines -c -o verilated.o /usr/share/verilator/include/verilated.cpp
+g++ -Os  -I.  -MMD -I/usr/share/verilator/include -I/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=1 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -DVL_TIME_CONTEXT   -fcoroutines -c -o verilated_timing.o /usr/share/verilator/include/verilated_timing.cpp
+g++ -Os  -I.  -MMD -I/usr/share/verilator/include -I/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=1 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -DVL_TIME_CONTEXT   -fcoroutines -c -o verilated_threads.o /usr/share/verilator/include/verilated_threads.cpp
+python3 /usr/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtb_chain_lfsr.cpp Vtb_chain_lfsr___024root__DepSet_h0af41e9c__0.cpp Vtb_chain_lfsr___024root__DepSet_ha8fb3905__0.cpp Vtb_chain_lfsr__main.cpp Vtb_chain_lfsr__ConstPool_0.cpp Vtb_chain_lfsr___024root__Slow.cpp Vtb_chain_lfsr___024root__DepSet_h0af41e9c__0__Slow.cpp Vtb_chain_lfsr___024root__DepSet_ha8fb3905__0__Slow.cpp Vtb_chain_lfsr__Syms.cpp > Vtb_chain_lfsr__ALL.cpp
+g++ -Os  -I.  -MMD -I/usr/share/verilator/include -I/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=1 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -DVL_TIME_CONTEXT   -fcoroutines -c -o Vtb_chain_lfsr__ALL.o Vtb_chain_lfsr__ALL.cpp
+echo "" > Vtb_chain_lfsr__ALL.verilator_deplist.tmp
+g++    verilated.o verilated_timing.o verilated_threads.o Vtb_chain_lfsr__ALL.a    -pthread -lpthread -latomic   -o Vtb_chain_lfsr
+rm Vtb_chain_lfsr__ALL.verilator_deplist.tmp
+make: Leaving directory '/home/wickerwaka/src/nec_test/hdl/tb/.obj_dir_chain_lfsr.staging.2978652'
+- V e r i l a t i o n   R e p o r t: Verilator 5.032 2025-01-01 rev (Debian 5.032-1)
+- Verilator: Built from 0.824 MB sources in 7 modules, into 2.492 MB in 9 C++ files needing 0.002 MB
+- Verilator: Walltime 14.898 s (elab=0.041, cvt=0.377, bld=14.396); cpu 0.502 s on 1 threads; alloced 30.762 MB
+artifact: PROMOTED hdl/tb/obj_dir_chain_lfsr/Vtb_chain_lfsr  receipt 87af9ef616c4c9dc…  (15.0s)
+  binary receipt 87af9ef616c4c9dc1ed02a3c6c38c6c7db898aca3b0e599c123265f78144599e
+  seed 1: rc=0 CHAIN_DEPTH_MAX=6 entry_st=25 ce_clocks=66648 g0=8233 coincide=0 sig=1d01c9b269ffaa94
+      gaps g0=8233 g1=8384 g2=8350 g3=8343 g4=8383 g5=8310 g6=8343 g7=8302
+      live  fpops=262 qpops=544 IOR=9 IOW=3 HALT=1 CODE=349 MEMR=890 MEMW=763
+  seed 2: rc=0 CHAIN_DEPTH_MAX=6 entry_st=25 ce_clocks=66664 g0=8394 coincide=0 sig=b39b040a98b28e5d
+      gaps g0=8394 g1=8294 g2=8295 g3=8347 g4=8294 g5=8348 g6=8346 g7=8346
+      live  fpops=138 qpops=269 INTA=2 IOR=4 IOW=1 HALT=2 CODE=175 MEMR=329 MEMW=300
+  seed 3: rc=0 CHAIN_DEPTH_MAX=6 entry_st=25 ce_clocks=66521 g0=8114 coincide=0 sig=0997b773cd99c030
+      gaps g0=8114 g1=8364 g2=8330 g3=8343 g4=8364 g5=8309 g6=8343 g7=8354
+      live  fpops=1366 qpops=2946 IOR=46 IOW=18 HALT=5 CODE=1866 MEMR=1625 MEMW=2027
+  seed 4: rc=0 CHAIN_DEPTH_MAX=6 entry_st=25 ce_clocks=66559 g0=8204 coincide=0 sig=d05b6c3c3d9fbe78
+      gaps g0=8204 g1=8360 g2=8356 g3=8278 g4=8361 g5=8274 g6=8278 g7=8448
+      live  fpops=468 qpops=907 IOR=10 IOW=5 HALT=4 CODE=554 MEMR=350 MEMW=340
+
+chain_lfsr_gate: PASS -- CHAIN_MAX 7, observed depth [6], 0 overflows, 4 seeds x 400000 clocks
+
+real	0m16.589s
+user	0m15.934s
+sys	0m0.785s

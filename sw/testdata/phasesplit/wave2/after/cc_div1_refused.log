@@ -1,0 +1,12 @@
+check_core: --ce-div 1 is OUTSIDE THE ce/ce_half CONTRACT and is REFUSED.
+  The contract is ONE premise:
+    C-a  `ce` and `ce_half` are never asserted on the same fabric clock.
+  div 1 asserts BOTH on EVERY clock.  Adjacent enables ARE legal (USER RULING
+  2026-08-13), so the minimum legal divisor is 2 -- which is M72's catch-up
+  burst rate.  The default is 4, and a default is not a floor.
+  See hdl/rtl/ucore/v30_core.sv's own assert, hdl/nec_test.sdc and
+  docs/notes/ce_contract_correction_prereg_2026-08-13.md §2.
+
+real	0m0.098s
+user	0m0.069s
+sys	0m0.013s

@@ -1,0 +1,7 @@
+  RTL leg hdl/tb/obj_dir_ucore/Vtb_v30_core  receipt 8109d500651f4501…
+
+loop CODE T1 @00100: real [26, 90, 154, 218, 282, 346] sim [26, 90, 154, 218, 282, 346]
+real loop period 64; sim loop period 64
+
+BOOT REPLAY MATCHES over 400 rows from RESET release
+python3 sw/check_boot.py 400 --core ucore  0.12s user 0.03s system 98% cpu 0.154 total

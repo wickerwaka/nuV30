@@ -1,0 +1,20 @@
+  LEDGER   sw/testdata/fz2/fz2_failure_ledger_f20_2026-08-12.json   (fz2_replay fidelity reference)
+           2026-08-12T12:15:39Z   106 failures / denominator 3839   era sof 26d6e7916618…
+Traceback (most recent call last):
+  File "/home/wickerwaka/src/nec_test/sw/fz2_replay.py", line 653, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/wickerwaka/src/nec_test/sw/fz2_replay.py", line 552, in main
+    d = json.loads(Path(a.report).read_text())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/usr/lib/python3.14/pathlib/__init__.py", line 788, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.14/pathlib/__init__.py", line 772, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'sw/testdata/phasesplit/wave2/edit_a/fz2_replay.json'
+
+real	0m0.155s
+user	0m0.132s
+sys	0m0.023s
