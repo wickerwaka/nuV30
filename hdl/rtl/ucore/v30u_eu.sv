@@ -63,6 +63,11 @@
 module v30u_eu (
     input             clk,
     input             ce,
+    // THE PHASE SPLIT (WAVE 2, 2026-09-08): the CPU clock's half-cycle enable,
+    // which is where STAGE 1 of the next-state cone is captured.  See THE PHASE
+    // SPLIT below.  It is an UNCONDITIONAL port of `v30_core` for this reason
+    // -- `V30_MUXED_AD` governs the bus shape, and this is core clocking.
+    input             ce_half,
     input             srst,
 
     // queue port
@@ -3323,203 +3328,24 @@ endtask
 // capturing rather than by this block not running.
 //--------------------------------------------------------------------------
 always @* begin
-    //-- preload: `_n` starts at the flop, so an arm that assigns nothing holds
-    for (i = 0; i < 8; i = i + 1) gpr_n[i] = gpr[i];
-    for (i = 0; i < 4; i = i + 1) sreg_n[i] = sreg[i];
-    pc_n = pc;
-    psw_n = psw;
-    tmpa_n = tmpa;
-    tmpa_byte_n = tmpa_byte;
-    tmpb_byte_n = tmpb_byte;
-    tmpc_byte_n = tmpc_byte;
-    opr_byte_n = opr_byte;
-    tmpb_n = tmpb;
-    tmpc_n = tmpc;
-    ea_residue_n = ea_residue;
-    ea_pair_rhs_n = ea_pair_rhs;
-    ea_pair_valid_n = ea_pair_valid;
-    opr_n = opr;
-    ind_n = ind;
-    count_n = count;
-    pfxcnt_n = pfxcnt;
-    stat_n = stat;
-    sign_neg_n = sign_neg;
-    bit_n_n = bit_n;
-    al_op_n = al_op;
-    al_tmp_n = al_tmp;
-    al_eaconst_n = al_eaconst;
-    al_eaval_n = al_eaval;
-    al_adjust_n = al_adjust;
-    al_adjtmp_n = al_adjtmp;
-    al_bitarm_n = al_bitarm;
-    al_bitn_n = al_bitn;
-    al_spent_n = al_spent;
-    upc_page_n = upc_page;
-    upc_opc_n = upc_opc;
-    upc_loc_n = upc_loc;
-    seg_override_n = seg_override;
-    seg_ovr_n = seg_ovr;
-    rep_kind_n = rep_kind;
-    lock_pfx_n = lock_pfx;
-    opc_reg_n = opc_reg;
-    op8_n = op8;
-    imm8_n = imm8;
-    opc_base_n = opc_base;
-    opc_from_modrm_n = opc_from_modrm;
-    modrm_reg_n = modrm_reg;
-    xop_n = xop;
-    rep_test_n = rep_test;
-    rep_pol_n = rep_pol;
-    bus_word_n = bus_word;
-    opc8080_n = opc8080;
-    mode8080_n = mode8080;
-    intr_pending_n = intr_pending;
-    eu_halted_n = eu_halted;
-    int_p_n = int_p;
-    nmi_p_n = nmi_p;
-    nmi_latch_n = nmi_latch;
-    ie_p_n = ie_p;
-    rep_chain_n = rep_chain;
-    irq_shadow_n = irq_shadow;
-    bnd_armed_n = bnd_armed;
-    irq_sel_nmi_n = irq_sel_nmi;
-    irq_sel_brk_n = irq_sel_brk;
-    brk_p_n = brk_p;
-    brk_arm_n = brk_arm;
-    brk_smp_n = brk_smp;
-    unhalt_pend_n = unhalt_pend;
-    irq_fast_inta_n = irq_fast_inta;
-    irq_halt_entry_n = irq_halt_entry;
-    m_kind_n = m_kind;
-    r_kind_n = r_kind;
-    wb_kind_n = wb_kind;
-    m_idx_n = m_idx;
-    r_idx_n = r_idx;
-    wb_idx_n = wb_idx;
-    m_ea_n = m_ea;
-    r_ea_n = r_ea;
-    wb_ea_n = wb_ea;
-    m_seg_n = m_seg;
-    r_seg_n = r_seg;
-    wb_seg_n = wb_seg;
-    m_byte_n = m_byte;
-    r_byte_n = r_byte;
-    wb_byte_n = wb_byte;
-    pend_active_n = pend_active;
-    pend_off_n = pend_off;
-    pend_seg_n = pend_seg;
-    pend_byte_n = pend_byte;
-    pend_io_n = pend_io;
-    opr_fresh_n = opr_fresh;
-    opr_loaded_n = opr_loaded;
-    rdp0_byte_n = rdp0_byte;
-    rdp1_byte_n = rdp1_byte;
-    rdq0_byte_n = rdq0_byte;
-    rdq1_byte_n = rdq1_byte;
-    rdq0_n = rdq0;
-    rdq1_n = rdq1;
-    rdq_n_n = rdq_n;
-    rd_pending_n = rd_pending;
-    ghost_rd_discard_n = ghost_rd_discard;
-    rd_done_cnt_n = rd_done_cnt;
-    rd_age0_n = rd_age0;
-    iend_owed_n = iend_owed;
-    rst_ctr_n = rst_ctr;
-    tsel_n = tsel;
-    pe_opc_reg_n = pe_opc_reg;
-    pe_opc8080_n = pe_opc8080;
-    pe_op8_n = pe_op8;
-    pe_pfxcnt_n = pe_pfxcnt;
-    wr_out_n = wr_out;
-    opc_valid_n = opc_valid;
-    opc_byte_n = opc_byte;
-    pop_is_first_n = pop_is_first;
-    ld_b_n = ld_b;
-    ld_pla_n = ld_pla;
-    ld_ext_n = ld_ext;
-    ld_page_n = ld_page;
-    ld_hasrm_n = ld_hasrm;
-    ld_rm_n = ld_rm;
-    ld_disp_n = ld_disp;
-    ld_dlo_n = ld_dlo;
-    ld_grpd_n = ld_grpd;
-    ld_byte_n = ld_byte;
-    ld_preread_n = ld_preread;
-    ld_ripe_prev_n = ld_ripe_prev;
-    st_n = st;
-    chg_n = chg;
-    ending_n = ending;
-    rowq_n = rowq;
-    row_posted_n = row_posted;
-    row_paired_n = row_paired;
-    rloop_n_n = rloop_n;
-    suppress_commit_n = suppress_commit;
-    first_pop_seen_n = first_pop_seen;
-    rowb0_n = rowb0;
-    rowb1_n = rowb1;
-    poste_n = poste;
-    poll_pipe_n = poll_pipe;
+    `include "v30u_eu_preload.svh"
 
-    //-- ...and the SCRATCH TEMPORARIES start at zero, for the same reason the
-    //   `_n` mirrors start at the flop: an arm that assigns nothing must not
-    //   LATCH.  These 24 are pure per-evaluation locals -- every one of them is
-    //   written before it is read on every reachable path (the writes dominate
-    //   the reads inside one arm: `stop` at the head of the chain, `ie_now` /
-    //   `brk_now` at the head of block (a), `nloc`/`carry`/`taken`/`bubble` at
-    //   the head of the row body, `pv`/`rm*`/`ea`/`rseg`/`bsw` at the head of
-    //   their decode arm, `v1`/`v2` immediately above the `wd1` include, and
-    //   `tk`/`ti`/`ts`/`te`/`tb` on the swap line that reads them) -- so a
-    //   defined starting value is UNOBSERVABLE and only removes 24 Quartus
-    //   10240 latch inferences.  NONE of them is referenced by
-    //   `v30u_eu_ss_write.svh`, so the `ss_we` arm holding them was never read
-    //   either; the only reads outside this block are the `ifndef SYNTHESIS`
-    //   observer (guarded `!ss_we`, where every one of them IS assigned) and
-    //   the `_unused_eu` sink.
-    //
-    //   ⚠ THIS IS NOT A PLACE TO PARK A DEFAULT THAT MATTERS.  It is placed
-    //   OUTSIDE the `chain` unroll on purpose: a value written at chain
-    //   position k must still be visible at k+1, and it is.  If a future edit
-    //   ever wants one of these to CARRY between evaluations it must become a
-    //   `_n`/register pair, not lose a line from here.
-    stop = 1'b0;
-    chain = 4'd0;
-    v1 = 16'd0;
-    v2 = 16'd0;
-    bsw = 1'b0;
-    wb1 = 1'b0;
-    wb2 = 1'b0;
-    rdh_byte = 1'b0;
-    pv = 14'd0;
-    nloc = 4'd0;
-    carry = 1'b0;
-    taken = 1'b0;
-    bubble = 1'b0;
-    retire_now = 1'b0;
-    rep_chained = 1'b0;
-    ie_now = 1'b0;
-    brk_now = 1'b0;
-    ea = 16'd0;
-    rseg = 3'd0;
-    rmmod = 2'd0;
-    rmreg = 3'd0;
-    rmrm = 3'd0;
-    tk = 2'd0;
-    ti = 3'd0;
-    ts = 3'd0;
-    te = 16'd0;
-    tb = 1'b0;
-
-    if (ss_we) begin
-        `include "v30u_eu_ss_write.svh"
-    end else begin   // <- was `else if (srst)` then `else if (ce)`:
-                     //    both selects are on the register bank now
+    // ***  STAGE 1 RUNS UNCONDITIONALLY  ***  -- the ce/ce_half PHASE SPLIT.
+    // Blocks (a)-(f) used to sit in the `else` arm of `if (ss_we)`.  They do
+    // not any more, and the reason is THE SS RESUME: the phase-split shadow
+    // must be re-derived from the FULLY RESTORED register file before the
+    // first resumed `ce`, and the only edge on which that is possible is the
+    // resume-drain edge -- the clock the A2 contract already requires, where
+    // `ss_we_q` is still high and every stream word has landed.  Stage 1
+    // evaluated THERE is stage 1 of the restored machine.  The `ss_we` arm,
+    // which now opens AT THE CUT, re-runs the preload so that stage 1's `_n`
+    // writes do not survive into it.
         //====================================================================
         // (a) the BIU's completion pulses, sampled on the clock they ride
         //====================================================================
 `ifndef SYNTHESIS
         trc_1bl_hit = 1'b0; trc_pe_hit = 1'b0; trc_1bld_hit = 1'b0;
 `endif
-        poll_pipe_n = {poll_pipe_n[1:0], pin_poll_n};
         // ...and the IE the gate's own pipeline is about to take, frozen HERE
         // because the chain below may write `psw` (see block (g)).
         ie_now = psw_n[FIE];
@@ -3727,6 +3553,75 @@ always @* begin
         trc_tmpb = tmpb_n;
         trc_tmpc = tmpc_n;
 `endif
+        //====================================================================
+        // ***  THE CUT  ***  -- the ce/ce_half PHASE SPLIT, WAVE 2.
+        //====================================================================
+        // Everything ABOVE is STAGE 1, evaluated in the `ce -> ce_half`
+        // window.  Everything BELOW is STAGE 2, evaluated in the
+        // `ce_half -> ce` window.  The boundary is WAVE 1's named cut --
+        // `Decoder28#1`, the ENTRY to the unrolled chain loop, measured at
+        // 46.8/53.2 . 49.8/50.2 . 46.1/53.9 . 46.1/53.9 per cent over four
+        // draws (`phase_split_anatomy_2026-09-08.md` §5) -- and it is the one
+        // place in this cone where the RTL has a boundary the netlist also
+        // has: four unrolled copies of ONE source line stand in series on the
+        // worst path and are 22.3 ns of its 48.2.
+        //
+        // THE MEMBERSHIP RULE, and it is mechanical: every `_n` or scratch
+        // name STAGE 1 ASSIGNS.  A `_n` stage 1 never touches still reads as
+        // its own flop in stage 2 and crosses nothing, so it is not here.
+        // `sw/phase_split_width.py` derives the set from the source.
+        //
+        // THE PACK AND THE UNPACK ARE ONE LIST, WRITTEN TWICE AND CHECKED.
+        s1_bus = {
+        al_adjtmp_n, al_adjust_n, al_bitarm_n, al_bitn_n, al_eaconst_n,
+        al_op_n, al_spent_n, al_tmp_n, brk_arm_n, brk_now, brk_smp_n, bsw,
+        count_n, ea_pair_valid_n, ea_residue_n, first_pop_seen_n,
+        ghost_rd_discard_n, gpr_n[0], gpr_n[1], gpr_n[2], gpr_n[3], gpr_n[4],
+        gpr_n[5], gpr_n[6], gpr_n[7], ie_now, iend_owed_n, ind_n,
+        intr_pending_n, irq_fast_inta_n, irq_halt_entry_n, m_idx_n, m_kind_n,
+        mode8080_n, modrm_reg_n, opc_base_n, opc_from_modrm_n, opr_byte_n,
+        opr_fresh_n, opr_loaded_n, opr_n, pc_n, poll_pipe_n, poste_n, psw_n,
+        r_idx_n, r_kind_n, rd_age0_n, rd_done_cnt_n, rd_pending_n, rdh_byte,
+        rdp0_byte_n, rdq0_byte_n, rdq0_n, rdq1_byte_n, rdq1_n, rdq_n_n,
+        sign_neg_n, sreg_n[0], sreg_n[1], sreg_n[2], sreg_n[3], stat_n,
+        tmpa_byte_n, tmpa_n, tmpb_byte_n, tmpb_n, tmpc_byte_n, tmpc_n,
+        unhalt_pend_n, v1, v2, wb1, wb2, wb_kind_n, wr_out_n
+        };
+
+        if (ss_we) begin
+            // ...and STAGE 1 IS UNDONE HERE.  An `ss_we` clock commits `_n`
+            // for EVERY register, so a `_n` the stream has not addressed yet
+            // must read as its own flop.  Re-running the block's own head is
+            // exactly that, and it makes this arm byte-identical to the
+            // pre-split one.  (`s1_bus` above is already packed, from stage 1
+            // evaluated on the register file as it stands -- which on the
+            // resume-drain edge is the FULLY RESTORED one.)
+            `include "v30u_eu_preload.svh"
+            `include "v30u_eu_ss_write.svh"
+        end else begin
+        //====================================================================
+        // STAGE 2 -- evaluated `ce_half -> ce`, committed on `ce`
+        //====================================================================
+        // The unpack.  CHARACTER-IDENTICAL to the pack above; that identity is
+        // the whole of the correctness argument and `sw/phase_split_lint.py`
+        // is its falsifier.
+        {
+        al_adjtmp_n, al_adjust_n, al_bitarm_n, al_bitn_n, al_eaconst_n,
+        al_op_n, al_spent_n, al_tmp_n, brk_arm_n, brk_now, brk_smp_n, bsw,
+        count_n, ea_pair_valid_n, ea_residue_n, first_pop_seen_n,
+        ghost_rd_discard_n, gpr_n[0], gpr_n[1], gpr_n[2], gpr_n[3], gpr_n[4],
+        gpr_n[5], gpr_n[6], gpr_n[7], ie_now, iend_owed_n, ind_n,
+        intr_pending_n, irq_fast_inta_n, irq_halt_entry_n, m_idx_n, m_kind_n,
+        mode8080_n, modrm_reg_n, opc_base_n, opc_from_modrm_n, opr_byte_n,
+        opr_fresh_n, opr_loaded_n, opr_n, pc_n, poll_pipe_n, poste_n, psw_n,
+        r_idx_n, r_kind_n, rd_age0_n, rd_done_cnt_n, rd_pending_n, rdh_byte,
+        rdp0_byte_n, rdq0_byte_n, rdq0_n, rdq1_byte_n, rdq1_n, rdq_n_n,
+        sign_neg_n, sreg_n[0], sreg_n[1], sreg_n[2], sreg_n[3], stat_n,
+        tmpa_byte_n, tmpa_n, tmpb_byte_n, tmpb_n, tmpc_byte_n, tmpc_n,
+        unhalt_pend_n, v1, v2, wb1, wb2, wb_kind_n, wr_out_n
+        } = s1q;
+
+
         stop = 1'b0;
 `ifndef SYNTHESIS
         chain_used = 4'd0;
@@ -3783,6 +3678,17 @@ always @* begin
         // F11b's trap, third form.)
         int_p_n = {int_p_n[2:0], pin_int};
         nmi_p_n = {nmi_p_n[3:0], pin_nmi};
+        // ...AND THE POLL PIN'S PIPELINE, WHICH MOVED HERE FROM BLOCK (a) AT
+        // THE PHASE SPLIT AND BELONGED HERE ALL ALONG.  It is the third of the
+        // three pin pipelines and it was the only one advanced at the START of
+        // the edge instead of the END.  Nothing between the two positions
+        // reads `poll_pipe_n` -- the module's other readers read the FLOP
+        // `poll_pipe` -- so the move is a no-op by inspection, and it is a
+        // REQUIREMENT of the split by construction: `pin_poll_n` is a live
+        // asynchronous input and stage 1 may not contain one (P-11), which the
+        // phase-stability `$fatal` beside the shadow would otherwise report on
+        // the first clock the pin moved mid-cycle.
+        poll_pipe_n = {poll_pipe_n[1:0], pin_poll_n};
         ie_p_n  = {ie_p_n[2:0], ie_now};
         // §86 -- `psw[FBRK]` on the SAME pipeline, frozen at the same instant
         // and shifted in the same place, because it answers the same kind of
@@ -3829,6 +3735,81 @@ always @* begin
     end
 end
 
+
+//==========================================================================
+// THE PHASE SPLIT -- `ce_half` CAPTURES STAGE 1  (WAVE 2, 2026-09-08)
+//==========================================================================
+// WAVE 1 (`docs/notes/phase_split_anatomy_2026-09-08.md`) measured that 96 %
+// of the binding `ce -> ce` cone is PHASE-STABLE -- pin-dependence enters only
+// in the last 1.5-5 ns of a 48-51 ns arc -- and named the cut: `Decoder28#1`,
+// the ENTRY to the unrolled chain loop.  This is that cut.
+//
+// THE THEOREM.  A node in the `ce -> ce` cone outside every input pin's
+// combinational fanout depends only on registers that commit on `ce`.  Its
+// value is therefore CONSTANT ACROSS THE WHOLE CPU CYCLE -- identical at
+// `ce_half(n)` and at `ce(n+1)`.  Capturing it on `ce_half` and consuming it
+// on `ce` is bit-exact BY CONSTRUCTION and moves no pin on any clock.  One
+// 2-period arc becomes two 1-period arcs, and `hdl/nec_test.sdc`'s CE
+// multicycle -- 2,100 registers of exception every downstream integrator has
+// to re-derive and copy -- is DELETED.
+//
+// THE PREMISE IS ASSERTED, NOT ARGUED.  `ifndef SYNTHESIS` below,
+// `s1q !== s1_bus` at every `ce` is a `$fatal`.  Every golden case, every
+// `ulockstep` scenario and all 4 x 400,000 `chain_lfsr` clocks run under it,
+// so "the pin identity held" is a MEASUREMENT and not an inference.  It is
+// what caught the one place the premise did NOT hold: `poll_pipe_n` used to
+// shift `pin_poll_n` in block (a), i.e. in stage 1, where a pin cannot go; it
+// now shifts in block (g) beside `int_p_n` and `nmi_p_n`, which is where the
+// other two pin pipelines have always been advanced and is the same clock.
+//
+// THE COMMIT CONDITION IS `(ss_we || srst || ce_half)` -- the register bank's
+// own condition with `ce_half` in place of `ce`, and for the bank's own three
+// reasons:
+//   * `ce_half` is the capture edge, which is the whole point;
+//   * `srst` is in it so the shadow tracks stage 1 THROUGHOUT RESET.  That is
+//     what answers "the first `CE` of a run may not have had a `CE_HALF`
+//     before it" (`v30_core.sv`'s `ce_half_since_ce` starts asserted, exactly
+//     so that first CE is legal): RESET is asserted at the head of every run,
+//     so the shadow is current at that CE whether or not a CE_HALF preceded
+//     it.  No `_r` mirror is needed and none is written -- stage 1 evaluated
+//     on the reset state IS the value wanted, where a mirror would be a second
+//     source of truth for it;
+//   * `ss_we` is in it so the RESUME-DRAIN edge re-derives it.  The A2 resume
+//     contract already requires a clock on which `ss_we_q` is high and every
+//     stream word has landed; stage 1 evaluated there is stage 1 of the
+//     restored machine, which is exactly what the first resumed `ce` needs.
+//     This is why stage 1 runs unconditionally and the `ss_we` arm re-runs the
+//     preload instead.
+//
+// IT IS DERIVED STATE AND IT IS NOT SAVE-STATE MAPPED.  `s1q` is a pure
+// function of registers that ARE SSA-mapped, recomputed from the same
+// expression, and the place that is CHECKABLE BY EYE is the one above: the
+// pack `s1_bus = { ... }` and the unpack `{ ... } = s1q` at THE CUT carry
+// character-identical concatenations, and `sw/phase_split_lint.py` fails if
+// they ever differ or if their summed declared widths stop equalling S1W.
+// `sw/ss_flop_whitelist_ucore.txt`, DERIVED class.
+localparam int S1W = 495;
+reg [S1W-1:0] s1_bus;      // STAGE 1's output, packed AT THE CUT
+reg [S1W-1:0] s1q = '0;    // ...and the shadow that carries it to `ce`
+
+always @(posedge clk) begin
+    if (ss_we || srst || ce_half) s1q <= s1_bus;
+end
+
+`ifndef SYNTHESIS
+// THE FALSIFIER FOR THE THEOREM, ON EVERY CLOCK OF EVERY GATE LEG.  At a `ce`
+// the live stage 1 and the shadow must agree: that IS the phase-stability
+// premise, and if any pin or mid-cycle signal ever reaches stage 1 this fires
+// on the clock it does.  Excluded: `srst` and `ss_we`, where the register bank
+// is not taking stage 1's answer either.
+always @(posedge clk) begin
+    if (ce && !srst && !ss_we && (s1q !== s1_bus))
+        $fatal(1, "v30u_eu: PHASE-SPLIT PREMISE VIOLATED at %0t -- stage 1 is not constant across the CPU cycle.  The shadow captured at ce_half differs from stage 1 evaluated at this ce: s1q=%h s1_bus=%h.  Something in stage 1 depends on a pin or on a mid-cycle signal; move that term into stage 2 (block (g)), as `poll_pipe_n` was.  docs/notes/phase_split_landing_prereg_2026-09-08.md P-10.",
+               $time, s1q, s1_bus);
+end
+`endif
+
+
 // L1 -- THE DECODE'S ADDRESS, AND IT IS THE COMMIT'S OWN SELECTION.
 //
 // Character for character the `upc_page`/`upc_opc`/`upc_loc` lines in THE
@@ -3848,6 +3829,14 @@ assign dec_addr_next = (srst && !ss_we)
 //--------------------------------------------------------------------------
 // THE COMMIT -- the ONLY place an EU state register is written, and the only
 // place `ce` appears.  This is the clock-enable port.
+//
+// ⚠ 2026-09-08, THE PHASE SPLIT: `ce_half` now gates ONE register of its own,
+// `s1q` (see THE PHASE SPLIT above).  That does NOT weaken this sentence --
+// `s1q` is DERIVED state, not EU state: it is not save-state mapped, it is on
+// `sw/ss_flop_whitelist_ucore.txt`'s DERIVED class, and every architectural
+// register is still written HERE and only here, on `ce`.  What DID change is
+// that this block's `_n` now come from a cone that starts at `s1q` rather than
+// at the flops directly.
 //--------------------------------------------------------------------------
 always @(posedge clk) begin
     //-- ss_we > srst > ce, exactly the priority the one clocked block had

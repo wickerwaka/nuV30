@@ -35,38 +35,61 @@ def restore(*paths):
 
 CASES = []
 
-def case(name, path, old, new, want, cmd):
-    CASES.append((name, path, old, new, want, cmd))
+def case(name, patches, want, cmd):
+    """`patches` is a list of (path, old, new)."""
+    CASES.append((name, patches, want, cmd))
 
 RUN = "python3 sw/check_core.py --core ucore --opcodes 90 --cases 1"
 RUN_SS = ("python3 sw/check_core.py --core ucore --opcodes 90 --cases 1 "
-          "--ss-sweep 40 --ss-cases 0")
+          "--ss-sweep 40 --ss-cases 0 --ss-mode 2")
 
 # A1 / A2 -- let CE_HALF run during the SS park, which is what the TB's
-# `!ss_park` term exists to prevent.  Both new clauses see it.
-case("A1+A2  SS_WE && CE_HALF  and  CE_HALF && ss_we_q",
-     "hdl/tb/tb_v30_core.sv",
-     "    ce_half <= !ss_park && (ce_cnt == (ce_div / 2) - 1);",
-     "    ce_half <= (ce_cnt == (ce_div / 2) - 1);   // P-8(a) NON-VACUITY PROBE",
-     [r"SS_WE asserted while CE_HALF high", r"CE_HALF resumed with SS command staging undrained"],
-     RUN_SS)
+# `!ss_park` term exists to prevent.
+#
+# ⚠ THEY NEED TWO PROBES AND NOT ONE, AND THE REASON IS ITSELF WORTH RECORDING:
+# **VERILATOR TREATS A PROCEDURAL `$error` AS AN ASSERTION AND `$stop`s ON THE
+# FIRST ONE.**  A single probe that raises CE_HALF across the whole park fires
+# A1 and the run ends there, so A2 would read "DID NOT FIRE" for a reason that
+# has nothing to do with A2.  Each clause therefore gets a probe that
+# constructs ITS OWN condition and NOT the other's.
+#   A1: CE_HALF high on the clocks SS_WE is high  -> `SS_WE && CE_HALF`.
+#   A2: CE_HALF high ONE CLOCK LATER, i.e. exactly where the core's staging
+#       flop still carries `ss_we_q` and SS_WE has already fallen.
+PARK_PROBE = ("hdl/tb/tb_v30_core.sv",
+              "    ce_half <= !ss_park && (ce_cnt == (ce_div / 2) - 1);",
+              "    ce_half <= (!ss_park && (ce_cnt == (ce_div / 2) - 1)) || ss_park;   // P-8(a) PROBE")
+
+case("A1     SS_WE && CE_HALF", [PARK_PROBE],
+     [r"SS_WE asserted while CE_HALF high"], RUN_SS)
+
+# ...and A2 needs the SAME probe with A1's clause SILENCED, because A1 is
+# reached FIRST on it.  Silencing the clause under test's NEIGHBOUR is the only
+# honest way to show the neighbour is reachable at all; A2's own clause is
+# untouched and is what must fire.
+case("A2     CE_HALF && ss_we_q  (with A1 silenced so it can be reached)",
+     [PARK_PROBE,
+      ("hdl/rtl/ucore/v30_core.sv",
+       '    if (SS_WE && CE_HALF) $error("SS_WE asserted while CE_HALF high',
+       '    if (1\'b0)            $error("SS_WE asserted while CE_HALF high')],
+     [r"CE_HALF resumed with SS command staging undrained"], RUN_SS)
 
 # B -- withhold CE_HALF entirely: S-1 must fire, and its message must name the
 # EU's stage-1 dependence, not only t1_half2/ad_oe_data.
 case("B      S-1 $fatal, naming the EU",
-     "hdl/tb/tb_v30_core.sv",
-     "    ce_half <= !ss_park && (ce_cnt == (ce_div / 2) - 1);",
-     "    ce_half <= 1'b0;   // P-8(b) NON-VACUITY PROBE: withhold CE_HALF",
+     [("hdl/tb/tb_v30_core.sv",
+       "    ce_half <= !ss_park && (ce_cnt == (ce_div / 2) - 1);",
+       "    ce_half <= 1'b0;   // P-8(b) NON-VACUITY PROBE: withhold CE_HALF")],
      [r"REQUIREMENT VIOLATED \(S-1\)", r"STAGE-1 capture edge"],
      RUN)
 
-# C -- the shadow is LOAD-BEARING.  Flip one bit of it on its way out and a
-# named gate leg must break.  (Skipped automatically before the peel lands.)
-case("C      the shadow is LOAD-BEARING",
-     "hdl/rtl/ucore/v30u_eu.sv",
-     "        } = s1q;",
-     "        } = s1q ^ {{(S1W-1){1'b0}}, 1'b1};   // P-8(c) PERTURBATION PROBE",
-     [r"MISMATCH|FAIL|mismatch|PHASE-SPLIT PREMISE VIOLATED"],
+# C -- the shadow is LOAD-BEARING.  Flip ONE BIT of it on its way out and a
+# named gate leg must break.  A shadow nothing depends on would pass every
+# identity bar for the wrong reason.  (Skipped automatically before the peel.)
+case("C      the shadow is LOAD-BEARING (one bit perturbed)",
+     [("hdl/rtl/ucore/v30u_eu.sv",
+       "        } = s1q;",
+       "        } = s1q ^ 495'd1;   // P-8(c) PERTURBATION PROBE")],
+     [r"PHASE-SPLIT PREMISE VIOLATED|FAIL|MISMATCH|mismatch"],
      "python3 sw/check_core.py --core ucore --opcodes 90 --cases 5")
 
 def main():
@@ -75,14 +98,15 @@ def main():
         print("REFUSING: hdl/ carries uncommitted tracked changes:\n" + dirty)
         return 2
     ok = True
-    for name, path, old, new, wants, cmd in CASES:
-        src = open(path).read()
-        if old not in src:
-            print(f"[skip] {name}\n       anchor absent in {path} "
+    for name, patches, wants, cmd in CASES:
+        miss = [pp for pp, o, n in patches if o not in open(pp).read()]
+        if miss:
+            print(f"[skip] {name}\n       anchor absent in {miss} "
                   f"(the mechanism it probes is not in this tree yet)")
             continue
         print(f"\n=== {name}")
-        patch(path, old, new)
+        for pp, o, n in patches:
+            patch(pp, o, n)
         try:
             b = sh("python3 sw/check_core.py --build --core ucore")
             r = sh(cmd)
@@ -96,7 +120,7 @@ def main():
                 for l in out.strip().split('\n')[-12:]:
                     print("      " + l)
         finally:
-            restore(path)
+            restore(*[pp for pp, o, n in patches])
     sh("python3 sw/check_core.py --build --core ucore")
     dirty = sh("git status --porcelain hdl/ | grep -v '^??'").stdout.strip()
     print("\nhdl/ restored: %s" % ("CLEAN" if not dirty else "*** DIRTY *** " + dirty))

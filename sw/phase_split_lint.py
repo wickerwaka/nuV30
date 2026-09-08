@@ -41,7 +41,10 @@ def norm(t):
     return re.sub(r'\s+', ' ', t).strip()
 
 def main():
-    src = open(EU).read()
+    raw = open(EU).read()
+    # comments MENTION the two lists (that is the point of them), so they are
+    # stripped before the lists are located -- otherwise the doc counts as code.
+    src = re.sub(r'//[^\n]*', '', raw)
     bad = []
 
     # --- L1 -----------------------------------------------------------------
@@ -120,7 +123,7 @@ def main():
     # --- L7 -----------------------------------------------------------------
     hi = src.index('`include "v30u_eu_preload.svh"')
     ci = src.index('s1_bus = {')
-    stage1 = re.sub(r'//[^\n]*', '', src[hi:ci])
+    stage1 = src[hi:ci]
     hits = [s for s in LIVE if re.search(r'(?<![\w.])%s(?![\w])' % s, stage1)]
     print("  live-in-stage1: %s" % (hits or 'none'))
     if hits:
