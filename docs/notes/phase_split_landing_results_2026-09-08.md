@@ -435,7 +435,19 @@ instrument artefact.
    between two halves of one measurement is an edit that was not measured.
    **BOOKED**, and the same shape as this repo's other accepted-and-ignored
    findings: the tool did what it was told and what it was told was wrong.
-7. **`sw/phase_split_lint.py` EXITS 2 ("COULD NOT RUN") ON THE REVERTED TREE**
+7. ⚠ **TWO OF THIS WAVE'S OWN INSTRUMENT MISTAKES, RECORDED BECAUSE NOTHING
+   CAUGHT THEM EITHER.**  (a) `sw/sta_phase_split_diag.tcl` opened its output as
+   `[lindex $quartus(args) 0]` — the PROJECT NAME — where both sibling scripts
+   in this tree use index **2**, so the diagnosis was written to `hdl/nec_test`
+   and the path §11.6 cites was never written.  The run looked entirely
+   successful because the script also prints to the terminal, which is where
+   every figure in §11.6 was read from.  (b) The P-9 revert commit used
+   `git add -A hdl/` and thereby committed twelve pre-existing untracked
+   `quartus_gate_*.log` files plus that stray.  Both are corrected in
+   `dface07119` and `5d34c8ee3e`, the second an ERRATUM against the first, and
+   both are the same class as §9's Verilator finding: **a tool doing exactly
+   what it was told, where what it was told was wrong.**
+8. **`sw/phase_split_lint.py` EXITS 2 ("COULD NOT RUN") ON THE REVERTED TREE**
    and is deliberately NOT registered in `standing_gates.md`.  It gates the
    split, and the split is not in the tree; a lint that passed here would pass
    vacuously.  It is retained for the next attempt.
