@@ -4,8 +4,18 @@
 
 **NOTHING UNDER `hdl/rtl/` OR `hdl/nec_test.sdc` IS TOUCHED BY THIS WAVE.**
 `git status --porcelain hdl/` showed **0** tracked modifications at the start
-and must show 0 at the end. (Untracked `hdl/quartus_gate_*.log` files predate
-the wave.)
+and **0 at the end**, and `git diff c0633d7685..HEAD -- hdl/` is **EMPTY**:
+`hdl/` is byte-identical to the tree the wave measured. (Untracked
+`hdl/quartus_gate_*.log` files predate the wave and no new untracked file was
+left under `hdl/`.)
+
+⚠ **ONE FILE UNDER `hdl/` DID MOVE DURING THE RUN AND WAS RESTORED:
+`hdl/nec_test_ucore.qsf`.** Quartus rewrites the revision `.qsf` it compiles,
+appending ~182 lines of pin assignments — this is the DECLARED §70.7 exemption,
+the same one `sw/testdata/g6dist/…/distribution.json`'s `E7_input_stability`
+bar names as its single permitted mover. It was restored with
+`git checkout -- hdl/nec_test_ucore.qsf` after the last draw. Recorded because
+a file that moves and is put back is still a file that moved.
 
 **THIS IS NOT A GATE AND IT PRODUCES NO RECEIPT.** It may not be quoted as a
 pass. The quotable Fmax numbers come from `sw/quartus_gate.py`, and
@@ -180,6 +190,10 @@ therefore indicative and not this tree's**, and this wave re-measures all of it.
   retention draw exactly as on the three CONTROL draws (38.78 MHz against
   40.09 / 38.99 / 40.83), the frontier has the same owner, and the same three
   nets clear A-4. **No finding.**
+
+**EVERY FIT USED THE SEED IT WAS GIVEN**, read back from the fitter's own
+report (`seed*.seedecho.txt`): `Fitter Initial Placement Seed` = 1 · 2 · 3 on
+CONTROL and 1 on RETENTION.
 
 **ALL FOUR DRAWS WERE TAKEN TWICE.** The first set is
 `sw/testdata/phasesplit/ctl-DEFECTIVE-WALKER/` and is quoted nowhere (§3.0);
