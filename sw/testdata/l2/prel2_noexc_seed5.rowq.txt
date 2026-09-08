@@ -1,0 +1,11 @@
+=== sta_l2_rowq_probe: nec_test / nec_test_ucore ===
+
+=== E. COLLECTION SIZES ===
+  $v30u_ce                : 2042
+  row_q (incl ~DUPLICATE) : 0
+  dec_q (incl ~DUPLICATE) : 0
+
+CONTROL FAILED: the row_q collection is EMPTY.  Either this netlist
+predates L2, or every row_q bit was optimised away, or the glob is
+wrong.  NO L-8 RESULT IS EMITTED -- an empty collection returns no
+path, and 'no path' would read as 'the class does not bind'.
