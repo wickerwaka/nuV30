@@ -1,0 +1,7 @@
+configuration_requested: CONTROL
+verilog_macro: <none>
+git_head: 5ba6008a7daed86a3fb7657d9bce17301438f7c0
+git_dirty_tracked_hdl: 0
+seeds: 1 2 3
+started: 2026-09-08T16:33:38Z
+completed: 2026-09-08T17:01:10Z

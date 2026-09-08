@@ -1,0 +1,560 @@
+=== sta_phase_split_scan: nec_test / nec_test_ucore ===
+npaths requested = 50
+T0 = 31.250 ns   (clock emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk)
+
+=== E. COLLECTION SIZES (a silently-short collection reads as a result) ===
+  all registers                 : 15464
+  $v30u_regs (eu + biu)         : 2201
+  $v30u_half (t1_half2)         : 2
+  $v30u_ce                      : 2200
+  LIVE_NARROW (core input drvrs): 44
+  LIVE_WIDE   (not $v30u_ce)    : 13264
+    t1_half2 member: emu:emu|system_large:system_large|v30_core:u_core|v30u_biu:u_biu|t1_half2
+    t1_half2 member: emu:emu|system_large:system_large|v30_core:u_core|v30u_biu:u_biu|t1_half2~DUPLICATE
+
+=== A. THE POSITIVE CONTROL (gates everything below) ===
+
+  --- LIVE_NARROW ---
+  worst path : emu:emu|system_large:system_large|c_int_q
+            -> emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|row_posted
+  data delay (launch reg output -> dest) :   23.396 ns
+  total arrival (from clock source)      :   31.609 ns
+  data-path combinational cells          : 23
+  EXCLUDED BY RULE: clock-network cells 5, destination-register cells 5
+  PIN-DEPENDENT 23 / 23      REG-ONLY 0      UNRESOLVED 0
+
+  --- LIVE_WIDE ---
+  worst path : emu:emu|system_large:system_large|c_int_q
+            -> emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|row_posted
+  data delay (launch reg output -> dest) :   23.396 ns
+  total arrival (from clock source)      :   31.609 ns
+  data-path combinational cells          : 23
+  EXCLUDED BY RULE: clock-network cells 5, destination-register cells 5
+  PIN-DEPENDENT 23 / 23      REG-ONLY 0      UNRESOLVED 0
+
+CONTROL PASSED -- 100% pin-dependent on every non-excluded node, both live sets.
+
+=== B. THE PIN-DEPENDENCE SCAN over the top-50 $v30u_ce -> $v30u_ce paths ===
+paths returned: 50
+
+   #    slack  lvls   dataDly  cells   regO   pinD unres    mergeNs mergeIx
+   1   12.032    41    48.837     50     48      2     0     47.337      48
+   2   12.038    41    48.835     50     48      2     0     47.337      48
+   3   12.050    41    48.819     50     48      2     0     47.319      48
+   4   12.056    41    48.817     50     48      2     0     47.319      48
+   5   12.062    41    48.807     50     48      2     0     47.307      48
+   6   12.068    41    48.805     50     48      2     0     47.307      48
+   7   12.089    41    48.780     50     48      2     0     47.280      48
+   8   12.095    41    48.778     50     48      2     0     47.280      48
+   9   12.105    42    48.764     51     49      2     0     47.264      49
+  10   12.107    41    48.762     50     48      2     0     47.262      48
+  11   12.111    42    48.762     51     49      2     0     47.264      49
+  12   12.113    41    48.760     50     48      2     0     47.262      48
+  13   12.119    41    48.750     46     44      2     0     47.250      44
+  14   12.119    41    48.750     50     48      2     0     47.250      48
+  15   12.123    42    48.746     51     49      2     0     47.246      49
+  16   12.125    41    48.748     46     44      2     0     47.250      44
+  17   12.125    41    48.748     50     48      2     0     47.250      48
+  18   12.129    42    48.744     51     49      2     0     47.246      49
+  19   12.135    42    48.734     51     49      2     0     47.234      49
+  20   12.136    41    48.733     50     48      2     0     47.233      48
+  21   12.137    41    48.732     46     44      2     0     47.232      44
+  22   12.141    42    48.732     51     49      2     0     47.234      49
+  23   12.142    41    48.731     50     48      2     0     47.233      48
+  24   12.143    41    48.730     46     44      2     0     47.232      44
+  25   12.149    41    48.720     46     44      2     0     47.220      44
+  26   12.154    41    48.715     50     48      2     0     47.215      48
+  27   12.155    41    48.718     46     44      2     0     47.220      44
+  28   12.156    42    48.713     51     49      2     0     47.213      49
+  29   12.157    42    48.712     51     49      2     0     47.212      49
+  30   12.160    41    48.713     50     48      2     0     47.215      48
+  31   12.162    42    48.711     51     49      2     0     47.213      49
+  32   12.162    42    48.707     51     49      2     0     47.207      49
+  33   12.163    42    48.710     51     49      2     0     47.212      49
+  34   12.166    41    48.703     50     48      2     0     47.203      48
+  35   12.168    42    48.705     51     49      2     0     47.207      49
+  36   12.172    41    48.701     50     48      2     0     47.203      48
+  37   12.174    41    48.695     50     48      2     0     47.195      48
+  38   12.174    42    48.695     51     49      2     0     47.195      49
+  39   12.175    42    48.694     51     49      2     0     47.194      49
+  40   12.176    41    48.693     46     44      2     0     47.193      44
+  41   12.178    41    48.691     48     46      2     0     47.191      46
+  42   12.180    41    48.693     50     48      2     0     47.195      48
+  43   12.180    41    48.689     50     48      2     0     47.189      48
+  44   12.180    42    48.693     51     49      2     0     47.195      49
+  45   12.180    42    48.689     51     49      2     0     47.189      49
+  46   12.181    42    48.692     51     49      2     0     47.194      49
+  47   12.182    41    48.691     46     44      2     0     47.193      44
+  48   12.184    41    48.689     48     46      2     0     47.191      46
+  49   12.186    41    48.687     50     48      2     0     47.189      48
+  50   12.186    42    48.683     51     49      2     0     47.183      49
+
+  (mergeNs = cumulative DATA delay, measured from the launch register's
+   output pin, at which the FIRST pin-dependent node appears.  mergeIx is
+   that node's index in the path's combinational cell list, so mergeIx IS
+   the REG-ONLY prefix depth and cells-mergeIx the PIN-DEP suffix depth.)
+
+  paths with NO pin-dependent node at all (merge point UNDEFINED): 0 of 50
+  -- reported as its own class; it is NOT folded into 0 and NOT into the total.
+
+  worst $v30u_ce -> $v30u_ce DATA delay in this population: 48.837 ns
+     emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a4~PORT_A_WRITE_ENABLE_REG -> emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|Mux67~0_OTERM3150DUPLICATE
+
+  THE WORST PATH'S SPLIT:
+    data delay 48.837 ns over 50 combinational cells
+    REG-ONLY 48   PIN-DEP 2
+
+=== C. CUT-POINT CENSUS -- nets on >= 25% of the 50 paths ===
+  A cut is USABLE only if the net is REG-ONLY on every path it appears on
+  (so stage 1 is phase-stable by the theorem) AND its (upstream,
+  downstream) split is balanced.  Sorted by |up - down| on the MEAN.
+
+paths    %pop   up.mean   dn.mean    up.max    dn.max  REGONLY  net
+   50  100.0%    24.696    24.036    24.751    24.086  yes      emu|system_large|u_core|u_eu|Ram14#1
+   45   90.0%    25.312    23.424    25.362    23.475  yes      emu|system_large|u_core|u_eu|Ram14#2
+   50  100.0%    23.259    25.473    23.301    25.548  yes      emu|system_large|u_core|u_eu|ld_b_n#1
+   50  100.0%    22.405    26.327    22.437    26.400  yes      emu|system_large|u_core|u_eu|Decoder28#1
+   50  100.0%    26.538    22.194    26.702    23.206  yes      emu|system_large|u_core|u_eu|always6#1
+   50  100.0%    20.905    27.827    20.937    27.900  yes      emu|system_large|u_core|u_eu|Mux360#2
+   50  100.0%    20.619    28.113    20.651    28.186  yes      emu|system_large|u_core|u_eu|Mux360#1
+   50  100.0%    28.215    20.517    28.400    20.855  yes      emu|system_large|u_core|u_eu|st_n#1
+   50  100.0%    20.089    28.643    20.121    28.716  yes      emu|system_large|u_core|u_eu|Mux350#2
+   50  100.0%    19.552    29.180    19.584    29.253  yes      emu|system_large|u_core|u_eu|Mux350#1
+   50  100.0%    19.219    29.513    19.251    29.586  yes      emu|system_large|u_core|u_eu|Equal231#2
+   50  100.0%    29.573    19.160    29.733    19.549  yes      emu|system_large|u_core|u_eu|st_zero_ok#1
+   50  100.0%    29.970    18.762    30.050    18.787  yes      emu|system_large|u_core|u_eu|seg_override_n#1
+   50  100.0%    18.405    30.327    18.703    31.462  yes      emu|system_large|u_core|u_eu|Equal231#1
+   50  100.0%    30.377    18.355    31.161    20.399  yes      emu|system_large|u_core|u_eu|st_n#2
+   40   80.0%    16.663    32.073    16.676    32.161  yes      emu|system_large|u_core|u_eu|Add57#9
+   50  100.0%    32.166    16.567    32.627    17.676  yes      emu|system_large|u_core|u_eu|st_n#3
+   42   84.0%    16.264    32.470    16.571    32.576  yes      emu|system_large|u_core|u_eu|Add57#7
+   40   80.0%    16.248    32.488    16.261    32.576  yes      emu|system_large|u_core|u_eu|Add57#8
+   50  100.0%    16.242    32.490    16.518    32.633  yes      emu|system_large|u_core|u_eu|Add57#5
+   42   84.0%    16.192    32.542    16.204    32.633  yes      emu|system_large|u_core|u_eu|Add57#6
+   50  100.0%    16.146    32.586    16.159    32.678  yes      emu|system_large|u_core|u_eu|Add57#3
+   50  100.0%    16.146    32.586    16.159    32.678  yes      emu|system_large|u_core|u_eu|Add57#4
+   50  100.0%    16.101    32.631    16.114    32.723  yes      emu|system_large|u_core|u_eu|Add57#1
+   50  100.0%    16.101    32.631    16.114    32.723  yes      emu|system_large|u_core|u_eu|Add57#2
+   50  100.0%    33.935    14.797    34.015    14.822  yes      emu|system_large|u_core|u_eu|Decoder34#1
+   50  100.0%    14.309    34.423    14.322    34.515  yes      emu|system_large|u_core|u_eu|v1#1
+   50  100.0%    35.027    13.705    35.314    13.834  yes      emu|system_large|u_core|u_eu|ld_b_n#2
+   50  100.0%    13.131    35.601    13.144    35.693  yes      emu|system_large|u_core|u_eu|opr_n#2
+   50  100.0%    36.277    12.455    36.383    12.464  yes      emu|system_large|u_core|u_eu|Ram23#1
+   50  100.0%    37.025    11.707    37.138    11.740  yes      emu|system_large|u_core|u_eu|Ram23#2
+   50  100.0%    11.673    37.059    11.686    37.151  yes      emu|system_large|u_core|u_eu|Selector928#1
+   50  100.0%    37.068    11.664    38.381    22.462  yes      emu|system_large|u_core|u_eu|always6#2
+   50  100.0%    37.361    11.371    39.179    16.210  yes      emu|system_large|u_core|u_eu|st_n#4
+   50  100.0%    10.124    38.608    10.137    38.700  yes      emu|system_large|u_core|u_eu|opr_n#1
+   50  100.0%     9.756    38.976     9.769    39.068  yes      emu|system_large|u_core|u_eu|opr_fresh_n#1
+   50  100.0%    40.020     8.712    40.499     9.734  yes      emu|system_large|u_core|u_eu|st_n#5
+   50  100.0%     8.522    40.210     8.535    40.302  yes      emu|system_large|u_core|u_eu|WideOr17#1
+   50  100.0%    40.621     8.111    40.858     8.499  yes      emu|system_large|u_core|u_eu|st_n#6
+   13   26.0%    40.716     8.007    40.785     8.166  yes      emu|system_large|u_core|u_eu|st_n#7
+   50  100.0%     6.732    42.000     6.745    42.092  yes      emu|system_large|u_core|u_eu|e_d1[2]#1
+   50  100.0%    42.077     6.655    42.181     6.664  yes      emu|system_large|u_core|u_eu|Decoder38#1
+   50  100.0%     5.643    43.089     5.656    43.181  yes      emu|system_large|u_core|u_eu|u_ucrom|ucrom#4
+   50  100.0%     5.336    43.396     5.349    43.488  yes      emu|system_large|u_core|u_eu|u_ucrom|ucrom#3
+   50  100.0%    43.739     4.993    43.968     5.038  yes      emu|system_large|u_core|u_eu|tmpb[4]#1
+   50  100.0%     4.375    44.357     4.388    44.449  yes      emu|system_large|u_core|u_eu|u_ucrom|ucrom#2
+   50  100.0%     3.656    45.076     3.677    45.187  yes      emu|system_large|u_core|u_eu|u_ucrom|ucrom#1
+   50  100.0%    45.639     3.093    45.743     3.094  yes      emu|system_large|u_core|u_eu|tmpb#1
+   50  100.0%    47.233     1.499    47.337     1.500  NO       emu|system_large|u_core|u_eu|tmpb[12]_NEW2617#1
+   50  100.0%     1.046    47.686     1.046    47.791  yes      emu|system_large|u_core|u_eu|u_ucrom|ucdecode_rtl_0|auto_generated|ram_block1a4#1
+   50  100.0%    48.467     0.265    48.571     0.266  NO       emu|system_large|u_core|u_eu|Mux67#1
+
+=== C.2  THE A-4 EXISTENCE QUESTION ===
+  bar: a net REG-ONLY on every path it appears on, present on >= 50% of the
+       50 paths, whose upstream AND downstream halves are each <= 60% of the
+       worst $v30u_ce -> $v30u_ce data delay (48.837 ns) => <= 29.302 ns
+  candidates on the MEAN split : 10
+      emu|system_large|u_core|u_eu|Mux360#1
+      emu|system_large|u_core|u_eu|Mux360#2
+      emu|system_large|u_core|u_eu|ld_b_n#1
+      emu|system_large|u_core|u_eu|Decoder28#1
+      emu|system_large|u_core|u_eu|st_n#1
+      emu|system_large|u_core|u_eu|always6#1
+      emu|system_large|u_core|u_eu|Mux350#1
+      emu|system_large|u_core|u_eu|Mux350#2
+      emu|system_large|u_core|u_eu|Ram14#1
+      emu|system_large|u_core|u_eu|Ram14#2
+  candidates on the MAX  split : 10   <-- A-4 is scored on THIS, the strict reading
+      emu|system_large|u_core|u_eu|Mux360#1
+      emu|system_large|u_core|u_eu|Mux360#2
+      emu|system_large|u_core|u_eu|ld_b_n#1
+      emu|system_large|u_core|u_eu|Decoder28#1
+      emu|system_large|u_core|u_eu|st_n#1
+      emu|system_large|u_core|u_eu|always6#1
+      emu|system_large|u_core|u_eu|Mux350#1
+      emu|system_large|u_core|u_eu|Mux350#2
+      emu|system_large|u_core|u_eu|Ram14#1
+      emu|system_large|u_core|u_eu|Ram14#2
+  A-4: MET
+
+=== D. THE WORST THREE PATHS, NODE BY NODE ===
+  (PD column: 1 = pin-dependent under LIVE_NARROW, 0 = register-only,
+   '.' = not a data-path combinational cell)
+
+  --- path 1 ---
+  from: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a4~PORT_A_WRITE_ENABLE_REG
+  to  : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|Mux67~0_OTERM3150DUPLICATE
+  PD     incr      cum type   phase  node
+  .    0.000    0.000 clksrc CLK    FPGA_CLK2_50
+  .    0.000    0.000 ic     CLK    FPGA_CLK2_50~input|i
+  .    0.761    0.761 cell   CLK    FPGA_CLK2_50~input|o
+  .    1.335    2.096 ic     CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_REFCLK_SELECT|clkin[0]
+  .    0.333    2.429 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_REFCLK_SELECT|clkout
+  .    0.000    2.429 ic     CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|refclkin
+  .    0.029    2.458 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|vcoph[0]
+  .    0.000    2.458 ic     CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]
+  .    1.535    3.993 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk
+  .    1.019    5.012 ic     CLK    emu|pll|pll_inst|altera_pll_i|outclk_wire[0]~CLKENA0|inclk
+  .    0.322    5.334 cell   CLK    emu|pll|pll_inst|altera_pll_i|outclk_wire[0]~CLKENA0|outclk
+  .    2.315    7.649 ic     CLK    emu|system_large|u_core|u_eu|u_ucrom|ucdecode_rtl_0|auto_generated|ram_block1a4|clk0
+  .    1.594    9.243 cell   LAUNCH emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a4~PORT_A_WRITE_ENABLE_REG
+  .    0.000    9.243 utco   LAUNCH emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a4~PORT_A_WRITE_ENABLE_REG
+  0    1.046   10.289 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucdecode_rtl_0|auto_generated|ram_block1a4|portadataout[0]
+  .    2.094   12.383 ic     DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~762|datac
+  0    0.510   12.893 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~762|combout
+  .    0.230   13.123 ic     DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~376|datad
+  0    0.508   13.631 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~376|combout
+  .    0.879   14.510 ic     DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~52|dataf
+  0    0.082   14.592 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~52|combout
+  .    0.213   14.805 ic     DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~56|dataf
+  0    0.094   14.899 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~56|combout
+  .    0.990   15.889 ic     DATA   emu|system_large|u_core|u_eu|e_d1[2]~0|dataf
+  0    0.099   15.988 cell   DATA   emu|system_large|u_core|u_eu|e_d1[2]~0|combout
+  .    1.695   17.683 ic     DATA   emu|system_large|u_core|u_eu|WideOr17~0|dataf
+  0    0.095   17.778 cell   DATA   emu|system_large|u_core|u_eu|WideOr17~0|combout
+  .    0.666   18.444 ic     DATA   emu|system_large|u_core|u_eu|opr_fresh_n~1|datab
+  0    0.568   19.012 cell   DATA   emu|system_large|u_core|u_eu|opr_fresh_n~1|combout
+  .    0.269   19.281 ic     DATA   emu|system_large|u_core|u_eu|opr_n~1|dataf
+  0    0.099   19.380 cell   DATA   emu|system_large|u_core|u_eu|opr_n~1|combout
+  .    1.032   20.412 ic     DATA   emu|system_large|u_core|u_eu|Selector928~0|datac
+  0    0.517   20.929 cell   DATA   emu|system_large|u_core|u_eu|Selector928~0|combout
+  .    1.227   22.156 ic     DATA   emu|system_large|u_core|u_eu|opr_n~20|datae
+  0    0.231   22.387 cell   DATA   emu|system_large|u_core|u_eu|opr_n~20|combout
+  .    0.680   23.067 ic     DATA   emu|system_large|u_core|u_eu|v1~16|datac
+  0    0.498   23.565 cell   DATA   emu|system_large|u_core|u_eu|v1~16|combout
+  .    0.955   24.520 ic     DATA   emu|system_large|u_core|u_eu|Add57~41|datac
+  0    0.837   25.357 cell   DATA   emu|system_large|u_core|u_eu|Add57~41|cout
+  .    0.000   25.357 ic     DATA   emu|system_large|u_core|u_eu|Add57~37|cin
+  0    0.000   25.357 cell   DATA   emu|system_large|u_core|u_eu|Add57~37|cout
+  .    0.000   25.357 ic     DATA   emu|system_large|u_core|u_eu|Add57~21|cin
+  0    0.045   25.402 cell   DATA   emu|system_large|u_core|u_eu|Add57~21|cout
+  .    0.000   25.402 ic     DATA   emu|system_large|u_core|u_eu|Add57~25|cin
+  0    0.000   25.402 cell   DATA   emu|system_large|u_core|u_eu|Add57~25|cout
+  .    0.000   25.402 ic     DATA   emu|system_large|u_core|u_eu|Add57~45|cin
+  0    0.045   25.447 cell   DATA   emu|system_large|u_core|u_eu|Add57~45|cout
+  .    0.000   25.447 ic     DATA   emu|system_large|u_core|u_eu|Add57~49|cin
+  0    0.000   25.447 cell   DATA   emu|system_large|u_core|u_eu|Add57~49|cout
+  .    0.000   25.447 ic     DATA   emu|system_large|u_core|u_eu|Add57~53|cin
+  0    0.057   25.504 cell   DATA   emu|system_large|u_core|u_eu|Add57~53|cout
+  .    0.000   25.504 ic     DATA   emu|system_large|u_core|u_eu|Add57~29|cin
+  0    0.000   25.504 cell   DATA   emu|system_large|u_core|u_eu|Add57~29|cout
+  .    0.000   25.504 ic     DATA   emu|system_large|u_core|u_eu|Add57~33|cin
+  0    0.415   25.919 cell   DATA   emu|system_large|u_core|u_eu|Add57~33|sumout
+  .    1.454   27.373 ic     DATA   emu|system_large|u_core|u_eu|Equal231~7|datab
+  0    0.573   27.946 cell   DATA   emu|system_large|u_core|u_eu|Equal231~7|combout
+  .    0.339   28.285 ic     DATA   emu|system_large|u_core|u_eu|Equal231~2|datae
+  0    0.209   28.494 cell   DATA   emu|system_large|u_core|u_eu|Equal231~2|combout
+  .    0.240   28.734 ic     DATA   emu|system_large|u_core|u_eu|Mux350~1|dataf
+  0    0.093   28.827 cell   DATA   emu|system_large|u_core|u_eu|Mux350~1|combout
+  .    0.233   29.060 ic     DATA   emu|system_large|u_core|u_eu|Mux350~5|datae
+  0    0.304   29.364 cell   DATA   emu|system_large|u_core|u_eu|Mux350~5|combout
+  .    0.229   29.593 ic     DATA   emu|system_large|u_core|u_eu|Mux360~3|datae
+  0    0.301   29.894 cell   DATA   emu|system_large|u_core|u_eu|Mux360~3|combout
+  .    0.205   30.099 ic     DATA   emu|system_large|u_core|u_eu|Mux360~15|dataf
+  0    0.081   30.180 cell   DATA   emu|system_large|u_core|u_eu|Mux360~15|combout
+  .    1.276   31.456 ic     DATA   emu|system_large|u_core|u_eu|Decoder28~8|datae
+  0    0.224   31.680 cell   DATA   emu|system_large|u_core|u_eu|Decoder28~8|combout
+  .    0.769   32.449 ic     DATA   emu|system_large|u_core|u_eu|ld_b_n~2|dataf
+  0    0.083   32.532 cell   DATA   emu|system_large|u_core|u_eu|ld_b_n~2|combout
+  .    1.035   33.567 ic     DATA   emu|system_large|u_core|u_eu|Ram14~16|datad
+  0    0.427   33.994 cell   DATA   emu|system_large|u_core|u_eu|Ram14~16|combout
+  .    0.307   34.301 ic     DATA   emu|system_large|u_core|u_eu|Ram14~27|datae
+  0    0.304   34.605 cell   DATA   emu|system_large|u_core|u_eu|Ram14~27|combout
+  .    0.960   35.565 ic     DATA   emu|system_large|u_core|u_eu|always6~23|datad
+  0    0.380   35.945 cell   DATA   emu|system_large|u_core|u_eu|always6~23|combout
+  .    1.185   37.130 ic     DATA   emu|system_large|u_core|u_eu|st_n~37|datac
+  0    0.513   37.643 cell   DATA   emu|system_large|u_core|u_eu|st_n~37|combout
+  .    0.823   38.466 ic     DATA   emu|system_large|u_core|u_eu|st_zero_ok~10|datac
+  0    0.510   38.976 cell   DATA   emu|system_large|u_core|u_eu|st_zero_ok~10|combout
+  .    0.234   39.210 ic     DATA   emu|system_large|u_core|u_eu|seg_override_n~2|dataf
+  0    0.083   39.293 cell   DATA   emu|system_large|u_core|u_eu|seg_override_n~2|combout
+  .    0.630   39.923 ic     DATA   emu|system_large|u_core|u_eu|st_n~51|datac
+  0    0.481   40.404 cell   DATA   emu|system_large|u_core|u_eu|st_n~51|combout
+  .    0.881   41.285 ic     DATA   emu|system_large|u_core|u_eu|st_n~55|datac
+  0    0.585   41.870 cell   DATA   emu|system_large|u_core|u_eu|st_n~55|combout
+  .    0.911   42.781 ic     DATA   emu|system_large|u_core|u_eu|Decoder34~8|datac
+  0    0.477   43.258 cell   DATA   emu|system_large|u_core|u_eu|Decoder34~8|combout
+  .    0.901   44.159 ic     DATA   emu|system_large|u_core|u_eu|ld_b_n~40|dataf
+  0    0.087   44.246 cell   DATA   emu|system_large|u_core|u_eu|ld_b_n~40|combout
+  .    0.870   45.116 ic     DATA   emu|system_large|u_core|u_eu|Ram23~24|datac
+  0    0.510   45.626 cell   DATA   emu|system_large|u_core|u_eu|Ram23~24|combout
+  .    0.237   45.863 ic     DATA   emu|system_large|u_core|u_eu|Ram23~12|datad
+  0    0.518   46.381 cell   DATA   emu|system_large|u_core|u_eu|Ram23~12|combout
+  .    0.813   47.194 ic     DATA   emu|system_large|u_core|u_eu|always6~43|datad
+  0    0.430   47.624 cell   DATA   emu|system_large|u_core|u_eu|always6~43|combout
+  .    0.234   47.858 ic     DATA   emu|system_large|u_core|u_eu|st_n~90|dataa
+  0    0.564   48.422 cell   DATA   emu|system_large|u_core|u_eu|st_n~90|combout
+  .    0.772   49.194 ic     DATA   emu|system_large|u_core|u_eu|st_n~105|datab
+  0    0.548   49.742 cell   DATA   emu|system_large|u_core|u_eu|st_n~105|combout
+  .    0.273   50.015 ic     DATA   emu|system_large|u_core|u_eu|st_n~106|dataf
+  0    0.086   50.101 cell   DATA   emu|system_large|u_core|u_eu|st_n~106|combout
+  .    0.886   50.987 ic     DATA   emu|system_large|u_core|u_eu|Decoder38~8|datac
+  0    0.429   51.416 cell   DATA   emu|system_large|u_core|u_eu|Decoder38~8|combout
+  .    1.528   52.944 ic     DATA   emu|system_large|u_core|u_eu|tmpb[4]~8|dataf
+  0    0.098   53.042 cell   DATA   emu|system_large|u_core|u_eu|tmpb[4]~8|combout
+  .    1.436   54.478 ic     DATA   emu|system_large|u_core|u_eu|tmpb~24|datad
+  0    0.508   54.986 cell   DATA   emu|system_large|u_core|u_eu|tmpb~24|combout
+  .    1.512   56.498 ic     DATA   emu|system_large|u_core|u_eu|tmpb[12]_NEW2617|dataf
+  1    0.082   56.580 cell   DATA   emu|system_large|u_core|u_eu|tmpb[12]_NEW2617|combout
+  .    1.157   57.737 ic     DATA   emu|system_large|u_core|u_eu|Mux67~0|dataf
+  1    0.077   57.814 cell   DATA   emu|system_large|u_core|u_eu|Mux67~0|combout
+  .    0.000   57.814 ic     DEST   emu|system_large|u_core|u_eu|Mux67~0_OTERM3150DUPLICATE|d
+  .    0.266   58.080 cell   DEST   emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|Mux67~0_OTERM3150DUPLICATE
+
+  --- path 2 ---
+  from: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a4~PORT_A_WRITE_ENABLE_REG
+  to  : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|Mux67~0_OTERM3150
+  PD     incr      cum type   phase  node
+  .    0.000    0.000 clksrc CLK    FPGA_CLK2_50
+  .    0.000    0.000 ic     CLK    FPGA_CLK2_50~input|i
+  .    0.761    0.761 cell   CLK    FPGA_CLK2_50~input|o
+  .    1.335    2.096 ic     CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_REFCLK_SELECT|clkin[0]
+  .    0.333    2.429 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_REFCLK_SELECT|clkout
+  .    0.000    2.429 ic     CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|refclkin
+  .    0.029    2.458 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|vcoph[0]
+  .    0.000    2.458 ic     CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]
+  .    1.535    3.993 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk
+  .    1.019    5.012 ic     CLK    emu|pll|pll_inst|altera_pll_i|outclk_wire[0]~CLKENA0|inclk
+  .    0.322    5.334 cell   CLK    emu|pll|pll_inst|altera_pll_i|outclk_wire[0]~CLKENA0|outclk
+  .    2.315    7.649 ic     CLK    emu|system_large|u_core|u_eu|u_ucrom|ucdecode_rtl_0|auto_generated|ram_block1a4|clk0
+  .    1.594    9.243 cell   LAUNCH emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a4~PORT_A_WRITE_ENABLE_REG
+  .    0.000    9.243 utco   LAUNCH emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a4~PORT_A_WRITE_ENABLE_REG
+  0    1.046   10.289 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucdecode_rtl_0|auto_generated|ram_block1a4|portadataout[0]
+  .    2.094   12.383 ic     DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~762|datac
+  0    0.510   12.893 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~762|combout
+  .    0.230   13.123 ic     DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~376|datad
+  0    0.508   13.631 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~376|combout
+  .    0.879   14.510 ic     DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~52|dataf
+  0    0.082   14.592 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~52|combout
+  .    0.213   14.805 ic     DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~56|dataf
+  0    0.094   14.899 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~56|combout
+  .    0.990   15.889 ic     DATA   emu|system_large|u_core|u_eu|e_d1[2]~0|dataf
+  0    0.099   15.988 cell   DATA   emu|system_large|u_core|u_eu|e_d1[2]~0|combout
+  .    1.695   17.683 ic     DATA   emu|system_large|u_core|u_eu|WideOr17~0|dataf
+  0    0.095   17.778 cell   DATA   emu|system_large|u_core|u_eu|WideOr17~0|combout
+  .    0.666   18.444 ic     DATA   emu|system_large|u_core|u_eu|opr_fresh_n~1|datab
+  0    0.568   19.012 cell   DATA   emu|system_large|u_core|u_eu|opr_fresh_n~1|combout
+  .    0.269   19.281 ic     DATA   emu|system_large|u_core|u_eu|opr_n~1|dataf
+  0    0.099   19.380 cell   DATA   emu|system_large|u_core|u_eu|opr_n~1|combout
+  .    1.032   20.412 ic     DATA   emu|system_large|u_core|u_eu|Selector928~0|datac
+  0    0.517   20.929 cell   DATA   emu|system_large|u_core|u_eu|Selector928~0|combout
+  .    1.227   22.156 ic     DATA   emu|system_large|u_core|u_eu|opr_n~20|datae
+  0    0.231   22.387 cell   DATA   emu|system_large|u_core|u_eu|opr_n~20|combout
+  .    0.680   23.067 ic     DATA   emu|system_large|u_core|u_eu|v1~16|datac
+  0    0.498   23.565 cell   DATA   emu|system_large|u_core|u_eu|v1~16|combout
+  .    0.955   24.520 ic     DATA   emu|system_large|u_core|u_eu|Add57~41|datac
+  0    0.837   25.357 cell   DATA   emu|system_large|u_core|u_eu|Add57~41|cout
+  .    0.000   25.357 ic     DATA   emu|system_large|u_core|u_eu|Add57~37|cin
+  0    0.000   25.357 cell   DATA   emu|system_large|u_core|u_eu|Add57~37|cout
+  .    0.000   25.357 ic     DATA   emu|system_large|u_core|u_eu|Add57~21|cin
+  0    0.045   25.402 cell   DATA   emu|system_large|u_core|u_eu|Add57~21|cout
+  .    0.000   25.402 ic     DATA   emu|system_large|u_core|u_eu|Add57~25|cin
+  0    0.000   25.402 cell   DATA   emu|system_large|u_core|u_eu|Add57~25|cout
+  .    0.000   25.402 ic     DATA   emu|system_large|u_core|u_eu|Add57~45|cin
+  0    0.045   25.447 cell   DATA   emu|system_large|u_core|u_eu|Add57~45|cout
+  .    0.000   25.447 ic     DATA   emu|system_large|u_core|u_eu|Add57~49|cin
+  0    0.000   25.447 cell   DATA   emu|system_large|u_core|u_eu|Add57~49|cout
+  .    0.000   25.447 ic     DATA   emu|system_large|u_core|u_eu|Add57~53|cin
+  0    0.057   25.504 cell   DATA   emu|system_large|u_core|u_eu|Add57~53|cout
+  .    0.000   25.504 ic     DATA   emu|system_large|u_core|u_eu|Add57~29|cin
+  0    0.000   25.504 cell   DATA   emu|system_large|u_core|u_eu|Add57~29|cout
+  .    0.000   25.504 ic     DATA   emu|system_large|u_core|u_eu|Add57~33|cin
+  0    0.415   25.919 cell   DATA   emu|system_large|u_core|u_eu|Add57~33|sumout
+  .    1.454   27.373 ic     DATA   emu|system_large|u_core|u_eu|Equal231~7|datab
+  0    0.573   27.946 cell   DATA   emu|system_large|u_core|u_eu|Equal231~7|combout
+  .    0.339   28.285 ic     DATA   emu|system_large|u_core|u_eu|Equal231~2|datae
+  0    0.209   28.494 cell   DATA   emu|system_large|u_core|u_eu|Equal231~2|combout
+  .    0.240   28.734 ic     DATA   emu|system_large|u_core|u_eu|Mux350~1|dataf
+  0    0.093   28.827 cell   DATA   emu|system_large|u_core|u_eu|Mux350~1|combout
+  .    0.233   29.060 ic     DATA   emu|system_large|u_core|u_eu|Mux350~5|datae
+  0    0.304   29.364 cell   DATA   emu|system_large|u_core|u_eu|Mux350~5|combout
+  .    0.229   29.593 ic     DATA   emu|system_large|u_core|u_eu|Mux360~3|datae
+  0    0.301   29.894 cell   DATA   emu|system_large|u_core|u_eu|Mux360~3|combout
+  .    0.205   30.099 ic     DATA   emu|system_large|u_core|u_eu|Mux360~15|dataf
+  0    0.081   30.180 cell   DATA   emu|system_large|u_core|u_eu|Mux360~15|combout
+  .    1.276   31.456 ic     DATA   emu|system_large|u_core|u_eu|Decoder28~8|datae
+  0    0.224   31.680 cell   DATA   emu|system_large|u_core|u_eu|Decoder28~8|combout
+  .    0.769   32.449 ic     DATA   emu|system_large|u_core|u_eu|ld_b_n~2|dataf
+  0    0.083   32.532 cell   DATA   emu|system_large|u_core|u_eu|ld_b_n~2|combout
+  .    1.035   33.567 ic     DATA   emu|system_large|u_core|u_eu|Ram14~16|datad
+  0    0.427   33.994 cell   DATA   emu|system_large|u_core|u_eu|Ram14~16|combout
+  .    0.307   34.301 ic     DATA   emu|system_large|u_core|u_eu|Ram14~27|datae
+  0    0.304   34.605 cell   DATA   emu|system_large|u_core|u_eu|Ram14~27|combout
+  .    0.960   35.565 ic     DATA   emu|system_large|u_core|u_eu|always6~23|datad
+  0    0.380   35.945 cell   DATA   emu|system_large|u_core|u_eu|always6~23|combout
+  .    1.185   37.130 ic     DATA   emu|system_large|u_core|u_eu|st_n~37|datac
+  0    0.513   37.643 cell   DATA   emu|system_large|u_core|u_eu|st_n~37|combout
+  .    0.823   38.466 ic     DATA   emu|system_large|u_core|u_eu|st_zero_ok~10|datac
+  0    0.510   38.976 cell   DATA   emu|system_large|u_core|u_eu|st_zero_ok~10|combout
+  .    0.234   39.210 ic     DATA   emu|system_large|u_core|u_eu|seg_override_n~2|dataf
+  0    0.083   39.293 cell   DATA   emu|system_large|u_core|u_eu|seg_override_n~2|combout
+  .    0.630   39.923 ic     DATA   emu|system_large|u_core|u_eu|st_n~51|datac
+  0    0.481   40.404 cell   DATA   emu|system_large|u_core|u_eu|st_n~51|combout
+  .    0.881   41.285 ic     DATA   emu|system_large|u_core|u_eu|st_n~55|datac
+  0    0.585   41.870 cell   DATA   emu|system_large|u_core|u_eu|st_n~55|combout
+  .    0.911   42.781 ic     DATA   emu|system_large|u_core|u_eu|Decoder34~8|datac
+  0    0.477   43.258 cell   DATA   emu|system_large|u_core|u_eu|Decoder34~8|combout
+  .    0.901   44.159 ic     DATA   emu|system_large|u_core|u_eu|ld_b_n~40|dataf
+  0    0.087   44.246 cell   DATA   emu|system_large|u_core|u_eu|ld_b_n~40|combout
+  .    0.870   45.116 ic     DATA   emu|system_large|u_core|u_eu|Ram23~24|datac
+  0    0.510   45.626 cell   DATA   emu|system_large|u_core|u_eu|Ram23~24|combout
+  .    0.237   45.863 ic     DATA   emu|system_large|u_core|u_eu|Ram23~12|datad
+  0    0.518   46.381 cell   DATA   emu|system_large|u_core|u_eu|Ram23~12|combout
+  .    0.813   47.194 ic     DATA   emu|system_large|u_core|u_eu|always6~43|datad
+  0    0.430   47.624 cell   DATA   emu|system_large|u_core|u_eu|always6~43|combout
+  .    0.234   47.858 ic     DATA   emu|system_large|u_core|u_eu|st_n~90|dataa
+  0    0.564   48.422 cell   DATA   emu|system_large|u_core|u_eu|st_n~90|combout
+  .    0.772   49.194 ic     DATA   emu|system_large|u_core|u_eu|st_n~105|datab
+  0    0.548   49.742 cell   DATA   emu|system_large|u_core|u_eu|st_n~105|combout
+  .    0.273   50.015 ic     DATA   emu|system_large|u_core|u_eu|st_n~106|dataf
+  0    0.086   50.101 cell   DATA   emu|system_large|u_core|u_eu|st_n~106|combout
+  .    0.886   50.987 ic     DATA   emu|system_large|u_core|u_eu|Decoder38~8|datac
+  0    0.429   51.416 cell   DATA   emu|system_large|u_core|u_eu|Decoder38~8|combout
+  .    1.528   52.944 ic     DATA   emu|system_large|u_core|u_eu|tmpb[4]~8|dataf
+  0    0.098   53.042 cell   DATA   emu|system_large|u_core|u_eu|tmpb[4]~8|combout
+  .    1.436   54.478 ic     DATA   emu|system_large|u_core|u_eu|tmpb~24|datad
+  0    0.508   54.986 cell   DATA   emu|system_large|u_core|u_eu|tmpb~24|combout
+  .    1.512   56.498 ic     DATA   emu|system_large|u_core|u_eu|tmpb[12]_NEW2617|dataf
+  1    0.082   56.580 cell   DATA   emu|system_large|u_core|u_eu|tmpb[12]_NEW2617|combout
+  .    1.157   57.737 ic     DATA   emu|system_large|u_core|u_eu|Mux67~0|dataf
+  1    0.077   57.814 cell   DATA   emu|system_large|u_core|u_eu|Mux67~0|combout
+  .    0.000   57.814 ic     DATA   emu|system_large|u_core|u_eu|Mux67~0_NEW_REG3149|d
+  .    0.264   58.078 cell   DEST   emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|Mux67~0_OTERM3150
+
+  --- path 3 ---
+  from: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a4~PORT_A_WRITE_ENABLE_REG
+  to  : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|Mux67~0_OTERM3150DUPLICATE
+  PD     incr      cum type   phase  node
+  .    0.000    0.000 clksrc CLK    FPGA_CLK2_50
+  .    0.000    0.000 ic     CLK    FPGA_CLK2_50~input|i
+  .    0.761    0.761 cell   CLK    FPGA_CLK2_50~input|o
+  .    1.335    2.096 ic     CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_REFCLK_SELECT|clkin[0]
+  .    0.333    2.429 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_REFCLK_SELECT|clkout
+  .    0.000    2.429 ic     CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|refclkin
+  .    0.029    2.458 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|vcoph[0]
+  .    0.000    2.458 ic     CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]
+  .    1.535    3.993 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk
+  .    1.019    5.012 ic     CLK    emu|pll|pll_inst|altera_pll_i|outclk_wire[0]~CLKENA0|inclk
+  .    0.322    5.334 cell   CLK    emu|pll|pll_inst|altera_pll_i|outclk_wire[0]~CLKENA0|outclk
+  .    2.315    7.649 ic     CLK    emu|system_large|u_core|u_eu|u_ucrom|ucdecode_rtl_0|auto_generated|ram_block1a4|clk0
+  .    1.594    9.243 cell   LAUNCH emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a4~PORT_A_WRITE_ENABLE_REG
+  .    0.000    9.243 utco   LAUNCH emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a4~PORT_A_WRITE_ENABLE_REG
+  0    1.046   10.289 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucdecode_rtl_0|auto_generated|ram_block1a4|portadataout[0]
+  .    2.094   12.383 ic     DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~762|datac
+  0    0.510   12.893 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~762|combout
+  .    0.230   13.123 ic     DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~376|datad
+  0    0.508   13.631 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~376|combout
+  .    0.879   14.510 ic     DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~52|dataf
+  0    0.082   14.592 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~52|combout
+  .    0.213   14.805 ic     DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~56|dataf
+  0    0.094   14.899 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~56|combout
+  .    0.990   15.889 ic     DATA   emu|system_large|u_core|u_eu|e_d1[2]~0|dataf
+  0    0.099   15.988 cell   DATA   emu|system_large|u_core|u_eu|e_d1[2]~0|combout
+  .    1.695   17.683 ic     DATA   emu|system_large|u_core|u_eu|WideOr17~0|dataf
+  0    0.095   17.778 cell   DATA   emu|system_large|u_core|u_eu|WideOr17~0|combout
+  .    0.666   18.444 ic     DATA   emu|system_large|u_core|u_eu|opr_fresh_n~1|datab
+  0    0.568   19.012 cell   DATA   emu|system_large|u_core|u_eu|opr_fresh_n~1|combout
+  .    0.269   19.281 ic     DATA   emu|system_large|u_core|u_eu|opr_n~1|dataf
+  0    0.099   19.380 cell   DATA   emu|system_large|u_core|u_eu|opr_n~1|combout
+  .    1.032   20.412 ic     DATA   emu|system_large|u_core|u_eu|Selector928~0|datac
+  0    0.517   20.929 cell   DATA   emu|system_large|u_core|u_eu|Selector928~0|combout
+  .    1.227   22.156 ic     DATA   emu|system_large|u_core|u_eu|opr_n~20|datae
+  0    0.231   22.387 cell   DATA   emu|system_large|u_core|u_eu|opr_n~20|combout
+  .    0.680   23.067 ic     DATA   emu|system_large|u_core|u_eu|v1~16|datac
+  0    0.498   23.565 cell   DATA   emu|system_large|u_core|u_eu|v1~16|combout
+  .    0.955   24.520 ic     DATA   emu|system_large|u_core|u_eu|Add57~41|datac
+  0    0.837   25.357 cell   DATA   emu|system_large|u_core|u_eu|Add57~41|cout
+  .    0.000   25.357 ic     DATA   emu|system_large|u_core|u_eu|Add57~37|cin
+  0    0.000   25.357 cell   DATA   emu|system_large|u_core|u_eu|Add57~37|cout
+  .    0.000   25.357 ic     DATA   emu|system_large|u_core|u_eu|Add57~21|cin
+  0    0.045   25.402 cell   DATA   emu|system_large|u_core|u_eu|Add57~21|cout
+  .    0.000   25.402 ic     DATA   emu|system_large|u_core|u_eu|Add57~25|cin
+  0    0.000   25.402 cell   DATA   emu|system_large|u_core|u_eu|Add57~25|cout
+  .    0.000   25.402 ic     DATA   emu|system_large|u_core|u_eu|Add57~45|cin
+  0    0.045   25.447 cell   DATA   emu|system_large|u_core|u_eu|Add57~45|cout
+  .    0.000   25.447 ic     DATA   emu|system_large|u_core|u_eu|Add57~49|cin
+  0    0.000   25.447 cell   DATA   emu|system_large|u_core|u_eu|Add57~49|cout
+  .    0.000   25.447 ic     DATA   emu|system_large|u_core|u_eu|Add57~53|cin
+  0    0.057   25.504 cell   DATA   emu|system_large|u_core|u_eu|Add57~53|cout
+  .    0.000   25.504 ic     DATA   emu|system_large|u_core|u_eu|Add57~29|cin
+  0    0.000   25.504 cell   DATA   emu|system_large|u_core|u_eu|Add57~29|cout
+  .    0.000   25.504 ic     DATA   emu|system_large|u_core|u_eu|Add57~33|cin
+  0    0.415   25.919 cell   DATA   emu|system_large|u_core|u_eu|Add57~33|sumout
+  .    1.454   27.373 ic     DATA   emu|system_large|u_core|u_eu|Equal231~7|datab
+  0    0.573   27.946 cell   DATA   emu|system_large|u_core|u_eu|Equal231~7|combout
+  .    0.339   28.285 ic     DATA   emu|system_large|u_core|u_eu|Equal231~2|datae
+  0    0.209   28.494 cell   DATA   emu|system_large|u_core|u_eu|Equal231~2|combout
+  .    0.240   28.734 ic     DATA   emu|system_large|u_core|u_eu|Mux350~1|dataf
+  0    0.093   28.827 cell   DATA   emu|system_large|u_core|u_eu|Mux350~1|combout
+  .    0.233   29.060 ic     DATA   emu|system_large|u_core|u_eu|Mux350~5|datae
+  0    0.304   29.364 cell   DATA   emu|system_large|u_core|u_eu|Mux350~5|combout
+  .    0.229   29.593 ic     DATA   emu|system_large|u_core|u_eu|Mux360~3|datae
+  0    0.301   29.894 cell   DATA   emu|system_large|u_core|u_eu|Mux360~3|combout
+  .    0.205   30.099 ic     DATA   emu|system_large|u_core|u_eu|Mux360~15|dataf
+  0    0.081   30.180 cell   DATA   emu|system_large|u_core|u_eu|Mux360~15|combout
+  .    1.276   31.456 ic     DATA   emu|system_large|u_core|u_eu|Decoder28~8|datae
+  0    0.224   31.680 cell   DATA   emu|system_large|u_core|u_eu|Decoder28~8|combout
+  .    0.769   32.449 ic     DATA   emu|system_large|u_core|u_eu|ld_b_n~2|dataf
+  0    0.083   32.532 cell   DATA   emu|system_large|u_core|u_eu|ld_b_n~2|combout
+  .    1.035   33.567 ic     DATA   emu|system_large|u_core|u_eu|Ram14~16|datad
+  0    0.427   33.994 cell   DATA   emu|system_large|u_core|u_eu|Ram14~16|combout
+  .    0.307   34.301 ic     DATA   emu|system_large|u_core|u_eu|Ram14~27|datae
+  0    0.304   34.605 cell   DATA   emu|system_large|u_core|u_eu|Ram14~27|combout
+  .    0.960   35.565 ic     DATA   emu|system_large|u_core|u_eu|always6~23|datad
+  0    0.380   35.945 cell   DATA   emu|system_large|u_core|u_eu|always6~23|combout
+  .    1.185   37.130 ic     DATA   emu|system_large|u_core|u_eu|st_n~37|datac
+  0    0.513   37.643 cell   DATA   emu|system_large|u_core|u_eu|st_n~37|combout
+  .    0.823   38.466 ic     DATA   emu|system_large|u_core|u_eu|st_zero_ok~10|datac
+  0    0.510   38.976 cell   DATA   emu|system_large|u_core|u_eu|st_zero_ok~10|combout
+  .    0.234   39.210 ic     DATA   emu|system_large|u_core|u_eu|seg_override_n~2|dataf
+  0    0.083   39.293 cell   DATA   emu|system_large|u_core|u_eu|seg_override_n~2|combout
+  .    0.630   39.923 ic     DATA   emu|system_large|u_core|u_eu|st_n~51|datac
+  0    0.481   40.404 cell   DATA   emu|system_large|u_core|u_eu|st_n~51|combout
+  .    0.881   41.285 ic     DATA   emu|system_large|u_core|u_eu|st_n~55|datac
+  0    0.585   41.870 cell   DATA   emu|system_large|u_core|u_eu|st_n~55|combout
+  .    0.911   42.781 ic     DATA   emu|system_large|u_core|u_eu|Decoder34~8|datac
+  0    0.477   43.258 cell   DATA   emu|system_large|u_core|u_eu|Decoder34~8|combout
+  .    0.862   44.120 ic     DATA   emu|system_large|u_core|u_eu|ld_b_n~35|datad
+  0    0.437   44.557 cell   DATA   emu|system_large|u_core|u_eu|ld_b_n~35|combout
+  .    0.576   45.133 ic     DATA   emu|system_large|u_core|u_eu|Ram23~25|datac
+  0    0.465   45.598 cell   DATA   emu|system_large|u_core|u_eu|Ram23~25|combout
+  .    0.248   45.846 ic     DATA   emu|system_large|u_core|u_eu|Ram23~12|datac
+  0    0.517   46.363 cell   DATA   emu|system_large|u_core|u_eu|Ram23~12|combout
+  .    0.813   47.176 ic     DATA   emu|system_large|u_core|u_eu|always6~43|datad
+  0    0.430   47.606 cell   DATA   emu|system_large|u_core|u_eu|always6~43|combout
+  .    0.234   47.840 ic     DATA   emu|system_large|u_core|u_eu|st_n~90|dataa
+  0    0.564   48.404 cell   DATA   emu|system_large|u_core|u_eu|st_n~90|combout
+  .    0.772   49.176 ic     DATA   emu|system_large|u_core|u_eu|st_n~105|datab
+  0    0.548   49.724 cell   DATA   emu|system_large|u_core|u_eu|st_n~105|combout
+  .    0.273   49.997 ic     DATA   emu|system_large|u_core|u_eu|st_n~106|dataf
+  0    0.086   50.083 cell   DATA   emu|system_large|u_core|u_eu|st_n~106|combout
+  .    0.886   50.969 ic     DATA   emu|system_large|u_core|u_eu|Decoder38~8|datac
+  0    0.429   51.398 cell   DATA   emu|system_large|u_core|u_eu|Decoder38~8|combout
+  .    1.528   52.926 ic     DATA   emu|system_large|u_core|u_eu|tmpb[4]~8|dataf
+  0    0.098   53.024 cell   DATA   emu|system_large|u_core|u_eu|tmpb[4]~8|combout
+  .    1.436   54.460 ic     DATA   emu|system_large|u_core|u_eu|tmpb~24|datad
+  0    0.508   54.968 cell   DATA   emu|system_large|u_core|u_eu|tmpb~24|combout
+  .    1.512   56.480 ic     DATA   emu|system_large|u_core|u_eu|tmpb[12]_NEW2617|dataf
+  1    0.082   56.562 cell   DATA   emu|system_large|u_core|u_eu|tmpb[12]_NEW2617|combout
+  .    1.157   57.719 ic     DATA   emu|system_large|u_core|u_eu|Mux67~0|dataf
+  1    0.077   57.796 cell   DATA   emu|system_large|u_core|u_eu|Mux67~0|combout
+  .    0.000   57.796 ic     DEST   emu|system_large|u_core|u_eu|Mux67~0_OTERM3150DUPLICATE|d
+  .    0.266   58.062 cell   DEST   emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|Mux67~0_OTERM3150DUPLICATE
+
+=== RESOLVER CENSUS (which collection command answered) ===
+  pins         88
+  distinct nodes classified (LIVE_NARROW): 88
+  distinct nodes classified (LIVE_WIDE)  : 23

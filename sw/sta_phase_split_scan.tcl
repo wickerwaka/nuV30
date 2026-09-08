@@ -102,6 +102,18 @@ proc norm {name} {
     }
     return [join $o "|"]
 }
+# ⚠ PREFIX TESTS ARE LITERAL, NEVER `string match`.  A register named with a
+# BUS INDEX -- `opc_base[3]`, `tmpb[4]` -- is a `string match` PATTERN in which
+# `[3]` is a CHARACTER CLASS, so `string match "…opc_base[3]*" "…opc_base[3]|q"`
+# returns 0 and the walker never finds the launch register.  MEASURED, not
+# argued: on the first CONTROL run of 2026-09-08 this silently gave 19 of 50
+# paths on seed 2 a data path of ZERO cells and a "data delay" that still
+# carried the 9.3 ns clock-network arrival, and the failures were absorbed into
+# the `merge point UNDEFINED` count -- i.e. a WALKER FAILURE was reported as a
+# RESULT.  That run is retained at `sw/testdata/phasesplit/ctl-DEFECTIVE-WALKER/`
+# and nothing is quoted from it.
+proc hasprefix {s p} { return [expr {[string first $p $s] == 0}] }
+
 proc basenet {name} {
     set segs [split [norm $name] "|"]
     if {[llength $segs] > 1} { set segs [lrange $segs 0 end-1] }
@@ -250,16 +262,16 @@ proc walk {p} {
         set cum [expr {$cum + $inc}]
         set nn [norm $nm]
         if {$state == 0} {
-            if {[string match "${fn}*" $nn]} { set state 1 } else {
+            if {[hasprefix $nn $fn]} { set state 1 } else {
                 if {$ty eq "cell"} { incr nclock }
             }
         }
         if {$state == 1} {
-            if {[string match "${fn}*" $nn]} {
+            if {[hasprefix $nn $fn]} {
                 set launch_cum $cum
             } else { set state 2 }
         }
-        if {$state == 2 && [string match "${tn}*" $nn]} { set state 3 }
+        if {$state == 2 && [hasprefix $nn $tn]} { set state 3 }
         set tag ""
         if {$state == 0} { set tag CLK } elseif {$state == 1} { set tag LAUNCH } \
             elseif {$state == 2} { set tag DATA } else { set tag DEST }
@@ -358,6 +370,8 @@ array set netpaths {}
 
 set npath 0
 set n_nomerge 0
+set n_walkfail 0
+set walkfail_list {}
 set worst_data 0.0
 set worst_desc ""
 set dumps {}
@@ -369,7 +383,9 @@ foreach_in_collection p $paths {
     set lv    [get_path_info $p -num_logic_levels]
     set data  [expr {$W(total) - $W(launch)}]
     if {$npath <= 3} { lappend dumps [list $npath $W(from) $W(to) $W(dump)] }
-    if {$data > $worst_data} { set worst_data $data ; set worst_desc "$W(from) -> $W(to)" }
+    if {$data > $worst_data && [llength $W(cells)] >= 3} {
+        set worst_data $data ; set worst_desc "$W(from) -> $W(to)"
+    }
 
     set npd 0 ; set nro 0 ; set nun 0 ; set merge -1 ; set merge_idx -1
     set idx 0
@@ -416,7 +432,12 @@ foreach_in_collection p $paths {
         incr idx
     }
     array unset seen ; array unset occ
-    if {$merge < 0} { incr n_nomerge }
+    # ⚠ A WALKER FAILURE IS NOT A RESULT.  A path on which the walker found
+    # fewer than 3 data-path cells is counted in its OWN class and is NOT
+    # folded into `merge point UNDEFINED`, which means something else entirely
+    # (a path with a real data path and no pin-dependent node on it).
+    if {[llength $W(cells)] < 3} { incr n_walkfail ; lappend walkfail_list $npath }
+    if {$merge < 0 && [llength $W(cells)] >= 3} { incr n_nomerge }
     lappend rows [list $npath $slack $lv $data [llength $W(cells)] $nro $npd $merge $merge_idx $W(from) $W(to) $nun]
     array unset W
 }
@@ -442,6 +463,14 @@ emit ""
 emit [format "  paths with NO pin-dependent node at all (merge point UNDEFINED): %d of %d" \
           $n_nomerge $npath]
 emit "  -- reported as its own class; it is NOT folded into 0 and NOT into the total."
+emit ""
+emit [format "  WALKER FAILURES (fewer than 3 data-path cells found): %d of %d" \
+          $n_walkfail $npath]
+if {$n_walkfail > 0} {
+    emit "  ⚠ THESE ARE NOT RESULTS.  A path the walker could not split contributes"
+    emit "    nothing to the census, its `dataDly` is NOT a data delay, and it is"
+    emit "    counted here and NOT in the UNDEFINED class above.  Paths: $walkfail_list"
+}
 emit ""
 emit [format "  worst \$v30u_ce -> \$v30u_ce DATA delay in this population: %.3f ns" $worst_data]
 emit "     $worst_desc"
