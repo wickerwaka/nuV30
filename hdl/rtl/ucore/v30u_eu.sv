@@ -3249,6 +3249,43 @@ reg [5:0] chain_first;
 reg cp_seen [0:1023];
 integer cpi;
 initial for (cpi = 0; cpi < 1024; cpi = cpi + 1) cp_seen[cpi] = 1'b0;
+//--------------------------------------------------------------------------
+// WAVE 6 (THE CHAIN FLATTENING STUDY) -- THE SEQUENCE CENSUS.
+//
+// `cp_seen` above answers "which (position, state) PAIRS occur"; that is what
+// sec.51.2 measured and it cannot say which SEQUENCES a clock actually walks.
+// This records the ORDERED tuple of states occupying positions 0..chain_used-1
+// of one CE edge, de-duplicates it, and counts it.
+//
+// ⚠ THE TUPLE IS FILLED IN THE COMBINATIONAL CHAIN BLOCK AND READ IN THE
+// CLOCKED OBSERVER, which is the SAME discipline `stop` / `chain_used` /
+// `chain_first` already use and for the same reason: a comb block re-evaluates
+// many times per delta, so a census taken inside it would count settling.  The
+// observer runs ONCE per CE clock on the settled values.
+//
+// SIM-ONLY AND OFF BY DEFAULT.  `CHAIN_PROBE` is undefined unless a driver
+// defines it; nothing here is compiled otherwise, and no synthesis flow
+// defines it.
+localparam int CP_SLOTS = 8192;          // linear-probed, power of two
+reg [41:0] cp_key  [0:CP_SLOTS-1];       // 7 positions x 6 bits, 6'h3F = absent
+reg        cp_val  [0:CP_SLOTS-1];
+integer    cp_cnt  [0:CP_SLOTS-1];
+reg  [5:0] cp_seq  [0:15];               // this edge's occupancy, by position
+integer    cp_used;                      // ...how many of them are live
+integer    cp_nseq;                      // distinct sequences seen
+integer    cp_edges;                     // CE edges censused
+integer    cpj;
+initial begin
+    for (cpi = 0; cpi < CP_SLOTS; cpi = cpi + 1) begin
+        cp_val[cpi] = 1'b0;
+        cp_key[cpi] = 42'd0;
+        cp_cnt[cpi] = 0;
+    end
+    for (cpi = 0; cpi < 16; cpi = cpi + 1) cp_seq[cpi] = 6'h3F;
+    cp_nseq = 0;
+    cp_edges = 0;
+    cp_used = 0;
+end
 `endif
 `endif
 
@@ -3731,6 +3768,9 @@ always @* begin
 `ifndef SYNTHESIS
         chain_used = 4'd0;
         chain_first = st_n;
+`ifdef CHAIN_PROBE
+        cp_used = 0;                     // WAVE 6: this edge's tuple, cleared
+`endif
 `endif
         for (chain = 0; chain < CHAIN_MAX; chain = chain + 4'd1) begin
             if (!stop) begin
@@ -3744,6 +3784,10 @@ always @* begin
                     $fwrite(fd, "POS %0d ST %0d\n", chain, st_n);
                     $fclose(fd);
                 end
+                // WAVE 6: the ORDERED tuple, recorded here and CENSUSED in the
+                // clocked observer (see the declaration block's warning).
+                cp_seq[chain] = st_n;
+                cp_used = chain + 1;
 `endif
 `endif
                 // THE FAIL-SAFE.  The 24 position-0-only arms are folded out
@@ -4110,8 +4154,79 @@ always @(posedge clk) begin
             end
             `endif
         end
+        //------------------------------------------------------------------
+        // WAVE 6 -- THE SEQUENCE CENSUS, ONCE PER CE EDGE ON SETTLED VALUES.
+        //------------------------------------------------------------------
+        `ifdef CHAIN_PROBE
+        begin : cpcensus
+            reg [41:0] k;
+            integer h, probe_i, slot;
+            k = 42'd0;
+            for (cpj = 0; cpj < 7; cpj = cpj + 1)
+                k = {k[35:0], (cpj < cp_used) ? cp_seq[cpj] : 6'h3F};
+            // linear probing; the table is 8,192 wide against a static bound
+            // of a few dozen distinct sequences, so it cannot fill -- and if
+            // it ever did, the OVERFLOW line below says so rather than
+            // silently dropping a sequence.
+            h = int'(k % CP_SLOTS);
+            slot = -1;
+            for (probe_i = 0; probe_i < CP_SLOTS; probe_i = probe_i + 1) begin
+                integer idx;
+                idx = (h + probe_i) % CP_SLOTS;
+                if (!cp_val[idx]) begin
+                    cp_val[idx] = 1'b1;
+                    cp_key[idx] = k;
+                    cp_cnt[idx] = 0;
+                    cp_nseq = cp_nseq + 1;
+                    slot = idx;
+                    break;
+                end else if (cp_key[idx] == k) begin
+                    slot = idx;
+                    break;
+                end
+            end
+            cp_edges = cp_edges + 1;
+            if (slot < 0) begin : cpovf
+                integer fd;
+                fd = $fopen(`CHAIN_PROBE, "a");
+                $fwrite(fd, "SEQ_TABLE_OVERFLOW\n");
+                $fclose(fd);
+            end else begin
+                cp_cnt[slot] = cp_cnt[slot] + 1;
+                if (cp_cnt[slot] == 1) begin : cpnew
+                    integer fd;
+                    fd = $fopen(`CHAIN_PROBE, "a");
+                    $fwrite(fd, "SEQ %0d", cp_used);
+                    for (cpj = 0; cpj < cp_used; cpj = cpj + 1)
+                        $fwrite(fd, " %0d", cp_seq[cpj]);
+                    $fwrite(fd, "\n");
+                    $fclose(fd);
+                end
+            end
+        end
+        `endif
     end
 end
+
+`ifdef CHAIN_PROBE
+// WAVE 6 -- the COUNTS, written once at the end of the run.  The streaming
+// `SEQ` lines above say WHICH sequences occurred; this says HOW OFTEN, which
+// is what deliverable B's distribution needs.
+final begin : cpfinal
+    integer fd, i2, j2;
+    fd = $fopen(`CHAIN_PROBE, "a");
+    $fwrite(fd, "SEQ_EDGES %0d SEQ_DISTINCT %0d\n", cp_edges, cp_nseq);
+    for (i2 = 0; i2 < CP_SLOTS; i2 = i2 + 1)
+        if (cp_val[i2]) begin
+            $fwrite(fd, "SEQCOUNT %0d", cp_cnt[i2]);
+            for (j2 = 6; j2 >= 0; j2 = j2 - 1)
+                if (cp_key[i2][j2*6 +: 6] != 6'h3F)
+                    $fwrite(fd, " %0d", cp_key[i2][j2*6 +: 6]);
+            $fwrite(fd, "\n");
+        end
+    $fclose(fd);
+end
+`endif
 `endif
 
 //============================================================================
