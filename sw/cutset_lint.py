@@ -34,8 +34,21 @@ CHECKS (exit 0 PASS / 1 violation / 2 could-not-run):
   X3  every aliased name is aliased EXACTLY ONCE, and every alias stands
       BEFORE THE CUT (`s1_bus = {`).
   X4  **COMPLETENESS.**  The block, plus every `.svh` it includes, names ZERO
-      module-level continuous-assignment targets of `v30u_eu.sv`.  This is the
-      clause that fires on a re-introduced bypass.
+      MODULE-LEVEL COMBINATIONAL VALUES of `v30u_eu.sv`.  This is the clause
+      that fires on a re-introduced bypass.
+      ⚠ **"COMBINATIONAL VALUE" IS NOT "WIRE", AND THE DIFFERENCE COST WAVE 4
+      ITS FIRST CUT.**  This clause used to read *"continuous-assignment
+      targets"*, i.e. `wire x = ...` and `assign x = ...`.  `v30u_eu.sv` has SIX
+      OTHER combinational `always @*` blocks -- the ALU, the BCD unit, the
+      iterative stepper, the Source1 and Source2 selects and the reset function
+      -- and every one of them drives module-level `reg`s that are exactly as
+      combinational and exactly as pre-cut as a wire.  The first landed cut set
+      shadowed the 70 wires, PASSED this clause, and the netlist then showed the
+      binding arc running `modrm_reg -> opc_sel -> ... -> s1_val/it_val -> v1 ->
+      the chain -> opc_base` with **107 arrival points and ZERO naming the
+      shadow** -- WAVE 2's signature, one layer in.  The set is now BOTH kinds.
+      A name the preload assigns is the block's OWN scratch, not a pre-cut
+      value, and is excluded by that rule and not by a list.
   X5  every aliased name is a member of the pack list (so it actually crosses).
   X6  no aliased wire's cone reaches a LIVE input -- `r7_lint`'s own set: the
       three asynchronous pins, the declared live-`READY` carrier and its data
@@ -137,7 +150,10 @@ def main():
             bad.append("X2: `s1w_` named inside the next-state block at line %d: %s" % (i, l))
     print("  s1w_ in block   : %d (must be 0 outside the alias lines)" % len(stray))
 
-    # --- module-level continuous assignment targets ------------------------
+    # --- module-level COMBINATIONAL VALUES ---------------------------------
+    # (a) continuous assignments, and (b) the module-level `reg`s driven by the
+    # OTHER combinational `always @*` blocks.  (b) is not a refinement: it is
+    # where WAVE 4's first cut set leaked (see X4's note above).
     stmts, cur = [], []
     for ch in src:
         cur.append(ch)
@@ -155,6 +171,34 @@ def main():
             decls[m.group(1)] = m.group(2)
     deps = {n: idents(e or "") for n, e in decls.items()}
 
+    # (b) -- every module-level `reg` assigned in a combinational `always @*`
+    # block OTHER than the next-state one.  A name the PRELOAD assigns is the
+    # next-state block's own mirror or scratch and is NOT a pre-cut value; that
+    # is the rule that excludes `rep_chained`, and it is a rule and not a list.
+    modregs = {}
+    for m in re.finditer(r"^reg\s+(?:signed\s+)?(\[[^\]]*\]\s*)?(.*?);", src, re.M):
+        for nm in m.group(2).split(","):
+            mm = re.match(r"\s*(\w+)", nm)
+            if mm:
+                modregs[mm.group(1)] = True
+    preload_assigned = set()
+    pp = UC / "v30u_eu_preload.svh"
+    if pp.exists():
+        for m in re.finditer(r"(?<![\w.])([A-Za-z_]\w*)\s*(?:\[[^\]]*\])?\s*=(?!=)",
+                             nocomment(pp.read_text())):
+            preload_assigned.add(m.group(1))
+    comb_starts = [i for i, l in enumerate(lines) if l.startswith("always @* begin")]
+    for st in comb_starts:
+        if st == b0:
+            continue
+        en = next(i for i in range(st + 1, len(lines)) if lines[i].rstrip() == "end")
+        body = nocomment("\n".join(lines[st:en + 1]))
+        for m in re.finditer(r"(?<![\w.])([A-Za-z_]\w*)\s*(?:\[[^\]]*\])?\s*=(?!=)", body):
+            n = m.group(1)
+            if n in modregs and n not in preload_assigned and n not in decls:
+                decls[n] = None
+                deps[n] = set()
+
     # --- X4 : COMPLETENESS -------------------------------------------------
     # THE ALIAS LINES ARE THE ONE PLACE THE CUT IS ALLOWED TO NAME THE WIRE,
     # and they are excluded HERE rather than by a name pattern: X2 has already
@@ -167,9 +211,11 @@ def main():
             region += "\n" + nocomment(p.read_text())
     read = idents(region)
     leaked = sorted(n for n in decls if n in read)
-    print("  module wires the block names : %d (must be 0)" % len(leaked))
+    print("  module combinational values the block names : %d (must be 0)" % len(leaked))
     if leaked:
-        bad.append("X4: the next-state block reads module-level wire(s) DIRECTLY, "
+        bad.append("X4: the next-state block reads module-level COMBINATIONAL "
+                   "VALUE(S) DIRECTLY -- a wire, or a `reg` driven by one of the "
+                   "module's other `always @*` blocks -- "
                    "so they are NOT in the cut set and stage 2 bypasses the shadow "
                    "exactly as WAVE 2 did: %s" % leaked[:12])
 

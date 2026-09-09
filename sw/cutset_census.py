@@ -138,6 +138,39 @@ def main():
         region += "\n" + strip_comments((UC / inc).read_text())
     read = idents(region)
 
+    # ⚠ AND THE MODULE-LEVEL `reg`s DRIVEN BY THE *OTHER* COMBINATIONAL
+    # `always @*` BLOCKS.  They are exactly as combinational and exactly as
+    # pre-cut as a wire, and WAVE 4's first cut set leaked through them: the
+    # ALU (`sigma`/`ev_*`), the iterative stepper (`it_val`, `it_flags`, ...)
+    # and the Source1 / Source2 selects (`s1_val`, `s2_val`, ...) are all of
+    # this kind.  A name the PRELOAD assigns is the next-state block's own
+    # mirror or scratch and is NOT a pre-cut value -- that rule, and not a
+    # list, is what excludes `rep_chained`.
+    modregs = {}
+    for m in re.finditer(r"^reg\s+(?:signed\s+)?(\[[^\]]*\]\s*)?(.*?);", src, re.M):
+        w = m.group(1)
+        for nm in m.group(2).split(","):
+            mm = re.match(r"\s*(\w+)", nm)
+            if mm:
+                modregs[mm.group(1)] = (w.strip() if w else None)
+    preload_assigned = set()
+    pp = UC / "v30u_eu_preload.svh"
+    if pp.exists():
+        for m in re.finditer(r"(?<![\w.])([A-Za-z_]\w*)\s*(?:\[[^\]]*\])?\s*=(?!=)",
+                             strip_comments(pp.read_text())):
+            preload_assigned.add(m.group(1))
+    for st in starts:
+        if st == start:
+            continue
+        en = next(i for i in range(st + 1, len(lines_raw)) if lines_raw[i].rstrip() == "end")
+        body = strip_comments("\n".join(lines_raw[st:en + 1]))
+        for m in re.finditer(r"(?<![\w.])([A-Za-z_]\w*)\s*(?:\[[^\]]*\])?\s*=(?!=)", body):
+            n = m.group(1)
+            if n in modregs and n not in preload_assigned and n not in decls:
+                decls[n] = (modregs[n], None)
+                deps[n] = set()
+                order.append(n)
+
     ss_write = idents(strip_comments((UC / "v30u_eu_ss_write.svh").read_text()))
 
     clean = [n for n in order if n in read and n not in tainted]
@@ -156,8 +189,12 @@ def main():
           + (f"   [{len(unk)} width UNKNOWN: {unk}]" if unk else ""))
     print(f"SHAPE (B) + wave 2's `_n` set    : {tot} + 495 = {tot + 495} bits")
     print()
-    print(f"SHAPE (A) `row` only             : {width(decls['row'][0])} bits"
-          f"  (+ wave 2's 495 = {width(decls['row'][0]) + 495})")
+    rowd = decls.get('row') or decls.get('s1w_row')
+    if rowd:
+        print(f"SHAPE (A) `row` only             : {width(rowd[0])} bits"
+              f"  (+ wave 2's 495 = {width(rowd[0]) + 495})")
+    else:
+        print("SHAPE (A) `row` only             : (no `row` net -- the cut is landed)")
     print()
     print(f"LIVE-TAINTED wires the block reads (STAGE-2 SOURCES, not shadowable): {len(dirty)}")
     for n in dirty:

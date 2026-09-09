@@ -204,3 +204,113 @@ scored against this document:
   made here; reach is proved by a behavioural falsifier on the rebuilt binary
   and, on the Quartus side, by the content-hashed `input_manifest`.
 * Record what was measured, not what was expected.
+
+---
+
+# AMENDMENT A-1 — **THE CUT SET WAS NOT COMPLETE, AND THE LINT COULD NOT SEE IT**
+
+**COMMITTED BEFORE THE FIRST EDIT IT GOVERNS.**  It amends §2 and §3 of this
+document.  **IT CHANGES NO BAR.  C-1 … C-12 STAND VERBATIM.**
+
+## A-1.1 WHAT WAS MEASURED, AND IT IS A MEASUREMENT AND NOT A RE-READING
+
+The landed cut set (edit (b), `3e0a4dfc3b`) was scored: **C-1 FAILED**, CONTROL
+`worst-of-5` **22.15 MHz**, RETENTION **22.90**, RED on ten of ten draws, against
+WAVE 3's pre-L2 no-exception baseline of 21.82.  `sw/sta_cutset_diag.tcl` on the
+worst CONTROL draw (seed 3) then said:
+
+```
+  worst ce->ce   modrm_reg[1] -> opc_base[3]   slack -13.888   44 levels   data 44.502
+    arrival points: 107   of which name |s1q : 0        <<<< C-3(b)
+    ...and of which live in v30u_biu : 0   v30u_eu : 3   elsewhere : 104
+  STAGE 1 (anything -> s1q), worst:  modrm_reg[1] -> s1q[625]   +8.326   17 levels   22.271 ns
+  STAGE 2 (s1q -> anything), worst:  s1q[14] -> opc_base[3]     -8.808   36 levels   39.462 ns
+  top 200 ce->ce: STAGE 1 count 0 . STAGE 2 count 0 . NEITHER count 200
+```
+
+**ZERO of 107, AGAIN — WAVE 2's SIGNATURE, ONE LAYER IN.**  The arrival-point
+dump names the leak to the node:
+
+```
+  modrm_reg[1] -> opc_sel[1]~2 -> Add4~2 -> sigma[1]~0 -> s1_bus[65]~43
+              -> LessThan7 -> Selector5/3 -> sigma[13]~42 -> Mux264~6
+              -> v1~22 -> Add57 (the EA add) -> ... -> the chain -> opc_base[3]
+```
+
+## A-1.2 THE CAUSE — **"MODULE-LEVEL COMBINATIONAL VALUE" IS NOT "WIRE"**
+
+`v30u_eu.sv` has **SIX OTHER combinational `always @*` blocks** — the ALU, the
+BCD unit, the iterative stepper, the Source1 select, the Source2 select and the
+reset function — and they drive module-level **`reg`s**, which are exactly as
+combinational and exactly as pre-cut as a `wire`.  `sw/cutset_census.py` walked
+CONTINUOUS ASSIGNMENTS only, so it returned 70 names / 183 bits and called that
+"everything the block reads"; `sw/cutset_lint.py`'s X4 asked the same too-narrow
+question and answered **PASS**.
+
+**TEN NAMES / 100 BITS WERE MISSING**, and they are precisely the segment
+WAVE 1 §2 measured at 9.34 ns — the operand / queue-state select — plus the
+iterative unit:
+
+`s1_val` (16) · `s1_byte` (1) · `s1_wbyte` (1) · `s2_val` (16) · `s2_wbyte` (1) ·
+`it_val` (16) · `it_tmpa` (16) · `it_flags` (16) · `it_fmask` (16) ·
+`it_writes_tmpa` (1).
+
+**THE CORRECTED LINT FAILS ON THE LANDED TREE AND NAMES ALL TEN** — that is the
+falsifier, run before the amendment's edit:
+
+```
+  module combinational values the block names : 10 (must be 0)
+  VIOLATION X4: ... ['it_flags','it_fmask','it_tmpa','it_val','it_writes_tmpa',
+                     's1_byte','s1_val','s1_wbyte','s2_val','s2_wbyte']
+=== cutset_lint: FAIL   (70 members / 1 violations)
+```
+
+**The exclusion of the block's own scratch is a RULE, not a list**: a name the
+PRELOAD assigns is the next-state block's own mirror or scratch and is not a
+pre-cut value.  That is what excludes `rep_chained`, which the reset block and
+the next-state block share as a scratch name.
+
+## A-1.3 WHAT THIS AMENDMENT DOES, AND WHAT IT DELIBERATELY DOES NOT
+
+**IT COMPLETES THE REGISTERED CUT SET.  IT DOES NOT MOVE THE CUT.**  The
+boundary is unchanged — the front end upstream, the unrolled chain downstream —
+and the ten names are added to the SAME shadow by the SAME mechanism (rename to
+`s1w_`, alias once at the head of stage 1, pack, unpack).  **No `.svh` is
+edited.**  This is the same class of correction WAVE 2 recorded in its §0 — *"a
+CORRECTION IN THE SAFE DIRECTION, recorded rather than smoothed over"* — made
+against an instrument defect and not against a result.
+
+> ⚠ **AND IT IS STATED PLAINLY SO A READER CAN DISAGREE WITH IT.**  The brief
+> says *"do not re-scope the cut after seeing a result."*  The judgment here is
+> that COMPLETING a set the instrument mis-derived is not re-scoping, because
+> the cut, the stages, the mechanism and every bar are unchanged and the
+> correction is forced by the design's own registered claim (C-3(a), "THE CUT
+> SET IS COMPLETE").  **The first cut set's result stands and is reported in
+> full and is not withdrawn**; this is scored SEPARATELY and beside it, and if
+> the coordinator reads it as a re-scope, the primary result is unaffected.
+
+**THE WIDTH, MEASURED BEFORE THE EDIT:**
+
+| | names | bits |
+|---|---:|---:|
+| the wire cone (edit (b), landed) | 70 | 183 |
+| **+ the `always @*`-driven module regs (A-1)** | **+10** | **+100** |
+| = the completed crossing set | 80 | **283** |
+| + wave 2's loop-carried `_n` set | | + 495 |
+| **= `S1W`** | | **778** |
+
+**THE STOP THRESHOLD IS 900.  778 IS UNDER IT.**  Live-tainted members: **0** —
+the ten add no module input to the union of §2, which stays the seven registered
+BIU views.
+
+**THE PREDICTION, PRE-REGISTERED SO IT CAN BE REFUTED.**  §4.1's P-a/P-b/P-c
+stand.  Added:
+
+* **P-d** the corrected lint reads PASS with `module combinational values the
+  block names : 0`, and the worst `ce -> ce` path's arrival points **name the
+  shadow** (C-3(b)).
+* **P-e** STAGE 2's worst (`s1q -> *`) falls from **39.462 ns**.  *A miss here
+  says the chain alone is over budget and the split cannot close whatever
+  crosses it — which would be the campaign's answer, not this wave's failure.*
+
+None of P-a…P-e is a revert condition.  **C-10 is.**
