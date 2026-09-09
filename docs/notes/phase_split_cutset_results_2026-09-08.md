@@ -461,3 +461,36 @@ closure — **which cuts both ways, so these twenty RED draws are not a proof th
 no phase split can close, only that these did not on these draws.**  What makes
 them strong is not the count but §4.2: STAGE 2's length and its endpoints are
 structural, and they are measured with the BIU excluded by counting.
+
+### 8.3 THE REVERT IS MEASURED, NOT ASSERTED
+
+* `git diff 6d0c770e91 -- hdl/ sw/quartus_gate.py sw/sta_truefmax_probe.tcl
+  sw/test_quartus_gate.py sw/demux_off_gate.py sw/ss_flop_whitelist_ucore.txt`
+  is **EMPTY** — byte-identical to the tree the wave entered on.
+  `hdl/rtl/ucore/v30u_eu_preload.svh` is deleted.
+* **THE WHOLE LADDER RE-RUN ON THE REVERTED TREE IS 31 OF 31 SAME**
+  (`sw/testdata/cutset/reverted/`, `sw/phase_split_ladder_diff.py` against
+  `…/before/`): every figure back at its registered value, **including `ss_lint`
+  at 228 architectural flops / 3 whitelist entries and `demux_off_gate`'s
+  original *"three muxed ports"* line** — the two legs that moved for the split
+  are the two legs that moved back.  `chain_lfsr_gate`'s four signatures and
+  every gap count are IDENTICAL to the BEFORE run.
+* **BOTH LINTS REFUSE**: `sw/cutset_lint.py` and `sw/phase_split_lint.py` each
+  exit **2, COULD NOT RUN**, naming the absent mechanism.  Neither is registered
+  in `standing_gates.md`, for the same reason WAVE 2 gave: a lint that passed
+  here would pass vacuously.
+* `sw/cutset_nonvacuity.py` on the reverted tree: **A / A2 / B / B2 SKIPPED**,
+  said to be, and said WHY (*"probe a mechanism that is not here"*, the guard
+  added for this run); **C FIRES on `REQUIREMENT VIOLATED (S-1)`** and **DOES
+  NOT** contain *"STAGE-1 capture edge"* — ⚠ **correctly**, because that wording
+  came with edit (a) and went with it, and on a tree with no phase split the EU
+  has no stage-1 dependence to name.  `hdl/ restored: CLEAN`.
+* **`git add -A hdl/` WAS NEVER USED** (WAVE 2 §10 item 7(b)); the twelve
+  pre-existing untracked `hdl/quartus_gate_*.log` files are still untracked and
+  the ~20 pre-existing tracked modifications outside `hdl/` and `docs/notes/`
+  (a repo-wide rename in flight) were not committed by this wave.
+* `hdl/nec_test_ucore.qsf` moved during every sweep — the declared §70.7
+  exemption, E7's single permitted mover — and was restored with
+  `git checkout --`.  **Recorded because a file that moves and is put back is
+  still a file that moved**, and because failing to put it back cost this wave a
+  sweep (§7 item 6).

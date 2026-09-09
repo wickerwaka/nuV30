@@ -102,7 +102,21 @@ case("C   S-1 $fatal, and its message names the EU's dependence",
      "python3 sw/check_core.py --core ucore --opcodes 90 --cases 1")
 
 
+SPLIT_PRESENT = "s1_bus = {" in open("hdl/rtl/ucore/v30u_eu.sv").read()
+
+
 def main():
+    # ⚠ ON A TREE WITHOUT THE SPLIT, A, A2, B AND B2 PROBE A MECHANISM THAT IS
+    # NOT THERE, AND `cutset_lint` CORRECTLY EXITS 2 (COULD NOT RUN) FOR ALL OF
+    # THEM.  Reporting that as "DID NOT FIRE" would report the ABSENCE OF THE
+    # MECHANISM as a failure of the probe.  They are SKIPPED and said to be, in
+    # the same words the anchor check uses; C stands, because S-1 is in the tree
+    # whatever the split is doing.
+    if not SPLIT_PRESENT:
+        print("the ce/ce_half CUT SET is NOT IN THIS TREE (`s1_bus = {` absent).\n"
+              "  A / A2 / B / B2 probe a mechanism that is not here and are SKIPPED;\n"
+              "  C is not, because S-1 does not depend on the split.")
+        del CASES[:4]
     dirty = sh("git status --porcelain hdl/ | grep -v '^??'").stdout.strip()
     if dirty:
         print("REFUSING: hdl/ carries uncommitted tracked changes:\n" + dirty)
