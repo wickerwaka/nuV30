@@ -42,7 +42,8 @@ foreach_in_collection p [get_timing_paths -from $v30u_ce -to $v30u_ce -setup -np
     emit $fh [format "    slack : %+8.3f   logic levels %s   data delay %s" \
                   [get_path_info $p -slack] [get_path_info $p -num_logic_levels] \
                   [get_path_info $p -data_delay]]
-    set nsh 0 ; set ncells 0
+    set nsh 0 ; set ncells 0 ; set nbiu 0 ; set neu 0 ; set nout 0
+    set firstbiu "" ; set lastbiu ""
     if {![catch {set pts [get_path_info $p -arrival_points]}]} {
         foreach_in_collection pt $pts {
             set nd [lindex [get_point_info $pt -node] 0]
@@ -50,9 +51,22 @@ foreach_in_collection p [get_timing_paths -from $v30u_ce -to $v30u_ce -setup -np
             set nm [get_node_info $nd -name]
             incr ncells
             if {[string first "|s1q" $nm] >= 0} { incr nsh }
+            if {[string first "v30u_biu:" $nm] >= 0} {
+                incr nbiu
+                if {$firstbiu eq ""} { set firstbiu $nm }
+                set lastbiu $nm
+            } elseif {[string first "v30u_eu:" $nm] >= 0} {
+                incr neu
+            } else { incr nout }
         }
     }
     emit $fh "    arrival points: $ncells   of which name |s1q : $nsh    <<<< C-3(b)"
+    emit $fh "    ...and of which live in v30u_biu : $nbiu   v30u_eu : $neu   elsewhere : $nout"
+    if {$nbiu > 0} {
+        emit $fh "    ⚠ THE ARC LEAVES THE EU AND COMES BACK -- an EU -> BIU -> EU"
+        emit $fh "      COMBINATIONAL ROUND TRIP.  first BIU node : $firstbiu"
+        emit $fh "                                  last  BIU node : $lastbiu"
+    }
 }
 if {$to eq ""} { emit $fh "  NO ce->ce PATH -- cannot diagnose" ; close $fh ; project_close ; return }
 
