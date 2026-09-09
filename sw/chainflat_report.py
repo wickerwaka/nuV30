@@ -33,13 +33,16 @@ def grab(path, rx):
     return m.group(1) if m else None
 
 
+# ⚠ `^` WITHOUT `re.M` ANCHORS AT THE START OF THE WHOLE STRING.  The first
+# form of this file had all six of these without it and every field parsed to
+# None -- an instrument returning nothing where it should return a number.
 SEG = re.compile(r'^\s*seg (\d+)\s+([\d.]+) -> \s*([\d.]+)\s+=\s+([\d.]+)\s+'
-                 r'cells\s+(\d+)\s+luts\s+(\d+)(.*)$')
-SLK = re.compile(r'^\s*slack\s+(-?[\d.]+)')
-DDY = re.compile(r'^\s*data delay\s+([\d.]+)')
-LVL = re.compile(r'^\s*levels\s+(\d+) cells / (\d+) combout')
-BND = re.compile(r'^\s*boundaries\s+(\d+)')
-CEN = re.compile(r'^\s+([a-z_A-Z0-9]+)\s+(\d+)\s*$')
+                 r'cells\s+(\d+)\s+luts\s+(\d+)(.*)$', re.M)
+SLK = re.compile(r'^\s*slack\s+(-?[\d.]+)', re.M)
+DDY = re.compile(r'^\s*data delay\s+([\d.]+)', re.M)
+LVL = re.compile(r'^\s*levels\s+(\d+) cells / (\d+) combout', re.M)
+BND = re.compile(r'^\s*boundaries\s+(\d+)\s*$', re.M)
+CEN = re.compile(r'^\s+([a-z_A-Z0-9]+)\s+(\d+)\s*$', re.M)
 CTL = re.compile(r'RESULT controls=(\w+)')
 BUCK = re.compile(r'boundaries\s+(-?\d+) : worst data delay\s+([\d.]+)\s+count (\d+)')
 

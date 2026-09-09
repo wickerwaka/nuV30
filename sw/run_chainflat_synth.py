@@ -94,6 +94,12 @@ def main():
     ap.add_argument('--seeds', default='1,2,3')
     ap.add_argument('--kinds', default='ref,flat')
     ap.add_argument('--npaths', default='400')
+    ap.add_argument('--skip-map', action='store_true',
+                    help='fit on the mapped db ALREADY on disk.  MAP ONCE PER '
+                         'PROJECT is what makes the draws draws of one tree; '
+                         'a second map would also re-roll the A&S '
+                         'combinational count, which is not reproducible run '
+                         'to run (ucore_provenance.md sec.74.4a).')
     ap.add_argument('--outdir', default='sw/testdata/chainflat')
     a = ap.parse_args()
 
@@ -114,10 +120,14 @@ def main():
             return 2
         if not guard():
             return 2
-        print(f'\n=== MAP: {kind} ===', flush=True)
-        if run([f'{QB}/quartus_map', 'cf', '-c', 'cf'], proj, log).returncode:
-            print('MAP FAILED for ' + kind)
-            return 1
+        if a.skip_map:
+            print(f'\n=== MAP: {kind} SKIPPED (--skip-map) ===', flush=True)
+        else:
+            print(f'\n=== MAP: {kind} ===', flush=True)
+            if run([f'{QB}/quartus_map', 'cf', '-c', 'cf'],
+                   proj, log).returncode:
+                print('MAP FAILED for ' + kind)
+                return 1
         for sd in [s for s in a.seeds.split(',') if s.strip()]:
             if not guard():
                 return 2
