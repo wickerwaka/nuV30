@@ -1,0 +1,691 @@
+{
+ "legs": {
+  "lfsr": {
+   "edges": 266292,
+   "distinct": 43
+  },
+  "golden": {
+   "edges": 8181529,
+   "distinct": 41,
+   "rc": 0,
+   "tail": "00, arch 500)\nFF.6: 500/500 full  (cycles 500, arch 500)\nHLT.INT: 200/200 full  (cycles 200, arch 200)\nHLT.NMI: 200/200 full  (cycles 200, arch 200)\nHLT.RES: 200/200 full  (cycles 200, arch 200)\nIE0.90: 200/200 full  (cycles 200, arch 200)\nINT.8ED0: 200/200 full  (cycles 200, arch 200)\nINT.8ED8: 200/200 full  (cycles 200, arch 200)\nINT.90: 200/200 full  (cycles 200, arch 200)\nINT.9D: 200/200 full  (cycles 200, arch 200)\nINT.B8: 200/200 full  (cycles 200, arch 200)\nINT.F3AA: 200/200 full  (cycles 200, arch 200)\nINT.FB: 200/200 full  (cycles 200, arch 200)\nNMI.90: 200/200 full  (cycles 200, arch 200)\nNMI.B8: 200/200 full  (cycles 200, arch 200)\nPOLL.LO: 200/200 full  (cycles 200, arch 200)\nPOLL.REL: 200/200 full  (cycles 200, arch 200)\n\nTOTAL: 169000/169000 full (cycles 169000, arch 169000)\n"
+  }
+ },
+ "controls": {
+  "PC-B1": true,
+  "PC-B2": true,
+  "PC-B3": true,
+  "PC-B4": true,
+  "observed_pos_ge1": [
+   "S_BIND",
+   "S_DECODE",
+   "S_DECODE2",
+   "S_EA_CALC",
+   "S_ENTER",
+   "S_INSTR_END",
+   "S_TAIL",
+   "S_TAIL_POP",
+   "S_TAKE_OPC"
+  ],
+  "static_pos_ge1": [
+   "S_BIND",
+   "S_DECODE",
+   "S_DECODE2",
+   "S_EA_CALC",
+   "S_ENTER",
+   "S_INSTR_END",
+   "S_TAIL",
+   "S_TAIL_POP",
+   "S_TAKE_OPC"
+  ],
+  "st_zero_ok": [
+   "S_BIND",
+   "S_DECODE",
+   "S_DECODE2",
+   "S_EA_CALC",
+   "S_ENTER",
+   "S_INSTR_END",
+   "S_TAIL",
+   "S_TAIL_POP",
+   "S_TAKE_OPC"
+  ],
+  "off_graph": [],
+  "dyn_depth": 6,
+  "static_depth": 6
+ },
+ "total_edges": 8447821,
+ "sequences": [
+  {
+   "states": [
+    "S_ROW"
+   ],
+   "codes": [
+    22
+   ],
+   "depth": 1,
+   "count": 2571711,
+   "pct": 30.442299854601558
+  },
+  {
+   "states": [
+    "S_RLOOP"
+   ],
+   "codes": [
+    24
+   ],
+   "depth": 1,
+   "count": 1193888,
+   "pct": 14.132496415347816
+  },
+  {
+   "states": [
+    "S_NORM_CHG",
+    "S_BIND",
+    "S_ENTER"
+   ],
+   "codes": [
+    16,
+    17,
+    20
+   ],
+   "depth": 3,
+   "count": 1078534,
+   "pct": 12.7670082024702
+  },
+  {
+   "states": [
+    "S_ROW",
+    "S_TAIL",
+    "S_INSTR_END",
+    "S_TAKE_OPC",
+    "S_DECODE",
+    "S_DECODE2"
+   ],
+   "codes": [
+    22,
+    26,
+    29,
+    1,
+    2,
+    3
+   ],
+   "depth": 6,
+   "count": 1074568,
+   "pct": 12.720061185008536
+  },
+  {
+   "states": [
+    "S_OPC_POP"
+   ],
+   "codes": [
+    0
+   ],
+   "depth": 1,
+   "count": 599727,
+   "pct": 7.09919161402686
+  },
+  {
+   "states": [
+    "S_PRERD"
+   ],
+   "codes": [
+    18
+   ],
+   "depth": 1,
+   "count": 555209,
+   "pct": 6.572215486099907
+  },
+  {
+   "states": [
+    "S_EPOP"
+   ],
+   "codes": [
+    25
+   ],
+   "depth": 1,
+   "count": 463736,
+   "pct": 5.489415554614616
+  },
+  {
+   "states": [
+    "S_OPC_POP",
+    "S_DECODE",
+    "S_DECODE2"
+   ],
+   "codes": [
+    0,
+    2,
+    3
+   ],
+   "depth": 3,
+   "count": 160551,
+   "pct": 1.9005019164113444
+  },
+  {
+   "states": [
+    "S_MODRM"
+   ],
+   "codes": [
+    8
+   ],
+   "depth": 1,
+   "count": 130124,
+   "pct": 1.5403261977260172
+  },
+  {
+   "states": [
+    "S_ROW_CHG"
+   ],
+   "codes": [
+    23
+   ],
+   "depth": 1,
+   "count": 101801,
+   "pct": 1.205056309786867
+  },
+  {
+   "states": [
+    "S_EPOP",
+    "S_TAIL",
+    "S_INSTR_END",
+    "S_TAKE_OPC",
+    "S_DECODE",
+    "S_DECODE2"
+   ],
+   "codes": [
+    25,
+    26,
+    29,
+    1,
+    2,
+    3
+   ],
+   "depth": 6,
+   "count": 79887,
+   "pct": 0.9456521391729299
+  },
+  {
+   "states": [
+    "S_PRERD",
+    "S_ENTER"
+   ],
+   "codes": [
+    18,
+    20
+   ],
+   "depth": 2,
+   "count": 56429,
+   "pct": 0.6679710661483003
+  },
+  {
+   "states": [
+    "S_D16_LO"
+   ],
+   "codes": [
+    11
+   ],
+   "depth": 1,
+   "count": 38494,
+   "pct": 0.4556677988323853
+  },
+  {
+   "states": [
+    "S_TAIL_POP"
+   ],
+   "codes": [
+    28
+   ],
+   "depth": 1,
+   "count": 33697,
+   "pct": 0.398883925215745
+  },
+  {
+   "states": [
+    "S_OPC_POP",
+    "S_DECODE"
+   ],
+   "codes": [
+    0,
+    2
+   ],
+   "depth": 2,
+   "count": 28201,
+   "pct": 0.33382572855177683
+  },
+  {
+   "states": [
+    "S_D16_A"
+   ],
+   "codes": [
+    12
+   ],
+   "depth": 1,
+   "count": 25627,
+   "pct": 0.303356332952604
+  },
+  {
+   "states": [
+    "S_D16_HI",
+    "S_EA_CALC",
+    "S_BIND"
+   ],
+   "codes": [
+    13,
+    15,
+    17
+   ],
+   "depth": 3,
+   "count": 24549,
+   "pct": 0.29059564590679654
+  },
+  {
+   "states": [
+    "S_D8_A"
+   ],
+   "codes": [
+    9
+   ],
+   "depth": 1,
+   "count": 22617,
+   "pct": 0.2677258431493754
+  },
+  {
+   "states": [
+    "S_D8_B",
+    "S_EA_CALC",
+    "S_BIND"
+   ],
+   "codes": [
+    10,
+    15,
+    17
+   ],
+   "depth": 3,
+   "count": 21711,
+   "pct": 0.2570011840923239
+  },
+  {
+   "states": [
+    "S_MODRM",
+    "S_BIND",
+    "S_ENTER"
+   ],
+   "codes": [
+    8,
+    17,
+    20
+   ],
+   "depth": 3,
+   "count": 21349,
+   "pct": 0.2527160554183144
+  },
+  {
+   "states": [
+    "S_HALTED"
+   ],
+   "codes": [
+    30
+   ],
+   "depth": 1,
+   "count": 20585,
+   "pct": 0.24367230318918925
+  },
+  {
+   "states": [
+    "S_EA_CHG",
+    "S_EA_CALC",
+    "S_BIND"
+   ],
+   "codes": [
+    14,
+    15,
+    17
+   ],
+   "depth": 3,
+   "count": 19133,
+   "pct": 0.22648443900504048
+  },
+  {
+   "states": [
+    "S_PFX_CHG"
+   ],
+   "codes": [
+    4
+   ],
+   "depth": 1,
+   "count": 15776,
+   "pct": 0.18674638110821715
+  },
+  {
+   "states": [
+    "S_D16_HI"
+   ],
+   "codes": [
+    13
+   ],
+   "depth": 1,
+   "count": 12722,
+   "pct": 0.15059504693577197
+  },
+  {
+   "states": [
+    "S_EXT_CHG1"
+   ],
+   "codes": [
+    5
+   ],
+   "depth": 1,
+   "count": 12509,
+   "pct": 0.14807368669388235
+  },
+  {
+   "states": [
+    "S_EXT_POP",
+    "S_DECODE2"
+   ],
+   "codes": [
+    6,
+    3
+   ],
+   "depth": 2,
+   "count": 12509,
+   "pct": 0.14807368669388235
+  },
+  {
+   "states": [
+    "S_GRPD_CHG",
+    "S_ENTER"
+   ],
+   "codes": [
+    19,
+    20
+   ],
+   "depth": 2,
+   "count": 11540,
+   "pct": 0.13660327319908885
+  },
+  {
+   "states": [
+    "S_D8_B"
+   ],
+   "codes": [
+    10
+   ],
+   "depth": 1,
+   "count": 11477,
+   "pct": 0.13585751876134686
+  },
+  {
+   "states": [
+    "S_ROW",
+    "S_TAIL"
+   ],
+   "codes": [
+    22,
+    26
+   ],
+   "depth": 2,
+   "count": 7913,
+   "pct": 0.09366912485479983
+  },
+  {
+   "states": [
+    "S_TAIL_W"
+   ],
+   "codes": [
+    27
+   ],
+   "depth": 1,
+   "count": 7383,
+   "pct": 0.08739531768014497
+  },
+  {
+   "states": [
+    "S_TAIL_W",
+    "S_TAIL_POP"
+   ],
+   "codes": [
+    27,
+    28
+   ],
+   "depth": 2,
+   "count": 6585,
+   "pct": 0.07794909480207973
+  },
+  {
+   "states": [
+    "S_TAIL_POP",
+    "S_INSTR_END",
+    "S_TAKE_OPC",
+    "S_DECODE",
+    "S_DECODE2"
+   ],
+   "codes": [
+    28,
+    29,
+    1,
+    2,
+    3
+   ],
+   "depth": 5,
+   "count": 6576,
+   "pct": 0.07784255845383088
+  },
+  {
+   "states": [
+    "S_EXT_POP"
+   ],
+   "codes": [
+    6
+   ],
+   "depth": 1,
+   "count": 6212,
+   "pct": 0.07353375503576602
+  },
+  {
+   "states": [
+    "S_1BL_CHG",
+    "S_INSTR_END"
+   ],
+   "codes": [
+    33,
+    29
+   ],
+   "depth": 2,
+   "count": 3763,
+   "pct": 0.04454403094004951
+  },
+  {
+   "states": [
+    "S_MODRM",
+    "S_BIND"
+   ],
+   "codes": [
+    8,
+    17
+   ],
+   "depth": 2,
+   "count": 2576,
+   "pct": 0.030493070343228155
+  },
+  {
+   "states": [
+    "S_IRQ_D"
+   ],
+   "codes": [
+    32
+   ],
+   "depth": 1,
+   "count": 2218,
+   "pct": 0.02625529115732921
+  },
+  {
+   "states": [
+    "S_1BL_LEAD"
+   ],
+   "codes": [
+    7
+   ],
+   "depth": 1,
+   "count": 1837,
+   "pct": 0.0217452524147943
+  },
+  {
+   "states": [
+    "S_TAIL_W",
+    "S_TAIL_POP",
+    "S_INSTR_END",
+    "S_TAKE_OPC",
+    "S_DECODE",
+    "S_DECODE2"
+   ],
+   "codes": [
+    27,
+    28,
+    29,
+    1,
+    2,
+    3
+   ],
+   "depth": 6,
+   "count": 1234,
+   "pct": 0.01460731708212094
+  },
+  {
+   "states": [
+    "S_D16_HI",
+    "S_EA_CALC",
+    "S_BIND",
+    "S_ENTER"
+   ],
+   "codes": [
+    13,
+    15,
+    17,
+    20
+   ],
+   "depth": 4,
+   "count": 1078,
+   "pct": 0.012760687045807434
+  },
+  {
+   "states": [
+    "S_D8_B",
+    "S_EA_CALC",
+    "S_BIND",
+    "S_ENTER"
+   ],
+   "codes": [
+    10,
+    15,
+    17,
+    20
+   ],
+   "depth": 4,
+   "count": 906,
+   "pct": 0.010724659057051517
+  },
+  {
+   "states": [
+    "S_EA_CHG",
+    "S_EA_CALC",
+    "S_BIND",
+    "S_ENTER"
+   ],
+   "codes": [
+    14,
+    15,
+    17,
+    20
+   ],
+   "depth": 4,
+   "count": 779,
+   "pct": 0.00922131280953988
+  },
+  {
+   "states": [
+    "S_ROW",
+    "S_TAIL",
+    "S_INSTR_END",
+    "S_TAKE_OPC",
+    "S_DECODE"
+   ],
+   "codes": [
+    22,
+    26,
+    29,
+    1,
+    2
+   ],
+   "depth": 5,
+   "count": 55,
+   "pct": 0.0006510554615207874
+  },
+  {
+   "states": [
+    "S_EPOP",
+    "S_TAIL",
+    "S_INSTR_END",
+    "S_TAKE_OPC",
+    "S_DECODE"
+   ],
+   "codes": [
+    25,
+    26,
+    29,
+    1,
+    2
+   ],
+   "depth": 5,
+   "count": 18,
+   "pct": 0.00021307269649771226
+  },
+  {
+   "states": [
+    "S_RESET"
+   ],
+   "codes": [
+    31
+   ],
+   "depth": 1,
+   "count": 16,
+   "pct": 0.00018939795244241089
+  },
+  {
+   "states": [
+    "S_TAIL_POP",
+    "S_INSTR_END",
+    "S_TAKE_OPC",
+    "S_DECODE"
+   ],
+   "codes": [
+    28,
+    29,
+    1,
+    2
+   ],
+   "depth": 4,
+   "count": 9,
+   "pct": 0.00010653634824885613
+  },
+  {
+   "states": [
+    "S_TAIL_W",
+    "S_TAIL_POP",
+    "S_INSTR_END",
+    "S_TAKE_OPC",
+    "S_DECODE"
+   ],
+   "codes": [
+    27,
+    28,
+    29,
+    1,
+    2
+   ],
+   "depth": 5,
+   "count": 2,
+   "pct": 2.367474405530136e-05
+  }
+ ]
+}

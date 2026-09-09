@@ -1,0 +1,11 @@
+=== PC-E1: the CHAIN_PROBE edit is INVISIBLE without the define ===
+verilator -E on hdl/rtl/ucore/v30u_eu.sv at d45de50a28^ and at HEAD,
+blank lines removed (the preprocessor pads removed regions to preserve
+line numbering, so a raw diff shows 115 EMPTY lines and nothing else).
+
+old  4226 lines
+new  4226 lines
+DIFF: NONE -- IDENTICAL
+
+NON-VACUITY: the same file WITH -DCHAIN_PROBE
+added lines: 95

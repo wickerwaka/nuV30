@@ -1,0 +1,230 @@
+PC-C1  every position-0-only arm writes something no chainable arm writes
+       arms failing that: 3  S_PFX_CHG S_EXT_POP S_1BL_LEAD
+       -> OK (reported, not a bar: an arm may legitimately write only shared names)
+PC-C2  the register file is written by NO chainable arm      : PASS
+       chainable write set carries gpr/sreg: NO
+       negative control `zzz_no_such_signal` present : no
+PC-C3  NON-VACUITY: injecting `gpr_n[0] = 0` into S_EA_CALC   : PASS
+
+=== CHAIN-INVARIANT INPUTS ===
+(read inside the chain, written by NO arm that can occupy a non-final position;
+ so every unrolled copy recomputes the identical value)
+12 names
+   bnd_take               read by S_TAIL_POP
+   brk_arm                read by S_DECODE2
+   brk_seen               read by S_DECODE2
+   brk_smp_n              read by S_DECODE2
+   irq_nmi_lvl            read by S_TAIL_POP
+   irq_take               read by S_TAIL_POP
+   ld_byte_n              read by S_BIND S_DECODE2
+   ld_pla_n               read by S_BIND S_DECODE2
+   q_byte                 read by S_TAIL_POP
+   q_ripe                 read by S_TAIL_POP
+   q_ripe_lead_n          read by S_DECODE2
+   retire_ok_n            read by S_TAIL_POP
+
+=== PER-SEQUENCE COMPOSITION (depth >= 2, by frequency) ===
+
+ 1078534 edges  12.77%  d=3  S_NORM_CHG -> S_BIND -> S_ENTER
+   SERIAL DEPTH (upper bound)      : 2 of 3 positions
+   carries 1->2     : ld_page_n opc_reg_n
+   DEAD write 1->2  : row_posted_n
+   written at >1 position          : row_posted_n
+
+ 1074568 edges  12.72%  d=6  S_ROW -> S_TAIL -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE -> S_DECODE2
+   SERIAL DEPTH (upper bound)      : 4 of 6 positions
+   carries 0->1     : opc_valid_n pend_active_n
+   carries 0->2     : poste_n
+   carries 0->3     : opc_byte_n pc_n
+   carries 0->5     : irq_shadow_n psw_n
+   carries 2->4     : pfxcnt_n
+   carries 3->4     : ld_b_n
+   carries 4->5     : ld_ext_n pv rep_kind_n
+   DEAD write 0->2  : al_adjust_n al_bitarm_n al_eaconst_n al_op_n al_spent_n al_tmp_n bus_word_n opr_fresh_n opr_loaded_n pop_is_first_n rep_chain_n row_paired_n row_posted_n rowq_n
+   DEAD write 2->4  : ld_ext_n lock_pfx_n rep_kind_n seg_override_n seg_ovr_n
+   DEAD write 2->5  : ld_hasrm_n pop_is_first_n
+   written at >1 position          : al_adjust_n al_bitarm_n al_eaconst_n al_op_n al_spent_n al_tmp_n bus_word_n irq_shadow_n ld_ext_n ld_hasrm_n lock_pfx_n opc_valid_n opr_fresh_n opr_loaded_n pc_n pfxcnt_n pop_is_first_n psw_n pv rep_chain_n rep_kind_n row_paired_n row_posted_n rowq_n seg_override_n seg_ovr_n
+
+  160551 edges   1.90%  d=3  S_OPC_POP -> S_DECODE -> S_DECODE2
+   SERIAL DEPTH (upper bound)      : 3 of 3 positions
+   carries 0->1     : ld_b_n
+   carries 0->2     : irq_shadow_n
+   carries 1->2     : ld_ext_n pv rep_kind_n
+   DEAD write 0->2  : pop_is_first_n
+   written at >1 position          : irq_shadow_n pop_is_first_n pv
+
+   79887 edges   0.95%  d=6  S_EPOP -> S_TAIL -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE -> S_DECODE2
+   SERIAL DEPTH (upper bound)      : 4 of 6 positions
+   carries 0->1     : opc_valid_n
+   carries 0->2     : poste_n
+   carries 0->3     : opc_byte_n
+   carries 0->5     : irq_shadow_n
+   carries 2->4     : pfxcnt_n
+   carries 3->4     : ld_b_n
+   carries 4->5     : ld_ext_n pv rep_kind_n
+   DEAD write 0->2  : pop_is_first_n
+   DEAD write 2->4  : ld_ext_n lock_pfx_n rep_kind_n seg_override_n seg_ovr_n
+   DEAD write 2->5  : ld_hasrm_n pop_is_first_n
+   written at >1 position          : irq_shadow_n ld_ext_n ld_hasrm_n lock_pfx_n opc_valid_n pfxcnt_n pop_is_first_n pv rep_kind_n seg_override_n seg_ovr_n
+
+   56429 edges   0.67%  d=2  S_PRERD -> S_ENTER
+   SERIAL DEPTH (upper bound)      : 1 of 2 positions
+   DEAD write 0->1  : row_posted_n
+   written at >1 position          : row_posted_n
+
+   28201 edges   0.33%  d=2  S_OPC_POP -> S_DECODE
+   SERIAL DEPTH (upper bound)      : 2 of 2 positions
+   carries 0->1     : ld_b_n
+
+   24549 edges   0.29%  d=3  S_D16_HI -> S_EA_CALC -> S_BIND
+   SERIAL DEPTH (upper bound)      : 3 of 3 positions
+   register file read at positions : [1]   written at: NOWHERE   CONSTANT for every reader: True
+   carries 0->1     : ld_disp_n
+   carries 1->2     : ea_pair_rhs_n ea_pair_valid_n ea_residue_n ind_n m_ea_n m_seg_n rmmod rmrm
+   written at >1 position          : ea_residue_n m_ea_n m_seg_n rmmod rmrm
+
+   21711 edges   0.26%  d=3  S_D8_B -> S_EA_CALC -> S_BIND
+   SERIAL DEPTH (upper bound)      : 3 of 3 positions
+   register file read at positions : [1]   written at: NOWHERE   CONSTANT for every reader: True
+   carries 0->1     : ld_disp_n
+   carries 1->2     : ea_pair_rhs_n ea_pair_valid_n ea_residue_n ind_n m_ea_n m_seg_n rmmod rmrm
+   written at >1 position          : ea_residue_n m_ea_n m_seg_n rmmod rmrm
+
+   21349 edges   0.25%  d=3  S_MODRM -> S_BIND -> S_ENTER
+   SERIAL DEPTH (upper bound)      : 3 of 3 positions
+   carries 0->1     : ld_rm_n
+   carries 1->2     : ld_page_n opc_reg_n
+   DEAD write 1->2  : row_posted_n
+   written at >1 position          : row_posted_n
+
+   19133 edges   0.23%  d=3  S_EA_CHG -> S_EA_CALC -> S_BIND
+   SERIAL DEPTH (upper bound)      : 2 of 3 positions
+   register file read at positions : [1]   written at: NOWHERE   CONSTANT for every reader: True
+   carries 1->2     : ea_pair_rhs_n ea_pair_valid_n ea_residue_n ind_n m_ea_n m_seg_n rmmod rmrm
+   written at >1 position          : ea_residue_n m_ea_n m_seg_n rmmod rmrm
+
+   12509 edges   0.15%  d=2  S_EXT_POP -> S_DECODE2
+   SERIAL DEPTH (upper bound)      : 2 of 2 positions
+   carries 0->1     : ld_b_n
+
+   11540 edges   0.14%  d=2  S_GRPD_CHG -> S_ENTER
+   SERIAL DEPTH (upper bound)      : 1 of 2 positions
+
+    7913 edges   0.09%  d=2  S_ROW -> S_TAIL
+   SERIAL DEPTH (upper bound)      : 2 of 2 positions
+   carries 0->1     : opc_valid_n pend_active_n
+
+    6585 edges   0.08%  d=2  S_TAIL_W -> S_TAIL_POP
+   SERIAL DEPTH (upper bound)      : 2 of 2 positions
+   carries 0->1     : brk_arm_n
+   DEAD write 0->1  : irq_sel_brk_n irq_sel_nmi_n irq_shadow_n
+   written at >1 position          : brk_arm_n irq_sel_brk_n irq_sel_nmi_n irq_shadow_n
+
+    6576 edges   0.08%  d=5  S_TAIL_POP -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE -> S_DECODE2
+   SERIAL DEPTH (upper bound)      : 4 of 5 positions
+   carries 0->1     : opc_valid_n
+   carries 0->2     : opc_byte_n
+   carries 0->4     : irq_shadow_n
+   carries 1->3     : pfxcnt_n
+   carries 2->3     : ld_b_n
+   carries 3->4     : ld_ext_n pv rep_kind_n
+   DEAD write 0->1  : pop_is_first_n
+   DEAD write 1->3  : ld_ext_n lock_pfx_n rep_kind_n seg_override_n seg_ovr_n
+   DEAD write 1->4  : ld_hasrm_n pop_is_first_n
+   written at >1 position          : irq_shadow_n ld_ext_n ld_hasrm_n lock_pfx_n opc_valid_n pfxcnt_n pop_is_first_n pv rep_kind_n seg_override_n seg_ovr_n
+
+    3763 edges   0.04%  d=2  S_1BL_CHG -> S_INSTR_END
+   SERIAL DEPTH (upper bound)      : 1 of 2 positions
+
+    2576 edges   0.03%  d=2  S_MODRM -> S_BIND
+   SERIAL DEPTH (upper bound)      : 2 of 2 positions
+   carries 0->1     : ld_rm_n
+
+    1234 edges   0.01%  d=6  S_TAIL_W -> S_TAIL_POP -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE -> S_DECODE2
+   SERIAL DEPTH (upper bound)      : 5 of 6 positions
+   carries 0->1     : brk_arm_n
+   carries 1->2     : opc_valid_n
+   carries 1->3     : opc_byte_n
+   carries 1->5     : irq_shadow_n
+   carries 2->4     : pfxcnt_n
+   carries 3->4     : ld_b_n
+   carries 4->5     : ld_ext_n pv rep_kind_n
+   DEAD write 0->1  : irq_sel_brk_n irq_sel_nmi_n irq_shadow_n
+   DEAD write 0->2  : opr_fresh_n opr_loaded_n
+   DEAD write 1->2  : pop_is_first_n
+   DEAD write 2->4  : ld_ext_n lock_pfx_n rep_kind_n seg_override_n seg_ovr_n
+   DEAD write 2->5  : ld_hasrm_n pop_is_first_n
+   written at >1 position          : brk_arm_n irq_sel_brk_n irq_sel_nmi_n irq_shadow_n ld_ext_n ld_hasrm_n lock_pfx_n opc_valid_n opr_fresh_n opr_loaded_n pfxcnt_n pop_is_first_n pv rep_kind_n seg_override_n seg_ovr_n
+
+    1078 edges   0.01%  d=4  S_D16_HI -> S_EA_CALC -> S_BIND -> S_ENTER
+   SERIAL DEPTH (upper bound)      : 4 of 4 positions
+   register file read at positions : [1]   written at: NOWHERE   CONSTANT for every reader: True
+   carries 0->1     : ld_disp_n
+   carries 1->2     : ea_pair_rhs_n ea_pair_valid_n ea_residue_n ind_n m_ea_n m_seg_n rmmod rmrm
+   carries 2->3     : ld_page_n opc_reg_n
+   DEAD write 2->3  : row_posted_n
+   written at >1 position          : ea_residue_n m_ea_n m_seg_n rmmod rmrm row_posted_n
+
+     906 edges   0.01%  d=4  S_D8_B -> S_EA_CALC -> S_BIND -> S_ENTER
+   SERIAL DEPTH (upper bound)      : 4 of 4 positions
+   register file read at positions : [1]   written at: NOWHERE   CONSTANT for every reader: True
+   carries 0->1     : ld_disp_n
+   carries 1->2     : ea_pair_rhs_n ea_pair_valid_n ea_residue_n ind_n m_ea_n m_seg_n rmmod rmrm
+   carries 2->3     : ld_page_n opc_reg_n
+   DEAD write 2->3  : row_posted_n
+   written at >1 position          : ea_residue_n m_ea_n m_seg_n rmmod rmrm row_posted_n
+
+     779 edges   0.01%  d=4  S_EA_CHG -> S_EA_CALC -> S_BIND -> S_ENTER
+   SERIAL DEPTH (upper bound)      : 3 of 4 positions
+   register file read at positions : [1]   written at: NOWHERE   CONSTANT for every reader: True
+   carries 1->2     : ea_pair_rhs_n ea_pair_valid_n ea_residue_n ind_n m_ea_n m_seg_n rmmod rmrm
+   carries 2->3     : ld_page_n opc_reg_n
+   DEAD write 2->3  : row_posted_n
+   written at >1 position          : ea_residue_n m_ea_n m_seg_n rmmod rmrm row_posted_n
+
+      55 edges   0.00%  d=5  S_ROW -> S_TAIL -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE
+   SERIAL DEPTH (upper bound)      : 3 of 5 positions
+   carries 0->1     : opc_valid_n pend_active_n
+   carries 0->2     : poste_n
+   carries 0->3     : opc_byte_n pc_n
+   carries 2->4     : pfxcnt_n
+   carries 3->4     : ld_b_n
+   DEAD write 0->2  : al_adjust_n al_bitarm_n al_eaconst_n al_op_n al_spent_n al_tmp_n bus_word_n opr_fresh_n opr_loaded_n pop_is_first_n rep_chain_n row_paired_n row_posted_n rowq_n
+   DEAD write 2->4  : ld_ext_n lock_pfx_n rep_kind_n seg_override_n seg_ovr_n
+   written at >1 position          : al_adjust_n al_bitarm_n al_eaconst_n al_op_n al_spent_n al_tmp_n bus_word_n ld_ext_n lock_pfx_n opc_valid_n opr_fresh_n opr_loaded_n pc_n pfxcnt_n pop_is_first_n rep_chain_n rep_kind_n row_paired_n row_posted_n rowq_n seg_override_n seg_ovr_n
+
+      18 edges   0.00%  d=5  S_EPOP -> S_TAIL -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE
+   SERIAL DEPTH (upper bound)      : 3 of 5 positions
+   carries 0->1     : opc_valid_n
+   carries 0->2     : poste_n
+   carries 0->3     : opc_byte_n
+   carries 2->4     : pfxcnt_n
+   carries 3->4     : ld_b_n
+   DEAD write 0->2  : pop_is_first_n
+   DEAD write 2->4  : ld_ext_n lock_pfx_n rep_kind_n seg_override_n seg_ovr_n
+   written at >1 position          : ld_ext_n lock_pfx_n opc_valid_n pfxcnt_n pop_is_first_n rep_kind_n seg_override_n seg_ovr_n
+
+       9 edges   0.00%  d=4  S_TAIL_POP -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE
+   SERIAL DEPTH (upper bound)      : 3 of 4 positions
+   carries 0->1     : opc_valid_n
+   carries 0->2     : opc_byte_n
+   carries 1->3     : pfxcnt_n
+   carries 2->3     : ld_b_n
+   DEAD write 0->1  : pop_is_first_n
+   DEAD write 1->3  : ld_ext_n lock_pfx_n rep_kind_n seg_override_n seg_ovr_n
+   written at >1 position          : ld_ext_n lock_pfx_n opc_valid_n pfxcnt_n pop_is_first_n rep_kind_n seg_override_n seg_ovr_n
+
+       2 edges   0.00%  d=5  S_TAIL_W -> S_TAIL_POP -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE
+   SERIAL DEPTH (upper bound)      : 4 of 5 positions
+   carries 0->1     : brk_arm_n
+   carries 1->2     : opc_valid_n
+   carries 1->3     : opc_byte_n
+   carries 2->4     : pfxcnt_n
+   carries 3->4     : ld_b_n
+   DEAD write 0->1  : irq_sel_brk_n irq_sel_nmi_n irq_shadow_n
+   DEAD write 0->2  : opr_fresh_n opr_loaded_n
+   DEAD write 1->2  : pop_is_first_n
+   DEAD write 2->4  : ld_ext_n lock_pfx_n rep_kind_n seg_override_n seg_ovr_n
+   written at >1 position          : brk_arm_n irq_sel_brk_n irq_sel_nmi_n irq_shadow_n ld_ext_n lock_pfx_n opc_valid_n opr_fresh_n opr_loaded_n pfxcnt_n pop_is_first_n rep_kind_n seg_override_n seg_ovr_n
+
+wrote /home/wickerwaka/src/nec_test/sw/testdata/chainflat/compose.json

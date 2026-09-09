@@ -1,0 +1,99 @@
+=== FALL-THROUGH ADJACENCY (the chain graph) ===
+  S_OPC_POP    -> S_DECODE      when !(bnd_armed_n && bnd_take) && !(! q_ripe)
+  S_TAKE_OPC   -> S_DECODE      when <always>
+  S_DECODE     -> S_DECODE2     when !(pla3_is_prefix ( pv ))
+  S_EXT_POP    -> S_DECODE2     when !(! q_ripe)
+  S_1BL_CHG    -> S_INSTR_END   when <always>
+  S_MODRM      -> S_BIND        when !(! q_ripe) && !(q_byte [ 7 : 6 ] == 2'd1) && !(q_byte [ 7 : 6 ] == 2'd2) && !(( q_byte [ 7 : 6 ] == 2'd0 ) && ( q_byte [ 2 : 0 ] == 3'd6 )) && !(q_byte [ 7 : 6 ] != 2'd3)
+  S_D8_B       -> S_EA_CALC     when !(! q_ripe) && !(! ld_ripe_prev_n && ( chg_n == 2'd0 ))
+  S_D16_HI     -> S_EA_CALC     when !(! q_ripe) && !(! ld_ripe_prev_n && ( chg_n == 2'd0 ))
+  S_EA_CHG     -> S_EA_CALC     when <always>
+  S_EA_CALC    -> S_BIND        when <always>
+  S_NORM_CHG   -> S_BIND        when <always>
+  S_BIND       -> S_ENTER       when !(ld_preread_n) && !(ld_grpd_n)
+  S_PRERD      -> S_ENTER       when !(! row_posted_n) && !(rd_done_cnt_n == 2'd0) && !(ld_grpd_n)
+  S_GRPD_CHG   -> S_ENTER       when <always>
+  S_ROW        -> S_TAIL        when !(row_blocked) && !(row_need_q && ! q_ripe) && row_need_q && !({ 1'b0 , rowq_n } < row_qn) && !(e_is_rloop) && e_e || ext4s_early_e && !(bnd_fire) && ! pend_after && ! opc_valid_n && retire_now && q_ripe && ! row_flush
+  S_ROW        -> S_TAIL        when !(row_blocked) && !(row_need_q && ! q_ripe) && row_need_q && !({ 1'b0 , rowq_n } < row_qn) && !(e_is_rloop) && e_e || ext4s_early_e && !(bnd_fire) && !(! pend_after && ! opc_valid_n && retire_now && q_ripe && ! row_flush) && !(! pend_after && ! opc_valid_n)
+  S_ROW        -> S_TAIL        when !(row_blocked) && !(row_need_q && ! q_ripe) && !(row_need_q) && !(row_pre_wait) && !(row_slot_wait) && !(e_is_rloop) && e_e || ext4s_early_e && !(bnd_fire) && ! pend_after && ! opc_valid_n && retire_now && q_ripe && ! row_flush
+  S_ROW        -> S_TAIL        when !(row_blocked) && !(row_need_q && ! q_ripe) && !(row_need_q) && !(row_pre_wait) && !(row_slot_wait) && !(e_is_rloop) && e_e || ext4s_early_e && !(bnd_fire) && !(! pend_after && ! opc_valid_n && retire_now && q_ripe && ! row_flush) && !(! pend_after && ! opc_valid_n)
+  S_EPOP       -> S_TAIL        when !(! retire_ok_n) && !(bnd_take) && !(! q_ripe)
+  S_TAIL       -> S_INSTR_END   when !(pend_active_n) && opc_valid_n
+  S_TAIL_W     -> S_INSTR_END   when !(! opr_fresh_n && ( nr_wait || ! opr_free_now )) && opc_valid_n
+  S_TAIL_W     -> S_TAIL_POP    when !(! opr_fresh_n && ( nr_wait || ! opr_free_now )) && !(opc_valid_n) && !(retire_ok_n && bnd_take)
+  S_TAIL_POP   -> S_INSTR_END   when !(! retire_ok_n) && !(bnd_take) && !(! q_ripe)
+  S_INSTR_END  -> S_TAKE_OPC    when opc_valid_n
+
+CYCLES IN THE FALL-THROUGH GRAPH: NONE (it is a DAG)
+
+=== MAXIMAL CHAINED SEQUENCES (position 0 may be any arm) ===
+  d=6  S_EPOP -> S_TAIL -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE -> S_DECODE2
+  d=6  S_ROW -> S_TAIL -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE -> S_DECODE2
+  d=6  S_ROW -> S_TAIL -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE -> S_DECODE2
+  d=6  S_ROW -> S_TAIL -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE -> S_DECODE2
+  d=6  S_ROW -> S_TAIL -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE -> S_DECODE2
+  d=6  S_TAIL_W -> S_TAIL_POP -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE -> S_DECODE2
+  d=5  S_1BL_CHG -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE -> S_DECODE2
+  d=5  S_EPOP -> S_TAIL -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE
+  d=5  S_ROW -> S_TAIL -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE
+  d=5  S_ROW -> S_TAIL -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE
+  d=5  S_ROW -> S_TAIL -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE
+  d=5  S_ROW -> S_TAIL -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE
+  d=5  S_TAIL -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE -> S_DECODE2
+  d=5  S_TAIL_POP -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE -> S_DECODE2
+  d=5  S_TAIL_W -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE -> S_DECODE2
+  d=5  S_TAIL_W -> S_TAIL_POP -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE
+  d=4  S_1BL_CHG -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE
+  d=4  S_D16_HI -> S_EA_CALC -> S_BIND -> S_ENTER
+  d=4  S_D8_B -> S_EA_CALC -> S_BIND -> S_ENTER
+  d=4  S_EA_CHG -> S_EA_CALC -> S_BIND -> S_ENTER
+  d=4  S_INSTR_END -> S_TAKE_OPC -> S_DECODE -> S_DECODE2
+  d=4  S_TAIL -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE
+  d=4  S_TAIL_POP -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE
+  d=4  S_TAIL_W -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE
+  d=3  S_D16_HI -> S_EA_CALC -> S_BIND
+  d=3  S_D8_B -> S_EA_CALC -> S_BIND
+  d=3  S_EA_CALC -> S_BIND -> S_ENTER
+  d=3  S_EA_CHG -> S_EA_CALC -> S_BIND
+  d=3  S_EPOP -> S_TAIL -> S_INSTR_END
+  d=3  S_INSTR_END -> S_TAKE_OPC -> S_DECODE
+  d=3  S_MODRM -> S_BIND -> S_ENTER
+  d=3  S_NORM_CHG -> S_BIND -> S_ENTER
+  d=3  S_OPC_POP -> S_DECODE -> S_DECODE2
+  d=3  S_ROW -> S_TAIL -> S_INSTR_END
+  d=3  S_ROW -> S_TAIL -> S_INSTR_END
+  d=3  S_ROW -> S_TAIL -> S_INSTR_END
+  d=3  S_ROW -> S_TAIL -> S_INSTR_END
+  d=3  S_TAIL_W -> S_TAIL_POP -> S_INSTR_END
+  d=3  S_TAKE_OPC -> S_DECODE -> S_DECODE2
+  d=2  S_1BL_CHG -> S_INSTR_END
+  d=2  S_BIND -> S_ENTER
+  d=2  S_DECODE -> S_DECODE2
+  d=2  S_EA_CALC -> S_BIND
+  d=2  S_EPOP -> S_TAIL
+  d=2  S_EXT_POP -> S_DECODE2
+  d=2  S_GRPD_CHG -> S_ENTER
+  d=2  S_MODRM -> S_BIND
+  d=2  S_NORM_CHG -> S_BIND
+  d=2  S_OPC_POP -> S_DECODE
+  d=2  S_PRERD -> S_ENTER
+  d=2  S_ROW -> S_TAIL
+  d=2  S_ROW -> S_TAIL
+  d=2  S_ROW -> S_TAIL
+  d=2  S_ROW -> S_TAIL
+  d=2  S_TAIL -> S_INSTR_END
+  d=2  S_TAIL_POP -> S_INSTR_END
+  d=2  S_TAIL_W -> S_INSTR_END
+  d=2  S_TAIL_W -> S_TAIL_POP
+  d=2  S_TAKE_OPC -> S_DECODE
+
+DEPTH HISTOGRAM (sequences by length): 1:28 2:20 3:15 4:8 5:10 6:6
+STATIC MAXIMUM OCCUPANCY: 6 positions (0..5)
+
+=== PER-POSITION OCCUPANCY, STATICALLY ===
+  pos 0 : 34  S_1BL_CHG S_1BL_LEAD S_BIND S_D16_A S_D16_HI S_D16_LO S_D8_A S_D8_B S_DECODE S_DECODE2 S_EA_CALC S_EA_CHG S_ENTER S_EPOP S_EXT_CHG1 S_EXT_POP S_GRPD_CHG S_HALTED S_INSTR_END S_IRQ_D S_MODRM S_NORM_CHG S_OPC_POP S_PFX_CHG S_PRERD S_RESET S_RLOOP S_ROW S_ROW_CHG S_TAIL S_TAIL_POP S_TAIL_W S_TAKE_OPC default
+  pos 1 :  9  S_BIND S_DECODE S_DECODE2 S_EA_CALC S_ENTER S_INSTR_END S_TAIL S_TAIL_POP S_TAKE_OPC
+  pos 2 :  6  S_BIND S_DECODE S_DECODE2 S_ENTER S_INSTR_END S_TAKE_OPC
+  pos 3 :  4  S_DECODE S_DECODE2 S_ENTER S_TAKE_OPC
+  pos 4 :  2  S_DECODE S_DECODE2
+  pos 5 :  1  S_DECODE2

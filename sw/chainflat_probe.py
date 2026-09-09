@@ -311,6 +311,13 @@ def main():
         if not (a.lfsr or a.golden):
             return 0
 
+    if not (a.lfsr or a.golden):
+        # ⚠ REFUSE rather than write an EMPTY census over a real one.  The
+        # first form of this file happily wrote a 46-sequence artifact down to
+        # zero when invoked with no leg selected.
+        print('chainflat_probe: no leg selected (--lfsr / --golden) -- '
+              'REFUSING to overwrite the census with nothing', file=sys.stderr)
+        return 2
     acc = {'seqs': {}, 'pos': {}, 'edges': 0, 'overflow': 0}
     legs = {}
     if a.lfsr:

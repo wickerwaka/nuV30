@@ -335,6 +335,9 @@ def qsf(kind):
     open(os.path.join(proj, 'cf.qsf'), 'w').write(
         QSF.format(tree=tree, vpins=vp))
     open(os.path.join(proj, 'cf.sdc'), 'w').write(SDC)
+    open(os.path.join(proj, 'cf.qpf'), 'w').write(
+        'QUARTUS_VERSION = "17.1"\nDATE = "00:00:00  January 01, 2026"\n'
+        'PROJECT_REVISION = "cf"\n')
     # ⚠ `v30u_ucrom`'s `HEXDIR` defaults to "rtl/ucore/" UNDER `SYNTHESIS`,
     # relative to the tool's cwd.  F44 is the standing warning: a wrong HEXDIR
     # gives two $readmemh WARNINGS, an ALL-ZERO ROM and a compile that

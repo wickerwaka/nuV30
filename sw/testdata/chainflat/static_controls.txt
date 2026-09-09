@@ -1,0 +1,8 @@
+PC-A1  33 arms + default / 24 guarded / 9 open / open == st_zero_ok : PASS
+       arms 33  default True  guarded 24  open 9
+       open      : S_BIND S_DECODE S_DECODE2 S_EA_CALC S_ENTER S_INSTR_END S_TAIL S_TAIL_POP S_TAKE_OPC
+       st_zero_ok: S_BIND S_DECODE S_DECODE2 S_EA_CALC S_ENTER S_INSTR_END S_TAIL S_TAIL_POP S_TAKE_OPC
+PC-A2  fall-through targets == st_zero_ok                    : PASS
+       targets   : S_BIND S_DECODE S_DECODE2 S_EA_CALC S_ENTER S_INSTR_END S_TAIL S_TAIL_POP S_TAKE_OPC
+PC-A3  NON-VACUITY (one `stop` deleted from S_PFX_CHG)        : PASS
+       PC-A2 now FAIL (right) ; targets now: S_BIND S_DECODE S_DECODE2 S_EA_CALC S_ENTER S_INSTR_END S_OPC_POP S_TAIL S_TAIL_POP S_TAKE_OPC

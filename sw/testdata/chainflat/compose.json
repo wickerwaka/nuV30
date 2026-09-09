@@ -1,0 +1,2269 @@
+{
+ "rows": [
+  {
+   "regfile_read_at": [],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_NORM_CHG",
+    "S_BIND",
+    "S_ENTER"
+   ],
+   "depth": 3,
+   "count": 1078534,
+   "pct": 12.7670082024702,
+   "serial_depth_upper": 2,
+   "carried": {
+    "1->2": [
+     "ld_page_n",
+     "opc_reg_n"
+    ]
+   },
+   "dead_writes": {
+    "1->2": [
+     "row_posted_n"
+    ]
+   },
+   "multiwrite": [
+    "row_posted_n"
+   ]
+  },
+  {
+   "regfile_read_at": [],
+   "regfile_written_at": [
+    0
+   ],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_ROW",
+    "S_TAIL",
+    "S_INSTR_END",
+    "S_TAKE_OPC",
+    "S_DECODE",
+    "S_DECODE2"
+   ],
+   "depth": 6,
+   "count": 1074568,
+   "pct": 12.720061185008536,
+   "serial_depth_upper": 4,
+   "carried": {
+    "0->1": [
+     "opc_valid_n",
+     "pend_active_n"
+    ],
+    "0->2": [
+     "poste_n"
+    ],
+    "0->3": [
+     "opc_byte_n",
+     "pc_n"
+    ],
+    "0->5": [
+     "irq_shadow_n",
+     "psw_n"
+    ],
+    "2->4": [
+     "pfxcnt_n"
+    ],
+    "3->4": [
+     "ld_b_n"
+    ],
+    "4->5": [
+     "ld_ext_n",
+     "pv",
+     "rep_kind_n"
+    ]
+   },
+   "dead_writes": {
+    "0->2": [
+     "al_adjust_n",
+     "al_bitarm_n",
+     "al_eaconst_n",
+     "al_op_n",
+     "al_spent_n",
+     "al_tmp_n",
+     "bus_word_n",
+     "opr_fresh_n",
+     "opr_loaded_n",
+     "pop_is_first_n",
+     "rep_chain_n",
+     "row_paired_n",
+     "row_posted_n",
+     "rowq_n"
+    ],
+    "2->4": [
+     "ld_ext_n",
+     "lock_pfx_n",
+     "rep_kind_n",
+     "seg_override_n",
+     "seg_ovr_n"
+    ],
+    "2->5": [
+     "ld_hasrm_n",
+     "pop_is_first_n"
+    ]
+   },
+   "multiwrite": [
+    "al_adjust_n",
+    "al_bitarm_n",
+    "al_eaconst_n",
+    "al_op_n",
+    "al_spent_n",
+    "al_tmp_n",
+    "bus_word_n",
+    "irq_shadow_n",
+    "ld_ext_n",
+    "ld_hasrm_n",
+    "lock_pfx_n",
+    "opc_valid_n",
+    "opr_fresh_n",
+    "opr_loaded_n",
+    "pc_n",
+    "pfxcnt_n",
+    "pop_is_first_n",
+    "psw_n",
+    "pv",
+    "rep_chain_n",
+    "rep_kind_n",
+    "row_paired_n",
+    "row_posted_n",
+    "rowq_n",
+    "seg_override_n",
+    "seg_ovr_n"
+   ]
+  },
+  {
+   "regfile_read_at": [],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_OPC_POP",
+    "S_DECODE",
+    "S_DECODE2"
+   ],
+   "depth": 3,
+   "count": 160551,
+   "pct": 1.9005019164113444,
+   "serial_depth_upper": 3,
+   "carried": {
+    "0->1": [
+     "ld_b_n"
+    ],
+    "0->2": [
+     "irq_shadow_n"
+    ],
+    "1->2": [
+     "ld_ext_n",
+     "pv",
+     "rep_kind_n"
+    ]
+   },
+   "dead_writes": {
+    "0->2": [
+     "pop_is_first_n"
+    ]
+   },
+   "multiwrite": [
+    "irq_shadow_n",
+    "pop_is_first_n",
+    "pv"
+   ]
+  },
+  {
+   "regfile_read_at": [],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_EPOP",
+    "S_TAIL",
+    "S_INSTR_END",
+    "S_TAKE_OPC",
+    "S_DECODE",
+    "S_DECODE2"
+   ],
+   "depth": 6,
+   "count": 79887,
+   "pct": 0.9456521391729299,
+   "serial_depth_upper": 4,
+   "carried": {
+    "0->1": [
+     "opc_valid_n"
+    ],
+    "0->2": [
+     "poste_n"
+    ],
+    "0->3": [
+     "opc_byte_n"
+    ],
+    "0->5": [
+     "irq_shadow_n"
+    ],
+    "2->4": [
+     "pfxcnt_n"
+    ],
+    "3->4": [
+     "ld_b_n"
+    ],
+    "4->5": [
+     "ld_ext_n",
+     "pv",
+     "rep_kind_n"
+    ]
+   },
+   "dead_writes": {
+    "0->2": [
+     "pop_is_first_n"
+    ],
+    "2->4": [
+     "ld_ext_n",
+     "lock_pfx_n",
+     "rep_kind_n",
+     "seg_override_n",
+     "seg_ovr_n"
+    ],
+    "2->5": [
+     "ld_hasrm_n",
+     "pop_is_first_n"
+    ]
+   },
+   "multiwrite": [
+    "irq_shadow_n",
+    "ld_ext_n",
+    "ld_hasrm_n",
+    "lock_pfx_n",
+    "opc_valid_n",
+    "pfxcnt_n",
+    "pop_is_first_n",
+    "pv",
+    "rep_kind_n",
+    "seg_override_n",
+    "seg_ovr_n"
+   ]
+  },
+  {
+   "regfile_read_at": [],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_PRERD",
+    "S_ENTER"
+   ],
+   "depth": 2,
+   "count": 56429,
+   "pct": 0.6679710661483003,
+   "serial_depth_upper": 1,
+   "carried": {},
+   "dead_writes": {
+    "0->1": [
+     "row_posted_n"
+    ]
+   },
+   "multiwrite": [
+    "row_posted_n"
+   ]
+  },
+  {
+   "regfile_read_at": [],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_OPC_POP",
+    "S_DECODE"
+   ],
+   "depth": 2,
+   "count": 28201,
+   "pct": 0.33382572855177683,
+   "serial_depth_upper": 2,
+   "carried": {
+    "0->1": [
+     "ld_b_n"
+    ]
+   },
+   "dead_writes": {},
+   "multiwrite": []
+  },
+  {
+   "regfile_read_at": [
+    1
+   ],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_D16_HI",
+    "S_EA_CALC",
+    "S_BIND"
+   ],
+   "depth": 3,
+   "count": 24549,
+   "pct": 0.29059564590679654,
+   "serial_depth_upper": 3,
+   "carried": {
+    "0->1": [
+     "ld_disp_n"
+    ],
+    "1->2": [
+     "ea_pair_rhs_n",
+     "ea_pair_valid_n",
+     "ea_residue_n",
+     "ind_n",
+     "m_ea_n",
+     "m_seg_n",
+     "rmmod",
+     "rmrm"
+    ]
+   },
+   "dead_writes": {},
+   "multiwrite": [
+    "ea_residue_n",
+    "m_ea_n",
+    "m_seg_n",
+    "rmmod",
+    "rmrm"
+   ]
+  },
+  {
+   "regfile_read_at": [
+    1
+   ],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_D8_B",
+    "S_EA_CALC",
+    "S_BIND"
+   ],
+   "depth": 3,
+   "count": 21711,
+   "pct": 0.2570011840923239,
+   "serial_depth_upper": 3,
+   "carried": {
+    "0->1": [
+     "ld_disp_n"
+    ],
+    "1->2": [
+     "ea_pair_rhs_n",
+     "ea_pair_valid_n",
+     "ea_residue_n",
+     "ind_n",
+     "m_ea_n",
+     "m_seg_n",
+     "rmmod",
+     "rmrm"
+    ]
+   },
+   "dead_writes": {},
+   "multiwrite": [
+    "ea_residue_n",
+    "m_ea_n",
+    "m_seg_n",
+    "rmmod",
+    "rmrm"
+   ]
+  },
+  {
+   "regfile_read_at": [],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_MODRM",
+    "S_BIND",
+    "S_ENTER"
+   ],
+   "depth": 3,
+   "count": 21349,
+   "pct": 0.2527160554183144,
+   "serial_depth_upper": 3,
+   "carried": {
+    "0->1": [
+     "ld_rm_n"
+    ],
+    "1->2": [
+     "ld_page_n",
+     "opc_reg_n"
+    ]
+   },
+   "dead_writes": {
+    "1->2": [
+     "row_posted_n"
+    ]
+   },
+   "multiwrite": [
+    "row_posted_n"
+   ]
+  },
+  {
+   "regfile_read_at": [
+    1
+   ],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_EA_CHG",
+    "S_EA_CALC",
+    "S_BIND"
+   ],
+   "depth": 3,
+   "count": 19133,
+   "pct": 0.22648443900504048,
+   "serial_depth_upper": 2,
+   "carried": {
+    "1->2": [
+     "ea_pair_rhs_n",
+     "ea_pair_valid_n",
+     "ea_residue_n",
+     "ind_n",
+     "m_ea_n",
+     "m_seg_n",
+     "rmmod",
+     "rmrm"
+    ]
+   },
+   "dead_writes": {},
+   "multiwrite": [
+    "ea_residue_n",
+    "m_ea_n",
+    "m_seg_n",
+    "rmmod",
+    "rmrm"
+   ]
+  },
+  {
+   "regfile_read_at": [],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_EXT_POP",
+    "S_DECODE2"
+   ],
+   "depth": 2,
+   "count": 12509,
+   "pct": 0.14807368669388235,
+   "serial_depth_upper": 2,
+   "carried": {
+    "0->1": [
+     "ld_b_n"
+    ]
+   },
+   "dead_writes": {},
+   "multiwrite": []
+  },
+  {
+   "regfile_read_at": [],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_GRPD_CHG",
+    "S_ENTER"
+   ],
+   "depth": 2,
+   "count": 11540,
+   "pct": 0.13660327319908885,
+   "serial_depth_upper": 1,
+   "carried": {},
+   "dead_writes": {},
+   "multiwrite": []
+  },
+  {
+   "regfile_read_at": [],
+   "regfile_written_at": [
+    0
+   ],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_ROW",
+    "S_TAIL"
+   ],
+   "depth": 2,
+   "count": 7913,
+   "pct": 0.09366912485479983,
+   "serial_depth_upper": 2,
+   "carried": {
+    "0->1": [
+     "opc_valid_n",
+     "pend_active_n"
+    ]
+   },
+   "dead_writes": {},
+   "multiwrite": []
+  },
+  {
+   "regfile_read_at": [],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_TAIL_W",
+    "S_TAIL_POP"
+   ],
+   "depth": 2,
+   "count": 6585,
+   "pct": 0.07794909480207973,
+   "serial_depth_upper": 2,
+   "carried": {
+    "0->1": [
+     "brk_arm_n"
+    ]
+   },
+   "dead_writes": {
+    "0->1": [
+     "irq_sel_brk_n",
+     "irq_sel_nmi_n",
+     "irq_shadow_n"
+    ]
+   },
+   "multiwrite": [
+    "brk_arm_n",
+    "irq_sel_brk_n",
+    "irq_sel_nmi_n",
+    "irq_shadow_n"
+   ]
+  },
+  {
+   "regfile_read_at": [],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_TAIL_POP",
+    "S_INSTR_END",
+    "S_TAKE_OPC",
+    "S_DECODE",
+    "S_DECODE2"
+   ],
+   "depth": 5,
+   "count": 6576,
+   "pct": 0.07784255845383088,
+   "serial_depth_upper": 4,
+   "carried": {
+    "0->1": [
+     "opc_valid_n"
+    ],
+    "0->2": [
+     "opc_byte_n"
+    ],
+    "0->4": [
+     "irq_shadow_n"
+    ],
+    "1->3": [
+     "pfxcnt_n"
+    ],
+    "2->3": [
+     "ld_b_n"
+    ],
+    "3->4": [
+     "ld_ext_n",
+     "pv",
+     "rep_kind_n"
+    ]
+   },
+   "dead_writes": {
+    "0->1": [
+     "pop_is_first_n"
+    ],
+    "1->3": [
+     "ld_ext_n",
+     "lock_pfx_n",
+     "rep_kind_n",
+     "seg_override_n",
+     "seg_ovr_n"
+    ],
+    "1->4": [
+     "ld_hasrm_n",
+     "pop_is_first_n"
+    ]
+   },
+   "multiwrite": [
+    "irq_shadow_n",
+    "ld_ext_n",
+    "ld_hasrm_n",
+    "lock_pfx_n",
+    "opc_valid_n",
+    "pfxcnt_n",
+    "pop_is_first_n",
+    "pv",
+    "rep_kind_n",
+    "seg_override_n",
+    "seg_ovr_n"
+   ]
+  },
+  {
+   "regfile_read_at": [],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_1BL_CHG",
+    "S_INSTR_END"
+   ],
+   "depth": 2,
+   "count": 3763,
+   "pct": 0.04454403094004951,
+   "serial_depth_upper": 1,
+   "carried": {},
+   "dead_writes": {},
+   "multiwrite": []
+  },
+  {
+   "regfile_read_at": [],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_MODRM",
+    "S_BIND"
+   ],
+   "depth": 2,
+   "count": 2576,
+   "pct": 0.030493070343228155,
+   "serial_depth_upper": 2,
+   "carried": {
+    "0->1": [
+     "ld_rm_n"
+    ]
+   },
+   "dead_writes": {},
+   "multiwrite": []
+  },
+  {
+   "regfile_read_at": [],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_TAIL_W",
+    "S_TAIL_POP",
+    "S_INSTR_END",
+    "S_TAKE_OPC",
+    "S_DECODE",
+    "S_DECODE2"
+   ],
+   "depth": 6,
+   "count": 1234,
+   "pct": 0.01460731708212094,
+   "serial_depth_upper": 5,
+   "carried": {
+    "0->1": [
+     "brk_arm_n"
+    ],
+    "1->2": [
+     "opc_valid_n"
+    ],
+    "1->3": [
+     "opc_byte_n"
+    ],
+    "1->5": [
+     "irq_shadow_n"
+    ],
+    "2->4": [
+     "pfxcnt_n"
+    ],
+    "3->4": [
+     "ld_b_n"
+    ],
+    "4->5": [
+     "ld_ext_n",
+     "pv",
+     "rep_kind_n"
+    ]
+   },
+   "dead_writes": {
+    "0->1": [
+     "irq_sel_brk_n",
+     "irq_sel_nmi_n",
+     "irq_shadow_n"
+    ],
+    "0->2": [
+     "opr_fresh_n",
+     "opr_loaded_n"
+    ],
+    "1->2": [
+     "pop_is_first_n"
+    ],
+    "2->4": [
+     "ld_ext_n",
+     "lock_pfx_n",
+     "rep_kind_n",
+     "seg_override_n",
+     "seg_ovr_n"
+    ],
+    "2->5": [
+     "ld_hasrm_n",
+     "pop_is_first_n"
+    ]
+   },
+   "multiwrite": [
+    "brk_arm_n",
+    "irq_sel_brk_n",
+    "irq_sel_nmi_n",
+    "irq_shadow_n",
+    "ld_ext_n",
+    "ld_hasrm_n",
+    "lock_pfx_n",
+    "opc_valid_n",
+    "opr_fresh_n",
+    "opr_loaded_n",
+    "pfxcnt_n",
+    "pop_is_first_n",
+    "pv",
+    "rep_kind_n",
+    "seg_override_n",
+    "seg_ovr_n"
+   ]
+  },
+  {
+   "regfile_read_at": [
+    1
+   ],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_D16_HI",
+    "S_EA_CALC",
+    "S_BIND",
+    "S_ENTER"
+   ],
+   "depth": 4,
+   "count": 1078,
+   "pct": 0.012760687045807434,
+   "serial_depth_upper": 4,
+   "carried": {
+    "0->1": [
+     "ld_disp_n"
+    ],
+    "1->2": [
+     "ea_pair_rhs_n",
+     "ea_pair_valid_n",
+     "ea_residue_n",
+     "ind_n",
+     "m_ea_n",
+     "m_seg_n",
+     "rmmod",
+     "rmrm"
+    ],
+    "2->3": [
+     "ld_page_n",
+     "opc_reg_n"
+    ]
+   },
+   "dead_writes": {
+    "2->3": [
+     "row_posted_n"
+    ]
+   },
+   "multiwrite": [
+    "ea_residue_n",
+    "m_ea_n",
+    "m_seg_n",
+    "rmmod",
+    "rmrm",
+    "row_posted_n"
+   ]
+  },
+  {
+   "regfile_read_at": [
+    1
+   ],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_D8_B",
+    "S_EA_CALC",
+    "S_BIND",
+    "S_ENTER"
+   ],
+   "depth": 4,
+   "count": 906,
+   "pct": 0.010724659057051517,
+   "serial_depth_upper": 4,
+   "carried": {
+    "0->1": [
+     "ld_disp_n"
+    ],
+    "1->2": [
+     "ea_pair_rhs_n",
+     "ea_pair_valid_n",
+     "ea_residue_n",
+     "ind_n",
+     "m_ea_n",
+     "m_seg_n",
+     "rmmod",
+     "rmrm"
+    ],
+    "2->3": [
+     "ld_page_n",
+     "opc_reg_n"
+    ]
+   },
+   "dead_writes": {
+    "2->3": [
+     "row_posted_n"
+    ]
+   },
+   "multiwrite": [
+    "ea_residue_n",
+    "m_ea_n",
+    "m_seg_n",
+    "rmmod",
+    "rmrm",
+    "row_posted_n"
+   ]
+  },
+  {
+   "regfile_read_at": [
+    1
+   ],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_EA_CHG",
+    "S_EA_CALC",
+    "S_BIND",
+    "S_ENTER"
+   ],
+   "depth": 4,
+   "count": 779,
+   "pct": 0.00922131280953988,
+   "serial_depth_upper": 3,
+   "carried": {
+    "1->2": [
+     "ea_pair_rhs_n",
+     "ea_pair_valid_n",
+     "ea_residue_n",
+     "ind_n",
+     "m_ea_n",
+     "m_seg_n",
+     "rmmod",
+     "rmrm"
+    ],
+    "2->3": [
+     "ld_page_n",
+     "opc_reg_n"
+    ]
+   },
+   "dead_writes": {
+    "2->3": [
+     "row_posted_n"
+    ]
+   },
+   "multiwrite": [
+    "ea_residue_n",
+    "m_ea_n",
+    "m_seg_n",
+    "rmmod",
+    "rmrm",
+    "row_posted_n"
+   ]
+  },
+  {
+   "regfile_read_at": [],
+   "regfile_written_at": [
+    0
+   ],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_ROW",
+    "S_TAIL",
+    "S_INSTR_END",
+    "S_TAKE_OPC",
+    "S_DECODE"
+   ],
+   "depth": 5,
+   "count": 55,
+   "pct": 0.0006510554615207874,
+   "serial_depth_upper": 3,
+   "carried": {
+    "0->1": [
+     "opc_valid_n",
+     "pend_active_n"
+    ],
+    "0->2": [
+     "poste_n"
+    ],
+    "0->3": [
+     "opc_byte_n",
+     "pc_n"
+    ],
+    "2->4": [
+     "pfxcnt_n"
+    ],
+    "3->4": [
+     "ld_b_n"
+    ]
+   },
+   "dead_writes": {
+    "0->2": [
+     "al_adjust_n",
+     "al_bitarm_n",
+     "al_eaconst_n",
+     "al_op_n",
+     "al_spent_n",
+     "al_tmp_n",
+     "bus_word_n",
+     "opr_fresh_n",
+     "opr_loaded_n",
+     "pop_is_first_n",
+     "rep_chain_n",
+     "row_paired_n",
+     "row_posted_n",
+     "rowq_n"
+    ],
+    "2->4": [
+     "ld_ext_n",
+     "lock_pfx_n",
+     "rep_kind_n",
+     "seg_override_n",
+     "seg_ovr_n"
+    ]
+   },
+   "multiwrite": [
+    "al_adjust_n",
+    "al_bitarm_n",
+    "al_eaconst_n",
+    "al_op_n",
+    "al_spent_n",
+    "al_tmp_n",
+    "bus_word_n",
+    "ld_ext_n",
+    "lock_pfx_n",
+    "opc_valid_n",
+    "opr_fresh_n",
+    "opr_loaded_n",
+    "pc_n",
+    "pfxcnt_n",
+    "pop_is_first_n",
+    "rep_chain_n",
+    "rep_kind_n",
+    "row_paired_n",
+    "row_posted_n",
+    "rowq_n",
+    "seg_override_n",
+    "seg_ovr_n"
+   ]
+  },
+  {
+   "regfile_read_at": [],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_EPOP",
+    "S_TAIL",
+    "S_INSTR_END",
+    "S_TAKE_OPC",
+    "S_DECODE"
+   ],
+   "depth": 5,
+   "count": 18,
+   "pct": 0.00021307269649771226,
+   "serial_depth_upper": 3,
+   "carried": {
+    "0->1": [
+     "opc_valid_n"
+    ],
+    "0->2": [
+     "poste_n"
+    ],
+    "0->3": [
+     "opc_byte_n"
+    ],
+    "2->4": [
+     "pfxcnt_n"
+    ],
+    "3->4": [
+     "ld_b_n"
+    ]
+   },
+   "dead_writes": {
+    "0->2": [
+     "pop_is_first_n"
+    ],
+    "2->4": [
+     "ld_ext_n",
+     "lock_pfx_n",
+     "rep_kind_n",
+     "seg_override_n",
+     "seg_ovr_n"
+    ]
+   },
+   "multiwrite": [
+    "ld_ext_n",
+    "lock_pfx_n",
+    "opc_valid_n",
+    "pfxcnt_n",
+    "pop_is_first_n",
+    "rep_kind_n",
+    "seg_override_n",
+    "seg_ovr_n"
+   ]
+  },
+  {
+   "regfile_read_at": [],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_TAIL_POP",
+    "S_INSTR_END",
+    "S_TAKE_OPC",
+    "S_DECODE"
+   ],
+   "depth": 4,
+   "count": 9,
+   "pct": 0.00010653634824885613,
+   "serial_depth_upper": 3,
+   "carried": {
+    "0->1": [
+     "opc_valid_n"
+    ],
+    "0->2": [
+     "opc_byte_n"
+    ],
+    "1->3": [
+     "pfxcnt_n"
+    ],
+    "2->3": [
+     "ld_b_n"
+    ]
+   },
+   "dead_writes": {
+    "0->1": [
+     "pop_is_first_n"
+    ],
+    "1->3": [
+     "ld_ext_n",
+     "lock_pfx_n",
+     "rep_kind_n",
+     "seg_override_n",
+     "seg_ovr_n"
+    ]
+   },
+   "multiwrite": [
+    "ld_ext_n",
+    "lock_pfx_n",
+    "opc_valid_n",
+    "pfxcnt_n",
+    "pop_is_first_n",
+    "rep_kind_n",
+    "seg_override_n",
+    "seg_ovr_n"
+   ]
+  },
+  {
+   "regfile_read_at": [],
+   "regfile_written_at": [],
+   "regfile_constant_for_every_reader": true,
+   "states": [
+    "S_TAIL_W",
+    "S_TAIL_POP",
+    "S_INSTR_END",
+    "S_TAKE_OPC",
+    "S_DECODE"
+   ],
+   "depth": 5,
+   "count": 2,
+   "pct": 2.367474405530136e-05,
+   "serial_depth_upper": 4,
+   "carried": {
+    "0->1": [
+     "brk_arm_n"
+    ],
+    "1->2": [
+     "opc_valid_n"
+    ],
+    "1->3": [
+     "opc_byte_n"
+    ],
+    "2->4": [
+     "pfxcnt_n"
+    ],
+    "3->4": [
+     "ld_b_n"
+    ]
+   },
+   "dead_writes": {
+    "0->1": [
+     "irq_sel_brk_n",
+     "irq_sel_nmi_n",
+     "irq_shadow_n"
+    ],
+    "0->2": [
+     "opr_fresh_n",
+     "opr_loaded_n"
+    ],
+    "1->2": [
+     "pop_is_first_n"
+    ],
+    "2->4": [
+     "ld_ext_n",
+     "lock_pfx_n",
+     "rep_kind_n",
+     "seg_override_n",
+     "seg_ovr_n"
+    ]
+   },
+   "multiwrite": [
+    "brk_arm_n",
+    "irq_sel_brk_n",
+    "irq_sel_nmi_n",
+    "irq_shadow_n",
+    "ld_ext_n",
+    "lock_pfx_n",
+    "opc_valid_n",
+    "opr_fresh_n",
+    "opr_loaded_n",
+    "pfxcnt_n",
+    "pop_is_first_n",
+    "rep_kind_n",
+    "seg_override_n",
+    "seg_ovr_n"
+   ]
+  }
+ ],
+ "invariant": {
+  "bnd_take": [
+   "S_TAIL_POP"
+  ],
+  "brk_arm": [
+   "S_DECODE2"
+  ],
+  "brk_seen": [
+   "S_DECODE2"
+  ],
+  "brk_smp_n": [
+   "S_DECODE2"
+  ],
+  "irq_nmi_lvl": [
+   "S_TAIL_POP"
+  ],
+  "irq_take": [
+   "S_TAIL_POP"
+  ],
+  "ld_byte_n": [
+   "S_BIND",
+   "S_DECODE2"
+  ],
+  "ld_pla_n": [
+   "S_BIND",
+   "S_DECODE2"
+  ],
+  "q_byte": [
+   "S_TAIL_POP"
+  ],
+  "q_ripe": [
+   "S_TAIL_POP"
+  ],
+  "q_ripe_lead_n": [
+   "S_DECODE2"
+  ],
+  "retire_ok_n": [
+   "S_TAIL_POP"
+  ]
+ },
+ "written_by_chainable": [
+  "al_adjust_n",
+  "al_bitarm_n",
+  "al_eaconst_n",
+  "al_eaval_n",
+  "al_op_n",
+  "al_spent_n",
+  "al_tmp_n",
+  "bnd_armed_n",
+  "brk_arm_n",
+  "bsw",
+  "bus_word_n",
+  "ea",
+  "ea_pair_rhs_n",
+  "ea_pair_valid_n",
+  "ea_residue_n",
+  "ending_n",
+  "eu_halted_n",
+  "iend_owed_n",
+  "imm8_n",
+  "ind_n",
+  "irq_sel_brk_n",
+  "irq_sel_nmi_n",
+  "irq_shadow_n",
+  "ld_b_n",
+  "ld_byte_n",
+  "ld_disp_n",
+  "ld_ext_n",
+  "ld_grpd_n",
+  "ld_hasrm_n",
+  "ld_page_n",
+  "ld_pla_n",
+  "ld_preread_n",
+  "ld_rm_n",
+  "lock_pfx_n",
+  "m_byte_n",
+  "m_ea_n",
+  "m_idx_n",
+  "m_kind_n",
+  "m_seg_n",
+  "modrm_reg_n",
+  "op8_n",
+  "opc8080_n",
+  "opc_base_n",
+  "opc_byte_n",
+  "opc_from_modrm_n",
+  "opc_reg_n",
+  "opc_valid_n",
+  "opr_fresh_n",
+  "opr_loaded_n",
+  "pc_n",
+  "pfxcnt_n",
+  "pop_is_first_n",
+  "psw_n",
+  "pv",
+  "r_byte_n",
+  "r_ea_n",
+  "r_idx_n",
+  "r_kind_n",
+  "r_seg_n",
+  "rep_chain_n",
+  "rep_kind_n",
+  "rep_pol_n",
+  "rep_test_n",
+  "rmmod",
+  "rmreg",
+  "rmrm",
+  "row_paired_n",
+  "row_posted_n",
+  "rowq_n",
+  "rseg",
+  "seg_override_n",
+  "seg_ovr_n",
+  "suppress_commit_n",
+  "tb",
+  "te",
+  "ti",
+  "tk",
+  "tmpa_n",
+  "tmpb_n",
+  "trc_1bl_hit",
+  "trc_1bl_post",
+  "trc_1bl_pre",
+  "trc_1bld_arm",
+  "trc_1bld_hit",
+  "trc_1bld_ripe",
+  "trc_1bld_seen",
+  "trc_1bld_shd",
+  "trc_1bld_smp",
+  "ts",
+  "upc_loc_n",
+  "upc_opc_n",
+  "upc_page_n",
+  "wb_byte_n",
+  "wb_ea_n",
+  "wb_idx_n",
+  "wb_kind_n",
+  "wb_seg_n",
+  "xop_n"
+ ],
+ "written_in_chain": [
+  "al_adjtmp_n",
+  "al_adjust_n",
+  "al_bitarm_n",
+  "al_bitn_n",
+  "al_eaconst_n",
+  "al_eaval_n",
+  "al_op_n",
+  "al_spent_n",
+  "al_tmp_n",
+  "bit_n_n",
+  "bnd_armed_n",
+  "brk_arm_n",
+  "bsw",
+  "bubble",
+  "bus_word_n",
+  "carry",
+  "chg_n",
+  "count_n",
+  "ea",
+  "ea_pair_rhs_n",
+  "ea_pair_valid_n",
+  "ea_residue_n",
+  "ending_n",
+  "ghost_rd_discard_n",
+  "gpr_n",
+  "iend_owed_n",
+  "ind_n",
+  "intr_pending_n",
+  "irq_fast_inta_n",
+  "irq_sel_brk_n",
+  "irq_sel_nmi_n",
+  "irq_shadow_n",
+  "ld_b_n",
+  "ld_disp_n",
+  "ld_ext_n",
+  "ld_grpd_n",
+  "ld_hasrm_n",
+  "ld_page_n",
+  "ld_preread_n",
+  "ld_ripe_prev_n",
+  "ld_rm_n",
+  "lock_pfx_n",
+  "m_byte_n",
+  "m_ea_n",
+  "m_idx_n",
+  "m_kind_n",
+  "m_seg_n",
+  "mode8080_n",
+  "modrm_reg_n",
+  "nloc",
+  "opc8080_n",
+  "opc_base_n",
+  "opc_byte_n",
+  "opc_from_modrm_n",
+  "opc_reg_n",
+  "opc_valid_n",
+  "opr_byte_n",
+  "opr_fresh_n",
+  "opr_loaded_n",
+  "opr_n",
+  "pc_n",
+  "pe_op8_n",
+  "pe_opc8080_n",
+  "pe_opc_reg_n",
+  "pe_pfxcnt_n",
+  "pend_active_n",
+  "pend_byte_n",
+  "pend_io_n",
+  "pend_off_n",
+  "pend_seg_n",
+  "pfxcnt_n",
+  "pop_is_first_n",
+  "poste_n",
+  "psw_n",
+  "pv",
+  "r_byte_n",
+  "r_ea_n",
+  "r_idx_n",
+  "r_kind_n",
+  "r_seg_n",
+  "rd_done_cnt_n",
+  "rd_pending_n",
+  "rdp0_byte_n",
+  "rdp1_byte_n",
+  "rdq0_byte_n",
+  "rdq0_n",
+  "rdq_n_n",
+  "rep_chain_n",
+  "rep_chained",
+  "rep_kind_n",
+  "rep_pol_n",
+  "rep_test_n",
+  "retire_now",
+  "rloop_n_n",
+  "rmmod",
+  "rmreg",
+  "rmrm",
+  "row_paired_n",
+  "row_posted_n",
+  "rowb0_n",
+  "rowb1_n",
+  "rowq_n",
+  "rseg",
+  "seg_override_n",
+  "seg_ovr_n",
+  "sign_neg_n",
+  "sreg_n",
+  "stat_n",
+  "suppress_commit_n",
+  "taken",
+  "tb",
+  "te",
+  "ti",
+  "tk",
+  "tmpa_byte_n",
+  "tmpa_n",
+  "tmpb_byte_n",
+  "tmpb_n",
+  "tmpc_byte_n",
+  "tmpc_n",
+  "ts",
+  "tsel_n",
+  "upc_loc_n",
+  "upc_opc_n",
+  "upc_page_n",
+  "v1",
+  "v2",
+  "wb1",
+  "wb2",
+  "wb_byte_n",
+  "wb_ea_n",
+  "wb_idx_n",
+  "wb_kind_n",
+  "wb_seg_n",
+  "wr_out_n"
+ ],
+ "rws": {
+  "S_OPC_POP": [
+   [
+    "bnd_armed_n",
+    "brk_arm_n",
+    "irq_fast_inta_n",
+    "irq_sel_brk_n",
+    "irq_sel_nmi_n",
+    "irq_shadow_n",
+    "ld_b_n",
+    "pc_n",
+    "pop_is_first_n"
+   ],
+   [
+    "bnd_armed_n",
+    "bnd_take",
+    "brk_arm_n",
+    "irq_nmi_lvl",
+    "irq_take",
+    "pc_n",
+    "q_byte",
+    "q_ripe"
+   ]
+  ],
+  "S_TAKE_OPC": [
+   [
+    "ld_b_n",
+    "opc_valid_n",
+    "pc_n"
+   ],
+   [
+    "opc_byte_n",
+    "pc_n"
+   ]
+  ],
+  "S_DECODE": [
+   [
+    "ld_ext_n",
+    "lock_pfx_n",
+    "pfxcnt_n",
+    "pv",
+    "rep_kind_n",
+    "seg_override_n",
+    "seg_ovr_n"
+   ],
+   [
+    "ld_b_n",
+    "pfxcnt_n",
+    "pv"
+   ]
+  ],
+  "S_PFX_CHG": [
+   [
+    "pop_is_first_n"
+   ],
+   []
+  ],
+  "S_EXT_CHG1": [
+   [],
+   []
+  ],
+  "S_EXT_POP": [
+   [
+    "ld_b_n",
+    "pc_n"
+   ],
+   [
+    "pc_n",
+    "q_byte",
+    "q_ripe"
+   ]
+  ],
+  "S_DECODE2": [
+   [
+    "eu_halted_n",
+    "imm8_n",
+    "irq_shadow_n",
+    "ld_byte_n",
+    "ld_hasrm_n",
+    "ld_page_n",
+    "ld_pla_n",
+    "op8_n",
+    "opc_reg_n",
+    "pop_is_first_n",
+    "psw_n",
+    "pv",
+    "trc_1bl_hit",
+    "trc_1bl_post",
+    "trc_1bl_pre",
+    "trc_1bld_arm",
+    "trc_1bld_hit",
+    "trc_1bld_ripe",
+    "trc_1bld_seen",
+    "trc_1bld_shd",
+    "trc_1bld_smp",
+    "xop_n"
+   ],
+   [
+    "brk_arm",
+    "brk_seen",
+    "brk_smp_n",
+    "irq_shadow_n",
+    "ld_b_n",
+    "ld_byte_n",
+    "ld_ext_n",
+    "ld_pla_n",
+    "poste_n",
+    "psw_n",
+    "pv",
+    "q_ripe_lead_n",
+    "rep_kind_n"
+   ]
+  ],
+  "S_1BL_LEAD": [
+   [
+    "psw_n",
+    "trc_1bl_hit",
+    "trc_1bl_post",
+    "trc_1bl_pre"
+   ],
+   [
+    "ld_pla_n",
+    "poste_n",
+    "psw_n",
+    "q_ripe_lead_n"
+   ]
+  ],
+  "S_1BL_CHG": [
+   [],
+   []
+  ],
+  "S_MODRM": [
+   [
+    "chg_n",
+    "ld_disp_n",
+    "ld_ripe_prev_n",
+    "ld_rm_n",
+    "pc_n"
+   ],
+   [
+    "pc_n",
+    "q_byte",
+    "q_ripe"
+   ]
+  ],
+  "S_D8_A": [
+   [
+    "ld_ripe_prev_n"
+   ],
+   [
+    "q_ripe"
+   ]
+  ],
+  "S_D8_B": [
+   [
+    "chg_n",
+    "ld_disp_n",
+    "pc_n"
+   ],
+   [
+    "chg_n",
+    "ld_ripe_prev_n",
+    "pc_n",
+    "q_byte",
+    "q_ripe"
+   ]
+  ],
+  "S_D16_LO": [
+   [
+    "ld_dlo_n",
+    "pc_n"
+   ],
+   [
+    "pc_n",
+    "q_byte",
+    "q_ripe"
+   ]
+  ],
+  "S_D16_A": [
+   [
+    "chg_n",
+    "ld_ripe_prev_n"
+   ],
+   [
+    "q_ripe"
+   ]
+  ],
+  "S_D16_HI": [
+   [
+    "chg_n",
+    "ld_disp_n",
+    "pc_n"
+   ],
+   [
+    "chg_n",
+    "ld_dlo_n",
+    "ld_ripe_prev_n",
+    "pc_n",
+    "q_byte",
+    "q_ripe"
+   ]
+  ],
+  "S_EA_CHG": [
+   [],
+   []
+  ],
+  "S_EA_CALC": [
+   [
+    "al_eaconst_n",
+    "al_eaval_n",
+    "ea",
+    "ea_pair_rhs_n",
+    "ea_pair_valid_n",
+    "ea_residue_n",
+    "ind_n",
+    "m_ea_n",
+    "m_seg_n",
+    "rmmod",
+    "rmrm",
+    "rseg"
+   ],
+   [
+    "ea",
+    "gpr_n",
+    "ld_disp_n",
+    "ld_rm_n",
+    "rmmod",
+    "rmrm",
+    "rseg",
+    "seg_override_n",
+    "seg_ovr_n"
+   ]
+  ],
+  "S_NORM_CHG": [
+   [],
+   []
+  ],
+  "S_BIND": [
+   [
+    "bsw",
+    "ea_residue_n",
+    "ld_grpd_n",
+    "ld_page_n",
+    "ld_preread_n",
+    "m_byte_n",
+    "m_ea_n",
+    "m_idx_n",
+    "m_kind_n",
+    "m_seg_n",
+    "modrm_reg_n",
+    "opc_base_n",
+    "opc_from_modrm_n",
+    "opc_reg_n",
+    "opr_loaded_n",
+    "pv",
+    "r_byte_n",
+    "r_ea_n",
+    "r_idx_n",
+    "r_kind_n",
+    "r_seg_n",
+    "rep_pol_n",
+    "rep_test_n",
+    "rmmod",
+    "rmreg",
+    "rmrm",
+    "row_posted_n",
+    "tb",
+    "te",
+    "ti",
+    "tk",
+    "tmpa_n",
+    "tmpb_n",
+    "ts",
+    "wb_byte_n",
+    "wb_ea_n",
+    "wb_idx_n",
+    "wb_kind_n",
+    "wb_seg_n"
+   ],
+   [
+    "bsw",
+    "ea_pair_rhs_n",
+    "ea_pair_valid_n",
+    "ea_residue_n",
+    "ind_n",
+    "ld_b_n",
+    "ld_byte_n",
+    "ld_ext_n",
+    "ld_grpd_n",
+    "ld_hasrm_n",
+    "ld_page_n",
+    "ld_pla_n",
+    "ld_preread_n",
+    "ld_rm_n",
+    "m_byte_n",
+    "m_ea_n",
+    "m_idx_n",
+    "m_kind_n",
+    "m_seg_n",
+    "pv",
+    "r_byte_n",
+    "r_ea_n",
+    "r_idx_n",
+    "r_kind_n",
+    "r_seg_n",
+    "rep_kind_n",
+    "rmmod",
+    "rmreg",
+    "rmrm",
+    "tb",
+    "te",
+    "ti",
+    "tk",
+    "ts"
+   ]
+  ],
+  "S_PRERD": [
+   [
+    "opr_byte_n",
+    "opr_loaded_n",
+    "opr_n",
+    "rd_done_cnt_n",
+    "rd_pending_n",
+    "rdp0_byte_n",
+    "rdp1_byte_n",
+    "rdq0_byte_n",
+    "rdq0_n",
+    "rdq_n_n",
+    "row_posted_n"
+   ],
+   [
+    "eu_slot_busy_n",
+    "ld_grpd_n",
+    "pr_byte",
+    "rd_done_cnt_n",
+    "rd_pending_n",
+    "rdq0_byte_n",
+    "rdq0_n",
+    "rdq1_byte_n",
+    "rdq1_n",
+    "rdq_n_n",
+    "row_posted_n"
+   ]
+  ],
+  "S_GRPD_CHG": [
+   [],
+   []
+  ],
+  "S_ENTER": [
+   [
+    "ending_n",
+    "row_paired_n",
+    "row_posted_n",
+    "rowq_n",
+    "suppress_commit_n",
+    "upc_loc_n",
+    "upc_opc_n",
+    "upc_page_n"
+   ],
+   [
+    "ld_page_n",
+    "opc_reg_n"
+   ]
+  ],
+  "S_ROW": [
+   [
+    "al_adjtmp_n",
+    "al_adjust_n",
+    "al_bitarm_n",
+    "al_bitn_n",
+    "al_eaconst_n",
+    "al_op_n",
+    "al_spent_n",
+    "al_tmp_n",
+    "bit_n_n",
+    "brk_arm_n",
+    "bsw",
+    "bubble",
+    "bus_word_n",
+    "carry",
+    "count_n",
+    "ea_pair_valid_n",
+    "ea_residue_n",
+    "ghost_rd_discard_n",
+    "gpr_n",
+    "ind_n",
+    "intr_pending_n",
+    "irq_sel_brk_n",
+    "irq_sel_nmi_n",
+    "irq_shadow_n",
+    "mode8080_n",
+    "nloc",
+    "opc_byte_n",
+    "opc_valid_n",
+    "opr_byte_n",
+    "opr_fresh_n",
+    "opr_loaded_n",
+    "opr_n",
+    "pc_n",
+    "pe_op8_n",
+    "pe_opc8080_n",
+    "pe_opc_reg_n",
+    "pe_pfxcnt_n",
+    "pend_active_n",
+    "pend_byte_n",
+    "pend_io_n",
+    "pend_off_n",
+    "pend_seg_n",
+    "pop_is_first_n",
+    "poste_n",
+    "psw_n",
+    "rd_done_cnt_n",
+    "rd_pending_n",
+    "rdp0_byte_n",
+    "rdp1_byte_n",
+    "rdq0_byte_n",
+    "rdq0_n",
+    "rdq_n_n",
+    "rep_chain_n",
+    "rep_chained",
+    "retire_now",
+    "rloop_n_n",
+    "row_paired_n",
+    "row_posted_n",
+    "rowb0_n",
+    "rowb1_n",
+    "rowq_n",
+    "sign_neg_n",
+    "sreg_n",
+    "stat_n",
+    "suppress_commit_n",
+    "taken",
+    "tmpa_byte_n",
+    "tmpa_n",
+    "tmpb_byte_n",
+    "tmpb_n",
+    "tmpc_byte_n",
+    "tmpc_n",
+    "tsel_n",
+    "upc_loc_n",
+    "upc_opc_n",
+    "upc_page_n",
+    "v1",
+    "v2",
+    "wb1",
+    "wb2",
+    "wr_out_n"
+   ],
+   [
+    "acc_byte",
+    "acc_io",
+    "acc_off_nog",
+    "acc_seg",
+    "acc_split_wr",
+    "al_adjust_n",
+    "al_op_n",
+    "al_tmp_n",
+    "bit_n_n",
+    "bnd_fire",
+    "brk_arm_n",
+    "brk_take",
+    "bsw",
+    "bubble",
+    "carry",
+    "count_n",
+    "e_d1",
+    "e_e",
+    "e_ectl",
+    "e_f",
+    "e_farjmp",
+    "e_have1",
+    "e_have2",
+    "e_is_rloop",
+    "e_s1",
+    "e_s2",
+    "e_type",
+    "e_w",
+    "ea_residue_n",
+    "ext4s_early_e",
+    "ext4s_early_wblock",
+    "ghost_read_stale_alu",
+    "imm8_n",
+    "intr_pending_n",
+    "irq_nmi_lvl",
+    "irq_rep_1st",
+    "irq_rep_chn",
+    "irq_take",
+    "m_byte_n",
+    "m_idx_n",
+    "m_kind_n",
+    "nloc",
+    "nxt_op",
+    "op8_n",
+    "opc8080_n",
+    "opc_reg_n",
+    "opc_valid_n",
+    "opr_byte_n",
+    "opr_fresh_n",
+    "opr_n",
+    "pc_n",
+    "pend_active_n",
+    "pend_after",
+    "pfxcnt_n",
+    "poll_busy",
+    "psw_n",
+    "q_byte",
+    "q_ripe",
+    "r_aluop",
+    "r_alutmp",
+    "r_byte_n",
+    "r_farloc",
+    "r_idx_n",
+    "r_loc",
+    "rd_done_cnt_n",
+    "rd_pending_n",
+    "rdq0_byte_n",
+    "rdq0_n",
+    "rdq1_byte_n",
+    "rdq1_n",
+    "rdq_n_n",
+    "rep_chain_n",
+    "rep_chained",
+    "rep_kind_n",
+    "rep_pol_n",
+    "rep_test_n",
+    "retire_now",
+    "retire_ok_e",
+    "row_blocked",
+    "row_bus",
+    "row_flush",
+    "row_is_inta",
+    "row_is_wb",
+    "row_is_wr",
+    "row_need_q",
+    "row_pre_wait",
+    "row_q1",
+    "row_qn",
+    "row_reads_opr",
+    "row_slot_wait",
+    "rowb0_n",
+    "rowb1_n",
+    "rowq_n",
+    "s1_byte",
+    "s1_val",
+    "s1_wbyte",
+    "s2_val",
+    "s2_wbyte",
+    "sig_commits",
+    "sig_flags",
+    "sig_mask",
+    "sign_neg_n",
+    "stat_n",
+    "taken",
+    "tmpa",
+    "tmpa_n",
+    "tmpb",
+    "tmpb_n",
+    "tmpc_n",
+    "tsel_n",
+    "upc_loc",
+    "upc_loc_n",
+    "upc_opc",
+    "upc_opc_n",
+    "upc_page",
+    "v1",
+    "v2",
+    "wb1",
+    "wb2",
+    "wb_kind_n",
+    "wr_out_n"
+   ]
+  ],
+  "S_ROW_CHG": [
+   [],
+   []
+  ],
+  "S_RLOOP": [
+   [
+    "al_spent_n",
+    "bsw",
+    "count_n",
+    "ea_pair_valid_n",
+    "ea_residue_n",
+    "gpr_n",
+    "ind_n",
+    "opr_byte_n",
+    "opr_fresh_n",
+    "opr_loaded_n",
+    "opr_n",
+    "pc_n",
+    "psw_n",
+    "rloop_n_n",
+    "sreg_n",
+    "stat_n",
+    "tmpa_byte_n",
+    "tmpa_n",
+    "tmpb_byte_n",
+    "tmpb_n",
+    "tmpc_byte_n",
+    "tmpc_n",
+    "upc_loc_n",
+    "upc_opc_n",
+    "v1",
+    "wb1"
+   ],
+   [
+    "al_width_byte",
+    "bsw",
+    "count_n",
+    "e_d1",
+    "e_nopmv",
+    "e_w",
+    "it_flags",
+    "it_fmask",
+    "it_tmpa",
+    "it_val",
+    "it_writes_tmpa",
+    "m_byte_n",
+    "m_idx_n",
+    "r_byte_n",
+    "r_idx_n",
+    "rloop_n_n",
+    "stat_n",
+    "tmpa",
+    "tmpa_n",
+    "tmpb",
+    "tmpb_n",
+    "upc_loc_n",
+    "upc_opc_n",
+    "v1",
+    "wb1"
+   ]
+  ],
+  "S_EPOP": [
+   [
+    "brk_arm_n",
+    "irq_sel_brk_n",
+    "irq_sel_nmi_n",
+    "irq_shadow_n",
+    "opc_byte_n",
+    "opc_valid_n",
+    "pe_op8_n",
+    "pe_opc8080_n",
+    "pe_opc_reg_n",
+    "pe_pfxcnt_n",
+    "pop_is_first_n",
+    "poste_n"
+   ],
+   [
+    "bnd_take",
+    "brk_arm_n",
+    "irq_nmi_lvl",
+    "irq_take",
+    "op8_n",
+    "opc8080_n",
+    "opc_reg_n",
+    "pfxcnt_n",
+    "q_byte",
+    "q_ripe",
+    "retire_ok_n"
+   ]
+  ],
+  "S_TAIL": [
+   [],
+   [
+    "opc_valid_n",
+    "pend_active_n"
+   ]
+  ],
+  "S_TAIL_W": [
+   [
+    "brk_arm_n",
+    "irq_sel_brk_n",
+    "irq_sel_nmi_n",
+    "irq_shadow_n",
+    "opr_byte_n",
+    "opr_fresh_n",
+    "opr_loaded_n",
+    "opr_n",
+    "pend_active_n",
+    "rd_done_cnt_n",
+    "rdq0_byte_n",
+    "rdq0_n",
+    "rdq_n_n"
+   ],
+   [
+    "bnd_take",
+    "brk_arm_n",
+    "irq_nmi_lvl",
+    "irq_take",
+    "nr_wait",
+    "opc_valid_n",
+    "opr_free_now",
+    "opr_fresh_n",
+    "rd_done_cnt_n",
+    "rdq0_byte_n",
+    "rdq0_n",
+    "rdq1_byte_n",
+    "rdq1_n",
+    "rdq_n_n",
+    "retire_ok_n"
+   ]
+  ],
+  "S_TAIL_POP": [
+   [
+    "brk_arm_n",
+    "irq_sel_brk_n",
+    "irq_sel_nmi_n",
+    "irq_shadow_n",
+    "opc_byte_n",
+    "opc_valid_n",
+    "pop_is_first_n"
+   ],
+   [
+    "bnd_take",
+    "brk_arm_n",
+    "irq_nmi_lvl",
+    "irq_take",
+    "q_byte",
+    "q_ripe",
+    "retire_ok_n"
+   ]
+  ],
+  "S_HALTED": [
+   [
+    "bnd_armed_n",
+    "eu_halted_n",
+    "irq_halt_entry_n"
+   ],
+   [
+    "irq_nmi_lvl",
+    "irq_pin_int"
+   ]
+  ],
+  "S_IRQ_D": [
+   [
+    "al_adjtmp_n",
+    "al_adjust_n",
+    "al_bitarm_n",
+    "al_bitn_n",
+    "al_eaconst_n",
+    "al_eaval_n",
+    "al_op_n",
+    "al_spent_n",
+    "al_tmp_n",
+    "bnd_armed_n",
+    "bus_word_n",
+    "ending_n",
+    "eu_halted_n",
+    "imm8_n",
+    "intr_pending_n",
+    "irq_fast_inta_n",
+    "irq_shadow_n",
+    "ld_disp_n",
+    "ld_ext_n",
+    "ld_grpd_n",
+    "ld_hasrm_n",
+    "ld_preread_n",
+    "ld_rm_n",
+    "lock_pfx_n",
+    "m_byte_n",
+    "m_ea_n",
+    "m_idx_n",
+    "m_kind_n",
+    "m_seg_n",
+    "modrm_reg_n",
+    "nmi_latch_n",
+    "op8_n",
+    "opc8080_n",
+    "opc_base_n",
+    "opc_from_modrm_n",
+    "opc_reg_n",
+    "opc_valid_n",
+    "opr_fresh_n",
+    "opr_loaded_n",
+    "pend_active_n",
+    "pend_byte_n",
+    "pend_io_n",
+    "pend_off_n",
+    "pend_seg_n",
+    "pfxcnt_n",
+    "pop_is_first_n",
+    "r_byte_n",
+    "r_ea_n",
+    "r_idx_n",
+    "r_kind_n",
+    "r_seg_n",
+    "rdq0_byte_n",
+    "rdq0_n",
+    "rdq1_byte_n",
+    "rdq1_n",
+    "rdq_n_n",
+    "rep_chain_n",
+    "rep_kind_n",
+    "rep_pol_n",
+    "rep_test_n",
+    "row_paired_n",
+    "row_posted_n",
+    "rowq_n",
+    "seg_override_n",
+    "seg_ovr_n",
+    "suppress_commit_n",
+    "unhalt_pend_n",
+    "upc_loc_n",
+    "upc_opc_n",
+    "upc_page_n",
+    "wb_byte_n",
+    "wb_ea_n",
+    "wb_idx_n",
+    "wb_kind_n",
+    "wb_seg_n",
+    "xop_n"
+   ],
+   [
+    "eu_halted_n",
+    "irq_sel_brk_n",
+    "irq_sel_nmi_n"
+   ]
+  ],
+  "S_RESET": [
+   [
+    "rst_ctr_n"
+   ],
+   [
+    "rst_ctr_n"
+   ]
+  ],
+  "S_INSTR_END": [
+   [
+    "al_adjust_n",
+    "al_bitarm_n",
+    "al_eaconst_n",
+    "al_op_n",
+    "al_spent_n",
+    "al_tmp_n",
+    "bnd_armed_n",
+    "bus_word_n",
+    "ending_n",
+    "iend_owed_n",
+    "ld_disp_n",
+    "ld_ext_n",
+    "ld_grpd_n",
+    "ld_hasrm_n",
+    "ld_preread_n",
+    "ld_rm_n",
+    "lock_pfx_n",
+    "m_kind_n",
+    "modrm_reg_n",
+    "opc8080_n",
+    "opc_base_n",
+    "opc_from_modrm_n",
+    "opr_fresh_n",
+    "opr_loaded_n",
+    "pfxcnt_n",
+    "pop_is_first_n",
+    "r_kind_n",
+    "rep_chain_n",
+    "rep_kind_n",
+    "rep_pol_n",
+    "rep_test_n",
+    "row_paired_n",
+    "row_posted_n",
+    "rowq_n",
+    "seg_override_n",
+    "seg_ovr_n",
+    "wb_kind_n"
+   ],
+   [
+    "opc_valid_n",
+    "poste_n"
+   ]
+  ],
+  "default": [
+   [],
+   []
+  ]
+ }
+}

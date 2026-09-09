@@ -1,0 +1,116 @@
+[lfsr] seed 1: RESULT OK=True depth=6
+[lfsr] seed 2: RESULT OK=True depth=6
+[lfsr] seed 3: RESULT OK=True depth=6
+[lfsr] seed 4: RESULT OK=True depth=6
+[golden] rc=0
+ 500/500 full  (cycles 500, arch 500)
+F7.6: 500/500 full  (cycles 500, arch 500)
+F7.7: 500/500 full  (cycles 500, arch 500)
+F8: 500/500 full  (cycles 500, arch 500)
+F9: 500/500 full  (cycles 500, arch 500)
+FA: 500/500 full  (cycles 500, arch 500)
+FB: 500/500 full  (cycles 500, arch 500)
+FC: 500/500 full  (cycles 500, arch 500)
+FD: 500/500 full  (cycles 500, arch 500)
+FE.0: 500/500 full  (cycles 500, arch 500)
+FE.1: 500/500 full  (cycles 500, arch 500)
+FF.0: 500/500 full  (cycles 500, arch 500)
+FF.1: 500/500 full  (cycles 500, arch 500)
+FF.2: 500/500 full  (cycles 500, arch 500)
+FF.3: 500/500 full  (cycles 500, arch 500)
+FF.4: 500/500 full  (cycles 500, arch 500)
+FF.5: 500/500 full  (cycles 500, arch 500)
+FF.6: 500/500 full  (cycles 500, arch 500)
+HLT.INT: 200/200 full  (cycles 200, arch 200)
+HLT.NMI: 200/200 full  (cycles 200, arch 200)
+HLT.RES: 200/200 full  (cycles 200, arch 200)
+IE0.90: 200/200 full  (cycles 200, arch 200)
+INT.8ED0: 200/200 full  (cycles 200, arch 200)
+INT.8ED8: 200/200 full  (cycles 200, arch 200)
+INT.90: 200/200 full  (cycles 200, arch 200)
+INT.9D: 200/200 full  (cycles 200, arch 200)
+INT.B8: 200/200 full  (cycles 200, arch 200)
+INT.F3AA: 200/200 full  (cycles 200, arch 200)
+INT.FB: 200/200 full  (cycles 200, arch 200)
+NMI.90: 200/200 full  (cycles 200, arch 200)
+NMI.B8: 200/200 full  (cycles 200, arch 200)
+POLL.LO: 200/200 full  (cycles 200, arch 200)
+POLL.REL: 200/200 full  (cycles 200, arch 200)
+
+TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+
+
+=== THE DYNAMIC CENSUS ===
+CE edges censused        : 8447821
+distinct sequences       : 46
+table overflows          : 0  (MUST be 0)
+max observed depth       : 6
+max STATIC depth         : 6
+
+PC-B1  states at position >= 1 == st_zero_ok        : PASS
+       observed: S_BIND S_DECODE S_DECODE2 S_EA_CALC S_ENTER S_INSTR_END S_TAIL S_TAIL_POP S_TAKE_OPC
+       static  : S_BIND S_DECODE S_DECODE2 S_EA_CALC S_ENTER S_INSTR_END S_TAIL S_TAIL_POP S_TAKE_OPC
+       st_zero_ok: S_BIND S_DECODE S_DECODE2 S_EA_CALC S_ENTER S_INSTR_END S_TAIL S_TAIL_POP S_TAKE_OPC
+PC-B2  every observed sequence walks the static graph  : PASS     <-- F-1
+PC-B3  NON-VACUITY: dropping the static edge S_1BL_CHG -> S_INSTR_END
+       makes PC-B2 FAIL                                : PASS
+PC-B4  observed depth <= static depth                  : PASS
+
+=== THE SEQUENCE CENSUS (deliverable B) ===
+   count    pct  sequence
+ 2571711 30.44%  d=1  S_ROW
+ 1193888 14.13%  d=1  S_RLOOP
+ 1078534 12.77%  d=3  S_NORM_CHG -> S_BIND -> S_ENTER
+ 1074568 12.72%  d=6  S_ROW -> S_TAIL -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE -> S_DECODE2
+  599727  7.10%  d=1  S_OPC_POP
+  555209  6.57%  d=1  S_PRERD
+  463736  5.49%  d=1  S_EPOP
+  160551  1.90%  d=3  S_OPC_POP -> S_DECODE -> S_DECODE2
+  130124  1.54%  d=1  S_MODRM
+  101801  1.21%  d=1  S_ROW_CHG
+   79887  0.95%  d=6  S_EPOP -> S_TAIL -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE -> S_DECODE2
+   56429  0.67%  d=2  S_PRERD -> S_ENTER
+   38494  0.46%  d=1  S_D16_LO
+   33697  0.40%  d=1  S_TAIL_POP
+   28201  0.33%  d=2  S_OPC_POP -> S_DECODE
+   25627  0.30%  d=1  S_D16_A
+   24549  0.29%  d=3  S_D16_HI -> S_EA_CALC -> S_BIND
+   22617  0.27%  d=1  S_D8_A
+   21711  0.26%  d=3  S_D8_B -> S_EA_CALC -> S_BIND
+   21349  0.25%  d=3  S_MODRM -> S_BIND -> S_ENTER
+   20585  0.24%  d=1  S_HALTED
+   19133  0.23%  d=3  S_EA_CHG -> S_EA_CALC -> S_BIND
+   15776  0.19%  d=1  S_PFX_CHG
+   12722  0.15%  d=1  S_D16_HI
+   12509  0.15%  d=1  S_EXT_CHG1
+   12509  0.15%  d=2  S_EXT_POP -> S_DECODE2
+   11540  0.14%  d=2  S_GRPD_CHG -> S_ENTER
+   11477  0.14%  d=1  S_D8_B
+    7913  0.09%  d=2  S_ROW -> S_TAIL
+    7383  0.09%  d=1  S_TAIL_W
+    6585  0.08%  d=2  S_TAIL_W -> S_TAIL_POP
+    6576  0.08%  d=5  S_TAIL_POP -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE -> S_DECODE2
+    6212  0.07%  d=1  S_EXT_POP
+    3763  0.04%  d=2  S_1BL_CHG -> S_INSTR_END
+    2576  0.03%  d=2  S_MODRM -> S_BIND
+    2218  0.03%  d=1  S_IRQ_D
+    1837  0.02%  d=1  S_1BL_LEAD
+    1234  0.01%  d=6  S_TAIL_W -> S_TAIL_POP -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE -> S_DECODE2
+    1078  0.01%  d=4  S_D16_HI -> S_EA_CALC -> S_BIND -> S_ENTER
+     906  0.01%  d=4  S_D8_B -> S_EA_CALC -> S_BIND -> S_ENTER
+     779  0.01%  d=4  S_EA_CHG -> S_EA_CALC -> S_BIND -> S_ENTER
+      55  0.00%  d=5  S_ROW -> S_TAIL -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE
+      18  0.00%  d=5  S_EPOP -> S_TAIL -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE
+      16  0.00%  d=1  S_RESET
+       9  0.00%  d=4  S_TAIL_POP -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE
+       2  0.00%  d=5  S_TAIL_W -> S_TAIL_POP -> S_INSTR_END -> S_TAKE_OPC -> S_DECODE
+
+DEPTH   distinct   edges      pct
+    1         21  5827366   68.98%
+    2          8   129516    1.53%
+    3          6  1325827   15.69%
+    4          4     2772    0.03%
+    5          4     6651    0.08%
+    6          3  1155689   13.68%
+
+wrote /home/wickerwaka/src/nec_test/sw/testdata/chainflat/dyncensus.json
