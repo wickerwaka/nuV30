@@ -56,6 +56,23 @@ case("A   the shadow is LOAD-BEARING (one bit of 778 perturbed)",
      [r"first-div:"],                       # check_core prints this ONLY on a fail
      "python3 sw/check_core.py --core ucore --opcodes 90 --cases 5")
 
+# --- A2 --------------------------------------------------------------------
+# ⚠ A2 IS ADDED BECAUSE A MISSED, AND THE MISS IS REPORTED, NOT REPLACED.
+# `s1q ^ 778'd1` perturbs the concatenation's LSB, which is its LAST member --
+# and after A-1 that is `it_writes_tmpa`, the iterative unit's "this step writes
+# tmpa" flag.  **`90` IS A NOP AND EXERCISES NO ITERATIVE STEP**, so the bit is
+# genuinely dead on that leg and A's probe cannot fire there.  (Before A-1 the
+# LSB was `wr_out_n` and it did fire -- WAVE 2 P-8(c).)  A2 keeps the SAME
+# one-bit perturbation and puts it in front of a NAMED GATE LEG that does
+# exercise the whole opcode space; choosing a different BIT after seeing the
+# result would be choosing an instrument after seeing a result, and choosing a
+# WIDER POPULATION for the same instrument is not.
+case("A2  ...the same one bit, in front of the whole 169,000-case leg",
+     [("hdl/rtl/ucore/v30u_eu.sv", "        } = s1q;",
+       "        } = s1q ^ 778'd1;   // C-9(A2) PERTURBATION PROBE")],
+     [r"first-div:"],
+     "python3 sw/check_core.py --core ucore --opcodes all --cases 0")
+
 # --- B ---------------------------------------------------------------------
 # `row_bus` is in the cut set, so the pre-cut wire is `s1w_row_bus`.  Naming it
 # in the loop body is EXACTLY WAVE 2's defect: the chain reads the live value and

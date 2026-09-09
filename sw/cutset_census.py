@@ -75,13 +75,22 @@ def main():
             stmts.append("".join(cur)); cur = []
     for s in stmts:
         s2 = " ".join(s.split())
-        m = re.match(r"^(?:.*\b)?(wire|logic)\s*(\[[^\]]*\])?\s+([A-Za-z_]\w*)\s*(?:=\s*(.*))?;$", s2)
-        if m and s2.lstrip().startswith(("wire", "logic")):
+        # ⚠ STRIP THE BLOCK-CLOSING KEYWORDS FIRST.  Statements are split on
+        # `;`, so the FIRST declaration after an `always`/`case`/`function`
+        # block begins with that block's `end` / `endcase` tokens, and a bare
+        # `startswith("wire")` test drops it.  `sigma` -- the ALU's own result
+        # rail, the first `wire` after the iterative stepper's `endcase end` --
+        # was invisible to this parser for exactly that reason (measured
+        # 2026-09-09; see the WAVE 4 results document).
+        s3 = re.sub(r"^(?:\s*\b(?:end|endcase|endfunction|endtask|endgenerate|"
+                    r"begin|else|endmodule)\b)+\s*", "", s2)
+        m = re.match(r"^(?:.*\b)?(wire|logic)\s*(\[[^\]]*\])?\s+([A-Za-z_]\w*)\s*(?:=\s*(.*))?;$", s3)
+        if m and s3.lstrip().startswith(("wire", "logic")):
             w = m.group(2); nm = m.group(3); ex = m.group(4)
             decls[nm] = (w, ex)
             order.append(nm)
             continue
-        m = re.match(r"^(?:.*\b)?assign\s+([A-Za-z_]\w*)\s*=\s*(.*);$", s2)
+        m = re.match(r"^(?:.*\b)?assign\s+([A-Za-z_]\w*)\s*=\s*(.*);$", s3)
         if m:
             nm, ex = m.group(1), m.group(2)
             if nm in decls:

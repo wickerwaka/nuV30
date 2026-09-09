@@ -29,8 +29,11 @@ CHECKS (exit 0 PASS / 1 violation / 2 could-not-run):
   X1  the split is present: the pack, the unpack and `S1W` exist.  If not,
       exit 2 -- a lint that passes on a tree without the mechanism passes
       VACUOUSLY, and this file says so instead.
-  X2  NO `s1w_` identifier appears anywhere in the next-state block EXCEPT on
-      the alias lines at the head of STAGE 1.
+  X2  NO `s1w_` identifier appears anywhere in the next-state block -- NOR IN
+      ANY `.svh` IT INCLUDES -- except on the alias lines at the head of
+      STAGE 1.  ⚠ The include half was added 2026-09-09: without it a bypass
+      spliced into `v30u_eu_step.svh`, which is where the chain body lives and
+      where WAVE 2's defect was, was invisible to X2 and only X4 caught it.
   X3  every aliased name is aliased EXACTLY ONCE, and every alias stands
       BEFORE THE CUT (`s1_bus = {`).
   X4  **COMPLETENESS.**  The block, plus every `.svh` it includes, names ZERO
@@ -145,9 +148,22 @@ def main():
         if re.match(r"^\s*\w+\s*=\s*s1w_\w+\s*;\s*$", code):
             continue
         stray.append((i, l.strip()[:90]))
+    # ...AND THE INCLUDES, WHICH IS WHERE THE CHAIN BODY ACTUALLY LIVES.
+    # X2 used to scan only `v30u_eu.sv`'s own lines, so a bypass spliced into
+    # `v30u_eu_step.svh` -- the most likely place for one, and the file WAVE 2's
+    # defect was in -- was invisible to it and only X4 caught it.  MEASURED by
+    # C-9 case B, which reported X2 "DID NOT FIRE" on exactly that probe.
+    # No `.svh` may name `s1w_` at all: the aliases are in `v30u_eu.sv`.
+    for inc in INCLUDES:
+        pth = UC / inc
+        if not pth.exists():
+            continue
+        for i, l in enumerate(nocomment(pth.read_text()).split("\n"), start=1):
+            if "s1w_" in l:
+                stray.append(("%s:%d" % (inc, i), l.strip()[:90]))
     if stray:
         for i, l in stray[:12]:
-            bad.append("X2: `s1w_` named inside the next-state block at line %d: %s" % (i, l))
+            bad.append("X2: `s1w_` named inside the next-state block at %s: %s" % (i, l))
     print("  s1w_ in block   : %d (must be 0 outside the alias lines)" % len(stray))
 
     # --- module-level COMBINATIONAL VALUES ---------------------------------
@@ -162,11 +178,20 @@ def main():
     decls, deps = {}, {}
     for s in stmts:
         s2 = " ".join(s.split())
-        m = re.match(r"^(?:.*\b)?(wire|logic)\s*(\[[^\]]*\])?\s+([A-Za-z_]\w*)\s*(?:=\s*(.*))?;$", s2)
-        if m and s2.lstrip().startswith(("wire", "logic")):
+        # ⚠ STRIP THE BLOCK-CLOSING KEYWORDS FIRST.  Statements are split on
+        # `;`, so the FIRST declaration after an `always`/`case`/`function`
+        # block begins with that block's `end` / `endcase` tokens, and a bare
+        # `startswith("wire")` test drops it.  `sigma` -- the ALU's own result
+        # rail, the first `wire` after the iterative stepper's `endcase end` --
+        # was invisible to this parser for exactly that reason (measured
+        # 2026-09-09; see the WAVE 4 results document).
+        s3 = re.sub(r"^(?:\s*\b(?:end|endcase|endfunction|endtask|endgenerate|"
+                    r"begin|else|endmodule)\b)+\s*", "", s2)
+        m = re.match(r"^(?:.*\b)?(wire|logic)\s*(\[[^\]]*\])?\s+([A-Za-z_]\w*)\s*(?:=\s*(.*))?;$", s3)
+        if m and s3.lstrip().startswith(("wire", "logic")):
             decls[m.group(3)] = m.group(4)
             continue
-        m = re.match(r"^(?:.*\b)?assign\s+([A-Za-z_]\w*)\s*=\s*(.*);$", s2)
+        m = re.match(r"^(?:.*\b)?assign\s+([A-Za-z_]\w*)\s*=\s*(.*);$", s3)
         if m and m.group(1) in decls:
             decls[m.group(1)] = m.group(2)
     deps = {n: idents(e or "") for n, e in decls.items()}
