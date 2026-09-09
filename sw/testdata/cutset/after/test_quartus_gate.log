@@ -1,0 +1,38 @@
+== test_quartus_gate: the --retention flag's and the DISTRIBUTION gate's falsifier (no Quartus binary required)
+
+Q1  --retention builds the RECORDED four-stage recipe, PRECEDED by the PRE_FLOW hook
+
+Q2  the DEFAULT (CONTROL) command list is UNCHANGED
+
+Q3  the env var WITHOUT --retention is REFUSED  (THE TRAP)
+
+Q4  the env var WITH --retention does NOT refuse
+
+Q5  with the variable unset, the default path does not refuse
+
+Q6  --retention --parse-only is REFUSED
+
+Q7  `configuration` is DERIVED FROM THE REPORTS, never from the flag
+
+Q9  --seeds builds ONE map and N fits, and the seed is ON THE FIT
+
+Q10 --seeds parses to a NAMED seed set (so a sweep is reproducible)
+
+Q11 E7: the inputs are re-hashed AFTER the build and must match
+
+Q12 E8: the fitter HONOURED the seed  (the accepted-and-ignored trap)
+
+Q13 the sweep's REFUSALS (sweep-only flags cannot be ignored)
+
+Q14 the per-class ceilings are parsed off the probe's own artifact
+
+Q15 the distribution summary, and WHICH number is the quotable one
+
+Q16 THE PAIRED FIGURE: whole-design AND core-domain, from ONE run
+
+255 / 255 checks pass
+=== test_quartus_gate: PASS
+
+real	0m1.151s
+user	0m0.945s
+sys	0m0.206s

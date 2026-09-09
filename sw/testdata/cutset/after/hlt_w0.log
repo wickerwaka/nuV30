@@ -1,0 +1,8 @@
+HLT.INT: 48/48 full  (cycles 48, arch 48)
+HLT.RES: 49/49 full  (cycles 49, arch 49)
+
+TOTAL: 97/97 full (cycles 97, arch 97)
+
+real	0m0.252s
+user	0m0.225s
+sys	0m0.027s

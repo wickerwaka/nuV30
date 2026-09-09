@@ -1,0 +1,25 @@
+=== sta_cutset_diag (WAVE 4) ===
+  $v30u_ce 2179   shadow registers matching |s1q* : 591
+  worst ce->ce
+    from  : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|modrm_reg[1]
+    to    : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|opc_base[3]
+    slack :  -13.888   logic levels 44   data delay 44.502
+    arrival points: 107   of which name |s1q : 0    <<<< C-3(b)
+    ...and of which live in v30u_biu : 0   v30u_eu : 3   elsewhere : 104
+  positive control: -through the destination's own D pin resolves 1 pin(s)
+    -> paths returned: 1   (MUST be 1; 0 means the question cannot say YES)
+  --- C-8: the top 200 ce->ce paths, classified ---
+    STAGE 1  (* -> s1q)       count 0
+      worst: 
+    STAGE 2  (s1q -> *)       count 0
+      worst: 
+    NEITHER  (WAVE 2's signature)  count 200
+      worst:  -13.888  levels 44   data 44.502    emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|modrm_reg[1]  ->  emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|opc_base[3]
+  STAGE 1 (anything -> s1q), worst:
+    from  : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|modrm_reg[1]
+    to    : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[625]
+    slack :   +8.326   logic levels 17   data delay 22.271
+  STAGE 2 (s1q -> anything), worst:
+    from  : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[14]
+    to    : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|opc_base[3]
+    slack :   -8.808   logic levels 36   data delay 39.462

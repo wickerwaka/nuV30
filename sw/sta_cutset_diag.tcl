@@ -17,7 +17,13 @@ create_timing_netlist -model slow
 read_sdc
 update_timing_netlist
 
-set fh [open [lindex $quartus(args) 2] w]   # 2, not 0 -- args are {proj rev out}
+# ⚠ INDEX **2**, NOT 0 -- `$quartus(args)` here is {project revision outfile}.
+# ⚠ AND THE COMMENT IS ON ITS OWN LINE, WHICH IS NOT A STYLE CHOICE: Tcl has no
+#   trailing `#` comment, so `set fh [open ...] w]   # ...` passes the comment
+#   words to `set` and dies with *"wrong # args"*.  WAVE 2's retained
+#   `sw/sta_phase_split_diag.tcl` carries exactly that line and CANNOT RUN as
+#   committed -- measured here, 2026-09-08 (see the results document).
+set fh [open [lindex $quartus(args) 2] w]
 proc emit {fh s} { puts $fh $s ; puts $s }
 
 emit $fh "=== sta_cutset_diag (WAVE 4) ==="
@@ -51,7 +57,16 @@ foreach_in_collection p [get_timing_paths -from $v30u_ce -to $v30u_ce -setup -np
             set nm [get_node_info $nd -name]
             incr ncells
             if {[string first "|s1q" $nm] >= 0} { incr nsh }
-            if {[string first "v30u_biu:" $nm] >= 0} {
+            # ⚠ MATCH `|u_biu|`, THE INSTANCE NAME, NOT `v30u_biu:`, THE TYPE
+            # PREFIX.  Quartus prints the type prefix on REGISTER names and
+            # omits it on COMBINATIONAL node names, so a `v30u_biu:` test finds
+            # every BIU flop and NOT ONE BIU LUT -- and it is the LUTs that make
+            # a combinational round trip.  The first version of this clause
+            # tested the type prefix and reported `v30u_biu : 0` on a path with
+            # EIGHT BIU nodes on it (measured, 2026-09-09; see the results
+            # document).  An instrument that can only say NO is the vacuous-gate
+            # pattern, and this one said NO about the thing it was added to find.
+            if {[string first "|u_biu|" $nm] >= 0} {
                 incr nbiu
                 if {$firstbiu eq ""} { set firstbiu $nm }
                 set lastbiu $nm

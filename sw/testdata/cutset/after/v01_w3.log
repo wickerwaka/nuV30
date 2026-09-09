@@ -1,0 +1,12 @@
+89: 200/200 full  (cycles 200, arch 200)
+8B: 200/200 full  (cycles 200, arch 200)
+B8: 200/200 full  (cycles 200, arch 200)
+E8: 200/200 full  (cycles 200, arch 200)
+EB: 200/200 full  (cycles 200, arch 200)
+F7.6: 200/200 full  (cycles 200, arch 200)
+
+TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+
+real	0m1.092s
+user	0m1.041s
+sys	0m0.051s
