@@ -1,4 +1,4 @@
-# nec_test — project instructions for Claude
+# nuV30 — project instructions for Claude
 
 ## Execution model (standing rule, user directive 2026-08-02)
 
@@ -101,6 +101,97 @@ them).
   (docs/notes/ucsim_provenance.md, docs/notes/ucsim_t_provenance.md).
 
 ## Gate quick reference
+
+### ⚠⚠⚠ READ FIRST — **THE EU'S CHAIN IS FLAT SINCE 2026-09-09 (WAVE 7, `2ceb8c3ba3`).  THE SEVEN-COPY UNROLL IS GONE AND THE FUNCTION IS BYTE-IDENTICAL.**
+
+`docs/notes/chainflat_landing_prereg_2026-09-09.md` (committed **before the
+first `hdl/` edit**) and `..._results_2026-09-09.md`; the measurement that
+authorised it is WAVE 6, `chainflat_results_2026-09-09.md`.
+
+**THE LAW IS ONE SENTENCE**: *the fall-through graph over the nine `st_zero_ok`
+states is a DAG, so one clock's walk visits each at most once and is a
+subsequence of any topological order of them* — therefore
+`for (chain = 0; chain < CHAIN_MAX; ...)`, **seven full copies of a 33-arm
+`case`**, is now **position 0's case ONCE, then the nine chainable arms ONCE
+EACH** in the order `S_TAIL_POP · S_TAIL · S_INSTR_END · S_TAKE_OPC ·
+S_EA_CALC · S_DECODE · S_DECODE2 · S_BIND · S_ENTER`.
+
+* **THE NINE ARM BODIES LIVE IN `hdl/rtl/ucore/v30u_eu_arm_<state>.svh`** and
+  are `` `include ``d from **BOTH** `v30u_eu_step.svh`'s `case` (position 0)
+  **and** `v30u_eu.sv`'s flattened pass (positions ≥ 1).  **ONE copy of each
+  body in the tree** — WAVE 6's prototype had two, and a landing may not.
+  `v30u_eu_chain_pos.svh` carries the per-position bookkeeping and is entirely
+  `` `ifndef SYNTHESIS ``.  **Falsifier: `python3
+  sw/chainflat_relocation_check.py`** (9/9, one copy each, bodies
+  byte-identical, the pre-edit `case (st_n)` reconstructible exactly).
+* **`CHAIN_MAX` STOPPED COSTING AND KEPT CLAIMING.**  It was the number of
+  unrolled copies; the flat pass provides nine positions ≥ 1 structurally, so
+  the bound is now a PURE CLAIM checked directly — `chain_used > CHAIN_MAX - 1`
+  — beside a SECOND `CHAIN OVERFLOW` clause, **`chain_open`**, that the walk
+  terminated inside the pass at all (the falsifier for the DAG premise itself;
+  a backward edge would silently drop a step).  **The declaration keeps its
+  exact text and value, so `sw/chain_lfsr_gate.py` IS UNEDITED** — it reads
+  `CHAIN_MAX` out of the RTL and its `--nonvacuity` rewrite to `4'd4` still
+  fires 4/4.
+* **THE `st_zero_ok` FAIL-SAFE IS KEPT** at the entry to positions ≥ 1, and its
+  purpose survives twice over: the line, and the fact that **a straight-line
+  pass has no loop to hang in.**  Demonstrated both ways (deleting it turns a
+  completing run into a `$fatal`).
+* ⚠ **THE 24 `if (chain == 4'd0)` GUARDS ARE NOW VACUOUS AND ARE KEPT**:
+  `v30u_eu_step.svh` is included at position 0 only, so they all read true and
+  fold away.  They stay because they are the machine-readable record of which
+  arms are position-0-only — the complement of `st_zero_ok`, and what
+  `sw/chainflat_graph.py` PC-A1 cross-derives that function from.
+* **THE LADDER IS ZERO-DELTA** — **31 legs SAME / 0 MOVED / 0 MISSING**
+  (`sw/testdata/wave7/{before,after}/`): 169,000/169,000 at `--ce-div` 2, 3, 4
+  **and** 8 with `--ce-div 1` still refused · `8F.0` 500 · HLT sweeps
+  97·93·45·44 = 279/283 · `v0.1-w1`/`-w3` 1,200 · `EB` 200 · the four `evt`
+  cells 200/1,200/200/1,200 · `v0.1-w1evt-biased` 1,200 · `ulockstep` **17,350
+  ALL LOCKSTEP** · `ghost_launch_law` 200/200 · `check_boot` 220 and 400 ·
+  `check_ab_sim` 187 · `sm3_s16_score` 1,320/1,371 · `demux_off_gate` PASS ·
+  `test_artifact` 45/45 · `test_quartus_gate` **255/255** · `ucrom_mif_check`
+  PASS · `chain_lfsr_gate` PASS with its **four signatures BYTE-IDENTICAL** and
+  every gap count and liveness row with them · `r7_lint` PASS · `ss_lint`
+  **232 / 228 flops / 0 UNMAPPED, `SS_VERSION` 0x8F, `SS_TAG` 0x8FE8 —
+  NOT ONE FLOP MOVED** · `fz2_replay` scored-content sha256
+  `de949fd373ed77de…` **IDENTICAL over 305 seeds**.
+* **AND WAVE 6's `CHAIN_PROBE` SEQUENCE CENSUS REPRODUCES EXACTLY** — 8,447,821
+  CE edges, 46 distinct sequences, all four PC-B controls PASS including the
+  non-vacuity one, **the whole distribution byte-identical**.  The flat pass
+  does not merely compute the same outcome: **it walks the same states, at the
+  same positions, in the same order.**
+* **G6, TWO 5-SEED SWEEPS PER CONFIGURATION.  WITH the exception: CONTROL
+  `worst-of-5` 41.06 MHz · RETENTION 41.06, PASS 10 of 10 draws**, TNS 0.000
+  setup AND hold every domain, ALMs **8,079–8,149 (19 %)** — against WAVE 3's
+  pre-landing 37.29–39.51, **no regression**.
+  **WITHOUT the exception (the goal state): CONTROL 22.18 → 28.32 (+6.14, GAP
+  9.82 → 3.68) · RETENTION 22.16 → 28.90 (+6.74, GAP 9.84 → 3.10).  STILL RED,
+  as pre-registered.**  `off_class` `['SAME']` k = 1.0 on 10 of 10, so the
+  deletion reached the compiler every time.
+* ⚠ **THE BINDING PATH IS NOW THE MICROCODE ROM ON EVERY DRAW OF BOTH
+  CONFIGURATIONS.**  The folded chain is no longer the binding structure; **the
+  front end is, and no wave has attacked it.**  The remaining ~3 MHz is there.
+* **AREA: `v30u_eu` 9,185 → 6,126 combinational ALUTs (−33.3 %), whole design
+  15,297 → 12,295 (−19.6 %), fitted ALMs 24 % → 20 % — AND NOT ONE FLOP**
+  anywhere inside `emu` (`sys_top`'s own row reads 424 → 422, outside the
+  design, reproduced on both configurations, recorded and not explained).
+  WAVE 6 predicted −29.3 % in isolation; the design gave more.
+* **G-7, THE OUT-OF-CONTEXT CORRECTION — WAVE 6's HARNESS WAS RIGHT.**  It
+  predicted **−9.431 ns**; the design realised **−9.413 ns** (5-draw
+  no-exception means).  **The correction is +0.018 ns.**  WAVE 5's
+  +11.3 … +20.0 ns mispredictions did **not** recur — a DIFFERENCE between two
+  identically-compiled builds transfers where a PARTITION PREDICTION did not.
+  ⚠ Scored against the landing's own immediate predecessor `aba01feb07` instead
+  of L2's tree the fold is worth **−10.512 ns**; the SMALLER, pre-registered
+  figure is the quoted one.
+* ⚠ **`sw/sta_chain_anatomy.tcl` (WAVE 5's per-position segmenter) NO LONGER
+  RUNS, AND THAT IS THE INSTRUMENT WORKING.**  It cuts on `st_zero_ok` netlist
+  pins; the fold deletes them (**0 pins, against 10 and 13 on the pre-landing
+  commit**), and its control **PC-3 REFUSES** rather than reporting *"0
+  boundaries"*.  A new marker must not be chosen after seeing the refusal.
+* ⚠ **NOTHING WAS FLASHED AND THE FABRIC CONFIRMATION IS OWED.**  This changes
+  the EU's decode.  **A fabric figure taken on FLASH #21 or earlier may not be
+  quoted against this tree.**
 
 ### ⚠⚠⚠ READ FIRST — **THE BUS HAS TWO SHAPES SINCE 2026-08-14, AND `V30_MUXED_AD` PICKS ONE.  THE RIG DEFINES IT.**
 

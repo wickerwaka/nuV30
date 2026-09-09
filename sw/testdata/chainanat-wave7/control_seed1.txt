@@ -1,0 +1,26 @@
+=== sta_chain_anatomy (WAVE 5) ===
+  revision nec_test_ucore   npaths 200
+  $v30u_ce 2154   $v30u_half 1
+
+=== A. POSITIVE CONTROLS (reported FIRST; a miss voids the wave) ===
+  PC-1 RESOLVER   probe node: emu|system_large|u_core|u_eu|u_ucrom|ucrom~764|combout
+       get_pins  collection 1 -> paths 1   (MUST be >= 1: the question can say YES)
+       get_nodes collection 1 -> paths 0   (WAVE 1 §0.2: silently 0)
+       PC-1 PASS
+  PC-2 WALKER     state 3 (MUST be 3)   data cells 36 (MUST be >= 3)
+                  walker data delay 32.549  vs Quartus -data_delay 32.549   diff 0.000 (MUST be <= 0.01)
+       PC-2 PASS
+  PC-3 SEGMENTER  st_zero_ok pins in the netlist: 0
+       boundaries on the FORCED path, real markers : -1  (MUST be >= 1)
+       boundaries on the SAME path, a fake marker  : -1  (MUST be 0)
+       *** PC-3 FAILED ***
+  PC-4 BIU        |u_biu| combout pins: 1227   (single-pin tries: 1)
+       BIU nodes on a path forced through ONE NAMED PIN : 10  (MUST be >= 1)
+       the pin that answered : emu|system_large|u_core|u_biu|q_ripe_lead_n~5|combout
+       ...that same path under the TYPE prefix          : 0  (WAVE 4 §6.1: the wrong test)
+       ...and the BULK -through of 1227 pins yields        : 8  BIU nodes
+       (a BULK figure BELOW the single-pin figure is `-through` being
+        ACCEPTED AND IGNORED -- printed, never relied on)
+       PC-4 PASS
+
+  === CONTROLS: *** FAILED -- NOTHING BELOW MAY BE QUOTED *** ===

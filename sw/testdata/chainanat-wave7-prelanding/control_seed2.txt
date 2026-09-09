@@ -1,0 +1,106 @@
+=== sta_chain_anatomy (WAVE 5) ===
+  revision nec_test_ucore   npaths 200
+  $v30u_ce 2222   $v30u_half 2
+
+=== A. POSITIVE CONTROLS (reported FIRST; a miss voids the wave) ===
+  PC-1 RESOLVER   probe node: emu|system_large|u_core|u_eu|u_ucrom|ucrom~747|combout
+       get_pins  collection 1 -> paths 1   (MUST be >= 1: the question can say YES)
+       get_nodes collection 1 -> paths 0   (WAVE 1 §0.2: silently 0)
+       PC-1 PASS
+  PC-2 WALKER     state 3 (MUST be 3)   data cells 50 (MUST be >= 3)
+                  walker data delay 42.049  vs Quartus -data_delay 42.049   diff 0.000 (MUST be <= 0.01)
+       PC-2 PASS
+  PC-3 SEGMENTER  st_zero_ok pins in the netlist: 10
+       forced path: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a7~PORT_A_WRITE_ENABLE_REG
+                 -> emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|opc_sel[1]~1_OTERM6649DUPLICATE
+       boundaries on the FORCED path, real markers : 3  (MUST be >= 1)
+       boundaries on the SAME path, a fake marker  : 0  (MUST be 0)
+       PC-3 PASS
+  PC-4 BIU        |u_biu| combout pins: 1171   (single-pin tries: 1)
+       BIU nodes on a path forced through ONE NAMED PIN : 10  (MUST be >= 1)
+       the pin that answered : emu|system_large|u_core|u_biu|q_ripe_lead_n~4|combout
+       ...that same path under the TYPE prefix          : 0  (WAVE 4 §6.1: the wrong test)
+       ...and the BULK -through of 1171 pins yields        : 0  BIU nodes
+       (a BULK figure BELOW the single-pin figure is `-through` being
+        ACCEPTED AND IGNORED -- printed, never relied on)
+       PC-4 PASS
+
+  === CONTROLS: ALL PASS ===
+
+=== B. THE WORST ce->ce ARC ===
+  from : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a7~PORT_A_WRITE_ENABLE_REG
+  to   : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|opc_sel[1]~1_OTERM6649DUPLICATE
+  slack  -12.059   logic levels 44   data delay 42.049   walked cells 50  combout 43
+  arrival points -> /home/wickerwaka/.cache/ucsimt-tmp/wave7/prelanding/sw/testdata/chainanat-wave7-prelanding/control_seed2.arrivalpoints.txt
+
+=== C. Q1 -- THE PER-SEGMENT PROFILE (segments = chain positions' bodies) ===
+  boundaries found: 3   segments: 4   (CHAIN_MAX = 7 bounds it)
+  seg |   from ns |     to ns |   span ns | cells | comb | first .. last combout base names
+    0 |     0.000 |    20.860 |    20.860 |    25 |   18 | ucrom .. Decoder28
+    1 |    20.860 |    27.567 |     6.707 |     5 |    5 | Decoder30 .. p
+    2 |    27.567 |    36.047 |     8.480 |     5 |    5 | Decoder34 .. always6
+    3 |    36.047 |    41.783 |     5.736 |     7 |    7 | seg_override_n .. opc_sel
+
+=== D. Q2 -- THE CUMULATIVE PROFILE OVER EVERY BOUNDARY ===
+  (upstream = launch pin -> the boundary; downstream = the boundary -> destination)
+  ⚠ THESE ARE UNCUT-NETLIST ESTIMATES.  WAVE 1 §6 item 1: after a real cut
+     both halves are re-synthesised and the numbers move.
+   k |  upstream ns | downstream ns | worse half | both <= 29.6 ?
+   0 |       20.860 |        21.189 |     21.189 | YES
+   1 |       27.567 |        14.482 |     27.567 | YES
+   2 |       36.047 |         6.002 |     36.047 | no
+
+=== E. Q3/Q4 -- SEGMENT CONTENTS (base names, in order) ===
+  seg 0 (20.860 ns): ucrom ucrom ucrom e_s1 Equal118 Equal118 always6 opr_fresh_n rdq0_n opr_n v1 Mux350 Mux350 Mux350 Mux360 Mux360 Mux360 Decoder28
+  seg 1 (6.707 ns): Decoder30 ld_b_n Ram17 Ram17 p
+  seg 2 (8.480 ns): Decoder34 ld_b_n Ram21 Ram23 always6
+  seg 3 (5.736 ns): seg_override_n opc_base opc_base m_kind modrm_reg modrm_reg opc_sel
+
+  --- Q4: base-name overlap between segments (same name, different ~N = INDEPENDENT COPIES) ---
+    seg 0 ∩ seg 2 : always6
+    seg 1 ∩ seg 2 : ld_b_n
+
+=== F. Q5 -- THE FLOOR (worst ce->ce arc by number of chain boundaries) ===
+
+  --- scan SLACK: scanned 200 paths ---
+  boundaries | n paths | worst DATA delay among paths with that many boundaries
+           3 |    152 |    42.049 ns  levels 44   ram_block1a7 -> opc_sel
+           4 |     48 |    42.020 ns  levels 44   ram_block1a7 -> opc_sel
+
+  --- scan ENDPOINT: scanned 200 paths ---
+  boundaries | n paths | worst DATA delay among paths with that many boundaries
+           2 |      1 |    40.115 ns  levels 40   ram_block1a7 -> Mux69
+           3 |    199 |    42.049 ns  levels 44   ram_block1a7 -> opc_sel
+
+  ARITHMETIC FLOOR on THIS arc: seg 0 (20.860) + seg 3 (5.736) = 26.596 ns
+     (against the whole arc's 42.049 ns; the 2 intermediate segments and
+      every boundary run are what it removes.  APPROXIMATION, labelled.)
+
+  ⚠ APPROXIMATION, LABELLED AS ONE.  The 0- and 1-boundary rows are the
+     closest thing this netlist has to 'the arc with the folded positions
+     removed'.  They are paths that HAPPEN not to cross more boundaries,
+     not the same design with positions 1-6 deleted.
+
+=== G. Q6 -- THE BIU ROUND TRIP ===
+  BIU nodes on the worst ce->ce arc: 0
+    (none -- the binding arc is EU-internal on this draw)
+
+=== H. Q4 -- THE COPY CENSUS (distinct combout nodes per RTL base name) ===
+  signal              | class            | combout nodes in v30u_eu
+  st_n                | CHAINABLE        | 160  (+0 indexed)
+  stop                | CHAINABLE        | 19  (+0 indexed)
+  st_zero_ok          | CHAINABLE        | 10  (+0 indexed)
+  ld_b_n              | CHAINABLE        | 62  (+0 indexed)
+  pv                  | CHAINABLE        | 45  (+0 indexed)
+  opc_base            | CHAINABLE        | 19  (+43 indexed)
+  m_kind              | CHAINABLE        | 28  (+10 indexed)
+  seg_override_n      | CHAINABLE        | 19  (+0 indexed)
+  rst_ctr_n           | POS0-ONLY        | 0  (+0 indexed)
+  ld_dlo_n            | POS0-ONLY        | 0  (+0 indexed)
+  nmi_latch_n         | POS0-ONLY        | 1  (+0 indexed)
+  rloop_n_n           | POS0-ONLY        | 1  (+0 indexed)
+  ld_ripe_prev_n      | POS0-ONLY        | 0  (+0 indexed)
+  sigma               | FRONT-END        | 0  (+133 indexed)
+  s1_val              | FRONT-END        | 54  (+0 indexed)
+  it_val              | FRONT-END        | 8  (+0 indexed)
+  zzz_no_such_signal  | NEGATIVE-CONTROL | 0  (+0 indexed)

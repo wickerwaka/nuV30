@@ -1,4 +1,4 @@
-# Standing gate set (nec_test)
+# Standing gate set (nuV30)
 
 The regression gates re-run after any RTL or generation-stack change. All are
 board-free (cached chip refs + Verilator TB) unless noted.
@@ -205,7 +205,63 @@ derived ceilings and inter-draw claims are affected.)*
 
 ---
 
-### ⚠⚠⚠⚠ **THE LIVE G6 LEG — 2026-08-14, THE DE-MUXED BUS.  A PAIR OF SINGLE DRAWS, NOT A BAND.**
+### ⚠⚠⚠⚠ **THE LIVE G6 LEG — 2026-09-09, WAVE 7 (THE CHAIN FLATTENING).  TWO 5-SEED SWEEPS PER CONFIGURATION, AND THE NO-EXCEPTION SCOREBOARD MOVED.**
+
+`docs/notes/chainflat_landing_results_2026-09-09.md`; landing **`2ceb8c3ba3`**,
+pre-registration `aba01feb07` committed **before the first `hdl/` edit**.
+
+**WITH the exception (the tree's SDC) — G-5, and it PASSES 10 of 10 draws:**
+
+| | `worst-of-5@seeds{1,2,3,4,5}` | draws | ALMs | record |
+|---|---:|---|---:|---|
+| **CONTROL** | **41.06 MHz** | 42.98 · 43.01 · 41.26 · 41.06 · 42.02 | 8,079–8,117 (19 %) | `2772002011546f6f…` |
+| **RETENTION** | **41.06 MHz** | 41.06 · 42.65 · 44.10 · 41.87 · 42.79 | 8,125–8,149 (19 %) | `569b46b853a43d2b…` |
+
+TNS 0.000 setup AND hold on every domain, 0 errors, 0 latches, 0 `lpm_divide`,
+E8 seed honoured on every draw.  **Against WAVE 3's pre-landing CONTROL band of
+37.29–39.51 this is +1.55 MHz on its best draw and there is no regression.**
+
+**WITHOUT the exception — THE GOAL STATE (USER RULING 2026-09-08, *"I don't
+want custom sdc rules, period"*).  STILL RED, and the gap fell by two thirds:**
+
+| | pre-landing | **WAVE 7** | move | **GAP to 32.0** | record |
+|---|---:|---:|---:|---:|---|
+| **CONTROL** | 22.18 | **28.32** | **+6.14** | 9.82 → **3.68** | `3df71113402c82f9…` |
+| **RETENTION** | 22.16 | **28.90** | **+6.74** | 9.84 → **3.10** | `4de850c056501ebf…` |
+
+`off_class` `['SAME']` with **k measured 1.0 against a nominal 2.0 on 10 of 10
+draws**, so the deletion reached the compiler every time; a draw with an EMPTY
+`off_class` answers a different question and none did.  ⚠ **The 22.18 / 22.16
+baseline is L2's (`ad70054b87509dbb…`, 2026-09-08) and is the PRE-REGISTERED
+comparison.  Measured on the landing's own immediate predecessor `aba01feb07`
+the pre-landing tree is SLOWER still (21.46 / 23.09 / 21.92 MHz on three
+draws), so the scored figure is the CONSERVATIVE one.**
+
+⚠ **AND THE BINDING PATH IS NOW THE MICROCODE ROM ON EVERY DRAW OF BOTH
+CONFIGURATIONS** — `v30u_ucrom|altsyncram:ucdecode_rtl_0|…|ram_block1a*` to
+another M10K's address register, or to `eff_op[2]`.  **The folded chain is no
+longer the binding structure.  The front end is, and no wave has attacked it.**
+
+⚠ **`sw/sta_chain_anatomy.tcl` (WAVE 5's per-position segmenter) NO LONGER
+RUNS ON THIS TREE and that is correct, not broken**: it cuts the arc on
+netlist pins named after `st_zero_ok`, the fold deletes them (0 pins against 10
+and 13 pre-landing), and its own control **PC-3 REFUSES** rather than reporting
+*"0 boundaries"*.  A later wave that wants the profile must choose a new
+marker; **choosing one after seeing the refusal is fitting-shaped and was
+deliberately not done at the landing.**
+
+⚠ **AREA, A&S per entity, CONTROL map vs CONTROL map**: `v30u_eu` **9,185 →
+6,126 combinational ALUTs (−33.3 %)**, whole design **15,297 → 12,295
+(−19.6 %)**, fitted ALMs **24 % → 20 %** of the device — and **NOT ONE FLOP**
+anywhere inside `emu` (`v30u_eu` 728 → 728, `v30_core` 1,162 → 1,162,
+`system_large` 2,340 → 2,340, `emu` 2,969 → 2,969).  `sys_top`'s own row reads
+424 → 422; those two are OUTSIDE the design, reproduced on both configurations,
+**recorded and not explained.**
+
+*The 2026-08-14 pair follows, SUPERSEDED as the live leg and kept because a
+ratchet is only readable against its own history.*
+
+### ⚠ SUPERSEDED — **THE 2026-08-14 G6 LEG, THE DE-MUXED BUS.  A PAIR OF SINGLE DRAWS, NOT A BAND.**
 
 **`demux_bus_results_2026-08-14.md` §7.**  One draw per configuration,
 **NOT an Fmax claim and not a band.**
@@ -569,7 +625,7 @@ shortening the core's own AD publication cone — because on its own it would
 >
 > **EACH HALF IS QUOTED WITH ITS BINDING CONE AND ITS `k`, AND NEITHER STANDS
 > IN FOR THE OTHER.**  The quoting form is *"the ucore's own logic closes at X
-> MHz (class C, k); the nec_test RIG closes at Y MHz, bound by cone Z"*.  A
+> MHz (class C, k); the nuV30 RIG closes at Y MHz, bound by cone Z"*.  A
 > core-domain figure quoted alone, or quoted as a G6 PASS, is a
 > mis-registration.
 
@@ -1058,6 +1114,39 @@ archived core and nothing is to be done about it.
 ### THE CHAIN-DEPTH FALSIFIER — **NEW, 2026-08-12.  ALWAYS-ON, ~20 s.**
 
 `python3 sw/chain_lfsr_gate.py`  (exit 0 PASS / 1 bar MISSED / 2 could-not-run)
+
+⚠⚠ **WHAT `CHAIN_MAX` COSTS CHANGED AT WAVE 7 (2026-09-09, `2ceb8c3ba3`) AND
+WHAT IT CLAIMS DID NOT — AND THIS GATE IS UNEDITED BY THAT LANDING.**  The
+chain is no longer a `for` loop over `CHAIN_MAX` unrolled copies; it is
+position 0's 33-arm case ONCE, then the nine chainable arms ONCE EACH in
+topological order (`chainflat_landing_results_2026-09-09.md`).  So the bound is
+no longer STRUCTURAL — it costs nothing — and the `$fatal` therefore checks the
+measured depth DIRECTLY (`chain_used > CHAIN_MAX - 1`) beside a SECOND clause,
+`chain_open`, that the walk terminated inside the pass at all.  **Both say
+`CHAIN OVERFLOW`, both are non-vacuity-demonstrated, and
+`localparam bit [3:0] CHAIN_MAX = 4'd7;` keeps its exact declared text and
+value — which is why this gate's regex, its H-1 bar and its `--nonvacuity`
+rewrite to `4'd4` all still work with NOT ONE LINE OF THIS TOOL CHANGED.**
+Measured at the landing: **PASS**, `CHAIN_MAX` 7, depth 6, 0 overflows, the four
+signatures `1d01c9b269ffaa94 · b39b040a98b28e5d · 0997b773cd99c030 ·
+d05b6c3c3d9fbe78` **BYTE-IDENTICAL across the landing** with `entry_st`,
+`coincide`, `ce_clocks`, every gap count and the whole liveness census; H-3
+non-vacuity **fires 4/4 at `CHAIN_MAX = 4`**.
+
+⚠ **A SECOND FALSIFIER STANDS BESIDE IT SINCE WAVE 7 — `python3
+sw/chainflat_relocation_check.py`** (exit 0/1/2, ~1 s, offline).  The nine
+chainable arm bodies now live in `hdl/rtl/ucore/v30u_eu_arm_<state>.svh` and
+are `` `include ``d from BOTH the `case` at position 0 and the flattened
+positions ≥ 1, so the tree must carry **exactly one copy of each** and each
+must be **byte-identical to its pre-flattening text**.  It checks both, plus
+that inlining the includes back reconstructs `v30u_eu_step.svh`'s pre-edit
+`case (st_n)` exactly.  **PASS at the landing, 9/9.**  ⚠ Its default `--ref` is
+`aba01feb07`; a wave that legitimately EDITS an arm must move the reference and
+say so, and a wave that does not must leave it alone.
+
+⚠ **`sw/sta_chain_anatomy.tcl` IS NOT A GATE AND NO LONGER RUNS ON THIS TREE**
+— its PC-3 segmenter cuts on `st_zero_ok` netlist pins and the fold deletes
+them.  See §A's live G6 leg.
 
 **Why it exists.** `v30u_eu.sv`'s `CHAIN_MAX` is a **bound on a claim** — no
 more than N zero-cost model steps ever ride one clock — and on 2026-08-12 that
