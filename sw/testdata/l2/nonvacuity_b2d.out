@@ -1,0 +1,14 @@
+
+=== B2 the srst arm dropped, scored on the SAVE-STATE sweep ===
+  cc 8F.0 --ss-sweep PASSED  (TOTAL: 500/500 full (cycles 500, arch 500))   *** NOT AS REQUIRED ***
+  CASE VERDICT: *** VACUOUS ***
+
+=== D  CONTROL FOR B -- the SAME arm dropped from L1's dec_addr_next ===
+  check_core 8F.0  PASSED  (TOTAL: 500/500 full (cycles 500, arch 500))   *** NOT AS REQUIRED ***
+  check_boot 220   PASSED  (BOOT REPLAY MATCHES over 220 rows from RESET release)   *** NOT AS REQUIRED ***
+  check_core all   PASSED  (TOTAL: 169000/169000 full (cycles 169000, arch 169000))   *** NOT AS REQUIRED ***
+  cc 8F.0 --ss-sweep PASSED  (TOTAL: 500/500 full (cycles 500, arch 500))   *** NOT AS REQUIRED ***
+  CASE VERDICT: *** VACUOUS ***
+
+restoring the receipted binary to the unperturbed tree
+hdl/ restored: CLEAN

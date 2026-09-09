@@ -64,12 +64,25 @@ emit [format "  \$v30u_ce                : %d" [get_collection_size $v30u_ce]]
 emit [format "  row_q (incl ~DUPLICATE) : %d" [get_collection_size $rowq]]
 emit [format "  dec_q (incl ~DUPLICATE) : %d" [get_collection_size $decq]]
 
+# ⚠ AN EMPTY `row_q` COLLECTION HAS A THIRD CAUSE AND IT IS NOT AN ERROR.
+# L1's `dec_q` reads 0 here on a post-L1 netlist because Quartus PACKED IT INTO
+# THE M10K as the memory's address register, so no post-fit register carries
+# that name and the launch point is `…|ram_block1aN~PORT_A_WRITE_ENABLE_REG`
+# instead.  If `ucrom` is ever inferred as a memory the same will happen to
+# `row_q`.  So: list the memory nodes before refusing, and say which cause it is.
+set rammem [get_registers -nowarn {*|v30u_eu:*|v30u_ucrom:*|*ram_block*}]
+emit [format "  ucrom/ucdecode memory nodes in the EU : %d" \
+          [get_collection_size $rammem]]
+foreach_in_collection r $rammem { emit "    mem node: [get_node_info $r -name]" }
+
 if {[get_collection_size $rowq] == 0} {
     emit ""
     emit "CONTROL FAILED: the row_q collection is EMPTY.  Either this netlist"
-    emit "predates L2, or every row_q bit was optimised away, or the glob is"
-    emit "wrong.  NO L-8 RESULT IS EMITTED -- an empty collection returns no"
-    emit "path, and 'no path' would read as 'the class does not bind'."
+    emit "predates L2, or every row_q bit was optimised away, or row_q was"
+    emit "PACKED INTO AN INFERRED MEMORY (see the memory-node list above --"
+    emit "that is what happened to L1's dec_q), or the glob is wrong.  NO L-8"
+    emit "RESULT IS EMITTED -- an empty collection returns no path, and 'no"
+    emit "path' would read as 'the class does not bind'."
     close $fh ; project_close ; exit 3
 }
 

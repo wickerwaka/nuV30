@@ -1,0 +1,17 @@
+
+=== A  row_q perturbed by one bit ===
+  check_core 8F.0  FAILED  (TOTAL: 0/500 full (cycles 249, arch 0))   as required
+  CASE VERDICT: NON-VACUOUS
+
+=== B  the srst arm dropped from rom_addr_next ===
+  check_core 8F.0  PASSED  (TOTAL: 500/500 full (cycles 500, arch 500))   *** NOT AS REQUIRED ***
+  check_boot 220   PASSED  (BOOT REPLAY MATCHES over 220 rows from RESET release)   *** NOT AS REQUIRED ***
+  check_core all   PASSED  (TOTAL: 169000/169000 full (cycles 169000, arch 169000))   *** NOT AS REQUIRED ***
+  CASE VERDICT: *** VACUOUS ***
+
+=== C  POSITIVE CONTROL -- no perturbation ===
+  check_core 8F.0  PASSED  (TOTAL: 500/500 full (cycles 500, arch 500))   as required
+  check_boot 220   PASSED  (BOOT REPLAY MATCHES over 220 rows from RESET release)   as required
+
+restoring the receipted binary to the unperturbed tree
+hdl/ restored: CLEAN
