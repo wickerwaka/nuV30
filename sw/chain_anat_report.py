@@ -26,6 +26,60 @@ CONT_RE = re.compile(r'^  seg (\d+) \(([\d.]+) ns\): (.*)$')
 HIST_RE = re.compile(r'^\s+(\d+) \|\s+(\d+) \|\s+([\d.]+) ns\s+levels (\S+)\s+(.*)$')
 
 
+AP_RE = re.compile(r'^\s*([\d.-]+)\s+([\d.-]+)\s+(\S+)\s+(\S+)\s+(.*)$')
+
+
+def base(nm):
+    """leaf name, `~N` and any bus index removed; the last `|` segment dropped
+    only when it IS a pin (the WAVE 1 `basenet` defect, fixed the same way in
+    the Tcl)."""
+    PIN = {'combout', 'dataa', 'datab', 'datac', 'datad', 'datae', 'dataf', 'q',
+           'd', 'clk', 'cin', 'cout', 'sumout', 'shareout', 'o', 'i', 'inclk',
+           'outclk', 'regout', 'datain'}
+    segs = [x.split(':')[-1] for x in nm.split('|')]
+    if len(segs) > 1 and segs[-1] in PIN:
+        segs = segs[:-1]
+    last = segs[-1].split('~')[0].split('[')[0]
+    return last
+
+
+def seg0_split(stem):
+    """SEGMENT 0 carries the FRONT END *and* chain position 0's body, and the
+    boundary between them is not an `st_zero_ok` (position 0 has no guard).
+    The reading used here is the FIRST `Decoder<N>` cone on the arc -- the
+    position-0 `case (st_n)` decode.
+
+    ⚠ DECLARED HEURISTIC, not a measurement.  WAVE 1 §5.2 identified
+    `Decoder28` as the chain entry independently on its own draws and WAVE 2
+    REFUTED the identification of a Quartus net name with an RTL seam; this is
+    offered as a READING of segment 0 and nothing more.  A `Decoder*` cone that
+    is some other case statement would move it."""
+    f = stem + '.arrivalpoints.txt'
+    if not os.path.exists(f):
+        return None
+    launch = None
+    first_dec = None
+    prev = None
+    total = None
+    for ln in open(f):
+        m = AP_RE.match(ln)
+        if not m:
+            continue
+        cum, tag, nm = float(m.group(2)), m.group(4), m.group(5)
+        total = cum
+        if tag == 'LAUNCH':
+            launch = cum
+        if tag == 'DATA' and first_dec is None and re.match(r'^Decoder\d+$', base(nm)):
+            first_dec = (cum, base(nm), prev)
+        if tag == 'DATA':
+            prev = base(nm)
+    if launch is None or first_dec is None:
+        return None
+    return dict(launch=launch, dec_cum=first_dec[0], dec=first_dec[1],
+                before=first_dec[2], front=first_dec[0] - launch,
+                total=total - launch)
+
+
 def parse(path):
     d = {'file': path, 'segs': [], 'cum': [], 'cont': {}, 'scan': {},
          'ctl': {}, 'biu': [], 'census': {}, 'floor': None}
@@ -123,6 +177,18 @@ def main():
         spans = " ".join(f"{s['span']:.2f}" for s in d['segs'])
         print(f"  {os.path.basename(d['file'])[:-4]:24s} | {d.get('dd',0):6.3f} | "
               f"{d.get('levels',0):3d} | {len(d['segs']):4d} | {spans}")
+    print("\n  --- SEGMENT 0 READ IN TWO, at the first `Decoder<N>` cone ---")
+    print("  (DECLARED HEURISTIC -- see seg0_split()'s docstring; WAVE 2 refuted")
+    print("   the identification of a Quartus net name with an RTL seam)")
+    for d in draws:
+        sp = seg0_split(d['file'][:-4])
+        if sp:
+            print(f"    {os.path.basename(d['file'])[:-4]:24s} FRONT END {sp['front']:7.3f} ns"
+                  f"  -> {sp['dec']} ; position-0 body + the rest "
+                  f"{sp['total']-sp['front']:7.3f} ns"
+                  f"   (last front-end node: {sp['before']})")
+        else:
+            print(f"    {os.path.basename(d['file'])[:-4]:24s} no `Decoder<N>` cone found -- not read")
     print("\n  seg 0 is the FRONT END + the first position's body; the rest are")
     print("  the folded positions.  seg 0 share of the arc:")
     for d in draws:

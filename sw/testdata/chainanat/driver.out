@@ -1,0 +1,47 @@
+patched: uncommented set_multicycle_path lines = 0 (must be 0)
+
+=== MAP: control ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_map nec_test -c nec_test_ucore
+    exit 0  141s
+
+=== FIT: control seed 1 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=1 --recompile=off nec_test -c nec_test_ucore
+    exit 0  708s
+    ; Fitter Initial Placement Seed                                              ; 1                                     ; 1                                     ;
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_truefmax_probe.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/sw/testdata/chainanat/control_seed1
+    exit 2  21s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chain_anatomy.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/sw/testdata/chainanat/control_seed1 1000
+    exit 0  26s
+
+=== FIT: control seed 2 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=2 --recompile=off nec_test -c nec_test_ucore
+    exit 0  714s
+    ; Fitter Initial Placement Seed                                              ; 2                                     ; 1                                     ;
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_truefmax_probe.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/sw/testdata/chainanat/control_seed2
+    exit 0  26s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chain_anatomy.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/sw/testdata/chainanat/control_seed2 1000
+    exit 0  26s
+
+=== FIT: control seed 3 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=3 --recompile=off nec_test -c nec_test_ucore
+    exit 0  520s
+    ; Fitter Initial Placement Seed                                              ; 3                                     ; 1                                     ;
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_truefmax_probe.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/sw/testdata/chainanat/control_seed3
+    exit 0  20s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chain_anatomy.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/sw/testdata/chainanat/control_seed3 1000
+    exit 0  23s
+
+=== MAP: retention ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_map --verilog_macro=X1_AD_RETENTION=1 nec_test -c nec_test_ucore
+    exit 0  152s
+
+=== FIT: retention seed 1 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=1 --recompile=off nec_test -c nec_test_ucore
+    exit 0  657s
+    ; Fitter Initial Placement Seed                                              ; 1                                     ; 1                                     ;
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_truefmax_probe.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/sw/testdata/chainanat/retention_seed1
+    exit 0  18s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chain_anatomy.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/sw/testdata/chainanat/retention_seed1 1000
+    exit 0  21s
+
+hdl/ restored: CLEAN

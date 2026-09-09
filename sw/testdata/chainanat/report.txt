@@ -1,0 +1,251 @@
+=== E-1  POSITIVE CONTROLS, PER DRAW (reported FIRST) ===
+  control_seed1.txt        PC-1:PASS  PC-2:PASS  PC-3:PASS  PC-4:PASS   -> ALL PASS
+  control_seed2.txt        PC-1:PASS  PC-2:PASS  PC-3:PASS  PC-4:PASS   -> ALL PASS
+  control_seed3.txt        PC-1:PASS  PC-2:PASS  PC-3:PASS  PC-4:PASS   -> ALL PASS
+  retention_seed1.txt      PC-1:PASS  PC-2:PASS  PC-3:PASS  PC-4:PASS   -> ALL PASS
+  E-1: MET
+
+=== THE NO-EXCEPTION CHECK (the deletion reached the compiler) ===
+  control_seed1.txt        SAME k=1.0  (MUST be 1.0)   T_min 45.014 ns  22.22 MHz
+  control_seed2.txt        SAME k=1.0  (MUST be 1.0)   T_min 45.824 ns  21.82 MHz
+  control_seed3.txt        SAME k=1.0  (MUST be 1.0)   T_min 44.342 ns  22.55 MHz
+  retention_seed1.txt      SAME k=1.0  (MUST be 1.0)   T_min 44.91 ns  22.27 MHz
+
+=== Q1 / E-2  THE PER-SEGMENT PROFILE, ALL DRAWS ===
+  draw                     | arc ns | lvl | segs | per-segment span ns
+  control_seed1            | 43.375 |  42 |    4 | 26.19 7.95 4.21 4.42
+  control_seed2            | 44.223 |  45 |    4 | 25.50 7.26 3.79 6.11
+  control_seed3            | 43.088 |  43 |    5 | 21.01 3.87 6.33 4.10 6.20
+  retention_seed1          | 43.254 |  41 |    5 | 22.17 3.99 7.47 2.99 6.37
+
+  --- SEGMENT 0 READ IN TWO, at the first `Decoder<N>` cone ---
+  (DECLARED HEURISTIC -- see seg0_split()'s docstring; WAVE 2 refuted
+   the identification of a Quartus net name with an RTL seam)
+    control_seed1            FRONT END  20.292 ns  -> Decoder28 ; position-0 body + the rest  23.083 ns   (last front-end node: Mux359)
+    control_seed2            FRONT END  19.710 ns  -> Decoder28 ; position-0 body + the rest  24.513 ns   (last front-end node: Mux358)
+    control_seed3            FRONT END  25.611 ns  -> Decoder32 ; position-0 body + the rest  17.477 ns   (last front-end node: st_n)
+    retention_seed1          FRONT END  20.043 ns  -> Decoder28 ; position-0 body + the rest  23.211 ns   (last front-end node: Mux358)
+
+  seg 0 is the FRONT END + the first position's body; the rest are
+  the folded positions.  seg 0 share of the arc:
+    control_seed1            26.190 / 43.375 = 60.4 %   folded positions = 17.185 ns
+    control_seed2            25.505 / 44.223 = 57.7 %   folded positions = 18.718 ns
+    control_seed3            21.010 / 43.088 = 48.8 %   folded positions = 22.078 ns
+    retention_seed1          22.171 / 43.254 = 51.3 %   folded positions = 21.083 ns
+
+=== Q2 / E-3  THE CUMULATIVE PROFILE.  DOES ANY k GIVE BOTH HALVES <= 29.6 ns? ===
+  --- control_seed1 (arc 43.375 ns) ---
+    k |  upstream |downstream| worse half | both <= 29.6
+     0 |    26.190 |   17.185 |     26.190 | YES
+     1 |    34.135 |    9.240 |     34.135 | no
+     2 |    38.340 |    5.035 |     38.340 | no
+    best-balanced k = 0, worse half 26.190 ns  -> BOTH INSIDE 29.6
+  --- control_seed2 (arc 44.223 ns) ---
+    k |  upstream |downstream| worse half | both <= 29.6
+     0 |    25.505 |   18.718 |     25.505 | YES
+     1 |    32.764 |   11.459 |     32.764 | no
+     2 |    36.550 |    7.673 |     36.550 | no
+    best-balanced k = 0, worse half 25.505 ns  -> BOTH INSIDE 29.6
+  --- control_seed3 (arc 43.088 ns) ---
+    k |  upstream |downstream| worse half | both <= 29.6
+     0 |    21.010 |   22.078 |     22.078 | YES
+     1 |    24.875 |   18.213 |     24.875 | YES
+     2 |    31.204 |   11.884 |     31.204 | no
+     3 |    35.300 |    7.788 |     35.300 | no
+    best-balanced k = 0, worse half 22.078 ns  -> BOTH INSIDE 29.6
+  --- retention_seed1 (arc 43.254 ns) ---
+    k |  upstream |downstream| worse half | both <= 29.6
+     0 |    22.171 |   21.083 |     22.171 | YES
+     1 |    26.159 |   17.095 |     26.159 | YES
+     2 |    33.629 |    9.625 |     33.629 | no
+     3 |    36.622 |    6.632 |     36.622 | no
+    best-balanced k = 0, worse half 22.171 ns  -> BOTH INSIDE 29.6
+
+  E-3 ANSWER (uncut-netlist estimate): YES -- some k gives both halves <= 29.6 ns
+
+=== Q3 / E-4  WHAT DOMINATES INSIDE A SEGMENT ===
+  --- control_seed1 ---
+    seg 0  26.190 ns : ucrom[-] ucrom[-] ucrom[-] ucrom[-] r_nopmove[-] opr_fresh_n[INSTR_END,IRQ_D,RLOOP,ROW,TAIL_W] opr_fresh_n[INSTR_END,IRQ_D,RLOOP,ROW,TAIL_W] Equal218[-] opr_n[PRERD,RLOOP,ROW,TAIL_W] v1[RLOOP,ROW] Equal243[-] Equal243[-] Mux354[-] Mux358[-] Mux359[-] Mux359[-] Decoder28[-] ld_b_n[EXT_POP,OPC_POP,TAKE_OPC] m_idx[BIND,IRQ_D] Ram12[-]
+    seg 1   7.945 ns : Decoder32[-] ld_b_n[TAKE_OPC] Ram20[-] Ram20[-] eu_halted_n[DECODE2]
+    seg 2   4.205 ns : Decoder36[-]
+    seg 3   4.416 ns : seg_override_n[DECODE,INSTR_END] opc_base[BIND,INSTR_END] opc_base[BIND,INSTR_END] modrm_reg[INSTR_END] modrm_reg[INSTR_END]
+    --- arm attribution, weighted by node count ---
+    seg 0  26.190 ns : ROW=1.15  RLOOP=1.15  IRQ_D=0.90  TAIL_W=0.65  BIND=0.50  INSTR_END=0.40   | unattributed nodes 14/20
+    seg 1   7.945 ns : TAKE_OPC=1.00  DECODE2=1.00   | unattributed nodes 3/5
+    seg 2   4.205 ns : (nothing named)   | unattributed nodes 1/1
+    seg 3   4.416 ns : INSTR_END=3.50  BIND=1.00  DECODE=0.50   | unattributed nodes 0/5
+  --- control_seed2 ---
+    seg 0  25.505 ns : ucrom[-] ucrom[-] ucrom[-] ucrom[-] Mux278[-] comb[-] comb[-] Mux277[-] Mux277[-] s1_now[-] ind_now[-] retire_ok_e[-] eu_bnd_take[-] q_cnt[-] Add46[-] q_ripe_lead_n[-] q_ripe_lead_n[-] Mux354[-] Mux358[-] Mux358[-] Decoder28[-] ld_b_n[EXT_POP,OPC_POP,TAKE_OPC] m_idx[BIND,IRQ_D] Ram12[-]
+    seg 1   7.259 ns : Selector1620[-] Selector1620[-] Selector1620[-] pv[BIND,DECODE,DECODE2] always6[-] Selector1742[-] Selector1742[-]
+    seg 2   3.786 ns : seg_override_n[DECODE,INSTR_END] seg_override_n[DECODE,INSTR_END]
+    seg 3   6.108 ns : Decoder38[-] opc_base[BIND,INSTR_END] opc_base[BIND,INSTR_END] modrm_reg[INSTR_END] modrm_reg[INSTR_END]
+    --- arm attribution, weighted by node count ---
+    seg 0  25.505 ns : BIND=0.50  IRQ_D=0.50  EXT_POP=0.33  TAKE_OPC=0.33  OPC_POP=0.33   | unattributed nodes 22/24
+    seg 1   7.259 ns : DECODE2=0.33  BIND=0.33  DECODE=0.33   | unattributed nodes 6/7
+    seg 2   3.786 ns : INSTR_END=1.00  DECODE=1.00   | unattributed nodes 0/2
+    seg 3   6.108 ns : INSTR_END=3.00  BIND=1.00   | unattributed nodes 1/5
+  --- control_seed3 ---
+    seg 0  21.010 ns : ucrom[-] ucrom[-] ucrom[-] e_s1[-] s1_val[-] s1_val[-] Mux277[-] Mux277[-] Mux277[-] s1_now[-] ind_now[-] retire_ok_e[-] eu_bnd_take[-] q_cnt[-] q_cnt[-] q_ripe_lead_n[-] q_ripe_lead_n[-] Mux354[-] Mux358[-] Mux358[-] seg_override_n[DECODE,INSTR_END,IRQ_D]
+    seg 1   3.865 ns : WideOr99[-]
+    seg 2   6.329 ns : Decoder32[-] ld_b_n[TAKE_OPC] Ram20[-] Ram20[-] p[-]
+    seg 3   4.096 ns : WideOr165[-] WideOr165[-]
+    seg 4   6.195 ns : Decoder38[-] opc_base[BIND,INSTR_END] opc_base[BIND,INSTR_END] modrm_reg[INSTR_END] modrm_reg[INSTR_END]
+    --- arm attribution, weighted by node count ---
+    seg 0  21.010 ns : INSTR_END=0.33  DECODE=0.33  IRQ_D=0.33   | unattributed nodes 20/21
+    seg 1   3.865 ns : (nothing named)   | unattributed nodes 1/1
+    seg 2   6.329 ns : TAKE_OPC=1.00   | unattributed nodes 4/5
+    seg 3   4.096 ns : (nothing named)   | unattributed nodes 2/2
+    seg 4   6.195 ns : INSTR_END=3.00  BIND=1.00   | unattributed nodes 1/5
+  --- retention_seed1 ---
+    seg 0  22.171 ns : ucrom[-] ucrom[-] ucrom[-] ucrom[-] mfs_frame_release[-] mfs_frame_release[-] opr_free_now[-] rd_edge_psw_take[-] rdq0_n[IRQ_D,PRERD,ROW,TAIL_W] opr_n[PRERD,RLOOP,ROW,TAIL_W] v1[RLOOP,ROW] Equal243[-] Equal243[-] Mux358[-] Mux358[-] Mux358[-] Decoder28[-]
+    seg 1   3.988 ns : Decoder30[-] Selector1552[-]
+    seg 2   7.470 ns : Decoder32[-] ld_b_n[TAKE_OPC] Ram18[-] Ram20[-] always6[-] eu_halted_n[DECODE2]
+    seg 3   2.993 ns : Decoder36[-]
+    seg 4   6.366 ns : Decoder38[-] opc_from_modrm_n[BIND,INSTR_END] opc_base[BIND,INSTR_END] opc_base[BIND,INSTR_END] r_kind[BIND,INSTR_END] modrm_reg[INSTR_END]
+    --- arm attribution, weighted by node count ---
+    seg 0  22.171 ns : ROW=1.00  RLOOP=0.75  TAIL_W=0.50  PRERD=0.50  IRQ_D=0.25   | unattributed nodes 14/17
+    seg 1   3.988 ns : (nothing named)   | unattributed nodes 2/2
+    seg 2   7.470 ns : TAKE_OPC=1.00  DECODE2=1.00   | unattributed nodes 4/6
+    seg 3   2.993 ns : (nothing named)   | unattributed nodes 1/1
+    seg 4   6.366 ns : INSTR_END=3.00  BIND=2.00   | unattributed nodes 1/6
+
+=== Q4 / E-5  SHARED OR INDEPENDENT COPIES ===
+  --- control_seed1 ---
+    st_n                 CHAINABLE         158 plain +    0 indexed = 158
+    sigma                FRONT-END           0 plain +  133 indexed = 133
+    opc_base             CHAINABLE          19 plain +   44 indexed = 63
+    ld_b_n               CHAINABLE          62 plain +    0 indexed = 62
+    s1_val               FRONT-END          53 plain +    0 indexed = 53
+    pv                   CHAINABLE          44 plain +    0 indexed = 44
+    m_kind               CHAINABLE          25 plain +    9 indexed = 34
+    stop                 CHAINABLE          18 plain +    0 indexed = 18
+    seg_override_n       CHAINABLE          18 plain +    0 indexed = 18
+    st_zero_ok           CHAINABLE           9 plain +    0 indexed = 9
+    it_val               FRONT-END           8 plain +    0 indexed = 8
+    nmi_latch_n          POS0-ONLY           1 plain +    0 indexed = 1
+    rloop_n_n            POS0-ONLY           1 plain +    0 indexed = 1
+    rst_ctr_n            POS0-ONLY           0 plain +    0 indexed = 0
+    ld_dlo_n             POS0-ONLY           0 plain +    0 indexed = 0
+    ld_ripe_prev_n       POS0-ONLY           0 plain +    0 indexed = 0
+    zzz_no_such_signal   NEGATIVE-CONTROL    0 plain +    0 indexed = 0
+  --- control_seed2 ---
+    st_n                 CHAINABLE         158 plain +    0 indexed = 158
+    sigma                FRONT-END           0 plain +  133 indexed = 133
+    opc_base             CHAINABLE          19 plain +   44 indexed = 63
+    ld_b_n               CHAINABLE          62 plain +    0 indexed = 62
+    s1_val               FRONT-END          53 plain +    0 indexed = 53
+    pv                   CHAINABLE          44 plain +    0 indexed = 44
+    m_kind               CHAINABLE          25 plain +    9 indexed = 34
+    stop                 CHAINABLE          18 plain +    0 indexed = 18
+    seg_override_n       CHAINABLE          18 plain +    0 indexed = 18
+    st_zero_ok           CHAINABLE           9 plain +    0 indexed = 9
+    it_val               FRONT-END           8 plain +    0 indexed = 8
+    nmi_latch_n          POS0-ONLY           1 plain +    0 indexed = 1
+    rloop_n_n            POS0-ONLY           1 plain +    0 indexed = 1
+    rst_ctr_n            POS0-ONLY           0 plain +    0 indexed = 0
+    ld_dlo_n             POS0-ONLY           0 plain +    0 indexed = 0
+    ld_ripe_prev_n       POS0-ONLY           0 plain +    0 indexed = 0
+    zzz_no_such_signal   NEGATIVE-CONTROL    0 plain +    0 indexed = 0
+  --- control_seed3 ---
+    st_n                 CHAINABLE         158 plain +    0 indexed = 158
+    sigma                FRONT-END           0 plain +  133 indexed = 133
+    opc_base             CHAINABLE          19 plain +   44 indexed = 63
+    ld_b_n               CHAINABLE          62 plain +    0 indexed = 62
+    s1_val               FRONT-END          53 plain +    0 indexed = 53
+    pv                   CHAINABLE          44 plain +    0 indexed = 44
+    m_kind               CHAINABLE          25 plain +    9 indexed = 34
+    stop                 CHAINABLE          18 plain +    0 indexed = 18
+    seg_override_n       CHAINABLE          18 plain +    0 indexed = 18
+    st_zero_ok           CHAINABLE           9 plain +    0 indexed = 9
+    it_val               FRONT-END           8 plain +    0 indexed = 8
+    nmi_latch_n          POS0-ONLY           1 plain +    0 indexed = 1
+    rloop_n_n            POS0-ONLY           1 plain +    0 indexed = 1
+    rst_ctr_n            POS0-ONLY           0 plain +    0 indexed = 0
+    ld_dlo_n             POS0-ONLY           0 plain +    0 indexed = 0
+    ld_ripe_prev_n       POS0-ONLY           0 plain +    0 indexed = 0
+    zzz_no_such_signal   NEGATIVE-CONTROL    0 plain +    0 indexed = 0
+  --- retention_seed1 ---
+    st_n                 CHAINABLE         167 plain +    0 indexed = 167
+    sigma                FRONT-END           0 plain +  140 indexed = 140
+    opc_base             CHAINABLE          20 plain +   43 indexed = 63
+    ld_b_n               CHAINABLE          62 plain +    0 indexed = 62
+    s1_val               FRONT-END          56 plain +    0 indexed = 56
+    pv                   CHAINABLE          43 plain +    0 indexed = 43
+    m_kind               CHAINABLE          23 plain +    0 indexed = 23
+    stop                 CHAINABLE          17 plain +    0 indexed = 17
+    seg_override_n       CHAINABLE          14 plain +    0 indexed = 14
+    st_zero_ok           CHAINABLE          12 plain +    0 indexed = 12
+    it_val               FRONT-END           8 plain +    0 indexed = 8
+    nmi_latch_n          POS0-ONLY           1 plain +    0 indexed = 1
+    rloop_n_n            POS0-ONLY           1 plain +    0 indexed = 1
+    rst_ctr_n            POS0-ONLY           0 plain +    0 indexed = 0
+    ld_dlo_n             POS0-ONLY           0 plain +    0 indexed = 0
+    ld_ripe_prev_n       POS0-ONLY           0 plain +    0 indexed = 0
+    zzz_no_such_signal   NEGATIVE-CONTROL    0 plain +    0 indexed = 0
+
+=== Q5  THE FLOOR ===
+  --- control_seed1  arithmetic floor on the worst arc: 30.606 ns ---
+    scan SLACK:
+      3 boundaries |   996 paths | worst  43.377 ns | levels  42 | ram_block1a2 -> modrm_reg
+      4 boundaries |     4 paths | worst  43.152 ns | levels  41 | ram_block1a2 -> modrm_reg
+    scan ENDPOINT:
+      0 boundaries |   241 paths | worst  41.366 ns | levels  38 | ram_block1a2 -> m_idx
+      1 boundaries |    26 paths | worst  37.533 ns | levels  35 | ram_block1a2 -> eu_halted_OTERM7
+      2 boundaries |   212 paths | worst  42.389 ns | levels  39 | ram_block1a2 -> pfxcnt
+      3 boundaries |   519 paths | worst  43.377 ns | levels  42 | ram_block1a2 -> modrm_reg
+      4 boundaries |     2 paths | worst  41.347 ns | levels  39 | ram_block1a2 -> st
+  --- control_seed2  arithmetic floor on the worst arc: 31.613 ns ---
+    scan SLACK:
+      3 boundaries |   802 paths | worst  44.223 ns | levels  45 | ram_block1a5 -> modrm_reg
+      4 boundaries |   198 paths | worst  44.120 ns | levels  44 | ram_block1a5 -> modrm_reg
+    scan ENDPOINT:
+      0 boundaries |   229 paths | worst  40.169 ns | levels  42 | ram_block1a5 -> m_idx
+      1 boundaries |    54 paths | worst  37.233 ns | levels  38 | ram_block1a5 -> eu_halted_OTERM7
+      2 boundaries |   255 paths | worst  41.809 ns | levels  43 | ram_block1a5 -> tmpb
+      3 boundaries |   454 paths | worst  44.223 ns | levels  45 | ram_block1a5 -> modrm_reg
+      4 boundaries |     8 paths | worst  41.186 ns | levels  43 | ram_block1a5 -> st
+  --- control_seed3  arithmetic floor on the worst arc: 27.205 ns ---
+    scan SLACK:
+      2 boundaries |     2 paths | worst  42.903 ns | levels  45 | ram_block1a1 -> modrm_reg
+      3 boundaries |   228 paths | worst  43.086 ns | levels  44 | ram_block1a1 -> modrm_reg
+      4 boundaries |   659 paths | worst  43.090 ns | levels  43 | ram_block1a1 -> modrm_reg
+      5 boundaries |   111 paths | worst  42.994 ns | levels  42 | ram_block1a1 -> modrm_reg
+    scan ENDPOINT:
+      0 boundaries |   222 paths | worst  32.624 ns | levels  31 | opc_base -> rd_pending
+      1 boundaries |    33 paths | worst  34.338 ns | levels  30 | ram_block1a1 -> wb_ea
+      2 boundaries |    81 paths | worst  40.546 ns | levels  43 | ram_block1a1 -> pfxcnt
+      3 boundaries |   152 paths | worst  41.401 ns | levels  40 | ram_block1a1 -> tmpa
+      4 boundaries |   425 paths | worst  43.090 ns | levels  43 | ram_block1a1 -> modrm_reg
+      5 boundaries |    87 paths | worst  41.902 ns | levels  42 | ram_block1a1 -> modrm_reg
+  --- retention_seed1  arithmetic floor on the worst arc: 28.537 ns ---
+    scan SLACK:
+      2 boundaries |   225 paths | worst  43.184 ns | levels  43 | ram_block1a4 -> modrm_reg
+      3 boundaries |   518 paths | worst  43.239 ns | levels  42 | ram_block1a4 -> modrm_reg
+      4 boundaries |   257 paths | worst  43.254 ns | levels  41 | ram_block1a4 -> modrm_reg
+    scan ENDPOINT:
+      0 boundaries |   455 paths | worst  31.848 ns | levels  29 | ram_block1a1 -> r_cmt_data
+      2 boundaries |     1 paths | worst  41.548 ns | levels  38 | ram_block1a4 -> eu_halted
+      3 boundaries |    37 paths | worst  42.261 ns | levels  39 | ram_block1a4 -> psw
+      4 boundaries |   507 paths | worst  43.504 ns | levels  37 | ram_block1a2 -> ram_block1a4
+
+=== Q6  THE BIU ROUND TRIP ===
+  --- control_seed1: 0 BIU nodes on the worst arc ---
+  --- control_seed2: 8 BIU nodes on the worst arc ---
+      seg 0      13.895 ns  emu|system_large|u_core|u_biu|q_cnt~3|dataf
+      seg 0      13.982 ns  emu|system_large|u_core|u_biu|q_cnt~3|combout
+      seg 0      14.780 ns  emu|system_large|u_core|u_biu|Add46~0|datad
+      seg 0      15.131 ns  emu|system_large|u_core|u_biu|Add46~0|combout
+      seg 0      15.530 ns  emu|system_large|u_core|u_biu|q_ripe_lead_n~1|datad
+      seg 0      16.040 ns  emu|system_large|u_core|u_biu|q_ripe_lead_n~1|combout
+      seg 0      16.302 ns  emu|system_large|u_core|u_biu|q_ripe_lead_n~4|datac
+      seg 0      16.789 ns  emu|system_large|u_core|u_biu|q_ripe_lead_n~4|combout
+  --- control_seed3: 8 BIU nodes on the worst arc ---
+      seg 0      13.876 ns  emu|system_large|u_core|u_biu|q_cnt~4|datad
+      seg 0      14.388 ns  emu|system_large|u_core|u_biu|q_cnt~4|combout
+      seg 0      15.144 ns  emu|system_large|u_core|u_biu|q_cnt~5|dataf
+      seg 0      15.227 ns  emu|system_large|u_core|u_biu|q_cnt~5|combout
+      seg 0      15.480 ns  emu|system_large|u_core|u_biu|q_ripe_lead_n~0|datad
+      seg 0      15.836 ns  emu|system_large|u_core|u_biu|q_ripe_lead_n~0|combout
+      seg 0      16.037 ns  emu|system_large|u_core|u_biu|q_ripe_lead_n~4|datab
+      seg 0      16.572 ns  emu|system_large|u_core|u_biu|q_ripe_lead_n~4|combout
+  --- retention_seed1: 0 BIU nodes on the worst arc ---
