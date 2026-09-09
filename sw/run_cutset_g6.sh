@@ -14,6 +14,8 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 OUT=sw/testdata/cutset
 mkdir -p "$OUT"
+# $1 = a label suffix, so a second wave of draws does not overwrite the first
+TAG="${1:-}"
 
 # single-writer guard: no other driver and no stage binary may be in flight.
 for d in run_adcone_anatomy.sh run_adcone_g6.sh run_phase_split_anatomy.sh \
@@ -24,10 +26,10 @@ for b in quartus_map quartus_fit quartus_sta quartus_asm quartus_sh; do
     while pgrep -x "$b" >/dev/null 2>&1; do sleep 30; done
 done
 
-python3 sw/quartus_gate.py --seeds 5 --label cutset-w4-noexc-control-n5 \
-    --log "$OUT/g6_noexc_control_n5.log"
+python3 sw/quartus_gate.py --seeds 5 --label "cutset-w4${TAG}-noexc-control-n5" \
+    --log "$OUT/g6${TAG}_noexc_control_n5.log"
 echo "CONTROL sweep exit $?"
-python3 sw/quartus_gate.py --seeds 5 --retention --label cutset-w4-noexc-retention-n5 \
-    --log "$OUT/g6_noexc_retention_n5.log"
+python3 sw/quartus_gate.py --seeds 5 --retention --label "cutset-w4${TAG}-noexc-retention-n5" \
+    --log "$OUT/g6${TAG}_noexc_retention_n5.log"
 echo "RETENTION sweep exit $?"
 echo "G6 BOTH CONFIGURATIONS DONE"
