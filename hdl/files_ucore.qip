@@ -33,9 +33,14 @@ set_global_assignment -name SYSTEMVERILOG_FILE rtl/ucore/v30u_biu.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/ucore/v30u_ucrom.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/ucore/v30u_eu.sv
 
-# So the EU's nine `include "v30u_eu_*.svh"` resolve by BASENAME via the
+# So the EU's `include "v30u_eu_*.svh"` resolve by BASENAME via the
 # project-relative search path, independent of the compiler's cwd -- the same
-# arrangement files.qip uses for the FSM core's race_law.svh.
+# arrangement files.qip uses for the FSM core's race_law.svh.  There are
+# NINETEEN of them since WAVE 7: the nine that were always here, the nine
+# `v30u_eu_arm_<state>.svh` the chain flattening carved out of the step case so
+# that position 0 and the flattened positions >= 1 share ONE copy of each
+# chainable arm, and `v30u_eu_chain_pos.svh` (sim-only; it expands to nothing
+# under SYNTHESIS).
 #
 # ...AND IT IS ALSO WHERE THE TWO MICROCODE TABLES LIVE.  F44: v30u_ucrom.sv
 # takes HEXDIR as a parameter and a WRONG PATH yields two warnings, an all-zero

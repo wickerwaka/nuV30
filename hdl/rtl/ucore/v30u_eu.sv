@@ -3224,6 +3224,10 @@ reg chain_report = 0;
 initial if ($test$plusargs("chaindepth")) chain_report = 1;
 reg [3:0] chain_hi = 4'd0;
 reg [3:0] chain_used;   // <- now a COMB output of the next-state block
+// WAVE 7: `stop` still low when the FLATTENED pass runs out of positions.
+// The loop's own `!stop` test used to say this; the flat pass has to record
+// it, because it must ALSO end the edge (see the pass, and the observer).
+reg        chain_open;
 // the eutrace SNAPSHOT: the flop-valued fields the trace line used to
 // read MID-EDGE (after blocks (a)/(b), before the chain).  Everything
 // else it prints is a module-level wire, which the observer reads at the
@@ -3248,6 +3252,10 @@ reg [5:0] chain_first;
 `ifdef CHAIN_PROBE
 reg cp_seen [0:1023];
 integer cpi;
+// WAVE 7: the probe's file handle is a MODULE-LEVEL name, not a `begin : x`
+// local, because `v30u_eu_chain_pos.svh` is elaborated once per chain
+// position and a named block may not be declared ten times in one scope.
+integer cp_fd;
 initial for (cpi = 0; cpi < 1024; cpi = cpi + 1) cp_seen[cpi] = 1'b0;
 //--------------------------------------------------------------------------
 // WAVE 6 (THE CHAIN FLATTENING STUDY) -- THE SEQUENCE CENSUS.
@@ -3289,10 +3297,20 @@ end
 `endif
 `endif
 
-// The bounded zero-cost chain.  See the loop at the bottom of the clocked
-// block: `CHAIN_MAX` is how many of the model's zero-cost steps may ride one
-// clock, and it costs a FULL UNROLLED COPY of the step case per unit -- which
-// is why 24 of the 33 arms are folded out of positions >= 1 (v30u_eu_step.svh).
+// The bounded zero-cost chain.  See THE FLATTENED PASS at the bottom of the
+// clocked block: `CHAIN_MAX` is how many of the model's zero-cost steps may
+// ride one clock.
+//
+// ⚠ WHAT THIS NUMBER COSTS CHANGED AT WAVE 7, AND WHAT IT CLAIMS DID NOT.
+// It used to be the count of UNROLLED COPIES of the 33-arm step case, so the
+// bound was enforced by construction and the `$fatal` detected the
+// enforcement biting.  The pass is now FLAT -- position 0's case once, then
+// the nine chainable arms once each in topological order -- so it provides
+// nine positions >= 1 structurally and `CHAIN_MAX` costs NOTHING.  It is
+// therefore a PURE CLAIM now, and it is checked directly against the measured
+// depth in the observer (`chain_used > CHAIN_MAX - 1`).  **The claim is the
+// same claim; it is asserted more directly than before, and the value is
+// unchanged so that every historical figure stays comparable.**
 //
 // **7 = the derived maximum occupancy 6, PLUS ONE SPARE POSITION**, because
 // fabric has no assertion.  It was 12 until 2026-08-12.
@@ -3312,11 +3330,16 @@ end
 // precisely because tightening MAKES a claim; the claim is now made, and it is
 // asserted continuously over every population this tree runs.
 //
-// ⚠ THE `[3:0]` WIDTH DOES NOT NARROW WITH THE BOUND.  A `[2:0]` `chain` wraps
-// at the loop's `chain + 4'd1` when it reaches 7, so `8 < 7` never becomes
-// false and the unroll never terminates -- an ELABORATION HANG, not a runtime
-// bug.  It also silently re-keys `CHAIN_PROBE`'s `{chain, st_n}` census.  The
-// width is what makes 8 representable and it stays.
+// ⚠ THE `[3:0]` WIDTH DOES NOT NARROW WITH THE BOUND.  `chain_used` counts
+// positions and is compared against `CHAIN_MAX - 1`; at `[2:0]` the count and
+// the bound would both wrap and the check would silently stop meaning what it
+// says.  It also keys `CHAIN_PROBE`'s `{position, st_n}` census.  The width is
+// what makes 8 representable and it stays.
+//
+// ⚠ AND THE DECLARATION'S SHAPE IS PART OF A GATE.  `sw/chain_lfsr_gate.py`
+// READS THIS LINE -- it refuses to carry a second copy of the number it is
+// checking -- and its `--nonvacuity` mode rewrites it to `4'd4` in a scratch
+// copy and REQUIRES the `$fatal`.  Change the text and you change a gate.
 localparam bit [3:0] CHAIN_MAX = 4'd7;
 
 integer i;
@@ -3772,40 +3795,117 @@ always @* begin
         cp_used = 0;                     // WAVE 6: this edge's tuple, cleared
 `endif
 `endif
-        for (chain = 0; chain < CHAIN_MAX; chain = chain + 4'd1) begin
-            if (!stop) begin
-`ifndef SYNTHESIS
-                chain_used = chain + 4'd1;
-`ifdef CHAIN_PROBE
-                if (!cp_seen[{chain, st_n}]) begin : cprobe
-                    integer fd;
-                    cp_seen[{chain, st_n}] = 1'b1;
-                    fd = $fopen(`CHAIN_PROBE, "a");
-                    $fwrite(fd, "POS %0d ST %0d\n", chain, st_n);
-                    $fclose(fd);
-                end
-                // WAVE 6: the ORDERED tuple, recorded here and CENSUSED in the
-                // clocked observer (see the declaration block's warning).
-                cp_seq[chain] = st_n;
-                cp_used = chain + 1;
-`endif
-`endif
-                // THE FAIL-SAFE.  The 24 position-0-only arms are folded out
-                // of positions >= 1 (see v30u_eu_step.svh's header).  If one
-                // ever DID stand there the folded copy would assign nothing,
-                // `stop` would stay low, and the machine would sit on the same
-                // state forever.  This turns that impossible case into a spent
-                // clock -- the same failure the CHAIN OVERFLOW `$fatal` names,
-                // but survivable in fabric where there is no assertion.
-                if ((chain != 4'd0) && !st_zero_ok(st_n)) stop = 1'b1;
-                else begin
-                    `include "v30u_eu_step.svh"
-                end
-            end
+        //==================================================================
+        // THE ZERO-COST CHAIN, FLAT.  (WAVE 7,
+        // docs/notes/chainflat_landing_prereg_2026-09-09.md; the measurement
+        // that authorised it is docs/notes/chainflat_results_2026-09-09.md.)
+        //
+        // THIS USED TO BE `for (chain = 0; chain < CHAIN_MAX; ...)`, i.e.
+        // SEVEN FULL COPIES of the 33-arm step case.  It is now position 0's
+        // case ONCE, then the NINE chainable arms ONCE EACH.  Nothing about
+        // the function changed -- 169,000/169,000 and four byte-identical
+        // LFSR signatures across the substitution -- and the combinational
+        // ALUTs of this entity fell by about a third with NOT ONE FLOP added.
+        //
+        // WHY IT IS EXACT, IN ONE SENTENCE: the fall-through graph over the
+        // nine `st_zero_ok` states is a **DAG**, so one edge's walk visits
+        // each state AT MOST ONCE and is therefore a SUBSEQUENCE of any
+        // topological order of them.  Emitting each arm once in such an order
+        // executes exactly the states the loop would have, in the same order,
+        // with the same values.
+        //
+        // ⚠ THAT IS AN ARGUMENT, SO IT IS ALSO ASSERTED.  The single way the
+        // substitution can be wrong is a fall-through edge that runs BACKWARD
+        // through the order below -- a step would be silently dropped.  It
+        // cannot hide: the walk would leave this pass with `stop` still low,
+        // which is `chain_open`, which `$fatal`s in the observer.  The order
+        // is re-derivable from the source at any time by
+        // `sw/chainflat_graph.py`, which refuses on a cycle.
+        //
+        // ⚠ AND THE UNROLL WAS AN ARTIFACT, NOT A DESCRIPTION OF THE DIE.
+        // The nine states are exactly the SPEC's statement positions with no
+        // `biu.charge()` between them and their predecessor -- program-counter
+        // positions of a straight-line C++ function, which a state machine has
+        // to re-serialise and the die does not: it settles the whole clock's
+        // decode in one combinational cone.  The CLOCK BOUNDARIES are physical
+        // (every one is a measured `charge(n)`); the MULTIPLICITY was not.
+        //==================================================================
+
+        //-- POSITION 0: any of the 33 arms ---------------------------------
+        chain = 4'd0;
+        `include "v30u_eu_chain_pos.svh"
+        `include "v30u_eu_step.svh"
+
+        //-- POSITIONS >= 1: the nine chainable arms, ONCE EACH, in the
+        //   topological order sw/chainflat_graph.py derives -----------------
+        //
+        //     S_TAIL_POP  S_TAIL  S_INSTR_END  S_TAKE_OPC  S_EA_CALC
+        //     S_DECODE    S_DECODE2  S_BIND  S_ENTER
+        //
+        // `chain` is 1 from here on and that is the whole of what the 24
+        // guarded arms ever asked it: v30u_eu_step.svh's `if (chain == 4'd0)`
+        // means "position 0 only".  It is left true-valued rather than deleted
+        // because it is the machine-readable record of WHICH arms are
+        // position-0-only -- the complement of `st_zero_ok`, and what
+        // sw/chainflat_graph.py's PC-A1 cross-derives that function from.
+        chain = 4'd1;
+
+        // THE FAIL-SAFE, applied once at the entry to positions >= 1 instead
+        // of once per loop iteration.  If a state that is NOT one of the nine
+        // ever stood here, no block below would match it, and the edge would
+        // end with `stop` low and `$fatal` in simulation.  In FABRIC there is
+        // no assertion, so this spends the clock instead -- the state is
+        // unchanged, and the next clock re-enters it at position 0 where its
+        // arm is unguarded.  **Costing a clock is survivable; the pass has no
+        // loop left to hang in.**
+        if (!stop && !st_zero_ok(st_n)) stop = 1'b1;
+
+        if (!stop && (st_n == S_TAIL_POP)) begin
+            `include "v30u_eu_chain_pos.svh"
+            `include "v30u_eu_arm_tail_pop.svh"
         end
+        if (!stop && (st_n == S_TAIL)) begin
+            `include "v30u_eu_chain_pos.svh"
+            `include "v30u_eu_arm_tail.svh"
+        end
+        if (!stop && (st_n == S_INSTR_END)) begin
+            `include "v30u_eu_chain_pos.svh"
+            `include "v30u_eu_arm_instr_end.svh"
+        end
+        if (!stop && (st_n == S_TAKE_OPC)) begin
+            `include "v30u_eu_chain_pos.svh"
+            `include "v30u_eu_arm_take_opc.svh"
+        end
+        if (!stop && (st_n == S_EA_CALC)) begin
+            `include "v30u_eu_chain_pos.svh"
+            `include "v30u_eu_arm_ea_calc.svh"
+        end
+        if (!stop && (st_n == S_DECODE)) begin
+            `include "v30u_eu_chain_pos.svh"
+            `include "v30u_eu_arm_decode.svh"
+        end
+        if (!stop && (st_n == S_DECODE2)) begin
+            `include "v30u_eu_chain_pos.svh"
+            `include "v30u_eu_arm_decode2.svh"
+        end
+        if (!stop && (st_n == S_BIND)) begin
+            `include "v30u_eu_chain_pos.svh"
+            `include "v30u_eu_arm_bind.svh"
+        end
+        if (!stop && (st_n == S_ENTER)) begin
+            `include "v30u_eu_chain_pos.svh"
+            `include "v30u_eu_arm_enter.svh"
+        end
+
+`ifndef SYNTHESIS
+        // The pass is over.  Anything still running has left the declared
+        // graph; the observer turns that into the CHAIN OVERFLOW $fatal.
+        chain_open = !stop;
+`endif
         // (CHAIN OVERFLOW and the depth tracker are in the clocked observer:
-        //  `stop` / `chain_used` / `chain_first` are comb outputs of this block
-        //  now, and the check must run ONCE per CE clock on the SETTLED values.)
+        //  `stop` / `chain_used` / `chain_first` / `chain_open` are comb
+        //  outputs of this block, and the check must run ONCE per CE clock on
+        //  the SETTLED values.)
 
         //====================================================================
         // (g) THE PIN PIPELINES, ADVANCED AT THE *END* OF THE EDGE
@@ -4138,9 +4238,27 @@ always @(posedge clk) begin
         // while `stop` is still low would silently push the remainder into the
         // NEXT clock -- a cadence error, not a hang, and therefore invisible
         // without this line.
-        if (!stop)
-            $fatal(1, "v30u_eu: CHAIN OVERFLOW at CHAIN_MAX=%0d (entered in st=%0d, now st=%0d)",
-                   CHAIN_MAX, chain_first, st_n);
+        //
+        // ⚠ WAVE 7 SPLIT IT IN TWO, because the loop's single `!stop` test was
+        // conflating two things that the FLAT pass separates.  Both are the
+        // same claim as before and both still say CHAIN OVERFLOW.
+        //
+        //   (i)  THE WALK TERMINATED INSIDE THE PASS.  With one copy per arm
+        //        in topological order, `stop` can only still be low here if
+        //        some arm handed over to a state the order has already passed
+        //        -- a BACKWARD edge in a graph asserted to be a DAG -- or to a
+        //        state `st_zero_ok` does not name.  This is the falsifier for
+        //        the flattening itself.
+        //   (ii) THE DEPTH BOUND, which used to be structural (there were
+        //        only CHAIN_MAX copies) and is now measured.  `chain_used`
+        //        counts positions entered, and the bound is the derived
+        //        maximum 6 = CHAIN_MAX - 1.
+        if (chain_open)
+            $fatal(1, "v30u_eu: CHAIN OVERFLOW -- the flattened chain pass ended with stop still low (entered in st=%0d, now st=%0d, st_zero_ok=%0d, depth=%0d)",
+                   chain_first, st_n, st_zero_ok(st_n), chain_used);
+        if (chain_used > CHAIN_MAX - 4'd1)
+            $fatal(1, "v30u_eu: CHAIN OVERFLOW at CHAIN_MAX=%0d -- depth %0d (entered in st=%0d, now st=%0d)",
+                   CHAIN_MAX, chain_used, chain_first, st_n);
         if (chain_used > chain_hi) begin
             chain_hi = chain_used;
             if (chain_report)

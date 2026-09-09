@@ -1,0 +1,20 @@
+chain_lfsr_gate: CHAIN_MAX = 7 (read from v30u_eu.sv), 4 seeds x 400000 fabric clocks
+  binary receipt d5c4a40eae2788594dccba562dd107d1cd5d77d781d6e1386c70558d1840b60e
+  seed 1: rc=0 CHAIN_DEPTH_MAX=6 entry_st=25 ce_clocks=66648 g0=8233 coincide=0 sig=1d01c9b269ffaa94
+      gaps g0=8233 g1=8384 g2=8350 g3=8343 g4=8383 g5=8310 g6=8343 g7=8302
+      live  fpops=262 qpops=544 IOR=9 IOW=3 HALT=1 CODE=349 MEMR=890 MEMW=763
+  seed 2: rc=0 CHAIN_DEPTH_MAX=6 entry_st=25 ce_clocks=66664 g0=8394 coincide=0 sig=b39b040a98b28e5d
+      gaps g0=8394 g1=8294 g2=8295 g3=8347 g4=8294 g5=8348 g6=8346 g7=8346
+      live  fpops=138 qpops=269 INTA=2 IOR=4 IOW=1 HALT=2 CODE=175 MEMR=329 MEMW=300
+  seed 3: rc=0 CHAIN_DEPTH_MAX=6 entry_st=25 ce_clocks=66521 g0=8114 coincide=0 sig=0997b773cd99c030
+      gaps g0=8114 g1=8364 g2=8330 g3=8343 g4=8364 g5=8309 g6=8343 g7=8354
+      live  fpops=1366 qpops=2946 IOR=46 IOW=18 HALT=5 CODE=1866 MEMR=1625 MEMW=2027
+  seed 4: rc=0 CHAIN_DEPTH_MAX=6 entry_st=25 ce_clocks=66559 g0=8204 coincide=0 sig=d05b6c3c3d9fbe78
+      gaps g0=8204 g1=8360 g2=8356 g3=8278 g4=8361 g5=8274 g6=8278 g7=8448
+      live  fpops=468 qpops=907 IOR=10 IOW=5 HALT=4 CODE=554 MEMR=350 MEMW=340
+
+chain_lfsr_gate: PASS -- CHAIN_MAX 7, observed depth [6], 0 overflows, 4 seeds x 400000 clocks
+
+real	0m1.519s
+user	0m1.477s
+sys	0m0.042s

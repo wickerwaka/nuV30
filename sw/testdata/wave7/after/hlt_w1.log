@@ -1,0 +1,17 @@
+  HLT.INT idx 8 ('halt <halt/int d=38>'):
+    row 10 busstat: exp 'CODE' got 'PASV'
+    row 11 busstat: exp 'PASV' got 'INTA'
+    row 12 pins: exp 0 got 1
+    row 12 tstate: exp 'Ti' got 'T1'
+    row 13 pins: exp 1 got 0
+    row 13 seg: exp '--' got 'CS'
+  HLT.INT idx 9 ('halt <halt/int d=38>'):
+    row 10 busstat: exp 'CODE' got 'PASV'
+HLT.INT: 44/46 full  (cycles 44, arch 46)  first-div: (10, 'busstat')x2
+HLT.RES: 49/49 full  (cycles 49, arch 49)
+
+TOTAL: 93/95 full (cycles 93, arch 95)
+
+real	0m0.250s
+user	0m0.219s
+sys	0m0.032s
