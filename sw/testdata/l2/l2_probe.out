@@ -1,0 +1,373 @@
+patched: uncommented set_multicycle_path lines now = 0 (must be 0)
+
+=== sw/sta_phase_split_scan.tcl ===
+u|system_large|u_core|u_eu|modrm_reg~18_Duplicate|combout
+  .    1.236   50.026 ic     DATA   emu|system_large|u_core|u_eu|modrm_reg[1]_NEW584~_Duplicate|dataf
+  1    0.080   50.106 cell   DATA   emu|system_large|u_core|u_eu|modrm_reg[1]_NEW584~_Duplicate|combout
+  .    0.240   50.346 ic     DATA   emu|system_large|u_core|u_eu|eff_op[1]~5|dataf
+  1    0.082   50.428 cell   DATA   emu|system_large|u_core|u_eu|eff_op[1]~5|combout
+  .    0.225   50.653 ic     DATA   emu|system_large|u_core|u_eu|eff_op[1]~1|dataf
+  1    0.084   50.737 cell   DATA   emu|system_large|u_core|u_eu|eff_op[1]~1|combout
+  .    0.554   51.291 ic     DATA   emu|system_large|u_core|u_eu|eff_op[1]~1_NEW_REG2017|asdata
+  .    0.613   51.904 cell   DEST   emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|eff_op[1]~1_OTERM2018
+
+  --- path 2 ---
+  from: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|eff_op[2]~2_OTERM2020DUPLICATE
+  to  : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|eff_op[1]~1_OTERM2018DUPLICATE
+  PD     incr      cum type   phase  node
+  .    0.000    0.000 clksrc CLK    FPGA_CLK2_50
+  .    0.000    0.000 ic     CLK    FPGA_CLK2_50~input|i
+  .    0.761    0.761 cell   CLK    FPGA_CLK2_50~input|o
+  .    1.335    2.096 ic     CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_REFCLK_SELECT|clkin[0]
+  .    0.333    2.429 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_REFCLK_SELECT|clkout
+  .    0.000    2.429 ic     CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|refclkin
+  .    0.029    2.458 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|vcoph[0]
+  .    0.000    2.458 ic     CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]
+  .    1.746    4.204 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk
+  .    1.039    5.243 ic     CLK    emu|pll|pll_inst|altera_pll_i|outclk_wire[0]~CLKENA0|inclk
+  .    0.304    5.547 cell   CLK    emu|pll|pll_inst|altera_pll_i|outclk_wire[0]~CLKENA0|outclk
+  .    2.278    7.825 ic     LAUNCH emu|system_large|u_core|u_eu|eff_op[2]~2_OTERM2020DUPLICATE|clk
+  .    0.570    8.395 cell   LAUNCH emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|eff_op[2]~2_OTERM2020DUPLICATE
+  .    0.000    8.395 utco   LAUNCH emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|eff_op[2]~2_OTERM2020DUPLICATE
+  .    0.000    8.395 cell   LAUNCH emu|system_large|u_core|u_eu|eff_op[2]~2_OTERM2020DUPLICATE|q
+  .    1.312    9.707 ic     DATA   emu|system_large|u_core|u_eu|Equal61~0|dataa
+  0    0.547   10.254 cell   DATA   emu|system_large|u_core|u_eu|Equal61~0|combout
+  .    0.273   10.527 ic     DATA   emu|system_large|u_core|u_eu|Add6~1|dataa
+  0    1.307   11.834 cell   DATA   emu|system_large|u_core|u_eu|Add6~1|sumout
+  .    0.833   12.667 ic     DATA   emu|system_large|u_core|u_eu|sigma[0]~3|datae
+  0    0.221   12.888 cell   DATA   emu|system_large|u_core|u_eu|sigma[0]~3|combout
+  .    1.308   14.196 ic     DATA   emu|system_large|u_core|u_eu|sigma[0]~5|datad
+  0    0.427   14.623 cell   DATA   emu|system_large|u_core|u_eu|sigma[0]~5|combout
+  .    0.257   14.880 ic     DATA   emu|system_large|u_core|u_eu|Mux277~9_RESYN3579|dataf
+  0    0.087   14.967 cell   DATA   emu|system_large|u_core|u_eu|Mux277~9_RESYN3579|combout
+  .    0.260   15.227 ic     DATA   emu|system_large|u_core|u_eu|Mux277~9|dataf
+  0    0.086   15.313 cell   DATA   emu|system_large|u_core|u_eu|Mux277~9|combout
+  .    0.326   15.639 ic     DATA   emu|system_large|u_core|u_eu|Mux277~4|datae
+  0    0.308   15.947 cell   DATA   emu|system_large|u_core|u_eu|Mux277~4|combout
+  .    0.251   16.198 ic     DATA   emu|system_large|u_core|u_eu|opr_n~9|datac
+  0    0.512   16.710 cell   DATA   emu|system_large|u_core|u_eu|opr_n~9|combout
+  .    0.892   17.602 ic     DATA   emu|system_large|u_core|u_eu|v1~8|datac
+  0    0.508   18.110 cell   DATA   emu|system_large|u_core|u_eu|v1~8|combout
+  .    0.984   19.094 ic     DATA   emu|system_large|u_core|u_eu|psw_n~59|datac
+  0    0.487   19.581 cell   DATA   emu|system_large|u_core|u_eu|psw_n~59|combout
+  .    0.325   19.906 ic     DATA   emu|system_large|u_core|u_eu|Mux349~1|dataf
+  0    0.081   19.987 cell   DATA   emu|system_large|u_core|u_eu|Mux349~1|combout
+  .    0.580   20.567 ic     DATA   emu|system_large|u_core|u_eu|Mux349~5|datad
+  0    0.508   21.075 cell   DATA   emu|system_large|u_core|u_eu|Mux349~5|combout
+  .    0.359   21.434 ic     DATA   emu|system_large|u_core|u_eu|Mux350~8|datad
+  0    0.353   21.787 cell   DATA   emu|system_large|u_core|u_eu|Mux350~8|combout
+  .    0.204   21.991 ic     DATA   emu|system_large|u_core|u_eu|Mux350~4|dataa
+  0    0.570   22.561 cell   DATA   emu|system_large|u_core|u_eu|Mux350~4|combout
+  .    0.261   22.822 ic     DATA   emu|system_large|u_core|u_eu|Mux350~5|datae
+  0    0.304   23.126 cell   DATA   emu|system_large|u_core|u_eu|Mux350~5|combout
+  .    0.602   23.728 ic     DATA   emu|system_large|u_core|u_eu|Mux360~2|dataf
+  0    0.081   23.809 cell   DATA   emu|system_large|u_core|u_eu|Mux360~2|combout
+  .    1.097   24.906 ic     DATA   emu|system_large|u_core|u_eu|Mux360~15|dataf
+  0    0.091   24.997 cell   DATA   emu|system_large|u_core|u_eu|Mux360~15|combout
+  .    1.163   26.160 ic     DATA   emu|system_large|u_core|u_eu|ld_b_n~3|datac
+  0    0.503   26.663 cell   DATA   emu|system_large|u_core|u_eu|ld_b_n~3|combout
+  .    0.934   27.597 ic     DATA   emu|system_large|u_core|u_eu|Ram12~5|dataa
+  0    0.565   28.162 cell   DATA   emu|system_large|u_core|u_eu|Ram12~5|combout
+  .    0.227   28.389 ic     DATA   emu|system_large|u_core|u_eu|Ram12~3|datad
+  0    0.512   28.901 cell   DATA   emu|system_large|u_core|u_eu|Ram12~3|combout
+  .    0.811   29.712 ic     DATA   emu|system_large|u_core|u_eu|p~4|dataf
+  0    0.087   29.799 cell   DATA   emu|system_large|u_core|u_eu|p~4|combout
+  .    0.859   30.658 ic     DATA   emu|system_large|u_core|u_eu|Selector1552~2|dataf
+  0    0.091   30.749 cell   DATA   emu|system_large|u_core|u_eu|Selector1552~2|combout
+  .    0.691   31.440 ic     DATA   emu|system_large|u_core|u_eu|st_n~31|datae
+  0    0.302   31.742 cell   DATA   emu|system_large|u_core|u_eu|st_n~31|combout
+  .    0.209   31.951 ic     DATA   emu|system_large|u_core|u_eu|st_n~32|dataf
+  0    0.097   32.048 cell   DATA   emu|system_large|u_core|u_eu|st_n~32|combout
+  .    0.588   32.636 ic     DATA   emu|system_large|u_core|u_eu|st_zero_ok~7|dataf
+  0    0.093   32.729 cell   DATA   emu|system_large|u_core|u_eu|st_zero_ok~7|combout
+  .    0.259   32.988 ic     DATA   emu|system_large|u_core|u_eu|seg_override_n~2|datac
+  0    0.485   33.473 cell   DATA   emu|system_large|u_core|u_eu|seg_override_n~2|combout
+  .    0.817   34.290 ic     DATA   emu|system_large|u_core|u_eu|Selector1620~4|datad
+  0    0.358   34.648 cell   DATA   emu|system_large|u_core|u_eu|Selector1620~4|combout
+  .    1.031   35.679 ic     DATA   emu|system_large|u_core|u_eu|pv~19|datad
+  0    0.512   36.191 cell   DATA   emu|system_large|u_core|u_eu|pv~19|combout
+  .    0.857   37.048 ic     DATA   emu|system_large|u_core|u_eu|always6~35|dataa
+  0    0.560   37.608 cell   DATA   emu|system_large|u_core|u_eu|always6~35|combout
+  .    0.251   37.859 ic     DATA   emu|system_large|u_core|u_eu|st_n~148|dataf
+  0    0.097   37.956 cell   DATA   emu|system_large|u_core|u_eu|st_n~148|combout
+  .    0.280   38.236 ic     DATA   emu|system_large|u_core|u_eu|st_n~70|datad
+  0    0.533   38.769 cell   DATA   emu|system_large|u_core|u_eu|st_n~70|combout
+  .    0.585   39.354 ic     DATA   emu|system_large|u_core|u_eu|st_n~72_Duplicate|dataf
+  0    0.083   39.437 cell   DATA   emu|system_large|u_core|u_eu|st_n~72_Duplicate|combout
+  .    1.146   40.583 ic     DATA   emu|system_large|u_core|u_eu|Decoder36~2|datad
+  0    0.514   41.097 cell   DATA   emu|system_large|u_core|u_eu|Decoder36~2|combout
+  .    0.789   41.886 ic     DATA   emu|system_large|u_core|u_eu|st_n~88|dataf
+  0    0.082   41.968 cell   DATA   emu|system_large|u_core|u_eu|st_n~88|combout
+  .    0.213   42.181 ic     DATA   emu|system_large|u_core|u_eu|st_n~93|datad
+  0    0.426   42.607 cell   DATA   emu|system_large|u_core|u_eu|st_n~93|combout
+  .    0.341   42.948 ic     DATA   emu|system_large|u_core|u_eu|st_n~94|dataf
+  0    0.092   43.040 cell   DATA   emu|system_large|u_core|u_eu|st_n~94|combout
+  .    0.895   43.935 ic     DATA   emu|system_large|u_core|u_eu|Decoder38~2_Duplicate|datac
+  0    0.499   44.434 cell   DATA   emu|system_large|u_core|u_eu|Decoder38~2_Duplicate|combout
+  .    0.996   45.430 ic     DATA   emu|system_large|u_core|u_eu|opc_from_modrm_n~1_Duplicate|dataf
+  0    0.091   45.521 cell   DATA   emu|system_large|u_core|u_eu|opc_from_modrm_n~1_Duplicate|combout
+  .    0.754   46.275 ic     DATA   emu|system_large|u_core|u_eu|opc_base[3]~7|datac
+  0    0.503   46.778 cell   DATA   emu|system_large|u_core|u_eu|opc_base[3]~7|combout
+  .    0.863   47.641 ic     DATA   emu|system_large|u_core|u_eu|modrm_reg~17|dataf
+  1    0.081   47.722 cell   DATA   emu|system_large|u_core|u_eu|modrm_reg~17|combout
+  .    0.587   48.309 ic     DATA   emu|system_large|u_core|u_eu|modrm_reg~18_Duplicate|datac
+  1    0.481   48.790 cell   DATA   emu|system_large|u_core|u_eu|modrm_reg~18_Duplicate|combout
+  .    1.236   50.026 ic     DATA   emu|system_large|u_core|u_eu|modrm_reg[1]_NEW584~_Duplicate|dataf
+  1    0.080   50.106 cell   DATA   emu|system_large|u_core|u_eu|modrm_reg[1]_NEW584~_Duplicate|combout
+  .    0.240   50.346 ic     DATA   emu|system_large|u_core|u_eu|eff_op[1]~5|dataf
+  1    0.082   50.428 cell   DATA   emu|system_large|u_core|u_eu|eff_op[1]~5|combout
+  .    0.225   50.653 ic     DATA   emu|system_large|u_core|u_eu|eff_op[1]~1|dataf
+  1    0.084   50.737 cell   DATA   emu|system_large|u_core|u_eu|eff_op[1]~1|combout
+  .    0.554   51.291 ic     DEST   emu|system_large|u_core|u_eu|eff_op[1]~1_OTERM2018DUPLICATE|asdata
+  .    0.615   51.906 cell   DEST   emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|eff_op[1]~1_OTERM2018DUPLICATE
+
+  --- path 3 ---
+  from: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~PORT_A_WRITE_ENABLE_REG
+  to  : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|eff_op[1]~1_OTERM2018
+  PD     incr      cum type   phase  node
+  .    0.000    0.000 clksrc CLK    FPGA_CLK2_50
+  .    0.000    0.000 ic     CLK    FPGA_CLK2_50~input|i
+  .    0.761    0.761 cell   CLK    FPGA_CLK2_50~input|o
+  .    1.335    2.096 ic     CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_REFCLK_SELECT|clkin[0]
+  .    0.333    2.429 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_REFCLK_SELECT|clkout
+  .    0.000    2.429 ic     CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|refclkin
+  .    0.029    2.458 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|vcoph[0]
+  .    0.000    2.458 ic     CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]
+  .    1.746    4.204 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk
+  .    1.039    5.243 ic     CLK    emu|pll|pll_inst|altera_pll_i|outclk_wire[0]~CLKENA0|inclk
+  .    0.304    5.547 cell   CLK    emu|pll|pll_inst|altera_pll_i|outclk_wire[0]~CLKENA0|outclk
+  .    2.259    7.806 ic     CLK    emu|system_large|u_core|u_eu|u_ucrom|ucrom_rtl_0|auto_generated|ram_block1a24|clk0
+  .    1.594    9.400 cell   LAUNCH emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~PORT_A_WRITE_ENABLE_REG
+  .    0.000    9.400 utco   LAUNCH emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~PORT_A_WRITE_ENABLE_REG
+  0    1.050   10.450 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom_rtl_0|auto_generated|ram_block1a24|portadataout[2]
+  .    1.750   12.200 ic     DATA   emu|system_large|u_core|u_eu|e_s1[2]~0|dataf
+  0    0.097   12.297 cell   DATA   emu|system_large|u_core|u_eu|e_s1[2]~0|combout
+  .    1.255   13.552 ic     DATA   emu|system_large|u_core|u_eu|Mux271~11|datae
+  0    0.267   13.819 cell   DATA   emu|system_large|u_core|u_eu|Mux271~11|combout
+  .    0.352   14.171 ic     DATA   emu|system_large|u_core|u_eu|Mux271~12|datae
+  0    0.300   14.471 cell   DATA   emu|system_large|u_core|u_eu|Mux271~12|combout
+  .    1.436   15.907 ic     DATA   emu|system_large|u_core|u_eu|Mux271~17|dataf
+  0    0.084   15.991 cell   DATA   emu|system_large|u_core|u_eu|Mux271~17|combout
+  .    0.803   16.794 ic     DATA   emu|system_large|u_core|u_eu|v1~5|dataf
+  0    0.081   16.875 cell   DATA   emu|system_large|u_core|u_eu|v1~5|combout
+  .    1.322   18.197 ic     DATA   emu|system_large|u_core|u_eu|v1~6|dataf
+  0    0.081   18.278 cell   DATA   emu|system_large|u_core|u_eu|v1~6|combout
+  .    1.075   19.353 ic     DATA   emu|system_large|u_core|u_eu|Add57~29|datac
+  0    0.836   20.189 cell   DATA   emu|system_large|u_core|u_eu|Add57~29|cout
+  .    0.000   20.189 ic     DATA   emu|system_large|u_core|u_eu|Add57~33|cin
+  0    0.000   20.189 cell   DATA   emu|system_large|u_core|u_eu|Add57~33|cout
+  .    0.000   20.189 ic     DATA   emu|system_large|u_core|u_eu|Add57~21|cin
+  0    0.374   20.563 cell   DATA   emu|system_large|u_core|u_eu|Add57~21|sumout
+  .    0.257   20.820 ic     DATA   emu|system_large|u_core|u_eu|Equal231~3|dataf
+  0    0.092   20.912 cell   DATA   emu|system_large|u_core|u_eu|Equal231~3|combout
+  .    0.537   21.449 ic     DATA   emu|system_large|u_core|u_eu|Equal231~1|datad
+  0    0.510   21.959 cell   DATA   emu|system_large|u_core|u_eu|Equal231~1|combout
+  .    0.238   22.197 ic     DATA   emu|system_large|u_core|u_eu|Mux350~4|datae
+  0    0.301   22.498 cell   DATA   emu|system_large|u_core|u_eu|Mux350~4|combout
+  .    0.235   22.733 ic     DATA   emu|system_large|u_core|u_eu|Mux350~5|datae
+  0    0.233   22.966 cell   DATA   emu|system_large|u_core|u_eu|Mux350~5|combout
+  .    0.571   23.537 ic     DATA   emu|system_large|u_core|u_eu|Mux360~2|dataf
+  0    0.086   23.623 cell   DATA   emu|system_large|u_core|u_eu|Mux360~2|combout
+  .    1.016   24.639 ic     DATA   emu|system_large|u_core|u_eu|Mux360~15|dataf
+  0    0.092   24.731 cell   DATA   emu|system_large|u_core|u_eu|Mux360~15|combout
+  .    1.297   26.028 ic     DATA   emu|system_large|u_core|u_eu|ld_b_n~3|datac
+  0    0.517   26.545 cell   DATA   emu|system_large|u_core|u_eu|ld_b_n~3|combout
+  .    0.934   27.479 ic     DATA   emu|system_large|u_core|u_eu|Ram12~5|dataa
+  0    0.565   28.044 cell   DATA   emu|system_large|u_core|u_eu|Ram12~5|combout
+  .    0.227   28.271 ic     DATA   emu|system_large|u_core|u_eu|Ram12~3|datad
+  0    0.512   28.783 cell   DATA   emu|system_large|u_core|u_eu|Ram12~3|combout
+  .    0.811   29.594 ic     DATA   emu|system_large|u_core|u_eu|p~4|dataf
+  0    0.087   29.681 cell   DATA   emu|system_large|u_core|u_eu|p~4|combout
+  .    0.859   30.540 ic     DATA   emu|system_large|u_core|u_eu|Selector1552~2|dataf
+  0    0.091   30.631 cell   DATA   emu|system_large|u_core|u_eu|Selector1552~2|combout
+  .    0.691   31.322 ic     DATA   emu|system_large|u_core|u_eu|st_n~31|datae
+  0    0.302   31.624 cell   DATA   emu|system_large|u_core|u_eu|st_n~31|combout
+  .    0.209   31.833 ic     DATA   emu|system_large|u_core|u_eu|st_n~32|dataf
+  0    0.097   31.930 cell   DATA   emu|system_large|u_core|u_eu|st_n~32|combout
+  .    0.588   32.518 ic     DATA   emu|system_large|u_core|u_eu|st_zero_ok~7|dataf
+  0    0.093   32.611 cell   DATA   emu|system_large|u_core|u_eu|st_zero_ok~7|combout
+  .    0.259   32.870 ic     DATA   emu|system_large|u_core|u_eu|seg_override_n~2|datac
+  0    0.485   33.355 cell   DATA   emu|system_large|u_core|u_eu|seg_override_n~2|combout
+  .    0.817   34.172 ic     DATA   emu|system_large|u_core|u_eu|Selector1620~4|datad
+  0    0.358   34.530 cell   DATA   emu|system_large|u_core|u_eu|Selector1620~4|combout
+  .    1.031   35.561 ic     DATA   emu|system_large|u_core|u_eu|pv~19|datad
+  0    0.512   36.073 cell   DATA   emu|system_large|u_core|u_eu|pv~19|combout
+  .    0.857   36.930 ic     DATA   emu|system_large|u_core|u_eu|always6~35|dataa
+  0    0.560   37.490 cell   DATA   emu|system_large|u_core|u_eu|always6~35|combout
+  .    0.251   37.741 ic     DATA   emu|system_large|u_core|u_eu|st_n~148|dataf
+  0    0.097   37.838 cell   DATA   emu|system_large|u_core|u_eu|st_n~148|combout
+  .    0.280   38.118 ic     DATA   emu|system_large|u_core|u_eu|st_n~70|datad
+  0    0.533   38.651 cell   DATA   emu|system_large|u_core|u_eu|st_n~70|combout
+  .    0.585   39.236 ic     DATA   emu|system_large|u_core|u_eu|st_n~72_Duplicate|dataf
+  0    0.083   39.319 cell   DATA   emu|system_large|u_core|u_eu|st_n~72_Duplicate|combout
+  .    1.146   40.465 ic     DATA   emu|system_large|u_core|u_eu|Decoder36~2|datad
+  0    0.514   40.979 cell   DATA   emu|system_large|u_core|u_eu|Decoder36~2|combout
+  .    0.789   41.768 ic     DATA   emu|system_large|u_core|u_eu|st_n~88|dataf
+  0    0.082   41.850 cell   DATA   emu|system_large|u_core|u_eu|st_n~88|combout
+  .    0.213   42.063 ic     DATA   emu|system_large|u_core|u_eu|st_n~93|datad
+  0    0.426   42.489 cell   DATA   emu|system_large|u_core|u_eu|st_n~93|combout
+  .    0.341   42.830 ic     DATA   emu|system_large|u_core|u_eu|st_n~94|dataf
+  0    0.092   42.922 cell   DATA   emu|system_large|u_core|u_eu|st_n~94|combout
+  .    0.895   43.817 ic     DATA   emu|system_large|u_core|u_eu|Decoder38~2_Duplicate|datac
+  0    0.499   44.316 cell   DATA   emu|system_large|u_core|u_eu|Decoder38~2_Duplicate|combout
+  .    0.996   45.312 ic     DATA   emu|system_large|u_core|u_eu|opc_from_modrm_n~1_Duplicate|dataf
+  0    0.091   45.403 cell   DATA   emu|system_large|u_core|u_eu|opc_from_modrm_n~1_Duplicate|combout
+  .    0.754   46.157 ic     DATA   emu|system_large|u_core|u_eu|opc_base[3]~7|datac
+  0    0.503   46.660 cell   DATA   emu|system_large|u_core|u_eu|opc_base[3]~7|combout
+  .    0.863   47.523 ic     DATA   emu|system_large|u_core|u_eu|modrm_reg~17|dataf
+  1    0.081   47.604 cell   DATA   emu|system_large|u_core|u_eu|modrm_reg~17|combout
+  .    0.587   48.191 ic     DATA   emu|system_large|u_core|u_eu|modrm_reg~18_Duplicate|datac
+  1    0.481   48.672 cell   DATA   emu|system_large|u_core|u_eu|modrm_reg~18_Duplicate|combout
+  .    1.236   49.908 ic     DATA   emu|system_large|u_core|u_eu|modrm_reg[1]_NEW584~_Duplicate|dataf
+  1    0.080   49.988 cell   DATA   emu|system_large|u_core|u_eu|modrm_reg[1]_NEW584~_Duplicate|combout
+  .    0.240   50.228 ic     DATA   emu|system_large|u_core|u_eu|eff_op[1]~5|dataf
+  1    0.082   50.310 cell   DATA   emu|system_large|u_core|u_eu|eff_op[1]~5|combout
+  .    0.225   50.535 ic     DATA   emu|system_large|u_core|u_eu|eff_op[1]~1|dataf
+  1    0.084   50.619 cell   DATA   emu|system_large|u_core|u_eu|eff_op[1]~1|combout
+  .    0.554   51.173 ic     DATA   emu|system_large|u_core|u_eu|eff_op[1]~1_NEW_REG2017|asdata
+  .    0.613   51.786 cell   DEST   emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|eff_op[1]~1_OTERM2018
+
+=== RESOLVER CENSUS (which collection command answered) ===
+  pins         117
+  distinct nodes classified (LIVE_NARROW): 117
+  distinct nodes classified (LIVE_WIDE)  : 30
+wrote /home/wickerwaka/src/nec_test/sw/testdata/l2/l2_noexc_ctl_seed5.phasesplit.txt
+Info (23030): Evaluation of Tcl script /home/wickerwaka/src/nec_test/sw/sta_phase_split_scan.tcl was successful
+Info: Quartus Prime TimeQuest Timing Analyzer was successful. 0 errors, 93 warnings
+    Info: Peak virtual memory: 1801 megabytes
+    Info: Processing ended: Tue Sep  8 19:53:51 2026
+    Info: Elapsed time: 00:00:21
+    Info: Total CPU time (on all processors): 00:00:44
+
+[sw/sta_phase_split_scan.tcl] exit 0
+
+=== sw/sta_l2_rowq_probe.tcl ===
+ partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 72
+Warning (332174): Ignored filter at sys_top.sdc(72): ascal|o_vtotal* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 72
+Warning (332049): Ignored set_false_path at sys_top.sdc(72): Argument <from> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 72
+    Info (332050): set_false_path -from {ascal|o_htotal* ascal|o_vtotal*} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 72
+Warning (332174): Ignored filter at sys_top.sdc(73): ascal|o_hsend* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 73
+Warning (332174): Ignored filter at sys_top.sdc(73): ascal|o_hsstart* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 73
+Warning (332174): Ignored filter at sys_top.sdc(73): ascal|o_vsend* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 73
+Warning (332174): Ignored filter at sys_top.sdc(73): ascal|o_vsstart* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 73
+Warning (332049): Ignored set_false_path at sys_top.sdc(73): Argument <from> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 73
+    Info (332050): set_false_path -from {ascal|o_hsstart* ascal|o_vsstart* ascal|o_hsend* ascal|o_vsend*} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 73
+Warning (332174): Ignored filter at sys_top.sdc(74): ascal|o_hsize* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 74
+Warning (332174): Ignored filter at sys_top.sdc(74): ascal|o_vsize* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 74
+Warning (332049): Ignored set_false_path at sys_top.sdc(74): Argument <from> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 74
+    Info (332050): set_false_path -from {ascal|o_hsize* ascal|o_vsize*} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 74
+Info (332104): Reading SDC File: 'nec_test.sdc'
+Info (332151): Clock uncertainty is not calculated until you update the timing netlist.
+Info: nec_test.sdc: L2 GOAL-STATE PROBE -- NO ce->ce exception; 2262 ce-gated v30u core registers are checked SINGLE-CYCLE
+Info: nec_test.sdc: 1 ce_half-gated register(s) kept OUT of the CE multicycle; cross-phase arcs are single-cycle by derivation (adjacent enables are legal)
+Info (332097): The following timing edges are non-unate.  TimeQuest will assume pos-unate behavior for these edges in the clock network.
+    Info (332098): Cell: emu|pll|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL  from: refclkin  to: fbclk
+    Info (332098): Cell: emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER  from: vco0ph[0]  to: divclk
+    Info (332098): Cell: emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_REFCLK_SELECT  from: clkin[0]  to: clkout
+    Info (332098): From: emu|system_large|hps_lw|clk  to: emu:emu|system_large:system_large|hps_lw~FF_3425
+    Info (332098): Cell: pll_audio|pll_audio_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL  from: refclkin  to: fbclk
+    Info (332098): Cell: pll_audio|pll_audio_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER  from: vco0ph[0]  to: divclk
+    Info (332098): Cell: pll_audio|pll_audio_inst|altera_pll_i|general[0].gpll~PLL_REFCLK_SELECT  from: clkin[0]  to: clkout
+Info (332123): Deriving Clock Uncertainty. Please refer to report_sdc in TimeQuest to see clock uncertainties.
+=== sta_l2_rowq_probe: nec_test / nec_test_ucore ===
+
+=== E. COLLECTION SIZES ===
+  $v30u_ce                : 2262
+  row_q (incl ~DUPLICATE) : 0
+  dec_q (incl ~DUPLICATE) : 2
+  ucrom/ucdecode memory nodes in the EU : 84
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg3
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg2
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg5
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg4
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg7
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg6
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_re_reg
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~PORT_A_WRITE_ENABLE_REG
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~CLOCK0_ENABLE0_0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg9
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg8
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg10
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg1
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg3
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg2
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg5
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg4
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg7
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg6
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_re_reg
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~PORT_A_WRITE_ENABLE_REG
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~CLOCK0_ENABLE0_0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg9
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg8
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg10
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg1
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg3
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg2
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg5
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg4
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg7
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg6
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_re_reg
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~PORT_A_WRITE_ENABLE_REG
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~CLOCK0_ENABLE0_0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg9
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg8
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg10
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg1
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg3
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg2
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg5
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg4
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg7
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg6
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_re_reg
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~PORT_A_WRITE_ENABLE_REG
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~CLOCK0_ENABLE0_0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg9
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg8
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg10
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg1
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg3
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg2
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg5
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg4
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg7
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg6
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_re_reg
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~PORT_A_WRITE_ENABLE_REG
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~CLOCK0_ENABLE0_0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg9
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg8
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg10
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg1
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg3
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg2
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg5
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg4
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg7
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg6
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_re_reg
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~PORT_A_WRITE_ENABLE_REG
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~CLOCK0_ENABLE0_0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg9
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg8
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg10
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg1
+
+CONTROL FAILED: the row_q collection is EMPTY.  Either this netlist
+predates L2, or every row_q bit was optimised away, or row_q was
+PACKED INTO AN INFERRED MEMORY (see the memory-node list above --
+that is what happened to L1's dec_q), or the glob is wrong.  NO L-8
+RESULT IS EMITTED -- an empty collection returns no path, and 'no
+path' would read as 'the class does not bind'.
+
+[sw/sta_l2_rowq_probe.tcl] exit 3
+
+hdl/nec_test.sdc restored: CLEAN

@@ -1,0 +1,368 @@
+patched: uncommented set_multicycle_path lines now = 0 (must be 0)
+
+=== sw/sta_phase_split_scan.tcl ===
+ll_i|general[0].gpll~PLL_REFCLK_SELECT|clkin[0]
+  .    0.333    2.429 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_REFCLK_SELECT|clkout
+  .    0.000    2.429 ic     CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|refclkin
+  .    0.029    2.458 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|vcoph[0]
+  .    0.000    2.458 ic     CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]
+  .    1.746    4.204 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk
+  .    1.039    5.243 ic     CLK    emu|pll|pll_inst|altera_pll_i|outclk_wire[0]~CLKENA0|inclk
+  .    0.304    5.547 cell   CLK    emu|pll|pll_inst|altera_pll_i|outclk_wire[0]~CLKENA0|outclk
+  .    2.256    7.803 ic     CLK    emu|system_large|u_core|u_eu|u_ucrom|ucdecode_rtl_0|auto_generated|ram_block1a5|clk0
+  .    1.594    9.397 cell   LAUNCH emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a5~PORT_A_WRITE_ENABLE_REG
+  .    0.000    9.397 utco   LAUNCH emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a5~PORT_A_WRITE_ENABLE_REG
+  0    1.046   10.443 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucdecode_rtl_0|auto_generated|ram_block1a5|portadataout[0]
+  .    1.411   11.854 ic     DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~368|datac
+  0    0.507   12.361 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~368|combout
+  .    0.900   13.261 ic     DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~45|datac
+  0    0.483   13.744 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~45|combout
+  .    0.229   13.973 ic     DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~49|datad
+  0    0.518   14.491 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~49|combout
+  .    1.039   15.530 ic     DATA   emu|system_large|u_core|u_eu|e_s1[3]~3|dataf
+  0    0.085   15.615 cell   DATA   emu|system_large|u_core|u_eu|e_s1[3]~3|combout
+  .    1.118   16.733 ic     DATA   emu|system_large|u_core|u_eu|f_wait~2|datae
+  0    0.237   16.970 cell   DATA   emu|system_large|u_core|u_eu|f_wait~2|combout
+  .    0.566   17.536 ic     DATA   emu|system_large|u_core|u_eu|rd_done_cnt_n~4|datac
+  0    0.499   18.035 cell   DATA   emu|system_large|u_core|u_eu|rd_done_cnt_n~4|combout
+  .    1.032   19.067 ic     DATA   emu|system_large|u_core|u_eu|rdq0_n~1|dataf
+  0    0.081   19.148 cell   DATA   emu|system_large|u_core|u_eu|rdq0_n~1|combout
+  .    1.301   20.449 ic     DATA   emu|system_large|u_core|u_eu|opr_n~24|dataf
+  0    0.082   20.531 cell   DATA   emu|system_large|u_core|u_eu|opr_n~24|combout
+  .    0.210   20.741 ic     DATA   emu|system_large|u_core|u_eu|opr_n~25|dataf
+  0    0.094   20.835 cell   DATA   emu|system_large|u_core|u_eu|opr_n~25|combout
+  .    0.278   21.113 ic     DATA   emu|system_large|u_core|u_eu|v1~22|dataf
+  0    0.095   21.208 cell   DATA   emu|system_large|u_core|u_eu|v1~22|combout
+  .    0.870   22.078 ic     DATA   emu|system_large|u_core|u_eu|Add57~49|datac
+  0    0.808   22.886 cell   DATA   emu|system_large|u_core|u_eu|Add57~49|cout
+  .    0.000   22.886 ic     DATA   emu|system_large|u_core|u_eu|Add57~17|cin
+  0    0.045   22.931 cell   DATA   emu|system_large|u_core|u_eu|Add57~17|cout
+  .    0.000   22.931 ic     DATA   emu|system_large|u_core|u_eu|Add57~21|cin
+  0    0.000   22.931 cell   DATA   emu|system_large|u_core|u_eu|Add57~21|cout
+  .    0.000   22.931 ic     DATA   emu|system_large|u_core|u_eu|Add57~25|cin
+  0    0.057   22.988 cell   DATA   emu|system_large|u_core|u_eu|Add57~25|cout
+  .    0.000   22.988 ic     DATA   emu|system_large|u_core|u_eu|Add57~29|cin
+  0    0.000   22.988 cell   DATA   emu|system_large|u_core|u_eu|Add57~29|cout
+  .    0.000   22.988 ic     DATA   emu|system_large|u_core|u_eu|Add57~33|cin
+  0    0.118   23.106 cell   DATA   emu|system_large|u_core|u_eu|Add57~33|cout
+  .    0.000   23.106 ic     DATA   emu|system_large|u_core|u_eu|Add57~53|cin
+  0    0.154   23.260 cell   DATA   emu|system_large|u_core|u_eu|Add57~53|sumout
+  .    1.304   24.564 ic     DATA   emu|system_large|u_core|u_eu|Mux350~5|dataf
+  0    0.081   24.645 cell   DATA   emu|system_large|u_core|u_eu|Mux350~5|combout
+  .    0.804   25.449 ic     DATA   emu|system_large|u_core|u_eu|Mux350~1|dataf
+  0    0.092   25.541 cell   DATA   emu|system_large|u_core|u_eu|Mux350~1|combout
+  .    0.235   25.776 ic     DATA   emu|system_large|u_core|u_eu|Mux350~4|dataf
+  0    0.092   25.868 cell   DATA   emu|system_large|u_core|u_eu|Mux350~4|combout
+  .    1.519   27.387 ic     DATA   emu|system_large|u_core|u_eu|Mux360~5|dataf
+  0    0.081   27.468 cell   DATA   emu|system_large|u_core|u_eu|Mux360~5|combout
+  .    0.239   27.707 ic     DATA   emu|system_large|u_core|u_eu|Mux360~17|dataf
+  0    0.083   27.790 cell   DATA   emu|system_large|u_core|u_eu|Mux360~17|combout
+  .    0.838   28.628 ic     DATA   emu|system_large|u_core|u_eu|Decoder28~8|datad
+  0    0.518   29.146 cell   DATA   emu|system_large|u_core|u_eu|Decoder28~8|combout
+  .    0.760   29.906 ic     DATA   emu|system_large|u_core|u_eu|Ram12~1|dataf
+  0    0.087   29.993 cell   DATA   emu|system_large|u_core|u_eu|Ram12~1|combout
+  .    1.088   31.081 ic     DATA   emu|system_large|u_core|u_eu|Ram14~6|dataf
+  0    0.084   31.165 cell   DATA   emu|system_large|u_core|u_eu|Ram14~6|combout
+  .    0.817   31.982 ic     DATA   emu|system_large|u_core|u_eu|pv~14|datad
+  0    0.430   32.412 cell   DATA   emu|system_large|u_core|u_eu|pv~14|combout
+  .    0.253   32.665 ic     DATA   emu|system_large|u_core|u_eu|always6~25|datae
+  0    0.308   32.973 cell   DATA   emu|system_large|u_core|u_eu|always6~25|combout
+  .    0.824   33.797 ic     DATA   emu|system_large|u_core|u_eu|st_n~33|dataf
+  0    0.094   33.891 cell   DATA   emu|system_large|u_core|u_eu|st_n~33|combout
+  .    0.254   34.145 ic     DATA   emu|system_large|u_core|u_eu|st_n~34|dataf
+  0    0.092   34.237 cell   DATA   emu|system_large|u_core|u_eu|st_n~34|combout
+  .    0.948   35.185 ic     DATA   emu|system_large|u_core|u_eu|Decoder32~3|datab
+  0    0.566   35.751 cell   DATA   emu|system_large|u_core|u_eu|Decoder32~3|combout
+  .    0.821   36.572 ic     DATA   emu|system_large|u_core|u_eu|st_n~42|dataf
+  0    0.091   36.663 cell   DATA   emu|system_large|u_core|u_eu|st_n~42|combout
+  .    0.291   36.954 ic     DATA   emu|system_large|u_core|u_eu|st_n~43|datab
+  0    0.555   37.509 cell   DATA   emu|system_large|u_core|u_eu|st_n~43|combout
+  .    0.243   37.752 ic     DATA   emu|system_large|u_core|u_eu|st_n~45|dataf
+  0    0.088   37.840 cell   DATA   emu|system_large|u_core|u_eu|st_n~45|combout
+  .    0.790   38.630 ic     DATA   emu|system_large|u_core|u_eu|Decoder34~2|dataa
+  0    0.596   39.226 cell   DATA   emu|system_large|u_core|u_eu|Decoder34~2|combout
+  .    0.915   40.141 ic     DATA   emu|system_large|u_core|u_eu|Selector1741~0|datac
+  0    0.476   40.617 cell   DATA   emu|system_large|u_core|u_eu|Selector1741~0|combout
+  .    0.842   41.459 ic     DATA   emu|system_large|u_core|u_eu|st_n~128|dataf
+  0    0.092   41.551 cell   DATA   emu|system_large|u_core|u_eu|st_n~128|combout
+  .    0.243   41.794 ic     DATA   emu|system_large|u_core|u_eu|st_n~73|dataf
+  0    0.098   41.892 cell   DATA   emu|system_large|u_core|u_eu|st_n~73|combout
+  .    0.578   42.470 ic     DATA   emu|system_large|u_core|u_eu|seg_override_n~5|datad
+  0    0.518   42.988 cell   DATA   emu|system_large|u_core|u_eu|seg_override_n~5|combout
+  .    0.251   43.239 ic     DATA   emu|system_large|u_core|u_eu|seg_override_n~6|datac
+  0    0.491   43.730 cell   DATA   emu|system_large|u_core|u_eu|seg_override_n~6|combout
+  .    0.849   44.579 ic     DATA   emu|system_large|u_core|u_eu|st_n~92|dataf
+  0    0.084   44.663 cell   DATA   emu|system_large|u_core|u_eu|st_n~92|combout
+  .    0.244   44.907 ic     DATA   emu|system_large|u_core|u_eu|st_n~95|datac
+  0    0.480   45.387 cell   DATA   emu|system_large|u_core|u_eu|st_n~95|combout
+  .    0.812   46.199 ic     DATA   emu|system_large|u_core|u_eu|Decoder38~7|datad
+  0    0.518   46.717 cell   DATA   emu|system_large|u_core|u_eu|Decoder38~7|combout
+  .    0.373   47.090 ic     DATA   emu|system_large|u_core|u_eu|opc_base[3]~3|datad
+  0    0.429   47.519 cell   DATA   emu|system_large|u_core|u_eu|opc_base[3]~3|combout
+  .    0.555   48.074 ic     DATA   emu|system_large|u_core|u_eu|m_kind[0]~0|dataf
+  0    0.094   48.168 cell   DATA   emu|system_large|u_core|u_eu|m_kind[0]~0|combout
+  .    1.048   49.216 ic     DATA   emu|system_large|u_core|u_eu|modrm_reg~3|datab
+  0    0.560   49.776 cell   DATA   emu|system_large|u_core|u_eu|modrm_reg~3|combout
+  .    0.231   50.007 ic     DATA   emu|system_large|u_core|u_eu|modrm_reg~6|datac
+  1    0.508   50.515 cell   DATA   emu|system_large|u_core|u_eu|modrm_reg~6|combout
+  .    1.215   51.730 ic     DEST   emu|system_large|u_core|u_eu|modrm_reg[0]_NEW1659|dataf
+  1    0.077   51.807 cell   DEST   emu|system_large|u_core|u_eu|modrm_reg[0]_NEW1659|combout
+  .    0.000   51.807 ic     DEST   emu|system_large|u_core|u_eu|modrm_reg[0]|d
+  .    0.264   52.071 cell   DEST   emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|modrm_reg[0]
+
+  --- path 3 ---
+  from: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a5~PORT_A_WRITE_ENABLE_REG
+  to  : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|modrm_reg[0]~DUPLICATE
+  PD     incr      cum type   phase  node
+  .    0.000    0.000 clksrc CLK    FPGA_CLK2_50
+  .    0.000    0.000 ic     CLK    FPGA_CLK2_50~input|i
+  .    0.761    0.761 cell   CLK    FPGA_CLK2_50~input|o
+  .    1.335    2.096 ic     CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_REFCLK_SELECT|clkin[0]
+  .    0.333    2.429 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_REFCLK_SELECT|clkout
+  .    0.000    2.429 ic     CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|refclkin
+  .    0.029    2.458 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL|vcoph[0]
+  .    0.000    2.458 ic     CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|vco0ph[0]
+  .    1.746    4.204 cell   CLK    emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk
+  .    1.039    5.243 ic     CLK    emu|pll|pll_inst|altera_pll_i|outclk_wire[0]~CLKENA0|inclk
+  .    0.304    5.547 cell   CLK    emu|pll|pll_inst|altera_pll_i|outclk_wire[0]~CLKENA0|outclk
+  .    2.256    7.803 ic     CLK    emu|system_large|u_core|u_eu|u_ucrom|ucdecode_rtl_0|auto_generated|ram_block1a5|clk0
+  .    1.594    9.397 cell   LAUNCH emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a5~PORT_A_WRITE_ENABLE_REG
+  .    0.000    9.397 utco   LAUNCH emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a5~PORT_A_WRITE_ENABLE_REG
+  0    1.046   10.443 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucdecode_rtl_0|auto_generated|ram_block1a5|portadataout[0]
+  .    1.411   11.854 ic     DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~368|datac
+  0    0.507   12.361 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~368|combout
+  .    0.900   13.261 ic     DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~45|datac
+  0    0.483   13.744 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~45|combout
+  .    0.229   13.973 ic     DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~49|datad
+  0    0.518   14.491 cell   DATA   emu|system_large|u_core|u_eu|u_ucrom|ucrom~49|combout
+  .    1.039   15.530 ic     DATA   emu|system_large|u_core|u_eu|e_s1[3]~3|dataf
+  0    0.085   15.615 cell   DATA   emu|system_large|u_core|u_eu|e_s1[3]~3|combout
+  .    1.118   16.733 ic     DATA   emu|system_large|u_core|u_eu|f_wait~2|datae
+  0    0.237   16.970 cell   DATA   emu|system_large|u_core|u_eu|f_wait~2|combout
+  .    0.566   17.536 ic     DATA   emu|system_large|u_core|u_eu|rd_done_cnt_n~4|datac
+  0    0.499   18.035 cell   DATA   emu|system_large|u_core|u_eu|rd_done_cnt_n~4|combout
+  .    1.032   19.067 ic     DATA   emu|system_large|u_core|u_eu|rdq0_n~1|dataf
+  0    0.081   19.148 cell   DATA   emu|system_large|u_core|u_eu|rdq0_n~1|combout
+  .    1.301   20.449 ic     DATA   emu|system_large|u_core|u_eu|opr_n~24|dataf
+  0    0.082   20.531 cell   DATA   emu|system_large|u_core|u_eu|opr_n~24|combout
+  .    0.210   20.741 ic     DATA   emu|system_large|u_core|u_eu|opr_n~25|dataf
+  0    0.094   20.835 cell   DATA   emu|system_large|u_core|u_eu|opr_n~25|combout
+  .    0.278   21.113 ic     DATA   emu|system_large|u_core|u_eu|v1~22|dataf
+  0    0.095   21.208 cell   DATA   emu|system_large|u_core|u_eu|v1~22|combout
+  .    0.870   22.078 ic     DATA   emu|system_large|u_core|u_eu|Add57~49|datac
+  0    0.808   22.886 cell   DATA   emu|system_large|u_core|u_eu|Add57~49|cout
+  .    0.000   22.886 ic     DATA   emu|system_large|u_core|u_eu|Add57~17|cin
+  0    0.045   22.931 cell   DATA   emu|system_large|u_core|u_eu|Add57~17|cout
+  .    0.000   22.931 ic     DATA   emu|system_large|u_core|u_eu|Add57~21|cin
+  0    0.000   22.931 cell   DATA   emu|system_large|u_core|u_eu|Add57~21|cout
+  .    0.000   22.931 ic     DATA   emu|system_large|u_core|u_eu|Add57~25|cin
+  0    0.057   22.988 cell   DATA   emu|system_large|u_core|u_eu|Add57~25|cout
+  .    0.000   22.988 ic     DATA   emu|system_large|u_core|u_eu|Add57~29|cin
+  0    0.000   22.988 cell   DATA   emu|system_large|u_core|u_eu|Add57~29|cout
+  .    0.000   22.988 ic     DATA   emu|system_large|u_core|u_eu|Add57~33|cin
+  0    0.118   23.106 cell   DATA   emu|system_large|u_core|u_eu|Add57~33|cout
+  .    0.000   23.106 ic     DATA   emu|system_large|u_core|u_eu|Add57~53|cin
+  0    0.154   23.260 cell   DATA   emu|system_large|u_core|u_eu|Add57~53|sumout
+  .    1.304   24.564 ic     DATA   emu|system_large|u_core|u_eu|Mux350~5|dataf
+  0    0.081   24.645 cell   DATA   emu|system_large|u_core|u_eu|Mux350~5|combout
+  .    0.804   25.449 ic     DATA   emu|system_large|u_core|u_eu|Mux350~1|dataf
+  0    0.092   25.541 cell   DATA   emu|system_large|u_core|u_eu|Mux350~1|combout
+  .    0.235   25.776 ic     DATA   emu|system_large|u_core|u_eu|Mux350~4|dataf
+  0    0.092   25.868 cell   DATA   emu|system_large|u_core|u_eu|Mux350~4|combout
+  .    1.519   27.387 ic     DATA   emu|system_large|u_core|u_eu|Mux360~5|dataf
+  0    0.081   27.468 cell   DATA   emu|system_large|u_core|u_eu|Mux360~5|combout
+  .    0.239   27.707 ic     DATA   emu|system_large|u_core|u_eu|Mux360~17|dataf
+  0    0.083   27.790 cell   DATA   emu|system_large|u_core|u_eu|Mux360~17|combout
+  .    0.838   28.628 ic     DATA   emu|system_large|u_core|u_eu|Decoder28~8|datad
+  0    0.518   29.146 cell   DATA   emu|system_large|u_core|u_eu|Decoder28~8|combout
+  .    0.760   29.906 ic     DATA   emu|system_large|u_core|u_eu|Ram12~1|dataf
+  0    0.087   29.993 cell   DATA   emu|system_large|u_core|u_eu|Ram12~1|combout
+  .    1.088   31.081 ic     DATA   emu|system_large|u_core|u_eu|Ram14~6|dataf
+  0    0.084   31.165 cell   DATA   emu|system_large|u_core|u_eu|Ram14~6|combout
+  .    0.817   31.982 ic     DATA   emu|system_large|u_core|u_eu|pv~14|datad
+  0    0.430   32.412 cell   DATA   emu|system_large|u_core|u_eu|pv~14|combout
+  .    0.253   32.665 ic     DATA   emu|system_large|u_core|u_eu|always6~25|datae
+  0    0.308   32.973 cell   DATA   emu|system_large|u_core|u_eu|always6~25|combout
+  .    0.824   33.797 ic     DATA   emu|system_large|u_core|u_eu|st_n~33|dataf
+  0    0.094   33.891 cell   DATA   emu|system_large|u_core|u_eu|st_n~33|combout
+  .    0.254   34.145 ic     DATA   emu|system_large|u_core|u_eu|st_n~34|dataf
+  0    0.092   34.237 cell   DATA   emu|system_large|u_core|u_eu|st_n~34|combout
+  .    0.948   35.185 ic     DATA   emu|system_large|u_core|u_eu|Decoder32~3|datab
+  0    0.566   35.751 cell   DATA   emu|system_large|u_core|u_eu|Decoder32~3|combout
+  .    0.821   36.572 ic     DATA   emu|system_large|u_core|u_eu|st_n~42|dataf
+  0    0.091   36.663 cell   DATA   emu|system_large|u_core|u_eu|st_n~42|combout
+  .    0.291   36.954 ic     DATA   emu|system_large|u_core|u_eu|st_n~43|datab
+  0    0.555   37.509 cell   DATA   emu|system_large|u_core|u_eu|st_n~43|combout
+  .    0.243   37.752 ic     DATA   emu|system_large|u_core|u_eu|st_n~45|dataf
+  0    0.088   37.840 cell   DATA   emu|system_large|u_core|u_eu|st_n~45|combout
+  .    0.790   38.630 ic     DATA   emu|system_large|u_core|u_eu|Decoder34~2|dataa
+  0    0.596   39.226 cell   DATA   emu|system_large|u_core|u_eu|Decoder34~2|combout
+  .    0.915   40.141 ic     DATA   emu|system_large|u_core|u_eu|Selector1741~0|datac
+  0    0.476   40.617 cell   DATA   emu|system_large|u_core|u_eu|Selector1741~0|combout
+  .    0.842   41.459 ic     DATA   emu|system_large|u_core|u_eu|st_n~128|dataf
+  0    0.092   41.551 cell   DATA   emu|system_large|u_core|u_eu|st_n~128|combout
+  .    0.243   41.794 ic     DATA   emu|system_large|u_core|u_eu|st_n~73|dataf
+  0    0.098   41.892 cell   DATA   emu|system_large|u_core|u_eu|st_n~73|combout
+  .    0.578   42.470 ic     DATA   emu|system_large|u_core|u_eu|seg_override_n~5|datad
+  0    0.518   42.988 cell   DATA   emu|system_large|u_core|u_eu|seg_override_n~5|combout
+  .    0.251   43.239 ic     DATA   emu|system_large|u_core|u_eu|seg_override_n~6|datac
+  0    0.491   43.730 cell   DATA   emu|system_large|u_core|u_eu|seg_override_n~6|combout
+  .    0.849   44.579 ic     DATA   emu|system_large|u_core|u_eu|st_n~92|dataf
+  0    0.084   44.663 cell   DATA   emu|system_large|u_core|u_eu|st_n~92|combout
+  .    0.244   44.907 ic     DATA   emu|system_large|u_core|u_eu|st_n~95|datac
+  0    0.480   45.387 cell   DATA   emu|system_large|u_core|u_eu|st_n~95|combout
+  .    0.804   46.191 ic     DATA   emu|system_large|u_core|u_eu|Decoder38~6|datad
+  0    0.514   46.705 cell   DATA   emu|system_large|u_core|u_eu|Decoder38~6|combout
+  .    0.572   47.277 ic     DATA   emu|system_large|u_core|u_eu|opc_base[3]~3|datae
+  0    0.233   47.510 cell   DATA   emu|system_large|u_core|u_eu|opc_base[3]~3|combout
+  .    0.555   48.065 ic     DATA   emu|system_large|u_core|u_eu|m_kind[0]~0|dataf
+  0    0.094   48.159 cell   DATA   emu|system_large|u_core|u_eu|m_kind[0]~0|combout
+  .    1.048   49.207 ic     DATA   emu|system_large|u_core|u_eu|modrm_reg~3|datab
+  0    0.560   49.767 cell   DATA   emu|system_large|u_core|u_eu|modrm_reg~3|combout
+  .    0.231   49.998 ic     DATA   emu|system_large|u_core|u_eu|modrm_reg~6|datac
+  1    0.508   50.506 cell   DATA   emu|system_large|u_core|u_eu|modrm_reg~6|combout
+  .    1.215   51.721 ic     DATA   emu|system_large|u_core|u_eu|modrm_reg[0]_NEW1659|dataf
+  1    0.077   51.798 cell   DATA   emu|system_large|u_core|u_eu|modrm_reg[0]_NEW1659|combout
+  .    0.000   51.798 ic     DEST   emu|system_large|u_core|u_eu|modrm_reg[0]~DUPLICATE|d
+  .    0.266   52.064 cell   DEST   emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|modrm_reg[0]~DUPLICATE
+
+=== RESOLVER CENSUS (which collection command answered) ===
+  pins         121
+  distinct nodes classified (LIVE_NARROW): 121
+  distinct nodes classified (LIVE_WIDE)  : 28
+wrote /home/wickerwaka/src/nec_test/sw/testdata/l2/prel2_noexc_seed5.phasesplit.txt
+Info (23030): Evaluation of Tcl script /home/wickerwaka/src/nec_test/sw/sta_phase_split_scan.tcl was successful
+Info: Quartus Prime TimeQuest Timing Analyzer was successful. 0 errors, 93 warnings
+    Info: Peak virtual memory: 1794 megabytes
+    Info: Processing ended: Tue Sep  8 16:39:32 2026
+    Info: Elapsed time: 00:00:20
+    Info: Total CPU time (on all processors): 00:00:42
+
+[sw/sta_phase_split_scan.tcl] exit 0
+
+=== sw/sta_l2_rowq_probe.tcl ===
+9
+Warning (332174): Ignored filter at sys_top.sdc(30): AUDIO_L could not be matched with a port File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 30
+Warning (332049): Ignored set_false_path at sys_top.sdc(30): Argument <to> is an empty collection File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 30
+    Info (332050): set_false_path -to   [get_ports {AUDIO_L}] File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 30
+Warning (332174): Ignored filter at sys_top.sdc(31): AUDIO_R could not be matched with a port File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 31
+Warning (332049): Ignored set_false_path at sys_top.sdc(31): Argument <to> is an empty collection File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 31
+    Info (332050): set_false_path -to   [get_ports {AUDIO_R}] File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 31
+Warning (332174): Ignored filter at sys_top.sdc(35): VSET[*] could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 35
+Warning (332049): Ignored set_false_path at sys_top.sdc(35): Argument <from> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 35
+    Info (332050): set_false_path -from {VSET[*]} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 35
+Warning (332174): Ignored filter at sys_top.sdc(36): hcalc[*] could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 36
+Warning (332174): Ignored filter at sys_top.sdc(36): wcalc[*] could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 36
+Warning (332049): Ignored set_false_path at sys_top.sdc(36): Argument <to> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 36
+    Info (332050): set_false_path -to   {wcalc[*] hcalc[*]} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 36
+Warning (332174): Ignored filter at sys_top.sdc(37): hdmi_height[*] could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 37
+Warning (332174): Ignored filter at sys_top.sdc(37): hdmi_width[*] could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 37
+Warning (332049): Ignored set_false_path at sys_top.sdc(37): Argument <to> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 37
+    Info (332050): set_false_path -to   {hdmi_width[*] hdmi_height[*]} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 37
+Warning (332174): Ignored filter at sys_top.sdc(38): btn_en could not be matched with a clock or keeper File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 38
+Warning (332174): Ignored filter at sys_top.sdc(38): btn_up could not be matched with a clock or keeper File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 38
+Warning (332174): Ignored filter at sys_top.sdc(54): HBP[*] could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 54
+Warning (332174): Ignored filter at sys_top.sdc(54): HEIGHT[*] could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 54
+Warning (332174): Ignored filter at sys_top.sdc(54): HFP[*] could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 54
+Warning (332174): Ignored filter at sys_top.sdc(54): HS[*] could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 54
+Warning (332174): Ignored filter at sys_top.sdc(54): VBP[*] could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 54
+Warning (332174): Ignored filter at sys_top.sdc(54): VFP[*] could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 54
+Warning (332174): Ignored filter at sys_top.sdc(54): VS[*] could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 54
+Warning (332174): Ignored filter at sys_top.sdc(54): WIDTH[*] could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 54
+Warning (332049): Ignored set_false_path at sys_top.sdc(54): Argument <to> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 54
+    Info (332050): set_false_path -to   {WIDTH[*] HFP[*] HS[*] HBP[*] HEIGHT[*] VFP[*] VS[*] VBP[*]} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 54
+Warning (332049): Ignored set_false_path at sys_top.sdc(55): Argument <from> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 55
+    Info (332050): set_false_path -from {WIDTH[*] HFP[*] HS[*] HBP[*] HEIGHT[*] VFP[*] VS[*] VBP[*]} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 55
+Warning (332174): Ignored filter at sys_top.sdc(56): FB_BASE[*] could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 56
+Warning (332174): Ignored filter at sys_top.sdc(56): FB_HEIGHT[*] could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 56
+Warning (332174): Ignored filter at sys_top.sdc(56): FB_WIDTH[*] could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 56
+Warning (332174): Ignored filter at sys_top.sdc(56): LFB_HMAX[*] could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 56
+Warning (332174): Ignored filter at sys_top.sdc(56): LFB_HMIN[*] could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 56
+Warning (332174): Ignored filter at sys_top.sdc(56): LFB_VMAX[*] could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 56
+Warning (332174): Ignored filter at sys_top.sdc(56): LFB_VMIN[*] could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 56
+Warning (332049): Ignored set_false_path at sys_top.sdc(56): Argument <to> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 56
+    Info (332050): set_false_path -to   {FB_BASE[*] FB_BASE[*] FB_WIDTH[*] FB_HEIGHT[*] LFB_HMIN[*] LFB_HMAX[*] LFB_VMIN[*] LFB_VMAX[*]} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 56
+Warning (332049): Ignored set_false_path at sys_top.sdc(57): Argument <from> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 57
+    Info (332050): set_false_path -from {FB_BASE[*] FB_BASE[*] FB_WIDTH[*] FB_HEIGHT[*] LFB_HMIN[*] LFB_HMAX[*] LFB_VMIN[*] LFB_VMAX[*]} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 57
+Warning (332174): Ignored filter at sys_top.sdc(58): scaler_flt[*] could not be matched with a clock or keeper File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 58
+Warning (332174): Ignored filter at sys_top.sdc(60): arc* could not be matched with a clock or keeper File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 60
+Warning (332174): Ignored filter at sys_top.sdc(61): arx* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 61
+Warning (332174): Ignored filter at sys_top.sdc(61): ary* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 61
+Warning (332049): Ignored set_false_path at sys_top.sdc(61): Argument <from> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 61
+    Info (332050): set_false_path -from {arx* ary*} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 61
+Warning (332174): Ignored filter at sys_top.sdc(63): ColorBurst_Range* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 63
+Warning (332174): Ignored filter at sys_top.sdc(63): PhaseInc* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 63
+Warning (332174): Ignored filter at sys_top.sdc(63): cvbs could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 63
+Warning (332174): Ignored filter at sys_top.sdc(63): pal_en could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 63
+Warning (332174): Ignored filter at sys_top.sdc(63): yc_en could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 63
+Warning (332049): Ignored set_false_path at sys_top.sdc(63): Argument <from> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 63
+    Info (332050): set_false_path -from {ColorBurst_Range* PhaseInc* pal_en cvbs yc_en} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 63
+Warning (332174): Ignored filter at sys_top.sdc(65): ascal|o_ihsize* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 65
+Warning (332049): Ignored set_false_path at sys_top.sdc(65): Argument <from> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 65
+    Info (332050): set_false_path -from {ascal|o_ihsize*} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 65
+Warning (332174): Ignored filter at sys_top.sdc(66): ascal|o_ivsize* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 66
+Warning (332049): Ignored set_false_path at sys_top.sdc(66): Argument <from> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 66
+    Info (332050): set_false_path -from {ascal|o_ivsize*} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 66
+Warning (332174): Ignored filter at sys_top.sdc(67): ascal|o_format* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 67
+Warning (332049): Ignored set_false_path at sys_top.sdc(67): Argument <from> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 67
+    Info (332050): set_false_path -from {ascal|o_format*} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 67
+Warning (332174): Ignored filter at sys_top.sdc(68): ascal|o_hdown could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 68
+Warning (332049): Ignored set_false_path at sys_top.sdc(68): Argument <from> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 68
+    Info (332050): set_false_path -from {ascal|o_hdown} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 68
+Warning (332174): Ignored filter at sys_top.sdc(69): ascal|o_vdown could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 69
+Warning (332049): Ignored set_false_path at sys_top.sdc(69): Argument <from> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 69
+    Info (332050): set_false_path -from {ascal|o_vdown} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 69
+Warning (332174): Ignored filter at sys_top.sdc(70): ascal|o_hmax* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 70
+Warning (332174): Ignored filter at sys_top.sdc(70): ascal|o_hmin* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 70
+Warning (332174): Ignored filter at sys_top.sdc(70): ascal|o_vmax* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 70
+Warning (332174): Ignored filter at sys_top.sdc(70): ascal|o_vmin* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 70
+Warning (332174): Ignored filter at sys_top.sdc(70): ascal|o_vrr could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 70
+Warning (332174): Ignored filter at sys_top.sdc(70): ascal|o_vrrmax* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 70
+Warning (332049): Ignored set_false_path at sys_top.sdc(70): Argument <from> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 70
+    Info (332050): set_false_path -from {ascal|o_hmin* ascal|o_hmax* ascal|o_vmin* ascal|o_vmax* ascal|o_vrrmax* ascal|o_vrr} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 70
+Warning (332174): Ignored filter at sys_top.sdc(71): ascal|o_hdisp* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 71
+Warning (332174): Ignored filter at sys_top.sdc(71): ascal|o_vdisp* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 71
+Warning (332049): Ignored set_false_path at sys_top.sdc(71): Argument <from> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 71
+    Info (332050): set_false_path -from {ascal|o_hdisp* ascal|o_vdisp*} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 71
+Warning (332174): Ignored filter at sys_top.sdc(72): ascal|o_htotal* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 72
+Warning (332174): Ignored filter at sys_top.sdc(72): ascal|o_vtotal* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 72
+Warning (332049): Ignored set_false_path at sys_top.sdc(72): Argument <from> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 72
+    Info (332050): set_false_path -from {ascal|o_htotal* ascal|o_vtotal*} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 72
+Warning (332174): Ignored filter at sys_top.sdc(73): ascal|o_hsend* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 73
+Warning (332174): Ignored filter at sys_top.sdc(73): ascal|o_hsstart* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 73
+Warning (332174): Ignored filter at sys_top.sdc(73): ascal|o_vsend* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 73
+Warning (332174): Ignored filter at sys_top.sdc(73): ascal|o_vsstart* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 73
+Warning (332049): Ignored set_false_path at sys_top.sdc(73): Argument <from> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 73
+    Info (332050): set_false_path -from {ascal|o_hsstart* ascal|o_vsstart* ascal|o_hsend* ascal|o_vsend*} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 73
+Warning (332174): Ignored filter at sys_top.sdc(74): ascal|o_hsize* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 74
+Warning (332174): Ignored filter at sys_top.sdc(74): ascal|o_vsize* could not be matched with a clock or keeper or register or port or pin or cell or partition File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 74
+Warning (332049): Ignored set_false_path at sys_top.sdc(74): Argument <from> is not an object ID File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 74
+    Info (332050): set_false_path -from {ascal|o_hsize* ascal|o_vsize*} File: /home/wickerwaka/src/nec_test/hdl/sys/sys_top.sdc Line: 74
+Info (332104): Reading SDC File: 'nec_test.sdc'
+Info (332151): Clock uncertainty is not calculated until you update the timing netlist.
+Info: nec_test.sdc: L2 GOAL-STATE PROBE -- NO ce->ce exception; 2042 ce-gated v30u core registers are checked SINGLE-CYCLE
+Info: nec_test.sdc: 1 ce_half-gated register(s) kept OUT of the CE multicycle; cross-phase arcs are single-cycle by derivation (adjacent enables are legal)
+Info (332097): The following timing edges are non-unate.  TimeQuest will assume pos-unate behavior for these edges in the clock network.
+    Info (332098): Cell: emu|pll|pll_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL  from: refclkin  to: fbclk
+    Info (332098): Cell: emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER  from: vco0ph[0]  to: divclk
+    Info (332098): Cell: emu|pll|pll_inst|altera_pll_i|general[0].gpll~PLL_REFCLK_SELECT  from: clkin[0]  to: clkout
+    Info (332098): From: emu|system_large|hps_lw|clk  to: emu:emu|system_large:system_large|hps_lw~FF_3425
+    Info (332098): Cell: pll_audio|pll_audio_inst|altera_pll_i|general[0].gpll~FRACTIONAL_PLL  from: refclkin  to: fbclk
+    Info (332098): Cell: pll_audio|pll_audio_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER  from: vco0ph[0]  to: divclk
+    Info (332098): Cell: pll_audio|pll_audio_inst|altera_pll_i|general[0].gpll~PLL_REFCLK_SELECT  from: clkin[0]  to: clkout
+Info (332123): Deriving Clock Uncertainty. Please refer to report_sdc in TimeQuest to see clock uncertainties.
+=== sta_l2_rowq_probe: nec_test / nec_test_ucore ===
+
+=== E. COLLECTION SIZES ===
+  $v30u_ce                : 2042
+  row_q (incl ~DUPLICATE) : 0
+  dec_q (incl ~DUPLICATE) : 0
+
+CONTROL FAILED: the row_q collection is EMPTY.  Either this netlist
+predates L2, or every row_q bit was optimised away, or the glob is
+wrong.  NO L-8 RESULT IS EMITTED -- an empty collection returns no
+path, and 'no path' would read as 'the class does not bind'.
+
+[sw/sta_l2_rowq_probe.tcl] exit 3
+
+hdl/nec_test.sdc restored: CLEAN

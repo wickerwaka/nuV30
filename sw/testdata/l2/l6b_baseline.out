@@ -1,0 +1,94 @@
+patched: uncommented set_multicycle_path lines now = 0 (must be 0)
+
+=== l2-baseline-noexc-control-n5 ===
+e/wickerwaka/src/nec_test/hdl/output_files_ucore/g6dist_seed3
+quartus_gate:   [seed3:truefmax] rc=2 in 20s
+quartus_gate:   [seed3:truefmax] rc=2 BUT the artifact is COMPLETE (all five classes) -- accepted, rc recorded
+quartus_gate: seed 3: RED  Fmax 22.55  setup -13.092  ALMs 10,252 / 41,910 ( 24 % )  core-domain 22.55 (SAME)  receipt 4888ecae35687bd8…
+
+quartus_gate: === seed 4  (4/5) ===
+quartus_gate: [seed4:quartus_fit] /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=4 --recompile=off nec_test -c nec_test_ucore
+quartus_gate:   [seed4:quartus_fit] rc=0 in 529s
+quartus_gate: [seed4:quartus_asm] /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_asm nec_test -c nec_test_ucore
+quartus_gate:   [seed4:quartus_asm] rc=0 in 13s
+quartus_gate: [seed4:quartus_sta] /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta nec_test -c nec_test_ucore
+quartus_gate:   [seed4:quartus_sta] rc=0 in 9s
+quartus_gate: [seed4:truefmax] /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_truefmax_probe.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/hdl/output_files_ucore/g6dist_seed4
+quartus_gate:   [seed4:truefmax] rc=0 in 20s
+quartus_gate: seed 4: RED  Fmax 22.11  setup -13.97  ALMs 10,210 / 41,910 ( 24 % )  core-domain 22.11 (SAME)  receipt 279cdd1107aade8b…
+
+quartus_gate: === seed 5  (5/5) ===
+quartus_gate: [seed5:quartus_fit] /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=5 --recompile=off nec_test -c nec_test_ucore
+quartus_gate:   [seed5:quartus_fit] rc=0 in 486s
+quartus_gate: [seed5:quartus_asm] /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_asm nec_test -c nec_test_ucore
+quartus_gate:   [seed5:quartus_asm] rc=0 in 13s
+quartus_gate: [seed5:quartus_sta] /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta nec_test -c nec_test_ucore
+quartus_gate:   [seed5:quartus_sta] rc=0 in 9s
+quartus_gate: [seed5:truefmax] /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_truefmax_probe.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/hdl/output_files_ucore/g6dist_seed5
+quartus_gate:   [seed5:truefmax] rc=0 in 20s
+quartus_gate: seed 5: RED  Fmax 22.58  setup -13.04  ALMs 10,233 / 41,910 ( 24 % )  core-domain 22.58 (SAME)  receipt a2c960c9c3f7a116…
+
+quartus_gate: E7 input stability -> PASS  (1 file(s) moved during the sweep; exempt ['hdl/nec_test_ucore.qsf'], OFFENDING [])
+
+  --- quartus_gate (G6) DISTRIBUTION ---
+  tool     : Version 17.1.0 Build 590 10/25/2017 SJ Lite Edition
+  config   : CONTROL/DEFAULT (no X1_AD_RETENTION) -- DERIVED from hdl/output_files_ucore/nec_test_ucore.flow.rpt, hdl/output_files_ucore/nec_test_ucore.map.rpt
+  inputs   : 88 files, sha256 69f1a5d56283ad56…   E7 PASS
+  seeds    : [1, 2, 3, 4, 5]   (one shared quartus_map, 5 fits)
+    seed      Fmax     setup      ALMs   core-dom   class  verdict
+       1     22.22   -13.764  10,215 / 41,910 ( 24 % )      22.22    SAME  RED
+       2     21.82   -14.574  10,230 / 41,910 ( 24 % )      21.82    SAME  RED
+       3     22.55   -13.092  10,252 / 41,910 ( 24 % )      22.55    SAME  RED
+       4     22.11    -13.97  10,210 / 41,910 ( 24 % )      22.11    SAME  RED
+       5     22.58    -13.04  10,233 / 41,910 ( 24 % )      22.58    SAME  RED
+  Fmax     : min 21.82  median 22.22  max 22.58   SPREAD 0.76 MHz
+    class   DEFAULT (whole-design worst, expect k=1)       min 21.82  med 22.22  max 22.58  spread 0.76
+    class   ENABLE (not $v30u_ce) -> t1_half2   -- the ENA min 100.07  med 123.06  max 179.79  spread 79.72
+    class   INTO   $v30u_ce -> t1_half2                    min 56.09  med 60.1  max 61.06  spread 4.97
+    class   OUTOF  t1_half2 -> $v30u_ce                    min 64.88  med 77.36  max 79.65  spread 14.77
+    class   RUNG 1: not latching in an observation registe min 21.82  med 22.22  max 22.58  spread 0.76
+    class   RUNG 1a: ...and not t1_half2 either (the worst min 21.82  med 22.22  max 22.58  spread 0.76
+    class   RUNG 2: ...and not launching from c_int_q      min 21.82  med 22.22  max 22.58  spread 0.76
+    class   RUNG 3: ...and not latching in row_posted      min 21.82  med 22.22  max 22.58  spread 0.76
+    class   SAME   $v30u_ce -> $v30u_ce   (the CE multicyc min 21.82  med 22.22  max 22.58  spread 0.76
+  binding cone distinct endpoint pairs over 5 draws: 5
+
+  *** THE QUOTABLE FIGURE IS A PAIR (standing_gates.md §A) ***
+  WHOLE-DESIGN : whole-design worst-of-5@seeds{1,2,3,4,5} = 21.82 MHz   (seed 2, k=1.0)
+                 bound by emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a5~PORT_A_WRITE_ENABLE_REG -> emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|modrm_reg[0]
+                 ^ THE PROMOTION GATE.  E3/E4/E5 score this one.
+  CORE-DOMAIN  : core-domain worst-of-5@seeds{1,2,3,4,5} = 21.82 MHz (SAME, k=1.0)   (seed 2)
+                 bound by emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a5~PORT_A_WRITE_ENABLE_REG -> emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|modrm_reg[0]
+                 ^ what an integration inherits.  NOT a gate; no bar reads it.
+                   SAME   worst-of-5 21.82  med 22.22  best 22.58
+                   INTO   worst-of-5 56.09  med 60.1  best 61.06
+                   OUTOF  worst-of-5 64.88  med 77.36  best 79.65
+                 ^ AN UPPER BOUND: each class row is that collection's worst BY SLACK, not by slack/k.
+  ⚠ off-class rows (measured k != the label's k), by seed: {1: ['SAME'], 2: ['SAME'], 3: ['SAME'], 4: ['SAME'], 5: ['SAME']}
+
+  (legacy single-figure line, unchanged: worst-of-5@seeds{1,2,3,4,5} = 21.82 MHz, worst seed 2)
+  record   : sw/testdata/g6dist/l2-baseline-noexc-control-n5/distribution.json  id 9ce05a8350929355…
+=== quartus_gate DISTRIBUTION: RED   2900s
+
+[l2-baseline-noexc-control-n5] quartus_gate exit 1 (non-zero is EXPECTED on a RED distribution and is not an error of this driver)
+  record id 9ce05a8350929355…   verdict RED   label l2-baseline-noexc-control-n5
+  configuration: CONTROL/DEFAULT (no X1_AD_RETENTION) -- DERIVED from hdl/output_files_ucore/nec_test_ucore.flow.rpt, hdl/output_files_ucore/nec_test_ucore.map.rpt
+  worst-of-5@seeds{1,2,3,4,5} = 21.82 MHz
+
+hdl/nec_test.sdc restored: CLEAN
+Traceback (most recent call last):
+  File "/home/wickerwaka/src/nec_test/sw/l2_noexc_g6.py", line 151, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/wickerwaka/src/nec_test/sw/l2_noexc_g6.py", line 141, in main
+    summarise(f"sw/testdata/g6dist/{label}/distribution.json")
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/wickerwaka/src/nec_test/sw/l2_noexc_g6.py", line 82, in summarise
+    offs = ", ".join(f"{o['class']} k={o['k']} (nominal {o['k_nominal']})"
+           ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                     for o in off) or "EMPTY  <<< THE DELETION DID NOT REACH THE COMPILER"
+                     ^^^^^^^^^^^^^
+  File "/home/wickerwaka/src/nec_test/sw/l2_noexc_g6.py", line 82, in <genexpr>
+    offs = ", ".join(f"{o['class']} k={o['k']} (nominal {o['k_nominal']})"
+                        ~^^^^^^^^^
+TypeError: string indices must be integers, not 'str'

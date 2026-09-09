@@ -1,0 +1,98 @@
+=== sta_l2_rowq_probe: nec_test / nec_test_ucore ===
+
+=== E. COLLECTION SIZES ===
+  $v30u_ce                : 2262
+  row_q (incl ~DUPLICATE) : 0
+  dec_q (incl ~DUPLICATE) : 2
+  ucrom/ucdecode memory nodes in the EU : 84
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg3
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg2
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg5
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg4
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg7
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg6
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_re_reg
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~PORT_A_WRITE_ENABLE_REG
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~CLOCK0_ENABLE0_0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg9
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg8
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg10
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a24~porta_address_reg1
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg3
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg2
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg5
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg4
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg7
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg6
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_re_reg
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~PORT_A_WRITE_ENABLE_REG
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~CLOCK0_ENABLE0_0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg9
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg8
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg10
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a2~porta_address_reg1
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg3
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg2
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg5
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg4
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg7
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg6
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_re_reg
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~PORT_A_WRITE_ENABLE_REG
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~CLOCK0_ENABLE0_0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg9
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg8
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg10
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a4~porta_address_reg1
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg3
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg2
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg5
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg4
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg7
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg6
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_re_reg
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~PORT_A_WRITE_ENABLE_REG
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~CLOCK0_ENABLE0_0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg9
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg8
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg10
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a0~porta_address_reg1
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg3
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg2
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg5
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg4
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg7
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg6
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_re_reg
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~PORT_A_WRITE_ENABLE_REG
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~CLOCK0_ENABLE0_0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg9
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg8
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg10
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a13~porta_address_reg1
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg3
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg2
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg5
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg4
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg7
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg6
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_re_reg
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~PORT_A_WRITE_ENABLE_REG
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~CLOCK0_ENABLE0_0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg9
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg8
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg10
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg0
+    mem node: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucrom_rtl_0|altsyncram_r2f1:auto_generated|ram_block1a19~porta_address_reg1
+
+CONTROL FAILED: the row_q collection is EMPTY.  Either this netlist
+predates L2, or every row_q bit was optimised away, or row_q was
+PACKED INTO AN INFERRED MEMORY (see the memory-node list above --
+that is what happened to L1's dec_q), or the glob is wrong.  NO L-8
+RESULT IS EMITTED -- an empty collection returns no path, and 'no
+path' would read as 'the class does not bind'.
