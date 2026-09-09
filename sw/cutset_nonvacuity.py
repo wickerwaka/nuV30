@@ -7,7 +7,7 @@ its condition by a temporary, reverted patch, runs the thing that must complain,
 and requires the named message.  Every patched file is restored with
 `git checkout --` and the tree is verified clean at the end.
 
-  A  THE SHADOW IS LOAD-BEARING -- flip ONE BIT of the 678 on its way out of
+  A  THE SHADOW IS LOAD-BEARING -- flip ONE BIT of the 778 on its way out of
      `s1q` and a named gate leg must break.  A shadow nothing depends on would
      pass every identity bar for the wrong reason.
   B  THE LINT FIRES ON A RE-INTRODUCED BYPASS -- put ONE pre-cut wire name back
@@ -50,9 +50,9 @@ def case(name, patches, want, cmd, build=True):
 
 
 # --- A ---------------------------------------------------------------------
-case("A   the shadow is LOAD-BEARING (one bit of 678 perturbed)",
+case("A   the shadow is LOAD-BEARING (one bit of 778 perturbed)",
      [("hdl/rtl/ucore/v30u_eu.sv", "        } = s1q;",
-       "        } = s1q ^ 678'd1;   // C-9(A) PERTURBATION PROBE")],
+       "        } = s1q ^ 778'd1;   // C-9(A) PERTURBATION PROBE")],
      [r"first-div:"],                       # check_core prints this ONLY on a fail
      "python3 sw/check_core.py --core ucore --opcodes 90 --cases 5")
 

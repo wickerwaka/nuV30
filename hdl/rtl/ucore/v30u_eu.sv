@@ -1361,11 +1361,11 @@ wire [15:0] it_bop  = tmps[al_tmp];
 wire [15:0] it_mask = it_byte ? 16'h00FF : 16'hFFFF;
 wire        it_msb  = it_byte ? it_a[7] : it_a[15];
 wire        it_lsb  = it_a[0];
-reg  [15:0] it_val;      // the SIGMA the step presents
-reg  [15:0] it_tmpa;     // the multiplier / quotient register after the step
-reg  [15:0] it_flags;
-reg  [15:0] it_fmask;
-reg         it_writes_tmpa;
+reg  [15:0] s1w_it_val;      // the SIGMA the step presents
+reg  [15:0] s1w_it_tmpa;     // the multiplier / quotient register after the step
+reg  [15:0] s1w_it_flags;
+reg  [15:0] s1w_it_fmask;
+reg         s1w_it_writes_tmpa;
 
 // MUL
 wire [15:0] mul_mplier = it_byte ? {8'd0, tmpa[7:0]} : tmpa;
@@ -1426,47 +1426,47 @@ wire [7:0] sh_hi = sh_left ? {tmpb[14:8], tmpb[7]}
                            : {sh_fb, tmpb[15:9]};
 
 always @* begin
-    it_val   = 16'd0;
-    it_tmpa  = tmpa;
-    it_flags = 16'd0;
-    it_fmask = 16'd0;
-    it_writes_tmpa = 1'b0;
+    s1w_it_val   = 16'd0;
+    s1w_it_tmpa  = tmpa;
+    s1w_it_flags = 16'd0;
+    s1w_it_fmask = 16'd0;
+    s1w_it_writes_tmpa = 1'b0;
     case (eff_op)
         A_MUL: begin
-            it_val  = it_byte ? {tmpb[15:8], mul_hi[7:0]} : mul_hi;
-            it_tmpa = it_byte ? {tmpa[15:8], mul_lo[7:0]} : mul_lo;
-            it_writes_tmpa = 1'b1;
+            s1w_it_val  = it_byte ? {tmpb[15:8], mul_hi[7:0]} : mul_hi;
+            s1w_it_tmpa = it_byte ? {tmpa[15:8], mul_lo[7:0]} : mul_lo;
+            s1w_it_writes_tmpa = 1'b1;
         end
         A_DIV: begin
-            it_val  = it_byte ? {tmpb[15:8], div_hi1[7:0]} : div_hi1;
-            it_tmpa = it_byte ? {tmpa[15:8], div_lo2[7:0]} : div_lo2;
-            it_writes_tmpa = 1'b1;
+            s1w_it_val  = it_byte ? {tmpb[15:8], div_hi1[7:0]} : div_hi1;
+            s1w_it_tmpa = it_byte ? {tmpa[15:8], div_lo2[7:0]} : div_lo2;
+            s1w_it_writes_tmpa = 1'b1;
         end
         A_ROL12: begin
-            it_val = {tmpb[14:0], tmpb[11]};
+            s1w_it_val = {tmpb[14:0], tmpb[11]};
         end
         default: begin
-            it_flags[FCY] = sh_cy;
-            it_flags[FV]  = sh_v;
+            s1w_it_flags[FCY] = sh_cy;
+            s1w_it_flags[FV]  = sh_v;
             if ((eff_op == A_SHL) || (eff_op == A_SHR) ||
                 (eff_op == A_SAR) || (eff_op == A_SHL6)) begin
-                it_flags = it_flags | szp({1'b0, sh_r}, it_byte);
-                it_fmask = ARITH_MASK;
+                s1w_it_flags = s1w_it_flags | szp({1'b0, sh_r}, it_byte);
+                s1w_it_fmask = ARITH_MASK;
             end else begin
-                it_fmask = (16'd1 << FCY) | (16'd1 << FV);
+                s1w_it_fmask = (16'd1 << FCY) | (16'd1 << FV);
             end
-            it_val = it_byte ? {sh_hi, sh_r[7:0]} : sh_r;
+            s1w_it_val = it_byte ? {sh_hi, sh_r[7:0]} : sh_r;
         end
     endcase
 end
 
 // SIGMA: what the row's Source1 [-14-] presents.
 wire [15:0] sigma = al_eaconst ? al_eaval
-                  : is_iter ? (al_spent ? tmpb : it_val)
+                  : is_iter ? (al_spent ? tmpb : s1w_it_val)
                             : ev_val;
-wire [15:0] s1w_sig_flags = is_iter ? it_flags : ev_flags;
+wire [15:0] s1w_sig_flags = is_iter ? s1w_it_flags : ev_flags;
 wire [15:0] s1w_sig_mask  = al_eaconst ? 16'd0
-                      : is_iter ? (al_spent ? 16'd0 : it_fmask)
+                      : is_iter ? (al_spent ? 16'd0 : s1w_it_fmask)
                                 : ev_mask;
 wire        s1w_sig_commits = al_eaconst ? 1'b1 : (is_iter ? 1'b1 : ev_commits);
 // ...AND SIGMA CARRIES THE WIDTH THE ALU WORKED AT, so a `SIGMA -> tmp`
@@ -1586,50 +1586,50 @@ wire [15:0] dirsz = (s1w_op8_eff ? (psw[FDIR] ? 16'hFFFF : 16'h0001)
 // is unobservable and carries no evidence either way.  The datum criterion
 // decides it, and it decides it WORD.
 //----------------------------------------------------------------------------
-reg  [15:0] s1_val;
-reg         s1_byte;
-reg         s1_wbyte;
+reg  [15:0] s1w_s1_val;
+reg         s1w_s1_byte;
+reg         s1w_s1_wbyte;
 always @* begin
-    s1_byte  = 1'b0;
-    s1_wbyte = 1'b0;                 // WORD unless the case says otherwise
+    s1w_s1_byte  = 1'b0;
+    s1w_s1_wbyte = 1'b0;                 // WORD unless the case says otherwise
     case (s1w_e_s1)
-        5'd0,5'd1,5'd2,5'd3: s1_val = sreg[s1w_e_s1[1:0]];
-        5'd4:  s1_val = pc;
-        5'd6:  begin s1_val = opr;  s1_wbyte = opr_byte; end
-        5'd7:  begin s1_val = {8'd0, q_byte}; s1_byte = 1'b1; s1_wbyte = 1'b1; end
-        5'd8:  s1_val = dirsz;
-        5'd9:  s1_val = 16'd0;
-        5'd10: s1_val = {8'd0, pfxcnt_eff};        // F22
-        5'd12: begin s1_val = tmpa; s1_wbyte = tmpa_byte; end
-        5'd13: begin s1_val = tmpb; s1_wbyte = tmpb_byte; end
-        5'd14: begin s1_val = tmpc; s1_wbyte = tmpc_byte; end
-        5'd15: s1_val = flags_rd;
-        5'd16: begin s1_val = {gpr[R_AW][7:0], gpr[R_AW][15:8]}; s1_wbyte = 1'b1; end
-        5'd17: s1_val = count;
-        5'd18: begin s1_val = r_rd; s1_wbyte = r_byte; end
-        5'd19: begin s1_val = m_rd; s1_wbyte = m_byte; end
-        5'd20: begin s1_val = sigma; s1_wbyte = sig_byte; end
-        5'd21: s1_val = 16'hFFFF;
-        5'd22: s1_val = {8'd0, opc_reg & 8'h38};
-        5'd23: begin s1_val = {10'd0, r_constval}; s1_byte = 1'b1; end
-        default: s1_val = (s1w_e_s1 >= 5'd24) ? gpr[s1w_e_s1[2:0]] : 16'd0;
+        5'd0,5'd1,5'd2,5'd3: s1w_s1_val = sreg[s1w_e_s1[1:0]];
+        5'd4:  s1w_s1_val = pc;
+        5'd6:  begin s1w_s1_val = opr;  s1w_s1_wbyte = opr_byte; end
+        5'd7:  begin s1w_s1_val = {8'd0, q_byte}; s1w_s1_byte = 1'b1; s1w_s1_wbyte = 1'b1; end
+        5'd8:  s1w_s1_val = dirsz;
+        5'd9:  s1w_s1_val = 16'd0;
+        5'd10: s1w_s1_val = {8'd0, pfxcnt_eff};        // F22
+        5'd12: begin s1w_s1_val = tmpa; s1w_s1_wbyte = tmpa_byte; end
+        5'd13: begin s1w_s1_val = tmpb; s1w_s1_wbyte = tmpb_byte; end
+        5'd14: begin s1w_s1_val = tmpc; s1w_s1_wbyte = tmpc_byte; end
+        5'd15: s1w_s1_val = flags_rd;
+        5'd16: begin s1w_s1_val = {gpr[R_AW][7:0], gpr[R_AW][15:8]}; s1w_s1_wbyte = 1'b1; end
+        5'd17: s1w_s1_val = count;
+        5'd18: begin s1w_s1_val = r_rd; s1w_s1_wbyte = r_byte; end
+        5'd19: begin s1w_s1_val = m_rd; s1w_s1_wbyte = m_byte; end
+        5'd20: begin s1w_s1_val = sigma; s1w_s1_wbyte = sig_byte; end
+        5'd21: s1w_s1_val = 16'hFFFF;
+        5'd22: s1w_s1_val = {8'd0, opc_reg & 8'h38};
+        5'd23: begin s1w_s1_val = {10'd0, r_constval}; s1w_s1_byte = 1'b1; end
+        default: s1w_s1_val = (s1w_e_s1 >= 5'd24) ? gpr[s1w_e_s1[2:0]] : 16'd0;
     endcase
 end
 
 // Source2, the SAME classification: ONES (0), ZEROS (6) and the 16-bit
 // register-file reads (>=8) are WORD; SIGMA (4) propagates; Q (5) is the queue
 // byte; R (7) is the decoder's own operand width.
-reg [15:0] s2_val;
-reg        s2_wbyte;
+reg [15:0] s1w_s2_val;
+reg        s1w_s2_wbyte;
 always @* begin
-    s2_wbyte = 1'b0;
+    s1w_s2_wbyte = 1'b0;
     case (s1w_e_s2)
-        4'd0: s2_val = 16'hFFFF;
-        4'd4: begin s2_val = sigma; s2_wbyte = sig_byte; end
-        4'd5: begin s2_val = {8'd0, q_byte}; s2_wbyte = 1'b1; end
-        4'd6: s2_val = 16'd0;
-        4'd7: begin s2_val = r_rd; s2_wbyte = r_byte; end
-        default: s2_val = (s1w_e_s2 >= 4'd8) ? gpr[s1w_e_s2[2:0]] : 16'd0;
+        4'd0: s1w_s2_val = 16'hFFFF;
+        4'd4: begin s1w_s2_val = sigma; s1w_s2_wbyte = sig_byte; end
+        4'd5: begin s1w_s2_val = {8'd0, q_byte}; s1w_s2_wbyte = 1'b1; end
+        4'd6: s1w_s2_val = 16'd0;
+        4'd7: begin s1w_s2_val = r_rd; s1w_s2_wbyte = r_byte; end
+        default: s1w_s2_val = (s1w_e_s2 >= 4'd8) ? gpr[s1w_e_s2[2:0]] : 16'd0;
     endcase
 end
 
@@ -1660,8 +1660,8 @@ wire [15:0] opr_live = (s1w_e_f && (rdq_n != 2'd0)) ? rdq0
                      : opr;
 wire [15:0] s1_now = (s1w_e_s1 == 5'd7) ? {8'd0, q_byte}
                    : (s1w_e_s1 == 5'd6) ? opr_live
-                   : s1_val;
-wire [15:0] s2_now = (s1w_e_s2 == 4'd5) ? {8'd0, q_byte} : s2_val;
+                   : s1w_s1_val;
+wire [15:0] s2_now = (s1w_e_s2 == 4'd5) ? {8'd0, q_byte} : s1w_s2_val;
 // The CMP suppression: a SIGMA source that does not commit drives nothing.
 wire wr_ind1 = s1w_e_have1 && (s1w_e_d1 == 5'd5) &&
                !((s1w_e_s1 == 5'd20) && !s1w_sig_commits);
@@ -3344,7 +3344,7 @@ endtask
 // from `r7_lint`'s own live set (the three asynchronous pins, the ONE
 // declared live-`READY` carrier `eu_rd_edge` with its data twin, and the TWO
 // declared UNRESOLVED carriers `eu_slot_busy_n` / `q_ripe_lead_n`), and
-// returns 70 names / 183 bits with **ZERO live-tainted**.
+// returns 80 names / 283 bits with **ZERO live-tainted**.
 // The union of module INPUTS their cones reach is seven -- `eu_access_active`,
 // `eu_opr_free`, `eu_rd_done_n`, `eu_slot_busy`, `eu_wr_done_n`, `eu_wr_eval`,
 // `q_byte` -- every one of them the BIU's own REGISTERED view (v30u_biu.sv's
@@ -3437,6 +3437,16 @@ reg            bnd_fire;
 reg            q_bnd_pop;
 reg            row_pre_wait;
 reg            inta_first;
+reg [15:0]     s1_val;
+reg            s1_byte;
+reg            s1_wbyte;
+reg [15:0]     s2_val;
+reg            s2_wbyte;
+reg [15:0]     it_val;
+reg [15:0]     it_tmpa;
+reg [15:0]     it_flags;
+reg [15:0]     it_fmask;
+reg            it_writes_tmpa;
 
 always @* begin
     `include "v30u_eu_preload.svh"
@@ -3516,6 +3526,16 @@ always @* begin
     q_bnd_pop              = s1w_q_bnd_pop;
     row_pre_wait           = s1w_row_pre_wait;
     inta_first             = s1w_inta_first;
+    s1_val                 = s1w_s1_val;
+    s1_byte                = s1w_s1_byte;
+    s1_wbyte               = s1w_s1_wbyte;
+    s2_val                 = s1w_s2_val;
+    s2_wbyte               = s1w_s2_wbyte;
+    it_val                 = s1w_it_val;
+    it_tmpa                = s1w_it_tmpa;
+    it_flags               = s1w_it_flags;
+    it_fmask               = s1w_it_fmask;
+    it_writes_tmpa         = s1w_it_writes_tmpa;
 
     // ***  STAGE 1 RUNS UNCONDITIONALLY  ***  -- the ce/ce_half PHASE SPLIT.
     // Blocks (a)-(f) used to sit in the `else` arm of `if (ss_we)`.  They do
@@ -3785,7 +3805,9 @@ always @* begin
         sig_flags, sig_mask, sig_commits, acc_off_nog, acc_split_wr,
         row_blocked, vector_first, row_slot_wait, retire_ok_e, pend_after,
         row_flush, bnd_opc, irq_take, brk_seen, brk_take, bnd_take,
-        bnd_fire, q_bnd_pop, row_pre_wait, inta_first
+        bnd_fire, q_bnd_pop, row_pre_wait, inta_first, s1_val, s1_byte,
+        s1_wbyte, s2_val, s2_wbyte, it_val, it_tmpa, it_flags, it_fmask,
+        it_writes_tmpa
         };
 
         if (ss_we) begin
@@ -3831,7 +3853,9 @@ always @* begin
         sig_flags, sig_mask, sig_commits, acc_off_nog, acc_split_wr,
         row_blocked, vector_first, row_slot_wait, retire_ok_e, pend_after,
         row_flush, bnd_opc, irq_take, brk_seen, brk_take, bnd_take,
-        bnd_fire, q_bnd_pop, row_pre_wait, inta_first
+        bnd_fire, q_bnd_pop, row_pre_wait, inta_first, s1_val, s1_byte,
+        s1_wbyte, s2_val, s2_wbyte, it_val, it_tmpa, it_flags, it_fmask,
+        it_writes_tmpa
         } = s1q;
 
 
@@ -4001,7 +4025,7 @@ end
 // character-identical concatenations, and `sw/phase_split_lint.py` fails if
 // they ever differ or if their summed declared widths stop equalling S1W.
 // `sw/ss_flop_whitelist_ucore.txt`, DERIVED class.
-localparam int S1W = 678;   // 495 loop-carried + 183 wire cone (WAVE 4)
+localparam int S1W = 778;   // 495 loop-carried + 283 wire cone (WAVE 4)
 reg [S1W-1:0] s1_bus;      // STAGE 1's output, packed AT THE CUT
 reg [S1W-1:0] s1q = '0;    // ...and the shadow that carries it to `ce`
 
