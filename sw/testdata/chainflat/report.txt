@@ -1,0 +1,52 @@
+=== AREA (Analysis & Synthesis, one map per project) ===
+          ALMs(est)       comb ALUTs    registers
+ref            7098            10052          807
+flat           5255             7104          807
+  comb ALUT change: -2948  (-29.3 %)   [P-4a asks <= -25 %]
+  ALM(est) change : -1843  (-26.0 %)
+
+=== THE WORST reg -> reg ARC, PER FIT SEED ===
+        seed     slack   data ns    cells   bnds segments (ns)
+ref        1   -14.912    44.562       51      3  23.499 7.125 8.772 1.318
+ref        2   -12.606    42.163       46      4  19.469 9.350 3.475 4.756 4.851
+ref        3   -14.367    45.182       51      4  21.435 1.984 6.792 7.052 7.137
+ref        4   -13.969    43.503       43      3  26.288 7.522 3.187 6.244
+ref        5   -13.315    43.956       45      4  27.143 3.582 4.658 2.429 5.518
+ref        6   -13.989    44.618       50      4  21.291 6.084 8.302 2.141 6.174
+flat       1    -3.528    33.498       36      1  19.473 13.424
+flat       2    -4.356    34.999       37      1  21.260 13.336
+flat       3    -3.923    35.118       42      2  22.306 7.020 5.010
+flat       4    -5.047    34.963       38      1  20.160 14.343
+flat       5    -4.400    34.889       42      2  21.566 7.222 5.656
+flat       6    -4.080    34.624       45      0  34.212
+  mean worst-arc data delay   REF 43.997   FLAT 34.682   -9.315 ns (-21.2 %)   [P-4b band +/-15 %]
+
+=== P-1  THE POSITIVE CONTROL (REF) ===
+  seed 1  boundaries 3 (>=2: True)   seg0 23.499 largest: True   census st_n 129 rst_ctr_n 0 ld_dlo_n 0 ld_ripe_prev_n 3 zzz 0 -> False
+           controls PASS (PC-1 True PC-2 True PC-3 True)
+  seed 2  boundaries 4 (>=2: True)   seg0 19.469 largest: True   census st_n 131 rst_ctr_n 0 ld_dlo_n 0 ld_ripe_prev_n 3 zzz 0 -> False
+           controls PASS (PC-1 True PC-2 True PC-3 True)
+  seed 3  boundaries 4 (>=2: True)   seg0 21.435 largest: True   census st_n 129 rst_ctr_n 0 ld_dlo_n 0 ld_ripe_prev_n 3 zzz 0 -> False
+           controls PASS (PC-1 True PC-2 True PC-3 True)
+  seed 4  boundaries 3 (>=2: True)   seg0 26.288 largest: True   census st_n 129 rst_ctr_n 0 ld_dlo_n 0 ld_ripe_prev_n 3 zzz 0 -> False
+           controls PASS (PC-1 True PC-2 True PC-3 True)
+  seed 5  boundaries 4 (>=2: True)   seg0 27.143 largest: True   census st_n 129 rst_ctr_n 0 ld_dlo_n 0 ld_ripe_prev_n 3 zzz 0 -> False
+           controls PASS (PC-1 True PC-2 True PC-3 True)
+  seed 6  boundaries 4 (>=2: True)   seg0 21.291 largest: True   census st_n 129 rst_ctr_n 0 ld_dlo_n 0 ld_ripe_prev_n 3 zzz 0 -> False
+           controls PASS (PC-1 True PC-2 True PC-3 True)
+  P-1d per-folded-position delay: n=22  min 1.318  max 9.350  mean 5.384   [band 2.0-9.0, WAVE 5 in-situ mean 5.359]
+  P-1 (a) True  (b) True  (c) False
+
+=== AMENDMENT A-1 -- P-1'(c) AND P-1" ON SEEDS 4,5,6 ===
+  P-1'(c) seed 4: min(chainable)=58  >= 10 x max(pos0-only)=3  (= 30)   zzz=0   -> PASS
+  P-1"    seed 4: chainable all FELL: True   st_n 129->47 stop 19->9 st_zero_ok 13->0 ld_b_n 58->12 pv 87->21 opc_base 77->16 m_kind 26->8 seg_override_n 13->3
+               front-end none fell: True   sigma 121->122 s1_val 56->56 it_val 9->9
+  P-1'(c) seed 5: min(chainable)=58  >= 10 x max(pos0-only)=3  (= 30)   zzz=0   -> PASS
+  P-1"    seed 5: chainable all FELL: True   st_n 129->47 stop 19->9 st_zero_ok 13->0 ld_b_n 58->12 pv 87->21 opc_base 75->16 m_kind 26->8 seg_override_n 13->3
+               front-end none fell: True   sigma 121->122 s1_val 56->56 it_val 9->9
+  P-1'(c) seed 6: min(chainable)=58  >= 10 x max(pos0-only)=3  (= 30)   zzz=0   -> PASS
+  P-1"    seed 6: chainable all FELL: True   st_n 129->47 stop 19->9 st_zero_ok 13->0 ld_b_n 58->12 pv 87->21 opc_base 75->16 m_kind 26->8 seg_override_n 13->3
+               front-end none fell: True   sigma 121->122 s1_val 56->56 it_val 9->9
+  P-1'(c) MET     P-1" MET
+
+wrote /home/wickerwaka/src/nec_test/sw/testdata/chainflat/report.json

@@ -88,6 +88,10 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--seeds', default='1,2,3')
     ap.add_argument('--kinds', default='ref,flat')
+    ap.add_argument('--pc-seeds', default='',
+                    help="AMENDMENT A-1: score P-1'(c) and P-1\" on THESE "
+                         "seeds only -- the ones that did not select the "
+                         "replacement bar.")
     a = ap.parse_args()
     os.makedirs(OUT, exist_ok=True)
     res = {}
@@ -184,6 +188,51 @@ def main():
           'mean %.3f   [band 2.0-9.0, WAVE 5 in-situ mean 5.359]'
           % (len(fold), min(fold), max(fold), sum(fold) / len(fold)))
     p('  P-1 (a) %s  (b) %s  (c) %s' % (ok_a, ok_b, ok_c))
+    if a.pc_seeds:
+        p()
+        p("=== AMENDMENT A-1 -- P-1'(c) AND P-1\" ON SEEDS %s ==="
+          % a.pc_seeds)
+        CHAINABLE = ['st_n', 'stop', 'st_zero_ok', 'ld_b_n', 'pv', 'opc_base',
+                     'm_kind', 'seg_override_n']
+        POS0 = ['rst_ctr_n', 'ld_dlo_n', 'ld_ripe_prev_n', 'nmi_latch_n',
+                'rloop_n_n']
+        FRONT = ['sigma', 's1_val', 'it_val']
+        ok1 = ok2 = True
+        for sd in a.pc_seeds.split(','):
+            rs = res.get('ref', {}).get('seeds', {}).get(sd)
+            fs = res.get('flat', {}).get('seeds', {}).get(sd)
+            if not rs:
+                p('  seed %s: NO REF STA -- CANNOT SCORE' % sd)
+                ok1 = ok2 = False
+                continue
+            c = rs['census']
+            lo = min(c.get(n, 0) for n in
+                     ('st_n', 'ld_b_n', 'pv', 'opc_base'))
+            hi = max(c.get(n, 0) for n in POS0)
+            zz = c.get('zzz_no_such_signal', 99)
+            r1 = (lo >= 10 * hi) and zz == 0
+            ok1 = ok1 and r1
+            p("  P-1'(c) seed %s: min(chainable)=%d  >= 10 x "
+              'max(pos0-only)=%d  (= %d)   zzz=%d   -> %s'
+              % (sd, lo, hi, 10 * hi, zz, 'PASS' if r1 else 'FAIL'))
+            if not fs:
+                p('  seed %s: NO FLAT STA -- CANNOT SCORE P-1"' % sd)
+                ok2 = False
+                continue
+            fc = fs['census']
+            fell = {n: (c.get(n, 0), fc.get(n, 0)) for n in CHAINABLE}
+            kept = {n: (c.get(n, 0), fc.get(n, 0)) for n in FRONT}
+            r2a = all(v[1] < v[0] for v in fell.values())
+            r2b = all(v[1] >= v[0] for v in kept.values())
+            ok2 = ok2 and r2a and r2b
+            p('  P-1"    seed %s: chainable all FELL: %s   %s'
+              % (sd, r2a, ' '.join('%s %d->%d' % (n, v[0], v[1])
+                                   for n, v in fell.items())))
+            p('               front-end none fell: %s   %s'
+              % (r2b, ' '.join('%s %d->%d' % (n, v[0], v[1])
+                               for n, v in kept.items())))
+        p("  P-1'(c) %s     P-1\" %s"
+          % ('MET' if ok1 else 'MISSED', 'MET' if ok2 else 'MISSED'))
     p()
     p('wrote %s' % os.path.join(OUT, 'report.json'))
     return 0

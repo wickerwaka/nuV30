@@ -1,0 +1,105 @@
+--- hdl/rtl/ucore/v30u_eu.sv	2026-09-09 09:26:40.929369177 -0700
++++ /home/wickerwaka/.cache/ucsimt-tmp/chainflat/tree_flat/v30u_eu.sv	2026-09-09 09:39:10.834352819 -0700
+@@ -3772,36 +3772,73 @@
+         cp_used = 0;                     // WAVE 6: this edge's tuple, cleared
+ `endif
+ `endif
+-        for (chain = 0; chain < CHAIN_MAX; chain = chain + 4'd1) begin
+-            if (!stop) begin
++        //==================================================================
++        // WAVE 6 PROTOTYPE -- THE FLATTENED CHAIN.  GENERATED; NOT A DESIGN.
++        // position 0 is the 33-arm case once; then the nine chainable arms,
++        // ONCE EACH, in topological order.  See sw/chainflat_proto.py.
++        //==================================================================
++        chain = 4'd0;
+ `ifndef SYNTHESIS
+-                chain_used = chain + 4'd1;
+-`ifdef CHAIN_PROBE
+-                if (!cp_seen[{chain, st_n}]) begin : cprobe
+-                    integer fd;
+-                    cp_seen[{chain, st_n}] = 1'b1;
+-                    fd = $fopen(`CHAIN_PROBE, "a");
+-                    $fwrite(fd, "POS %0d ST %0d\n", chain, st_n);
+-                    $fclose(fd);
+-                end
+-                // WAVE 6: the ORDERED tuple, recorded here and CENSUSED in the
+-                // clocked observer (see the declaration block's warning).
+-                cp_seq[chain] = st_n;
+-                cp_used = chain + 1;
+-`endif
+-`endif
+-                // THE FAIL-SAFE.  The 24 position-0-only arms are folded out
+-                // of positions >= 1 (see v30u_eu_step.svh's header).  If one
+-                // ever DID stand there the folded copy would assign nothing,
+-                // `stop` would stay low, and the machine would sit on the same
+-                // state forever.  This turns that impossible case into a spent
+-                // clock -- the same failure the CHAIN OVERFLOW `$fatal` names,
+-                // but survivable in fabric where there is no assertion.
+-                if ((chain != 4'd0) && !st_zero_ok(st_n)) stop = 1'b1;
+-                else begin
+-                    `include "v30u_eu_step.svh"
+-                end
+-            end
++        chain_used = 4'd1;
++`endif
++        `include "v30u_eu_step.svh"
++        chain = 4'd1;
++        // the loop's own fail-safe, applied once: a position-0 arm that
++        // falls through to a state no block below covers ends the edge here.
++        if (!stop && !st_zero_ok(st_n)) stop = 1'b1;
++        if (!stop && (st_n == S_TAIL_POP)) begin
++`ifndef SYNTHESIS
++            chain_used = chain_used + 4'd1;
++`endif
++            `include "cf_arm_S_TAIL_POP.svh"
++        end
++        if (!stop && (st_n == S_TAIL)) begin
++`ifndef SYNTHESIS
++            chain_used = chain_used + 4'd1;
++`endif
++            `include "cf_arm_S_TAIL.svh"
++        end
++        if (!stop && (st_n == S_INSTR_END)) begin
++`ifndef SYNTHESIS
++            chain_used = chain_used + 4'd1;
++`endif
++            `include "cf_arm_S_INSTR_END.svh"
++        end
++        if (!stop && (st_n == S_TAKE_OPC)) begin
++`ifndef SYNTHESIS
++            chain_used = chain_used + 4'd1;
++`endif
++            `include "cf_arm_S_TAKE_OPC.svh"
++        end
++        if (!stop && (st_n == S_EA_CALC)) begin
++`ifndef SYNTHESIS
++            chain_used = chain_used + 4'd1;
++`endif
++            `include "cf_arm_S_EA_CALC.svh"
++        end
++        if (!stop && (st_n == S_DECODE)) begin
++`ifndef SYNTHESIS
++            chain_used = chain_used + 4'd1;
++`endif
++            `include "cf_arm_S_DECODE.svh"
++        end
++        if (!stop && (st_n == S_DECODE2)) begin
++`ifndef SYNTHESIS
++            chain_used = chain_used + 4'd1;
++`endif
++            `include "cf_arm_S_DECODE2.svh"
++        end
++        if (!stop && (st_n == S_BIND)) begin
++`ifndef SYNTHESIS
++            chain_used = chain_used + 4'd1;
++`endif
++            `include "cf_arm_S_BIND.svh"
++        end
++        if (!stop && (st_n == S_ENTER)) begin
++`ifndef SYNTHESIS
++            chain_used = chain_used + 4'd1;
++`endif
++            `include "cf_arm_S_ENTER.svh"
+         end
+         // (CHAIN OVERFLOW and the depth tracker are in the clocked observer:
+         //  `stop` / `chain_used` / `chain_first` are comb outputs of this block

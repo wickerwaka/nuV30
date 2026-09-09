@@ -1,0 +1,60 @@
+=== sta_chainflat (WAVE 6) ===
+  revision cf   npaths 400
+  registers in the netlist: 967
+
+=== A. POSITIVE CONTROLS ===
+  PC-1 RESOLVER   probe node: u_ucrom|ucrom~328|combout
+       get_pins  collection 1 -> paths 1   (MUST be >= 1)
+       get_nodes collection 1 -> paths 0   (WAVE 1: silently 0)
+       PC-1 PASS
+  PC-2 WALKER     state 3 (MUST be 3)   data cells 43 (MUST be >= 3)
+                  walker 43.503 vs Quartus -data_delay 43.503  diff 0.000 (MUST be <= 0.01)
+       PC-2 PASS
+  PC-3 SEGMENTER  st_n combout pins in the netlist: 169
+       the pin that answered: st_n~90|combout   (single-pin tries 1)
+       boundaries, real markers : 3  (MUST be >= 1)
+       boundaries, fake marker  : 0  (MUST be 0)
+       PC-3 PASS
+
+  CONTROLS: ALL PASS
+
+=== B. THE WORST reg -> reg ARC ===
+  slack        -13.969
+  data delay   43.503
+  levels       43 cells / 39 combout
+  from         v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_kqd1:auto_generated|ram_block1a7~PORT_A_WRITE_ENABLE_REG
+  to           m_kind[0]
+  boundaries   3
+    seg 0     5.645 ->   31.933  =  26.288  cells 24  luts 20  ucrom ucrom e_s1 s1_val s1_val Mux277 Mux277 opr_n v1
+    seg 1    31.933 ->   39.455  =   7.522  cells  7  luts  7  Decoder32 ld_b_n Ram20 Ram20 always6 always6 Selector1741
+    seg 2    39.455 ->   42.642  =   3.187  cells  1  luts  1  Decoder36
+    seg 3    42.642 ->   48.886  =   6.244  cells  5  luts  5  Decoder38 opc_from_modrm_n modrm_reg m_kind m_kind
+
+=== C. BOUNDARY-BUCKETED SCAN (npaths 400) ===
+  paths walked 400
+  boundaries  2 : worst data delay   43.350   count 7
+  boundaries  3 : worst data delay   43.503   count 352
+  boundaries  4 : worst data delay   43.292   count 16
+  boundaries  5 : worst data delay   43.278   count 25
+
+=== D. COPY CENSUS (distinct combout cones per RTL base name) ===
+  combout cones in the netlist: 9278
+  st_n                   129
+  stop                   19
+  st_zero_ok             13
+  ld_b_n                 58
+  pv                     87
+  opc_base               77
+  m_kind                 26
+  seg_override_n         13
+  sigma                  121
+  s1_val                 56
+  it_val                 9
+  rst_ctr_n              0
+  ld_dlo_n               0
+  ld_ripe_prev_n         3
+  nmi_latch_n            0
+  rloop_n_n              0
+  zzz_no_such_signal     0
+
+RESULT controls=PASS

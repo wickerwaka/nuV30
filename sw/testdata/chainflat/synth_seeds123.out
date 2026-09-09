@@ -1,0 +1,52 @@
+
+=== MAP: ref ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_map cf -c cf
+    exit 0  95s
+
+=== FIT: ref seed 1 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=1 --recompile=off cf -c cf
+    exit 0  371s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chainflat.tcl cf cf /home/wickerwaka/src/nec_test/sw/testdata/chainflat/ref_seed1 400
+    exit 0  15s
+    {"alms": "7,328", "registers": "807", "seed": "1", "map_errors": 0, "readmem_warnings": 0, "hex_ok": true, "sta_exists": true}
+
+=== FIT: ref seed 2 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=2 --recompile=off cf -c cf
+    exit 0  415s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chainflat.tcl cf cf /home/wickerwaka/src/nec_test/sw/testdata/chainflat/ref_seed2 400
+    exit 0  7s
+    {"alms": "7,372", "registers": "807", "seed": "2", "map_errors": 0, "readmem_warnings": 0, "hex_ok": true, "sta_exists": true}
+
+=== FIT: ref seed 3 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=3 --recompile=off cf -c cf
+    exit 0  389s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chainflat.tcl cf cf /home/wickerwaka/src/nec_test/sw/testdata/chainflat/ref_seed3 400
+    exit 0  12s
+    {"alms": "7,319", "registers": "807", "seed": "3", "map_errors": 0, "readmem_warnings": 0, "hex_ok": true, "sta_exists": true}
+
+=== MAP: flat ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_map cf -c cf
+    exit 0  77s
+
+=== FIT: flat seed 1 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=1 --recompile=off cf -c cf
+    exit 0  298s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chainflat.tcl cf cf /home/wickerwaka/src/nec_test/sw/testdata/chainflat/flat_seed1 400
+    exit 0  6s
+    {"alms": "5,399", "registers": "807", "seed": "1", "map_errors": 0, "readmem_warnings": 0, "hex_ok": true, "sta_exists": true}
+
+=== FIT: flat seed 2 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=2 --recompile=off cf -c cf
+    exit 0  194s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chainflat.tcl cf cf /home/wickerwaka/src/nec_test/sw/testdata/chainflat/flat_seed2 400
+    exit 0  5s
+    {"alms": "5,416", "registers": "807", "seed": "2", "map_errors": 0, "readmem_warnings": 0, "hex_ok": true, "sta_exists": true}
+
+=== FIT: flat seed 3 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=3 --recompile=off cf -c cf
+    exit 0  225s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chainflat.tcl cf cf /home/wickerwaka/src/nec_test/sw/testdata/chainflat/flat_seed3 400
+    exit 0  11s
+    {"alms": "5,407", "registers": "807", "seed": "3", "map_errors": 0, "readmem_warnings": 0, "hex_ok": true, "sta_exists": true}
+
+hdl/ at end: CLEAN

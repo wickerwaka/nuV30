@@ -1,0 +1,56 @@
+{
+ "ref_seed4": {
+  "alms": "7,342",
+  "registers": "807",
+  "seed": "4",
+  "map_errors": 0,
+  "readmem_warnings": 0,
+  "hex_ok": true,
+  "sta_exists": true
+ },
+ "ref_seed5": {
+  "alms": "7,358",
+  "registers": "807",
+  "seed": "5",
+  "map_errors": 0,
+  "readmem_warnings": 0,
+  "hex_ok": true,
+  "sta_exists": true
+ },
+ "ref_seed6": {
+  "alms": "7,328",
+  "registers": "807",
+  "seed": "6",
+  "map_errors": 0,
+  "readmem_warnings": 0,
+  "hex_ok": true,
+  "sta_exists": true
+ },
+ "flat_seed4": {
+  "alms": "5,383",
+  "registers": "807",
+  "seed": "4",
+  "map_errors": 0,
+  "readmem_warnings": 0,
+  "hex_ok": true,
+  "sta_exists": true
+ },
+ "flat_seed5": {
+  "alms": "5,404",
+  "registers": "807",
+  "seed": "5",
+  "map_errors": 0,
+  "readmem_warnings": 0,
+  "hex_ok": true,
+  "sta_exists": true
+ },
+ "flat_seed6": {
+  "alms": "5,412",
+  "registers": "807",
+  "seed": "6",
+  "map_errors": 0,
+  "readmem_warnings": 0,
+  "hex_ok": true,
+  "sta_exists": true
+ }
+}

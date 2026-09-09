@@ -1,0 +1,39 @@
+{
+ "verify": {
+  "ref": {
+   "golden": "TOTAL: 169000/169000",
+   "golden_rc": 0,
+   "lfsr_sigs": [
+    "1d01c9b269ffaa94",
+    "b39b040a98b28e5d",
+    "0997b773cd99c030",
+    "d05b6c3c3d9fbe78"
+   ],
+   "lfsr_depths": [
+    6,
+    6,
+    6,
+    6
+   ],
+   "tail": " (cycles 200, arch 200)\nINT.B8: 200/200 full  (cycles 200, arch 200)\nINT.F3AA: 200/200 full  (cycles 200, arch 200)\nINT.FB: 200/200 full  (cycles 200, arch 200)\nNMI.90: 200/200 full  (cycles 200, arch 200)\nNMI.B8: 200/200 full  (cycles 200, arch 200)\nPOLL.LO: 200/200 full  (cycles 200, arch 200)\nPOLL.REL: 200/200 full  (cycles 200, arch 200)\n\nTOTAL: 169000/169000 full (cycles 169000, arch 169000)\n"
+  },
+  "flat": {
+   "golden": "TOTAL: 169000/169000",
+   "golden_rc": 0,
+   "lfsr_sigs": [
+    "1d01c9b269ffaa94",
+    "b39b040a98b28e5d",
+    "0997b773cd99c030",
+    "d05b6c3c3d9fbe78"
+   ],
+   "lfsr_depths": [
+    6,
+    6,
+    6,
+    6
+   ],
+   "tail": " (cycles 200, arch 200)\nINT.B8: 200/200 full  (cycles 200, arch 200)\nINT.F3AA: 200/200 full  (cycles 200, arch 200)\nINT.FB: 200/200 full  (cycles 200, arch 200)\nNMI.90: 200/200 full  (cycles 200, arch 200)\nNMI.B8: 200/200 full  (cycles 200, arch 200)\nPOLL.LO: 200/200 full  (cycles 200, arch 200)\nPOLL.REL: 200/200 full  (cycles 200, arch 200)\n\nTOTAL: 169000/169000 full (cycles 169000, arch 169000)\n"
+  },
+  "PC-D0": true
+ }
+}

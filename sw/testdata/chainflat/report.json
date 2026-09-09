@@ -1,0 +1,937 @@
+{
+ "ref": {
+  "as_alms": "7098",
+  "as_comb_aluts": "10052",
+  "as_registers": "807",
+  "fit_alms": "7,328",
+  "fit_registers": "807",
+  "fit_seed": "6",
+  "hex_loaded_positively": true,
+  "seeds": {
+   "1": {
+    "controls": "PASS",
+    "slack": -14.912,
+    "data_delay": 44.562,
+    "levels_cells": 51,
+    "levels_lut": 40,
+    "boundaries": 3,
+    "segments": [
+     {
+      "i": 0,
+      "a": 5.635,
+      "b": 29.134,
+      "ns": 23.499,
+      "cells": 29,
+      "luts": 18,
+      "names": "ucrom ucrom ucrom Mux272 mfs_frame_release mfs_frame_release opr_free_now comb rd_done_cnt_n"
+     },
+     {
+      "i": 1,
+      "a": 29.134,
+      "b": 36.259,
+      "ns": 7.125,
+      "cells": 1,
+      "luts": 1,
+      "names": "Decoder30"
+     },
+     {
+      "i": 2,
+      "a": 36.259,
+      "b": 45.031,
+      "ns": 8.772,
+      "cells": 7,
+      "luts": 7,
+      "names": "Decoder34 ld_b_n Ram23 pv always6 always6 Selector1836"
+     },
+     {
+      "i": 3,
+      "a": 45.031,
+      "b": 46.349,
+      "ns": 1.318,
+      "cells": 2,
+      "luts": 2,
+      "names": "seg_override_n opc_from_modrm_n"
+     }
+    ],
+    "census": {
+     "st_n": 129,
+     "stop": 19,
+     "st_zero_ok": 13,
+     "ld_b_n": 58,
+     "pv": 87,
+     "opc_base": 77,
+     "m_kind": 26,
+     "seg_override_n": 13,
+     "sigma": 121,
+     "s1_val": 56,
+     "it_val": 9,
+     "rst_ctr_n": 0,
+     "ld_dlo_n": 0,
+     "ld_ripe_prev_n": 3,
+     "nmi_latch_n": 0,
+     "rloop_n_n": 0,
+     "zzz_no_such_signal": 0
+    },
+    "buckets": {
+     "3": [
+      44.562,
+      398
+     ],
+     "4": [
+      44.302,
+      2
+     ]
+    },
+    "pc1": true,
+    "pc2": true,
+    "pc3": true
+   },
+   "2": {
+    "controls": "PASS",
+    "slack": -12.606,
+    "data_delay": 42.163,
+    "levels_cells": 46,
+    "levels_lut": 41,
+    "boundaries": 4,
+    "segments": [
+     {
+      "i": 0,
+      "a": 5.638,
+      "b": 25.107,
+      "ns": 19.469,
+      "cells": 21,
+      "luts": 16,
+      "names": "ucrom ucrom ucrom e_d1 Selector671 mfs_frame_release opr_free_now comb rd_done_cnt_n"
+     },
+     {
+      "i": 1,
+      "a": 25.107,
+      "b": 34.457,
+      "ns": 9.35,
+      "cells": 1,
+      "luts": 1,
+      "names": "seg_override_n"
+     },
+     {
+      "i": 2,
+      "a": 34.457,
+      "b": 37.932,
+      "ns": 3.475,
+      "cells": 3,
+      "luts": 3,
+      "names": "Decoder34 Selector1742 Selector1742"
+     },
+     {
+      "i": 3,
+      "a": 37.932,
+      "b": 42.688,
+      "ns": 4.756,
+      "cells": 1,
+      "luts": 1,
+      "names": "Decoder36"
+     },
+     {
+      "i": 4,
+      "a": 42.688,
+      "b": 47.539,
+      "ns": 4.851,
+      "cells": 5,
+      "luts": 5,
+      "names": "seg_override_n opc_from_modrm_n modrm_reg m_kind m_kind"
+     }
+    ],
+    "census": {
+     "st_n": 131,
+     "stop": 19,
+     "st_zero_ok": 13,
+     "ld_b_n": 58,
+     "pv": 87,
+     "opc_base": 77,
+     "m_kind": 26,
+     "seg_override_n": 13,
+     "sigma": 121,
+     "s1_val": 56,
+     "it_val": 9,
+     "rst_ctr_n": 0,
+     "ld_dlo_n": 0,
+     "ld_ripe_prev_n": 3,
+     "nmi_latch_n": 0,
+     "rloop_n_n": 0,
+     "zzz_no_such_signal": 0
+    },
+    "buckets": {
+     "3": [
+      42.001,
+      4
+     ],
+     "4": [
+      42.163,
+      178
+     ],
+     "5": [
+      42.151,
+      156
+     ],
+     "6": [
+      42.125,
+      62
+     ]
+    },
+    "pc1": true,
+    "pc2": true,
+    "pc3": true
+   },
+   "3": {
+    "controls": "PASS",
+    "slack": -14.367,
+    "data_delay": 45.182,
+    "levels_cells": 51,
+    "levels_lut": 41,
+    "boundaries": 4,
+    "segments": [
+     {
+      "i": 0,
+      "a": 4.624,
+      "b": 26.059,
+      "ns": 21.435,
+      "cells": 27,
+      "luts": 17,
+      "names": "opc_sel eff_op sig_byte div_divisor LessThan7 LessThan7 Selector9 Selector9 Mux270"
+     },
+     {
+      "i": 1,
+      "a": 26.059,
+      "b": 28.043,
+      "ns": 1.984,
+      "cells": 1,
+      "luts": 1,
+      "names": "seg_override_n"
+     },
+     {
+      "i": 2,
+      "a": 28.043,
+      "b": 34.835,
+      "ns": 6.792,
+      "cells": 5,
+      "luts": 5,
+      "names": "Decoder30 ld_b_n Ram15 Ram15 p"
+     },
+     {
+      "i": 3,
+      "a": 34.835,
+      "b": 41.887,
+      "ns": 7.052,
+      "cells": 6,
+      "luts": 6,
+      "names": "Decoder34 ld_b_n Ram22 pv always6 Selector1836"
+     },
+     {
+      "i": 4,
+      "a": 41.887,
+      "b": 49.024,
+      "ns": 7.137,
+      "cells": 5,
+      "luts": 5,
+      "names": "Decoder38 upc_opc_n upc_opc_n upc_opc_n dec_addr_next"
+     }
+    ],
+    "census": {
+     "st_n": 129,
+     "stop": 19,
+     "st_zero_ok": 13,
+     "ld_b_n": 58,
+     "pv": 87,
+     "opc_base": 77,
+     "m_kind": 26,
+     "seg_override_n": 13,
+     "sigma": 121,
+     "s1_val": 56,
+     "it_val": 9,
+     "rst_ctr_n": 0,
+     "ld_dlo_n": 0,
+     "ld_ripe_prev_n": 3,
+     "nmi_latch_n": 0,
+     "rloop_n_n": 0,
+     "zzz_no_such_signal": 0
+    },
+    "buckets": {
+     "3": [
+      45.027,
+      18
+     ],
+     "4": [
+      45.182,
+      375
+     ],
+     "5": [
+      44.995,
+      7
+     ]
+    },
+    "pc1": true,
+    "pc2": true,
+    "pc3": true
+   },
+   "4": {
+    "controls": "PASS",
+    "slack": -13.969,
+    "data_delay": 43.503,
+    "levels_cells": 43,
+    "levels_lut": 39,
+    "boundaries": 3,
+    "segments": [
+     {
+      "i": 0,
+      "a": 5.645,
+      "b": 31.933,
+      "ns": 26.288,
+      "cells": 24,
+      "luts": 20,
+      "names": "ucrom ucrom e_s1 s1_val s1_val Mux277 Mux277 opr_n v1"
+     },
+     {
+      "i": 1,
+      "a": 31.933,
+      "b": 39.455,
+      "ns": 7.522,
+      "cells": 7,
+      "luts": 7,
+      "names": "Decoder32 ld_b_n Ram20 Ram20 always6 always6 Selector1741"
+     },
+     {
+      "i": 2,
+      "a": 39.455,
+      "b": 42.642,
+      "ns": 3.187,
+      "cells": 1,
+      "luts": 1,
+      "names": "Decoder36"
+     },
+     {
+      "i": 3,
+      "a": 42.642,
+      "b": 48.886,
+      "ns": 6.244,
+      "cells": 5,
+      "luts": 5,
+      "names": "Decoder38 opc_from_modrm_n modrm_reg m_kind m_kind"
+     }
+    ],
+    "census": {
+     "st_n": 129,
+     "stop": 19,
+     "st_zero_ok": 13,
+     "ld_b_n": 58,
+     "pv": 87,
+     "opc_base": 77,
+     "m_kind": 26,
+     "seg_override_n": 13,
+     "sigma": 121,
+     "s1_val": 56,
+     "it_val": 9,
+     "rst_ctr_n": 0,
+     "ld_dlo_n": 0,
+     "ld_ripe_prev_n": 3,
+     "nmi_latch_n": 0,
+     "rloop_n_n": 0,
+     "zzz_no_such_signal": 0
+    },
+    "buckets": {
+     "2": [
+      43.35,
+      7
+     ],
+     "3": [
+      43.503,
+      352
+     ],
+     "4": [
+      43.292,
+      16
+     ],
+     "5": [
+      43.278,
+      25
+     ]
+    },
+    "pc1": true,
+    "pc2": true,
+    "pc3": true
+   },
+   "5": {
+    "controls": "PASS",
+    "slack": -13.315,
+    "data_delay": 43.956,
+    "levels_cells": 45,
+    "levels_lut": 42,
+    "boundaries": 4,
+    "segments": [
+     {
+      "i": 0,
+      "a": 4.607,
+      "b": 31.75,
+      "ns": 27.143,
+      "cells": 27,
+      "luts": 24,
+      "names": "opc_sel eff_op sig_byte div_divisor LessThan7 LessThan7 Selector6 Selector5 Selector5"
+     },
+     {
+      "i": 1,
+      "a": 31.75,
+      "b": 35.332,
+      "ns": 3.582,
+      "cells": 2,
+      "luts": 2,
+      "names": "Decoder32 Selector1646"
+     },
+     {
+      "i": 2,
+      "a": 35.332,
+      "b": 39.99,
+      "ns": 4.658,
+      "cells": 2,
+      "luts": 2,
+      "names": "Decoder34 Selector1742"
+     },
+     {
+      "i": 3,
+      "a": 39.99,
+      "b": 42.419,
+      "ns": 2.429,
+      "cells": 1,
+      "luts": 1,
+      "names": "Selector1830"
+     },
+     {
+      "i": 4,
+      "a": 42.419,
+      "b": 47.937,
+      "ns": 5.518,
+      "cells": 4,
+      "luts": 4,
+      "names": "Decoder38 upc_opc_n upc_opc_n dec_addr_next"
+     }
+    ],
+    "census": {
+     "st_n": 129,
+     "stop": 19,
+     "st_zero_ok": 13,
+     "ld_b_n": 58,
+     "pv": 87,
+     "opc_base": 75,
+     "m_kind": 26,
+     "seg_override_n": 13,
+     "sigma": 121,
+     "s1_val": 56,
+     "it_val": 9,
+     "rst_ctr_n": 0,
+     "ld_dlo_n": 0,
+     "ld_ripe_prev_n": 3,
+     "nmi_latch_n": 0,
+     "rloop_n_n": 0,
+     "zzz_no_such_signal": 0
+    },
+    "buckets": {
+     "3": [
+      43.928,
+      137
+     ],
+     "4": [
+      44.001,
+      263
+     ]
+    },
+    "pc1": true,
+    "pc2": true,
+    "pc3": true
+   },
+   "6": {
+    "controls": "PASS",
+    "slack": -13.989,
+    "data_delay": 44.618,
+    "levels_cells": 50,
+    "levels_lut": 37,
+    "boundaries": 4,
+    "segments": [
+     {
+      "i": 0,
+      "a": 4.767,
+      "b": 26.058,
+      "ns": 21.291,
+      "cells": 27,
+      "luts": 14,
+      "names": "opc_sel eff_op Equal65 sigma sigma sigma sigma Mux276 v1"
+     },
+     {
+      "i": 1,
+      "a": 26.058,
+      "b": 32.142,
+      "ns": 6.084,
+      "cells": 6,
+      "luts": 6,
+      "names": "seg_override_n Selector1430 pv pv always6 Selector1551"
+     },
+     {
+      "i": 2,
+      "a": 32.142,
+      "b": 40.444,
+      "ns": 8.302,
+      "cells": 5,
+      "luts": 5,
+      "names": "Decoder32 ld_b_n Ram18 pv Selector1742"
+     },
+     {
+      "i": 3,
+      "a": 40.444,
+      "b": 42.585,
+      "ns": 2.141,
+      "cells": 1,
+      "luts": 1,
+      "names": "seg_override_n"
+     },
+     {
+      "i": 4,
+      "a": 42.585,
+      "b": 48.759,
+      "ns": 6.174,
+      "cells": 5,
+      "luts": 5,
+      "names": "Decoder38 upc_opc_n upc_opc_n upc_opc_n dec_addr_next"
+     }
+    ],
+    "census": {
+     "st_n": 129,
+     "stop": 19,
+     "st_zero_ok": 13,
+     "ld_b_n": 58,
+     "pv": 87,
+     "opc_base": 75,
+     "m_kind": 26,
+     "seg_override_n": 13,
+     "sigma": 121,
+     "s1_val": 56,
+     "it_val": 9,
+     "rst_ctr_n": 0,
+     "ld_dlo_n": 0,
+     "ld_ripe_prev_n": 3,
+     "nmi_latch_n": 0,
+     "rloop_n_n": 0,
+     "zzz_no_such_signal": 0
+    },
+    "buckets": {
+     "3": [
+      44.755,
+      95
+     ],
+     "4": [
+      44.763,
+      304
+     ],
+     "5": [
+      44.418,
+      1
+     ]
+    },
+    "pc1": true,
+    "pc2": true,
+    "pc3": true
+   }
+  }
+ },
+ "flat": {
+  "as_alms": "5255",
+  "as_comb_aluts": "7104",
+  "as_registers": "807",
+  "fit_alms": "5,412",
+  "fit_registers": "807",
+  "fit_seed": "6",
+  "hex_loaded_positively": true,
+  "seeds": {
+   "1": {
+    "controls": "PASS",
+    "slack": -3.528,
+    "data_delay": 33.498,
+    "levels_cells": 36,
+    "levels_lut": 30,
+    "boundaries": 1,
+    "segments": [
+     {
+      "i": 0,
+      "a": 5.637,
+      "b": 25.11,
+      "ns": 19.473,
+      "cells": 22,
+      "luts": 16,
+      "names": "ucrom ucrom ucrom Equal28 comb comb Mux270 Mux270 Mux270"
+     },
+     {
+      "i": 1,
+      "a": 25.11,
+      "b": 38.534,
+      "ns": 13.424,
+      "cells": 12,
+      "luts": 12,
+      "names": "always6 ld_b_n ld_b_n Ram11 Ram11 Decoder27 pv ld_pla_n always6"
+     }
+    ],
+    "census": {
+     "st_n": 47,
+     "stop": 9,
+     "st_zero_ok": 0,
+     "ld_b_n": 12,
+     "pv": 21,
+     "opc_base": 16,
+     "m_kind": 8,
+     "seg_override_n": 3,
+     "sigma": 122,
+     "s1_val": 56,
+     "it_val": 9,
+     "rst_ctr_n": 0,
+     "ld_dlo_n": 0,
+     "ld_ripe_prev_n": 3,
+     "nmi_latch_n": 0,
+     "rloop_n_n": 0,
+     "zzz_no_such_signal": 0
+    },
+    "buckets": {
+     "1": [
+      34.454,
+      371
+     ],
+     "2": [
+      34.251,
+      29
+     ]
+    },
+    "pc1": true,
+    "pc2": true,
+    "pc3": true
+   },
+   "2": {
+    "controls": "PASS",
+    "slack": -4.356,
+    "data_delay": 34.999,
+    "levels_cells": 37,
+    "levels_lut": 33,
+    "boundaries": 1,
+    "segments": [
+     {
+      "i": 0,
+      "a": 4.624,
+      "b": 25.884,
+      "ns": 21.26,
+      "cells": 22,
+      "luts": 18,
+      "names": "opc_sel Equal56 div_hi0 LessThan7 LessThan7 LessThan7 Selector7 Selector5 Selector5"
+     },
+     {
+      "i": 1,
+      "a": 25.884,
+      "b": 39.22,
+      "ns": 13.336,
+      "cells": 13,
+      "luts": 13,
+      "names": "always6 ld_b_n ld_b_n Ram11 Ram11 Decoder27 pv always6 always6"
+     }
+    ],
+    "census": {
+     "st_n": 47,
+     "stop": 9,
+     "st_zero_ok": 0,
+     "ld_b_n": 12,
+     "pv": 21,
+     "opc_base": 16,
+     "m_kind": 8,
+     "seg_override_n": 3,
+     "sigma": 122,
+     "s1_val": 56,
+     "it_val": 9,
+     "rst_ctr_n": 0,
+     "ld_dlo_n": 0,
+     "ld_ripe_prev_n": 3,
+     "nmi_latch_n": 0,
+     "rloop_n_n": 0,
+     "zzz_no_such_signal": 0
+    },
+    "buckets": {
+     "0": [
+      34.87,
+      7
+     ],
+     "1": [
+      35.161,
+      259
+     ],
+     "2": [
+      35.137,
+      131
+     ],
+     "3": [
+      34.822,
+      3
+     ]
+    },
+    "pc1": true,
+    "pc2": true,
+    "pc3": true
+   },
+   "3": {
+    "controls": "PASS",
+    "slack": -3.923,
+    "data_delay": 35.118,
+    "levels_cells": 42,
+    "levels_lut": 33,
+    "boundaries": 2,
+    "segments": [
+     {
+      "i": 0,
+      "a": 4.753,
+      "b": 27.059,
+      "ns": 22.306,
+      "cells": 27,
+      "luts": 18,
+      "names": "opc_sel eff_op sig_byte div_divisor LessThan7 LessThan7 Selector13 Selector9 sigma"
+     },
+     {
+      "i": 1,
+      "a": 27.059,
+      "b": 34.079,
+      "ns": 7.02,
+      "cells": 7,
+      "luts": 7,
+      "names": "ld_b_n ld_b_n Ram9 Ram9 Decoder27 pv always6"
+     },
+     {
+      "i": 2,
+      "a": 34.079,
+      "b": 39.089,
+      "ns": 5.01,
+      "cells": 4,
+      "luts": 4,
+      "names": "always6 always6 upc_opc_n dec_addr_next"
+     }
+    ],
+    "census": {
+     "st_n": 47,
+     "stop": 9,
+     "st_zero_ok": 0,
+     "ld_b_n": 12,
+     "pv": 21,
+     "opc_base": 16,
+     "m_kind": 8,
+     "seg_override_n": 3,
+     "sigma": 122,
+     "s1_val": 56,
+     "it_val": 9,
+     "rst_ctr_n": 0,
+     "ld_dlo_n": 0,
+     "ld_ripe_prev_n": 3,
+     "nmi_latch_n": 0,
+     "rloop_n_n": 0,
+     "zzz_no_such_signal": 0
+    },
+    "buckets": {
+     "1": [
+      35.113,
+      190
+     ],
+     "2": [
+      35.118,
+      210
+     ]
+    },
+    "pc1": true,
+    "pc2": true,
+    "pc3": true
+   },
+   "4": {
+    "controls": "PASS",
+    "slack": -5.047,
+    "data_delay": 34.963,
+    "levels_cells": 38,
+    "levels_lut": 31,
+    "boundaries": 1,
+    "segments": [
+     {
+      "i": 0,
+      "a": 5.645,
+      "b": 25.805,
+      "ns": 20.16,
+      "cells": 23,
+      "luts": 16,
+      "names": "ucrom ucrom ucrom e_d1 Equal28 mfs_frame_release opr_free_now row_pre_wait rd_done_cnt_n"
+     },
+     {
+      "i": 1,
+      "a": 25.805,
+      "b": 40.148,
+      "ns": 14.343,
+      "cells": 13,
+      "luts": 13,
+      "names": "always6 ld_b_n ld_b_n Ram11 Ram11 Decoder27 Ram11 always6 opr_loaded_n"
+     }
+    ],
+    "census": {
+     "st_n": 47,
+     "stop": 9,
+     "st_zero_ok": 0,
+     "ld_b_n": 12,
+     "pv": 21,
+     "opc_base": 16,
+     "m_kind": 8,
+     "seg_override_n": 3,
+     "sigma": 122,
+     "s1_val": 56,
+     "it_val": 9,
+     "rst_ctr_n": 0,
+     "ld_dlo_n": 0,
+     "ld_ripe_prev_n": 3,
+     "nmi_latch_n": 0,
+     "rloop_n_n": 0,
+     "zzz_no_such_signal": 0
+    },
+    "buckets": {
+     "1": [
+      35.532,
+      364
+     ],
+     "2": [
+      35.108,
+      36
+     ]
+    },
+    "pc1": true,
+    "pc2": true,
+    "pc3": true
+   },
+   "5": {
+    "controls": "PASS",
+    "slack": -4.4,
+    "data_delay": 34.889,
+    "levels_cells": 42,
+    "levels_lut": 32,
+    "boundaries": 2,
+    "segments": [
+     {
+      "i": 0,
+      "a": 4.674,
+      "b": 26.24,
+      "ns": 21.566,
+      "cells": 27,
+      "luts": 17,
+      "names": "opc_sel Equal56 div_hi0 LessThan7 LessThan7 Selector13 Selector12 sigma Mux273"
+     },
+     {
+      "i": 1,
+      "a": 26.24,
+      "b": 33.462,
+      "ns": 7.222,
+      "cells": 7,
+      "luts": 7,
+      "names": "always6 ld_b_n ld_b_n Ram11 Ram11 Decoder27 pv"
+     },
+     {
+      "i": 2,
+      "a": 33.462,
+      "b": 39.118,
+      "ns": 5.656,
+      "cells": 5,
+      "luts": 5,
+      "names": "opr_loaded_n always6 always6 upc_opc_n dec_addr_next"
+     }
+    ],
+    "census": {
+     "st_n": 47,
+     "stop": 9,
+     "st_zero_ok": 0,
+     "ld_b_n": 12,
+     "pv": 21,
+     "opc_base": 16,
+     "m_kind": 8,
+     "seg_override_n": 3,
+     "sigma": 122,
+     "s1_val": 56,
+     "it_val": 9,
+     "rst_ctr_n": 0,
+     "ld_dlo_n": 0,
+     "ld_ripe_prev_n": 3,
+     "nmi_latch_n": 0,
+     "rloop_n_n": 0,
+     "zzz_no_such_signal": 0
+    },
+    "buckets": {
+     "1": [
+      34.844,
+      57
+     ],
+     "2": [
+      34.889,
+      220
+     ],
+     "3": [
+      34.882,
+      123
+     ]
+    },
+    "pc1": true,
+    "pc2": true,
+    "pc3": true
+   },
+   "6": {
+    "controls": "PASS",
+    "slack": -4.08,
+    "data_delay": 34.624,
+    "levels_cells": 45,
+    "levels_lut": 33,
+    "boundaries": 0,
+    "segments": [
+     {
+      "i": 0,
+      "a": 4.799,
+      "b": 39.011,
+      "ns": 34.212,
+      "cells": 45,
+      "luts": 33,
+      "names": "opc_sel WideOr0 Equal56 div_divisor LessThan7 LessThan7 LessThan7 Selector13 Selector12"
+     }
+    ],
+    "census": {
+     "st_n": 47,
+     "stop": 9,
+     "st_zero_ok": 0,
+     "ld_b_n": 12,
+     "pv": 21,
+     "opc_base": 16,
+     "m_kind": 8,
+     "seg_override_n": 3,
+     "sigma": 122,
+     "s1_val": 56,
+     "it_val": 9,
+     "rst_ctr_n": 0,
+     "ld_dlo_n": 0,
+     "ld_ripe_prev_n": 3,
+     "nmi_latch_n": 0,
+     "rloop_n_n": 0,
+     "zzz_no_such_signal": 0
+    },
+    "buckets": {
+     "0": [
+      34.801,
+      240
+     ],
+     "1": [
+      34.786,
+      151
+     ],
+     "2": [
+      34.519,
+      9
+     ]
+    },
+    "pc1": true,
+    "pc2": true,
+    "pc3": true
+   }
+  }
+ }
+}

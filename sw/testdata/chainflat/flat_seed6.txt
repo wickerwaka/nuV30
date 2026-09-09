@@ -1,0 +1,56 @@
+=== sta_chainflat (WAVE 6) ===
+  revision cf   npaths 400
+  registers in the netlist: 967
+
+=== A. POSITIVE CONTROLS ===
+  PC-1 RESOLVER   probe node: opc_sel[2]~1|combout
+       get_pins  collection 1 -> paths 1   (MUST be >= 1)
+       get_nodes collection 1 -> paths 0   (WAVE 1: silently 0)
+       PC-1 PASS
+  PC-2 WALKER     state 3 (MUST be 3)   data cells 45 (MUST be >= 3)
+                  walker 34.624 vs Quartus -data_delay 34.624  diff 0.000 (MUST be <= 0.01)
+       PC-2 PASS
+  PC-3 SEGMENTER  st_n combout pins in the netlist: 61
+       the pin that answered: st_n~12|combout   (single-pin tries 1)
+       boundaries, real markers : 1  (MUST be >= 1)
+       boundaries, fake marker  : 0  (MUST be 0)
+       PC-3 PASS
+
+  CONTROLS: ALL PASS
+
+=== B. THE WORST reg -> reg ARC ===
+  slack        -4.080
+  data delay   34.624
+  levels       45 cells / 33 combout
+  from         opc_reg[5]
+  to           v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_kqd1:auto_generated|ram_block1a1~porta_address_reg8
+  boundaries   0
+    seg 0     4.799 ->   39.011  =  34.212  cells 45  luts 33  opc_sel WideOr0 Equal56 div_divisor LessThan7 LessThan7 LessThan7 Selector13 Selector12
+
+=== C. BOUNDARY-BUCKETED SCAN (npaths 400) ===
+  paths walked 400
+  boundaries  0 : worst data delay   34.801   count 240
+  boundaries  1 : worst data delay   34.786   count 151
+  boundaries  2 : worst data delay   34.519   count 9
+
+=== D. COPY CENSUS (distinct combout cones per RTL base name) ===
+  combout cones in the netlist: 6616
+  st_n                   47
+  stop                   9
+  st_zero_ok             0
+  ld_b_n                 12
+  pv                     21
+  opc_base               16
+  m_kind                 8
+  seg_override_n         3
+  sigma                  122
+  s1_val                 56
+  it_val                 9
+  rst_ctr_n              0
+  ld_dlo_n               0
+  ld_ripe_prev_n         3
+  nmi_latch_n            0
+  rloop_n_n              0
+  zzz_no_such_signal     0
+
+RESULT controls=PASS
