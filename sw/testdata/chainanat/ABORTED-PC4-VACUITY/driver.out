@@ -1,0 +1,17 @@
+patched: uncommented set_multicycle_path lines = 0 (must be 0)
+
+=== MAP: control ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_map nec_test -c nec_test_ucore
+    exit 0  147s
+
+=== FIT: control seed 1 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=1 --recompile=off nec_test -c nec_test_ucore
+    exit 0  687s
+    *** NO SEED ROW ***
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_truefmax_probe.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/sw/testdata/chainanat/control_seed1.truefmax
+    exit 0  25s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chain_anatomy.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/sw/testdata/chainanat/control_seed1 1000
+    exit 4  9s
+
+=== FIT: control seed 2 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=2 --recompile=off nec_test -c nec_test_ucore

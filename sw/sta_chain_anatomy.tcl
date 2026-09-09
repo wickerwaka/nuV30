@@ -250,27 +250,70 @@ if {$nb_pos < 1 || $nb_neg != 0} { set CTL_OK 0 ; emit "       *** PC-3 FAILED *
 # PC-4 THE BIU MATCHER.  `|u_biu|` is the INSTANCE name; `v30u_biu:` is the TYPE
 # prefix Quartus prints on REGISTERS ONLY and omits on combinational nodes, so a
 # type-prefix test finds no BIU LUT at all (WAVE 4 §6.1 item 1 -- it reported 0
-# on a path carrying eight).  Force a path through a BIU pin: the counter must
-# say YES, and the type-prefix test is run beside it as the known-wrong control.
-set biup [get_pins -nowarn -compatibility_mode {*|u_biu|*|combout}]
-set nbiu_pos -1 ; set nbiu_typ -1
-emit [format "  PC-4 BIU        |u_biu| combout pins: %d" [get_collection_size $biup]]
-if {[get_collection_size $biup] > 0} {
-    set B ""
-    foreach_in_collection p [get_timing_paths -from $v30u_ce -to $v30u_ce \
-                                 -through $biup -setup -npaths 1 -detail full_path] { set B $p }
-    if {$B ne ""} {
-        array set BK [walk $B]
-        set nbiu_pos 0 ; set nbiu_typ 0
-        foreach e $BK(pts) {
-            foreach {nm cum inc ty} $e break
-            if {[string first "|u_biu|" $nm] >= 0} { incr nbiu_pos }
-            if {[string first "v30u_biu:" $nm] >= 0} { incr nbiu_typ }
+# on a path carrying eight).  The control forces a path through a BIU pin and
+# requires the counter to say YES.
+#
+# ⚠⚠ AND THE FIRST FORM OF THIS CONTROL WAS ITSELF VACUOUS, WHICH IS WHY IT IS
+# WRITTEN THIS WAY.  It passed a `get_pins` collection of **1,176** BIU pins to
+# `-through` and got back a path with **ZERO** BIU nodes on it -- i.e. the
+# `-through` was ACCEPTED AND IGNORED and the collection simply returned the
+# unconstrained worst `ce -> ce` path.  On the development netlist that read
+# "8 BIU nodes" and PASSED, because THAT netlist's worst arc happened to carry
+# the round trip: the control agreed for the wrong reason.  MEASURED on this
+# tree, 2026-09-09.  **A `-through` is therefore given ONE PIN AT A TIME**, and
+# the pin that answered is NAMED in the output so the YES is never anonymous.
+set nbiu_pos -1 ; set nbiu_typ -1 ; set biu_pin "" ; set biu_tries 0
+set nbiu_bulk -1
+foreach pat {{*|u_biu|q_ripe_lead_n~*|combout} {*|u_biu|q_cnt~*|combout}
+             {*|u_biu|*|combout}} {
+    if {$nbiu_pos >= 1} { break }
+    set cand [get_pins -nowarn -compatibility_mode $pat]
+    foreach_in_collection pin $cand {
+        if {$biu_tries >= 80 || $nbiu_pos >= 1} { break }
+        incr biu_tries
+        set ps [get_timing_paths -from $v30u_ce -to $v30u_ce -through $pin \
+                    -setup -npaths 1 -detail full_path]
+        if {[get_collection_size $ps] == 0} { continue }
+        foreach_in_collection B $ps {
+            array unset BK ; array set BK [walk $B]
+            set a 0 ; set b 0
+            foreach e $BK(pts) {
+                foreach {nm cum inc ty} $e break
+                if {[string first "|u_biu|" $nm] >= 0} { incr a }
+                if {[string first "v30u_biu:" $nm] >= 0} { incr b }
+            }
+            if {$a >= 1} {
+                set nbiu_pos $a ; set nbiu_typ $b
+                set biu_pin [get_node_info $pin -name]
+            }
         }
     }
 }
-emit [format "       BIU nodes on the FORCED path, |u_biu|      : %d  (MUST be >= 1)" $nbiu_pos]
-emit [format "       ...the same path under the TYPE prefix     : %d  (WAVE 4 §6.1: the wrong test)" $nbiu_typ]
+# ...and the BULK form, kept and PRINTED as the known-wrong control, so the
+# vacuity that was found here cannot come back silently.
+set biup [get_pins -nowarn -compatibility_mode {*|u_biu|*|combout}]
+emit [format "  PC-4 BIU        |u_biu| combout pins: %d   (single-pin tries: %d)" \
+          [get_collection_size $biup] $biu_tries]
+if {[get_collection_size $biup] > 0} {
+    set BB ""
+    foreach_in_collection p [get_timing_paths -from $v30u_ce -to $v30u_ce \
+                                 -through $biup -setup -npaths 1 -detail full_path] { set BB $p }
+    if {$BB ne ""} {
+        array unset BQ ; array set BQ [walk $BB]
+        set nbiu_bulk 0
+        foreach e $BQ(pts) {
+            foreach {nm cum inc ty} $e break
+            if {[string first "|u_biu|" $nm] >= 0} { incr nbiu_bulk }
+        }
+    }
+}
+emit [format "       BIU nodes on a path forced through ONE NAMED PIN : %d  (MUST be >= 1)" $nbiu_pos]
+emit "       the pin that answered : $biu_pin"
+emit [format "       ...that same path under the TYPE prefix          : %d  (WAVE 4 §6.1: the wrong test)" $nbiu_typ]
+emit [format "       ...and the BULK -through of %d pins yields        : %d  BIU nodes" \
+          [get_collection_size $biup] $nbiu_bulk]
+emit "       (a BULK figure BELOW the single-pin figure is `-through` being"
+emit "        ACCEPTED AND IGNORED -- printed, never relied on)"
 if {$nbiu_pos < 1} { set CTL_OK 0 ; emit "       *** PC-4 FAILED ***" } else { emit "       PC-4 PASS" }
 
 emit ""

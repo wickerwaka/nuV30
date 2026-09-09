@@ -1,0 +1,1403 @@
+{
+ "control": {
+  "n_arms": 33,
+  "n_guarded": 24,
+  "n_unguarded": 9,
+  "zok": [
+   "S_BIND",
+   "S_DECODE",
+   "S_DECODE2",
+   "S_EA_CALC",
+   "S_ENTER",
+   "S_INSTR_END",
+   "S_TAIL",
+   "S_TAIL_POP",
+   "S_TAKE_OPC"
+  ],
+  "unguarded": [
+   "S_BIND",
+   "S_DECODE",
+   "S_DECODE2",
+   "S_EA_CALC",
+   "S_ENTER",
+   "S_INSTR_END",
+   "S_TAIL",
+   "S_TAIL_POP",
+   "S_TAKE_OPC"
+  ],
+  "match": true,
+  "PASS": true
+ },
+ "sig2arms": {
+  "rdp0_byte_n": [
+   "S_PRERD",
+   "S_ROW"
+  ],
+  "opr_loaded_n": [
+   "S_BIND",
+   "S_INSTR_END",
+   "S_IRQ_D",
+   "S_PRERD",
+   "S_RLOOP",
+   "S_ROW",
+   "S_TAIL_W"
+  ],
+  "rdp1_byte_n": [
+   "S_PRERD",
+   "S_ROW"
+  ],
+  "rd_pending_n": [
+   "S_PRERD",
+   "S_ROW"
+  ],
+  "st_n": [
+   "S_1BL_CHG",
+   "S_BIND",
+   "S_D16_A",
+   "S_D16_HI",
+   "S_D16_LO",
+   "S_D8_A",
+   "S_D8_B",
+   "S_DECODE",
+   "S_DECODE2",
+   "S_EA_CALC",
+   "S_EA_CHG",
+   "S_ENTER",
+   "S_EPOP",
+   "S_EXT_CHG1",
+   "S_EXT_POP",
+   "S_GRPD_CHG",
+   "S_HALTED",
+   "S_MODRM",
+   "S_NORM_CHG",
+   "S_OPC_POP",
+   "S_PFX_CHG",
+   "S_PRERD",
+   "S_RESET",
+   "S_RLOOP",
+   "S_ROW",
+   "S_ROW_CHG",
+   "S_TAIL",
+   "S_TAIL_POP",
+   "S_TAIL_W",
+   "S_TAKE_OPC"
+  ],
+  "rdq0_n": [
+   "S_IRQ_D",
+   "S_PRERD",
+   "S_ROW",
+   "S_TAIL_W"
+  ],
+  "rdq0_byte_n": [
+   "S_IRQ_D",
+   "S_PRERD",
+   "S_ROW",
+   "S_TAIL_W"
+  ],
+  "opr_n": [
+   "S_PRERD",
+   "S_RLOOP",
+   "S_ROW",
+   "S_TAIL_W"
+  ],
+  "rdq_n_n": [
+   "S_IRQ_D",
+   "S_PRERD",
+   "S_ROW",
+   "S_TAIL_W"
+  ],
+  "rd_done_cnt_n": [
+   "S_PRERD",
+   "S_ROW",
+   "S_TAIL_W"
+  ],
+  "row_posted_n": [
+   "S_ENTER",
+   "S_INSTR_END",
+   "S_IRQ_D",
+   "S_PRERD",
+   "S_ROW"
+  ],
+  "stop": [
+   "S_1BL_LEAD",
+   "S_BIND",
+   "S_D16_A",
+   "S_D16_HI",
+   "S_D16_LO",
+   "S_D8_A",
+   "S_D8_B",
+   "S_DECODE",
+   "S_DECODE2",
+   "S_ENTER",
+   "S_EPOP",
+   "S_EXT_CHG1",
+   "S_EXT_POP",
+   "S_INSTR_END",
+   "S_IRQ_D",
+   "S_MODRM",
+   "S_OPC_POP",
+   "S_PFX_CHG",
+   "S_PRERD",
+   "S_RESET",
+   "S_ROW",
+   "S_ROW_CHG",
+   "S_TAIL",
+   "S_TAIL_POP",
+   "S_TAIL_W"
+  ],
+  "opr_byte_n": [
+   "S_PRERD",
+   "S_RLOOP",
+   "S_ROW",
+   "S_TAIL_W"
+  ],
+  "al_eaconst_n": [
+   "S_EA_CALC",
+   "S_INSTR_END",
+   "S_IRQ_D",
+   "S_ROW"
+  ],
+  "ld_preread_n": [
+   "S_BIND",
+   "S_INSTR_END",
+   "S_IRQ_D"
+  ],
+  "modrm_reg_n": [
+   "S_INSTR_END",
+   "S_IRQ_D"
+  ],
+  "ld_rm_n": [
+   "S_INSTR_END",
+   "S_IRQ_D",
+   "S_MODRM"
+  ],
+  "ending_n": [
+   "S_ENTER",
+   "S_IRQ_D"
+  ],
+  "rep_pol_n": [
+   "S_BIND",
+   "S_INSTR_END",
+   "S_IRQ_D"
+  ],
+  "al_spent_n": [
+   "S_INSTR_END",
+   "S_IRQ_D",
+   "S_RLOOP",
+   "S_ROW"
+  ],
+  "pend_active_n": [
+   "S_IRQ_D",
+   "S_ROW"
+  ],
+  "wb_byte_n": [
+   "S_BIND",
+   "S_IRQ_D"
+  ],
+  "opc_base_n": [
+   "S_BIND",
+   "S_INSTR_END",
+   "S_IRQ_D"
+  ],
+  "xop_n": [
+   "S_DECODE2",
+   "S_IRQ_D"
+  ],
+  "al_bitarm_n": [
+   "S_INSTR_END",
+   "S_IRQ_D",
+   "S_ROW"
+  ],
+  "m_byte_n": [
+   "S_BIND",
+   "S_IRQ_D"
+  ],
+  "rdq1_n": [
+   "S_IRQ_D"
+  ],
+  "unhalt_pend_n": [
+   "S_IRQ_D"
+  ],
+  "opr_fresh_n": [
+   "S_INSTR_END",
+   "S_IRQ_D",
+   "S_RLOOP",
+   "S_ROW",
+   "S_TAIL_W"
+  ],
+  "rowq_n": [
+   "S_ENTER",
+   "S_INSTR_END",
+   "S_IRQ_D",
+   "S_ROW"
+  ],
+  "al_tmp_n": [
+   "S_INSTR_END",
+   "S_IRQ_D",
+   "S_ROW"
+  ],
+  "intr_pending_n": [
+   "S_IRQ_D",
+   "S_ROW"
+  ],
+  "ld_ext_n": [
+   "S_INSTR_END",
+   "S_IRQ_D"
+  ],
+  "r_byte_n": [
+   "S_BIND",
+   "S_IRQ_D"
+  ],
+  "opc_reg_n": [
+   "S_BIND",
+   "S_DECODE2",
+   "S_IRQ_D"
+  ],
+  "m_idx_n": [
+   "S_BIND",
+   "S_IRQ_D"
+  ],
+  "rep_test_n": [
+   "S_BIND",
+   "S_INSTR_END",
+   "S_IRQ_D"
+  ],
+  "al_adjust_n": [
+   "S_INSTR_END",
+   "S_IRQ_D",
+   "S_ROW"
+  ],
+  "wb_idx_n": [
+   "S_BIND",
+   "S_IRQ_D"
+  ],
+  "al_adjtmp_n": [
+   "S_IRQ_D",
+   "S_ROW"
+  ],
+  "pop_is_first_n": [
+   "S_DECODE2",
+   "S_EPOP",
+   "S_INSTR_END",
+   "S_IRQ_D",
+   "S_OPC_POP",
+   "S_PFX_CHG",
+   "S_ROW",
+   "S_TAIL_POP"
+  ],
+  "r_seg_n": [
+   "S_BIND",
+   "S_IRQ_D"
+  ],
+  "al_bitn_n": [
+   "S_IRQ_D",
+   "S_ROW"
+  ],
+  "seg_override_n": [
+   "S_DECODE",
+   "S_INSTR_END",
+   "S_IRQ_D"
+  ],
+  "upc_page_n": [
+   "S_ENTER",
+   "S_IRQ_D",
+   "S_ROW"
+  ],
+  "rep_kind_n": [
+   "S_INSTR_END",
+   "S_IRQ_D"
+  ],
+  "bus_word_n": [
+   "S_INSTR_END",
+   "S_IRQ_D",
+   "S_ROW"
+  ],
+  "ld_hasrm_n": [
+   "S_DECODE2",
+   "S_INSTR_END",
+   "S_IRQ_D"
+  ],
+  "opc8080_n": [
+   "S_INSTR_END",
+   "S_IRQ_D"
+  ],
+  "r_idx_n": [
+   "S_BIND",
+   "S_IRQ_D"
+  ],
+  "wb_ea_n": [
+   "S_BIND",
+   "S_IRQ_D"
+  ],
+  "irq_fast_inta_n": [
+   "S_IRQ_D",
+   "S_OPC_POP"
+  ],
+  "pend_io_n": [
+   "S_IRQ_D",
+   "S_ROW"
+  ],
+  "ld_disp_n": [
+   "S_D16_HI",
+   "S_D8_B",
+   "S_INSTR_END",
+   "S_IRQ_D",
+   "S_MODRM"
+  ],
+  "nmi_latch_n": [
+   "S_IRQ_D"
+  ],
+  "lock_pfx_n": [
+   "S_INSTR_END",
+   "S_IRQ_D"
+  ],
+  "seg_ovr_n": [
+   "S_DECODE",
+   "S_INSTR_END",
+   "S_IRQ_D"
+  ],
+  "imm8_n": [
+   "S_DECODE2",
+   "S_IRQ_D"
+  ],
+  "al_op_n": [
+   "S_INSTR_END",
+   "S_IRQ_D",
+   "S_ROW"
+  ],
+  "pend_seg_n": [
+   "S_IRQ_D",
+   "S_ROW"
+  ],
+  "ld_grpd_n": [
+   "S_BIND",
+   "S_INSTR_END",
+   "S_IRQ_D"
+  ],
+  "irq_shadow_n": [
+   "S_DECODE2",
+   "S_EPOP",
+   "S_IRQ_D",
+   "S_OPC_POP",
+   "S_ROW",
+   "S_TAIL_POP",
+   "S_TAIL_W"
+  ],
+  "rep_chain_n": [
+   "S_INSTR_END",
+   "S_IRQ_D",
+   "S_ROW"
+  ],
+  "rdq1_byte_n": [
+   "S_IRQ_D"
+  ],
+  "row_paired_n": [
+   "S_ENTER",
+   "S_INSTR_END",
+   "S_IRQ_D",
+   "S_ROW"
+  ],
+  "wb_seg_n": [
+   "S_BIND",
+   "S_IRQ_D"
+  ],
+  "m_seg_n": [
+   "S_BIND",
+   "S_EA_CALC",
+   "S_IRQ_D"
+  ],
+  "upc_loc_n": [
+   "S_ENTER",
+   "S_IRQ_D",
+   "S_RLOOP",
+   "S_ROW"
+  ],
+  "pend_off_n": [
+   "S_IRQ_D",
+   "S_ROW"
+  ],
+  "m_kind_n": [
+   "S_BIND",
+   "S_INSTR_END",
+   "S_IRQ_D"
+  ],
+  "wb_kind_n": [
+   "S_INSTR_END",
+   "S_IRQ_D"
+  ],
+  "upc_opc_n": [
+   "S_ENTER",
+   "S_IRQ_D",
+   "S_RLOOP",
+   "S_ROW"
+  ],
+  "al_eaval_n": [
+   "S_EA_CALC",
+   "S_IRQ_D"
+  ],
+  "pfxcnt_n": [
+   "S_INSTR_END",
+   "S_IRQ_D"
+  ],
+  "eu_halted_n": [
+   "S_DECODE2",
+   "S_HALTED",
+   "S_IRQ_D"
+  ],
+  "r_ea_n": [
+   "S_BIND",
+   "S_IRQ_D"
+  ],
+  "opc_valid_n": [
+   "S_EPOP",
+   "S_IRQ_D",
+   "S_ROW",
+   "S_TAIL_POP",
+   "S_TAKE_OPC"
+  ],
+  "suppress_commit_n": [
+   "S_ENTER",
+   "S_IRQ_D",
+   "S_ROW"
+  ],
+  "bnd_armed_n": [
+   "S_HALTED",
+   "S_INSTR_END",
+   "S_IRQ_D",
+   "S_OPC_POP"
+  ],
+  "pend_byte_n": [
+   "S_IRQ_D",
+   "S_ROW"
+  ],
+  "r_kind_n": [
+   "S_BIND",
+   "S_INSTR_END",
+   "S_IRQ_D"
+  ],
+  "m_ea_n": [
+   "S_BIND",
+   "S_EA_CALC",
+   "S_IRQ_D"
+  ],
+  "op8_n": [
+   "S_DECODE2",
+   "S_IRQ_D"
+  ],
+  "opc_from_modrm_n": [
+   "S_BIND",
+   "S_INSTR_END",
+   "S_IRQ_D"
+  ],
+  "tmpc_n": [
+   "S_RLOOP",
+   "S_ROW"
+  ],
+  "tmpb_n": [
+   "S_BIND",
+   "S_RLOOP",
+   "S_ROW"
+  ],
+  "tmpb_byte_n": [
+   "S_RLOOP",
+   "S_ROW"
+  ],
+  "bsw": [
+   "S_RLOOP",
+   "S_ROW"
+  ],
+  "gpr_n": [
+   "S_RLOOP",
+   "S_ROW"
+  ],
+  "v1": [
+   "S_RLOOP",
+   "S_ROW"
+  ],
+  "count_n": [
+   "S_RLOOP",
+   "S_ROW"
+  ],
+  "tmpa_n": [
+   "S_BIND",
+   "S_RLOOP",
+   "S_ROW"
+  ],
+  "tmpa_byte_n": [
+   "S_RLOOP",
+   "S_ROW"
+  ],
+  "ea_pair_valid_n": [
+   "S_EA_CALC",
+   "S_RLOOP",
+   "S_ROW"
+  ],
+  "wb1": [
+   "S_RLOOP",
+   "S_ROW"
+  ],
+  "rloop_n_n": [
+   "S_RLOOP",
+   "S_ROW"
+  ],
+  "stat_n": [
+   "S_RLOOP",
+   "S_ROW"
+  ],
+  "tmpc_byte_n": [
+   "S_RLOOP",
+   "S_ROW"
+  ],
+  "ea_residue_n": [
+   "S_BIND",
+   "S_RLOOP",
+   "S_ROW"
+  ],
+  "pv": [
+   "S_BIND",
+   "S_DECODE",
+   "S_DECODE2"
+  ],
+  "ld_ripe_prev_n": [
+   "S_D16_A",
+   "S_D8_A",
+   "S_MODRM"
+  ],
+  "pc_n": [
+   "S_D16_HI",
+   "S_D16_LO",
+   "S_D8_B",
+   "S_EXT_POP",
+   "S_MODRM",
+   "S_OPC_POP",
+   "S_ROW",
+   "S_TAKE_OPC"
+  ],
+  "chg_n": [
+   "S_D16_A",
+   "S_D16_HI",
+   "S_D8_B",
+   "S_MODRM"
+  ],
+  "ld_byte_n": [
+   "S_DECODE2"
+  ],
+  "psw_n": [
+   "S_DECODE2",
+   "S_ROW"
+  ],
+  "ld_page_n": [
+   "S_BIND",
+   "S_DECODE2"
+  ],
+  "trc_1bld_smp": [
+   "S_DECODE2"
+  ],
+  "trc_1bl_hit": [
+   "S_1BL_LEAD",
+   "S_DECODE2"
+  ],
+  "trc_1bld_ripe": [
+   "S_DECODE2"
+  ],
+  "ld_pla_n": [
+   "S_DECODE2"
+  ],
+  "trc_1bld_seen": [
+   "S_DECODE2"
+  ],
+  "trc_1bld_arm": [
+   "S_DECODE2"
+  ],
+  "trc_1bld_shd": [
+   "S_DECODE2"
+  ],
+  "ld_b_n": [
+   "S_EXT_POP",
+   "S_OPC_POP",
+   "S_TAKE_OPC"
+  ],
+  "pe_pfxcnt_n": [
+   "S_EPOP",
+   "S_ROW"
+  ],
+  "poste_n": [
+   "S_EPOP",
+   "S_ROW"
+  ],
+  "brk_arm_n": [
+   "S_EPOP",
+   "S_OPC_POP",
+   "S_ROW",
+   "S_TAIL_POP",
+   "S_TAIL_W"
+  ],
+  "opc_byte_n": [
+   "S_EPOP",
+   "S_ROW",
+   "S_TAIL_POP"
+  ],
+  "pe_op8_n": [
+   "S_EPOP",
+   "S_ROW"
+  ],
+  "irq_sel_nmi_n": [
+   "S_EPOP",
+   "S_OPC_POP",
+   "S_ROW",
+   "S_TAIL_POP",
+   "S_TAIL_W"
+  ],
+  "irq_sel_brk_n": [
+   "S_EPOP",
+   "S_OPC_POP",
+   "S_ROW",
+   "S_TAIL_POP",
+   "S_TAIL_W"
+  ],
+  "pe_opc_reg_n": [
+   "S_EPOP",
+   "S_ROW"
+  ],
+  "pe_opc8080_n": [
+   "S_EPOP",
+   "S_ROW"
+  ],
+  "sign_neg_n": [
+   "S_ROW"
+  ],
+  "bubble": [
+   "S_ROW"
+  ],
+  "v2": [
+   "S_ROW"
+  ],
+  "rowb1_n": [
+   "S_ROW"
+  ],
+  "wb2": [
+   "S_ROW"
+  ],
+  "taken": [
+   "S_ROW"
+  ],
+  "rep_chained": [
+   "S_ROW"
+  ],
+  "bit_n_n": [
+   "S_ROW"
+  ],
+  "rowb0_n": [
+   "S_ROW"
+  ],
+  "nloc": [
+   "S_ROW"
+  ],
+  "retire_now": [
+   "S_ROW"
+  ],
+  "wr_out_n": [
+   "S_ROW"
+  ],
+  "carry": [
+   "S_ROW"
+  ],
+  "ghost_rd_discard_n": [
+   "S_ROW"
+  ],
+  "ts": [
+   "S_BIND"
+  ],
+  "te": [
+   "S_BIND"
+  ],
+  "rmrm": [
+   "S_BIND",
+   "S_EA_CALC"
+  ],
+  "ti": [
+   "S_BIND"
+  ],
+  "rmmod": [
+   "S_BIND",
+   "S_EA_CALC"
+  ],
+  "tk": [
+   "S_BIND"
+  ],
+  "tb": [
+   "S_BIND"
+  ],
+  "rmreg": [
+   "S_BIND"
+  ],
+  "iend_owed_n": [
+   "S_INSTR_END"
+  ],
+  "irq_halt_entry_n": [
+   "S_HALTED"
+  ],
+  "ld_dlo_n": [
+   "S_D16_LO"
+  ],
+  "rst_ctr_n": [
+   "S_RESET"
+  ],
+  "ind_n": [
+   "S_EA_CALC"
+  ],
+  "rseg": [
+   "S_EA_CALC"
+  ],
+  "ea_pair_rhs_n": [
+   "S_EA_CALC"
+  ],
+  "ea": [
+   "S_EA_CALC"
+  ]
+ },
+ "chain_assigned": [
+  "al_adjtmp_n",
+  "al_adjust_n",
+  "al_bitarm_n",
+  "al_bitn_n",
+  "al_eaconst_n",
+  "al_eaval_n",
+  "al_op_n",
+  "al_spent_n",
+  "al_tmp_n",
+  "bit_n_n",
+  "bnd_armed_n",
+  "brk_arm_n",
+  "bsw",
+  "bubble",
+  "bus_word_n",
+  "carry",
+  "chg_n",
+  "count_n",
+  "ea",
+  "ea_pair_rhs_n",
+  "ea_pair_valid_n",
+  "ea_residue_n",
+  "ending_n",
+  "eu_halted_n",
+  "ghost_rd_discard_n",
+  "gpr_n",
+  "iend_owed_n",
+  "imm8_n",
+  "ind_n",
+  "intr_pending_n",
+  "irq_fast_inta_n",
+  "irq_halt_entry_n",
+  "irq_sel_brk_n",
+  "irq_sel_nmi_n",
+  "irq_shadow_n",
+  "ld_b_n",
+  "ld_byte_n",
+  "ld_disp_n",
+  "ld_dlo_n",
+  "ld_ext_n",
+  "ld_grpd_n",
+  "ld_hasrm_n",
+  "ld_page_n",
+  "ld_pla_n",
+  "ld_preread_n",
+  "ld_ripe_prev_n",
+  "ld_rm_n",
+  "lock_pfx_n",
+  "m_byte_n",
+  "m_ea_n",
+  "m_idx_n",
+  "m_kind_n",
+  "m_seg_n",
+  "modrm_reg_n",
+  "nloc",
+  "nmi_latch_n",
+  "op8_n",
+  "opc8080_n",
+  "opc_base_n",
+  "opc_byte_n",
+  "opc_from_modrm_n",
+  "opc_reg_n",
+  "opc_valid_n",
+  "opr_byte_n",
+  "opr_fresh_n",
+  "opr_loaded_n",
+  "opr_n",
+  "pc_n",
+  "pe_op8_n",
+  "pe_opc8080_n",
+  "pe_opc_reg_n",
+  "pe_pfxcnt_n",
+  "pend_active_n",
+  "pend_byte_n",
+  "pend_io_n",
+  "pend_off_n",
+  "pend_seg_n",
+  "pfxcnt_n",
+  "pop_is_first_n",
+  "poste_n",
+  "psw_n",
+  "pv",
+  "r_byte_n",
+  "r_ea_n",
+  "r_idx_n",
+  "r_kind_n",
+  "r_seg_n",
+  "rd_done_cnt_n",
+  "rd_pending_n",
+  "rdp0_byte_n",
+  "rdp1_byte_n",
+  "rdq0_byte_n",
+  "rdq0_n",
+  "rdq1_byte_n",
+  "rdq1_n",
+  "rdq_n_n",
+  "rep_chain_n",
+  "rep_chained",
+  "rep_kind_n",
+  "rep_pol_n",
+  "rep_test_n",
+  "retire_now",
+  "rloop_n_n",
+  "rmmod",
+  "rmreg",
+  "rmrm",
+  "row_paired_n",
+  "row_posted_n",
+  "rowb0_n",
+  "rowb1_n",
+  "rowq_n",
+  "rseg",
+  "rst_ctr_n",
+  "seg_override_n",
+  "seg_ovr_n",
+  "sign_neg_n",
+  "st_n",
+  "stat_n",
+  "stop",
+  "suppress_commit_n",
+  "taken",
+  "tb",
+  "te",
+  "ti",
+  "tk",
+  "tmpa_byte_n",
+  "tmpa_n",
+  "tmpb_byte_n",
+  "tmpb_n",
+  "tmpc_byte_n",
+  "tmpc_n",
+  "trc_1bl_hit",
+  "trc_1bld_arm",
+  "trc_1bld_ripe",
+  "trc_1bld_seen",
+  "trc_1bld_shd",
+  "trc_1bld_smp",
+  "ts",
+  "unhalt_pend_n",
+  "upc_loc_n",
+  "upc_opc_n",
+  "upc_page_n",
+  "v1",
+  "v2",
+  "wb1",
+  "wb2",
+  "wb_byte_n",
+  "wb_ea_n",
+  "wb_idx_n",
+  "wb_kind_n",
+  "wb_seg_n",
+  "wr_out_n",
+  "xop_n"
+ ],
+ "eu_assigned": [
+  "al_adjtmp",
+  "al_adjtmp_n",
+  "al_adjtmp_r",
+  "al_adjust",
+  "al_adjust_n",
+  "al_adjust_r",
+  "al_bitarm",
+  "al_bitarm_n",
+  "al_bitarm_r",
+  "al_bitn",
+  "al_bitn_n",
+  "al_bitn_r",
+  "al_eaconst",
+  "al_eaconst_n",
+  "al_eaconst_r",
+  "al_eaval",
+  "al_eaval_n",
+  "al_eaval_r",
+  "al_op",
+  "al_op_n",
+  "al_op_r",
+  "al_spent",
+  "al_spent_n",
+  "al_spent_r",
+  "al_tmp",
+  "al_tmp_n",
+  "al_tmp_r",
+  "ar_full",
+  "ar_m",
+  "bit_n",
+  "bit_n_n",
+  "bit_n_r",
+  "bnd_armed",
+  "bnd_armed_n",
+  "bnd_armed_r",
+  "brk_arm",
+  "brk_arm_n",
+  "brk_arm_r",
+  "brk_now",
+  "brk_p",
+  "brk_p_n",
+  "brk_p_r",
+  "brk_smp",
+  "brk_smp_n",
+  "brk_smp_r",
+  "brktrace",
+  "bsw",
+  "bubble",
+  "bus_word",
+  "bus_word_n",
+  "bus_word_r",
+  "carry",
+  "ce_clk",
+  "chain",
+  "chain_first",
+  "chain_hi",
+  "chain_report",
+  "chg",
+  "chg_n",
+  "chg_r",
+  "ci",
+  "count",
+  "count_n",
+  "count_r",
+  "cp_seen",
+  "cpi",
+  "dec_q",
+  "ea",
+  "ea_pair_rhs",
+  "ea_pair_rhs_n",
+  "ea_pair_rhs_r",
+  "ea_pair_valid",
+  "ea_pair_valid_n",
+  "ea_pair_valid_r",
+  "ea_residue",
+  "ea_residue_n",
+  "ea_residue_r",
+  "ending",
+  "ending_n",
+  "ending_r",
+  "eu_halted",
+  "eu_halted_n",
+  "eu_halted_r",
+  "eutrace",
+  "ev_commits",
+  "ev_flags",
+  "ev_mask",
+  "ev_val",
+  "f",
+  "fd",
+  "first_pop_seen",
+  "first_pop_seen_n",
+  "first_pop_seen_r",
+  "ghost_rd_discard",
+  "ghost_rd_discard_n",
+  "ghost_rd_discard_r",
+  "gpr",
+  "gpr_n",
+  "gpr_r",
+  "i",
+  "ie_now",
+  "ie_p",
+  "ie_p_n",
+  "ie_p_r",
+  "iend_owed",
+  "iend_owed_n",
+  "iend_owed_r",
+  "imm8",
+  "imm8_n",
+  "imm8_r",
+  "ind",
+  "ind_n",
+  "ind_r",
+  "int_p",
+  "int_p_n",
+  "int_p_r",
+  "intr_pending",
+  "intr_pending_n",
+  "intr_pending_r",
+  "irq_fast_inta",
+  "irq_fast_inta_n",
+  "irq_fast_inta_r",
+  "irq_halt_entry",
+  "irq_halt_entry_n",
+  "irq_halt_entry_r",
+  "irq_sel_brk",
+  "irq_sel_brk_n",
+  "irq_sel_brk_r",
+  "irq_sel_nmi",
+  "irq_sel_nmi_n",
+  "irq_sel_nmi_r",
+  "irq_shadow",
+  "irq_shadow_n",
+  "irq_shadow_r",
+  "it_flags",
+  "it_fmask",
+  "it_tmpa",
+  "it_val",
+  "it_writes_tmpa",
+  "ld_b",
+  "ld_b_n",
+  "ld_b_r",
+  "ld_byte",
+  "ld_byte_n",
+  "ld_byte_r",
+  "ld_disp",
+  "ld_disp_n",
+  "ld_disp_r",
+  "ld_dlo",
+  "ld_dlo_n",
+  "ld_dlo_r",
+  "ld_ext",
+  "ld_ext_n",
+  "ld_ext_r",
+  "ld_grpd",
+  "ld_grpd_n",
+  "ld_grpd_r",
+  "ld_hasrm",
+  "ld_hasrm_n",
+  "ld_hasrm_r",
+  "ld_page",
+  "ld_page_n",
+  "ld_page_r",
+  "ld_pla",
+  "ld_pla_n",
+  "ld_pla_r",
+  "ld_preread",
+  "ld_preread_n",
+  "ld_preread_r",
+  "ld_ripe_prev",
+  "ld_ripe_prev_n",
+  "ld_ripe_prev_r",
+  "ld_rm",
+  "ld_rm_n",
+  "ld_rm_r",
+  "lock_pfx",
+  "lock_pfx_n",
+  "lock_pfx_r",
+  "m_byte",
+  "m_byte_n",
+  "m_byte_r",
+  "m_ea",
+  "m_ea_n",
+  "m_ea_r",
+  "m_idx",
+  "m_idx_n",
+  "m_idx_r",
+  "m_kind",
+  "m_kind_n",
+  "m_kind_r",
+  "m_seg",
+  "m_seg_n",
+  "m_seg_r",
+  "mode8080",
+  "mode8080_n",
+  "mode8080_r",
+  "modrm_reg",
+  "modrm_reg_n",
+  "modrm_reg_r",
+  "nloc",
+  "nmi_latch",
+  "nmi_latch_n",
+  "nmi_latch_r",
+  "nmi_p",
+  "nmi_p_n",
+  "nmi_p_r",
+  "op8",
+  "op8_n",
+  "op8_r",
+  "opc8080",
+  "opc8080_n",
+  "opc8080_r",
+  "opc_base",
+  "opc_base_n",
+  "opc_base_r",
+  "opc_byte",
+  "opc_byte_n",
+  "opc_byte_r",
+  "opc_from_modrm",
+  "opc_from_modrm_n",
+  "opc_from_modrm_r",
+  "opc_reg",
+  "opc_reg_n",
+  "opc_reg_r",
+  "opc_valid",
+  "opc_valid_n",
+  "opc_valid_r",
+  "opr",
+  "opr_byte",
+  "opr_byte_n",
+  "opr_byte_r",
+  "opr_fresh",
+  "opr_fresh_n",
+  "opr_fresh_r",
+  "opr_loaded",
+  "opr_loaded_n",
+  "opr_loaded_r",
+  "opr_n",
+  "opr_r",
+  "p",
+  "pc",
+  "pc_n",
+  "pc_r",
+  "pe_op8",
+  "pe_op8_n",
+  "pe_op8_r",
+  "pe_opc8080",
+  "pe_opc8080_n",
+  "pe_opc8080_r",
+  "pe_opc_reg",
+  "pe_opc_reg_n",
+  "pe_opc_reg_r",
+  "pe_pfxcnt",
+  "pe_pfxcnt_n",
+  "pe_pfxcnt_r",
+  "pend_active",
+  "pend_active_n",
+  "pend_active_r",
+  "pend_byte",
+  "pend_byte_n",
+  "pend_byte_r",
+  "pend_io",
+  "pend_io_n",
+  "pend_io_r",
+  "pend_off",
+  "pend_off_n",
+  "pend_off_r",
+  "pend_seg",
+  "pend_seg_n",
+  "pend_seg_r",
+  "pfxcnt",
+  "pfxcnt_n",
+  "pfxcnt_r",
+  "poll_pipe",
+  "poll_pipe_n",
+  "poll_pipe_r",
+  "pop_is_first",
+  "pop_is_first_n",
+  "pop_is_first_r",
+  "poste",
+  "poste_n",
+  "poste_r",
+  "psw",
+  "psw_n",
+  "psw_r",
+  "pv",
+  "r_byte",
+  "r_byte_n",
+  "r_byte_r",
+  "r_ea",
+  "r_ea_n",
+  "r_ea_r",
+  "r_idx",
+  "r_idx_n",
+  "r_idx_r",
+  "r_kind",
+  "r_kind_n",
+  "r_kind_r",
+  "r_seg",
+  "r_seg_n",
+  "r_seg_r",
+  "rb16",
+  "rd_age0",
+  "rd_age0_n",
+  "rd_age0_r",
+  "rd_done_cnt",
+  "rd_done_cnt_n",
+  "rd_done_cnt_r",
+  "rd_pending",
+  "rd_pending_n",
+  "rd_pending_r",
+  "rdh_byte",
+  "rdp0_byte",
+  "rdp0_byte_n",
+  "rdp0_byte_r",
+  "rdp1_byte",
+  "rdp1_byte_n",
+  "rdp1_byte_r",
+  "rdq0",
+  "rdq0_byte",
+  "rdq0_byte_n",
+  "rdq0_byte_r",
+  "rdq0_n",
+  "rdq0_r",
+  "rdq1",
+  "rdq1_byte",
+  "rdq1_byte_n",
+  "rdq1_byte_r",
+  "rdq1_n",
+  "rdq1_r",
+  "rdq_n",
+  "rdq_n_n",
+  "rdq_n_r",
+  "rep_chain",
+  "rep_chain_n",
+  "rep_chain_r",
+  "rep_chained",
+  "rep_kind",
+  "rep_kind_n",
+  "rep_kind_r",
+  "rep_pol",
+  "rep_pol_n",
+  "rep_pol_r",
+  "rep_test",
+  "rep_test_n",
+  "rep_test_r",
+  "retire_now",
+  "rloop_n",
+  "rloop_n_n",
+  "rloop_n_r",
+  "rmmod",
+  "rmreg",
+  "rmrm",
+  "row_paired",
+  "row_paired_n",
+  "row_paired_r",
+  "row_posted",
+  "row_posted_n",
+  "row_posted_r",
+  "rowb0",
+  "rowb0_n",
+  "rowb0_r",
+  "rowb1",
+  "rowb1_n",
+  "rowb1_r",
+  "rowq",
+  "rowq_n",
+  "rowq_r",
+  "rseg",
+  "rsi",
+  "rst_ctr",
+  "rst_ctr_n",
+  "rst_ctr_r",
+  "s1_byte",
+  "s1_val",
+  "s1_wbyte",
+  "s2_val",
+  "s2_wbyte",
+  "seg_override",
+  "seg_override_n",
+  "seg_override_r",
+  "seg_ovr",
+  "seg_ovr_n",
+  "seg_ovr_r",
+  "sh_cy",
+  "sh_r",
+  "sign_neg",
+  "sign_neg_n",
+  "sign_neg_r",
+  "sreg",
+  "sreg_n",
+  "sreg_r",
+  "st",
+  "st_n",
+  "st_r",
+  "st_zero_ok",
+  "stat",
+  "stat_n",
+  "stat_r",
+  "stop",
+  "suppress_commit",
+  "suppress_commit_n",
+  "suppress_commit_r",
+  "szp",
+  "taken",
+  "tb",
+  "te",
+  "ti",
+  "tk",
+  "tmpa",
+  "tmpa_byte",
+  "tmpa_byte_n",
+  "tmpa_byte_r",
+  "tmpa_n",
+  "tmpa_r",
+  "tmpb",
+  "tmpb_byte",
+  "tmpb_byte_n",
+  "tmpb_byte_r",
+  "tmpb_n",
+  "tmpb_r",
+  "tmpc",
+  "tmpc_byte",
+  "tmpc_byte_n",
+  "tmpc_byte_r",
+  "tmpc_n",
+  "tmpc_r",
+  "trc_1bld_hit",
+  "trc_ind",
+  "trc_opr",
+  "trc_opr_fresh",
+  "trc_pc",
+  "trc_pe_hit",
+  "trc_pe_pre",
+  "trc_pe_upc",
+  "trc_pend_active",
+  "trc_poste",
+  "trc_rd_done_cnt",
+  "trc_rdq_n",
+  "trc_tmpa",
+  "trc_tmpb",
+  "trc_tmpc",
+  "trc_upc_loc",
+  "trc_upc_opc",
+  "trc_upc_page",
+  "trc_wr_out",
+  "ts",
+  "tsel",
+  "tsel_n",
+  "tsel_r",
+  "unhalt_pend",
+  "unhalt_pend_n",
+  "unhalt_pend_r",
+  "upc_loc",
+  "upc_loc_n",
+  "upc_loc_r",
+  "upc_opc",
+  "upc_opc_n",
+  "upc_opc_r",
+  "upc_page",
+  "upc_page_n",
+  "upc_page_r",
+  "v1",
+  "v2",
+  "wb1",
+  "wb2",
+  "wb_byte",
+  "wb_byte_n",
+  "wb_byte_r",
+  "wb_ea",
+  "wb_ea_n",
+  "wb_ea_r",
+  "wb_idx",
+  "wb_idx_n",
+  "wb_idx_r",
+  "wb_kind",
+  "wb_kind_n",
+  "wb_kind_r",
+  "wb_seg",
+  "wb_seg_n",
+  "wb_seg_r",
+  "wr_out",
+  "wr_out_n",
+  "wr_out_r",
+  "xop",
+  "xop_n",
+  "xop_r"
+ ]
+}

@@ -1,0 +1,24 @@
+=== sta_chain_anatomy (WAVE 5) ===
+  revision nec_test_ucore   npaths 1000
+  $v30u_ce 2029   $v30u_half 1
+
+=== A. POSITIVE CONTROLS (reported FIRST; a miss voids the wave) ===
+  PC-1 RESOLVER   probe node: emu|system_large|u_core|u_eu|u_ucrom|ucrom~787|combout
+       get_pins  collection 1 -> paths 1   (MUST be >= 1: the question can say YES)
+       get_nodes collection 1 -> paths 0   (WAVE 1 §0.2: silently 0)
+       PC-1 PASS
+  PC-2 WALKER     state 3 (MUST be 3)   data cells 54 (MUST be >= 3)
+                  walker data delay 43.375  vs Quartus -data_delay 43.375   diff 0.000 (MUST be <= 0.01)
+       PC-2 PASS
+  PC-3 SEGMENTER  st_zero_ok pins in the netlist: 9
+       forced path: emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a2~PORT_A_WRITE_ENABLE_REG
+                 -> emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|modrm_reg[1]
+       boundaries on the FORCED path, real markers : 3  (MUST be >= 1)
+       boundaries on the SAME path, a fake marker  : 0  (MUST be 0)
+       PC-3 PASS
+  PC-4 BIU        |u_biu| combout pins: 1176
+       BIU nodes on the FORCED path, |u_biu|      : 0  (MUST be >= 1)
+       ...the same path under the TYPE prefix     : 0  (WAVE 4 §6.1: the wrong test)
+       *** PC-4 FAILED ***
+
+  === CONTROLS: *** FAILED -- NOTHING BELOW MAY BE QUOTED *** ===

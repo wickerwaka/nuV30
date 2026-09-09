@@ -1,0 +1,15 @@
+=== chain_srcmap POSITIVE CONTROL (gates every use of this map) ===
+  state arms parsed              : 33   (must be 33)
+  arms carrying `chain == 4'd0`  : 24   (must be 24)
+  arms WITHOUT the guard         : 9   (must be 9)
+  st_zero_ok() states, parsed from v30u_eu.sv : 9
+  unguarded set == st_zero_ok set: True
+    unguarded : S_BIND S_DECODE S_DECODE2 S_EA_CALC S_ENTER S_INSTR_END S_TAIL S_TAIL_POP S_TAKE_OPC
+    st_zero_ok: S_BIND S_DECODE S_DECODE2 S_EA_CALC S_ENTER S_INSTR_END S_TAIL S_TAIL_POP S_TAKE_OPC
+  CONTROL: PASS
+
+  signals assigned inside the chain step : 153
+    ...of which NEVER assigned elsewhere in v30u_eu.sv : 6
+    ...also assigned in v30u_eu.sv outside it          : 147
+
+  map written to sw/testdata/chainanat/srcmap.json

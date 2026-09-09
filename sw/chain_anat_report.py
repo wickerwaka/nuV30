@@ -162,6 +162,14 @@ def main():
     except Exception as e:                                    # pragma: no cover
         print(f"  chain_srcmap unavailable: {e}")
         s2a = None
+    # ⚠ THE REFINEMENT THAT MAKES THIS ATTRIBUTION WORTH READING.  Only the 9
+    # `st_zero_ok` arms can STAND at a chain position >= 1 -- the other 24 carry
+    # `if (chain == 4'd0)` and are FOLDED OUT of every copy but the first.  So a
+    # node inside SEGMENT >= 1 can only have been written by one of those 9, and
+    # the ambiguity of a name like `opc_base_n` (S_BIND / S_INSTR_END / S_IRQ_D)
+    # COLLAPSES there (S_IRQ_D is guarded).  Segment 0 gets the full set,
+    # because position 0 runs all 33.
+    ZOK = set(ctl['zok']) if s2a is not None else set()
     for d in draws:
         print(f"  --- {os.path.basename(d['file'])[:-4]} ---")
         for i in sorted(d['cont']):
@@ -171,8 +179,30 @@ def main():
                 arms = None
                 if s2a is not None:
                     arms = s2a.get(n) or s2a.get(n + '_n')
-                rows.append(f"{n}[{','.join(sorted(a[2:] for a in arms)) if arms else '-'}]")
+                if arms and i >= 1:
+                    arms = [x for x in arms if x in ZOK]
+                lab = ','.join(sorted(x[2:] for x in arms)) if arms else '-'
+                rows.append(f"{n}[{lab}]")
             print(f"    seg {i} {span:7.3f} ns : " + " ".join(rows))
+        # per-segment arm histogram, folded to the chainable 9 for seg >= 1
+        print("    --- arm attribution, weighted by node count ---")
+        for i in sorted(d['cont']):
+            span, names = d['cont'][i]
+            hist = {}
+            unattr = 0
+            for n in names:
+                arms = (s2a.get(n) or s2a.get(n + '_n')) if s2a is not None else None
+                if arms and i >= 1:
+                    arms = [x for x in arms if x in ZOK]
+                if not arms:
+                    unattr += 1
+                    continue
+                for x in arms:
+                    hist[x] = hist.get(x, 0) + 1.0 / len(arms)
+            top = sorted(hist.items(), key=lambda t: -t[1])[:6]
+            print(f"    seg {i} {span:7.3f} ns : " +
+                  ("  ".join(f"{k[2:]}={v:.2f}" for k, v in top) or "(nothing named)") +
+                  f"   | unattributed nodes {unattr}/{len(names)}")
 
     print("\n=== Q4 / E-5  SHARED OR INDEPENDENT COPIES ===")
     for d in draws:

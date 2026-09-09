@@ -63,6 +63,10 @@ def main():
     ap.add_argument('--retention-seeds', default='1')
     ap.add_argument('--outdir', default='sw/testdata/chainanat')
     ap.add_argument('--npaths', default='200')
+    ap.add_argument('--skip-map', action='store_true',
+                    help='fit on the mapped db ALREADY on disk.  Only legal when '
+                         'that db was mapped for the SAME configuration -- '
+                         'map-once/fit-N is what makes the draws one tree.')
     ap.add_argument('--dry-run', action='store_true')
     a = ap.parse_args()
 
@@ -96,14 +100,17 @@ def main():
             seeds = [x for x in seeds.split(',') if x.strip()]
             if not seeds:
                 continue
-            print(f"\n=== MAP: {cfg} ===", flush=True)
-            argv = [f"{QB}/quartus_map"]
-            if cfg == 'retention':
+            if a.skip_map:
+                print(f"\n=== MAP: {cfg} SKIPPED (--skip-map) ===", flush=True)
+            else:
+              print(f"\n=== MAP: {cfg} ===", flush=True)
+              argv = [f"{QB}/quartus_map"]
+              if cfg == 'retention':
                 argv.append("--verilog_macro=X1_AD_RETENTION=1")
-            argv += [PROJECT, "-c", REVISION]
-            if run(argv, log).returncode != 0:
+              argv += [PROJECT, "-c", REVISION]
+              if run(argv, log).returncode != 0:
                 print("MAP FAILED"); return 1
-            sh(f"git checkout -- {QSF}")
+              sh(f"git checkout -- {QSF}")
             for sd in seeds:
                 stem = os.path.join(ROOT, a.outdir, f"{cfg}_seed{sd}")
                 print(f"\n=== FIT: {cfg} seed {sd} ===", flush=True)
@@ -112,12 +119,22 @@ def main():
                     print("FIT FAILED"); return 1
                 sh(f"git checkout -- {QSF}")
                 # seed echo, read back from Quartus's own report (E8's reading)
+                # ⚠ THE REPORT IS IN `output_files_ucore/`, NOT beside the
+                # project file.  The first form of this line looked at
+                # `hdl/<rev>.fit.rpt`, found nothing, and printed
+                # `*** NO SEED ROW ***` -- the seed-honoured check reporting
+                # ABSENCE, which is exactly what `quartus_gate.py`'s E8 comment
+                # says must never read as agreement.  MEASURED 2026-09-09.
                 se = sh("grep -m1 'Fitter Initial Placement Seed' "
-                        f"hdl/{REVISION}.fit.rpt").stdout.strip()
+                        f"hdl/output_files_ucore/{REVISION}.fit.rpt").stdout.strip()
                 open(stem + ".seedecho.txt", 'w').write(se + "\n")
                 print("    " + (se or "*** NO SEED ROW ***"))
+                # ⚠ `sta_truefmax_probe.tcl` writes `<arg>.truefmax.txt`, so the
+                # arg is the BARE STEM -- passing `stem + ".truefmax"` produced
+                # `..._seed1.truefmax.truefmax.txt`, which the reporter does not
+                # find.  MEASURED 2026-09-09.
                 run([f"{QB}/quartus_sta", "-t", f"{ROOT}/sw/sta_truefmax_probe.tcl",
-                     PROJECT, REVISION, stem + ".truefmax"], log)
+                     PROJECT, REVISION, stem], log)
                 run([f"{QB}/quartus_sta", "-t", f"{ROOT}/sw/sta_chain_anatomy.tcl",
                      PROJECT, REVISION, stem, a.npaths], log)
                 sh(f"git checkout -- {QSF}")
