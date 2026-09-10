@@ -174,11 +174,22 @@ carry-forward is a READING and says so on every line it appears on.**
 CONCLUSION IN THIS DOCUMENT** — except where §4 says so explicitly, and there
 it is reported as a single draw and nothing is concluded from it.
 
-⚠ **THE ARC IS A LOOP AND IT CLOSES ON THE MICROCODE TABLE ON EVERY DRAW.**  It
-launches inside the `ucdecode` M10K and lands on the `ucdecode` M10K's own
-port-A address register.  On seed 1, **19 of the 20 worst endpoint-diverse
-paths run `ram_block1aN → ram_block1aM`** — the binding population is one loop
-shape repeated.
+⚠ **THE ARC IS A LOOP AND IT CLOSES ON THE MICROCODE TABLE, AND THAT IS NOT A
+PROPERTY OF THE WORST PATH — IT IS A PROPERTY OF THE WHOLE POPULATION.**
+
+> ### **ALL 1,600 ENDPOINT-DIVERSE `ce → ce` PATHS, ON ALL FOUR DRAWS, LAUNCH INSIDE THE `ucdecode` M10K.  400 / 400 · 400 / 400 · 400 / 400 · 400 / 400.**
+
+and of the 20 worst on each draw, **18 · 20 · 20 · 20 of 20** also *land* on
+that same M10K's own port-A address register.  **The binding population is one
+loop shape repeated**, and the loop is
+`ucdecode M10K → ucrom → front end → chain → upc_*_n → dec_addr_next →
+ucdecode M10K address register`.
+
+⚠ **ERRATUM against `864bd104fc`'s commit message**, which says *"19 of seed 1's
+20 worst paths"*: **it is 18 of 20** (two of seed 1's top twenty land on
+`Equal61` / `Equal56` instead).  Re-counted from
+`sw/testdata/frontend/anat/control_seed1.population.txt`.  The 400/400 launch
+figure above is the stronger statement and was not in that message at all.
 
 ### 3.2 THE CENSUS, CROSS-DRAW (H-3: TREE property vs DRAW property)
 
