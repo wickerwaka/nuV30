@@ -40,15 +40,38 @@ def expand(lines, depth=0):
 
 def main():
     eu = load('v30u_eu.sv')
+    # ⚠ 2026-09-09 (WAVE 9) -- THE ANCHOR WAS FINDING A COMMENT.  WAVE 7
+    # deleted `for (chain = 0; chain < CHAIN_MAX; ...)` and left a line of
+    # PROSE that names it (`v30u_eu.sv`: "THIS USED TO BE `for (chain = 0;
+    # ...)`"), and this loop matched the prose and reported a partition
+    # anyway.  It happened to land within ~30 lines of the right place, which
+    # is worse than failing, not better.  The anchor is now the flattened
+    # pass's OWN entry -- `chain = 4'd0;` -- with the pre-flattening form
+    # accepted as a fallback and NEITHER read out of a comment.
+    nc = [re.sub(r'//.*', '', l) for l in eu]
+    # the chain pass's entry is the `chain = 4'd0;` that IMMEDIATELY PRECEDES
+    # the position-0 `` `include "v30u_eu_step.svh" `` -- there is a second,
+    # unrelated `chain = 4'd0;` in the block's own preload, ~290 lines earlier.
+    step = [i for i, l in enumerate(nc) if 'include "v30u_eu_step.svh"' in l]
     LOOP = SSW = END = None
-    for i, l in enumerate(eu):
-        if 'for (chain = 0; chain < CHAIN_MAX' in l and LOOP is None:
-            LOOP = i
+    if step:
+        cands = [i for i, l in enumerate(nc)
+                 if i < step[0] and l.strip().startswith("chain = 4'd0;")]
+        LOOP = max(cands) if cands else None
+    if LOOP is None:
+        cands = [i for i, l in enumerate(nc)
+                 if 'for (chain = 0; chain < CHAIN_MAX' in l]
+        LOOP = cands[0] if cands else None
+    for i, l in enumerate(nc):
         if l.strip().startswith('if (ss_we) begin') and SSW is None:
             SSW = i
         if l.startswith('assign dec_addr_next') and END is None:
             END = i
-    assert None not in (LOOP, SSW, END), (LOOP, SSW, END)
+    if None in (LOOP, SSW, END):
+        print('phase_split_width: COULD NOT RUN -- anchors (chain-pass entry, '
+              '`if (ss_we) begin`, `assign dec_addr_next`) = %s' % ((LOOP, SSW, END),),
+              file=sys.stderr)
+        return 2
 
     nocomment = lambda ls: [re.sub(r'//.*', '', l) for l in ls]
     stage1 = nocomment(expand(eu[SSW + 3:LOOP]))

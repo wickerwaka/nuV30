@@ -129,22 +129,44 @@ def main():
                 tainted.add(n); changed = True
 
     # ---- 4. what the NEXT-STATE BLOCK reads -----------------------------
-    # region: the `always @* begin` whose body contains `for (chain`
-    ai = None
-    for i, l in enumerate(lines_raw):
-        if l.startswith("always @* begin"):
-            ai = i
-    # find the one containing the chain loop
+    # ⚠ 2026-09-09 (WAVE 9) -- THE ANCHOR AND THE INCLUDE LIST BOTH MOVED, AND
+    # THE OLD FORMS DIED ON THE FLATTENED TREE RATHER THAN LYING.  WAVE 7
+    # deleted `for (chain = 0; ...)` (the anchor this function used to find the
+    # block by) and moved the nine arm bodies into `v30u_eu_arm_<state>.svh`
+    # (files the HARD-CODED include list below did not name).  A hard-coded
+    # list is exactly what A-1 was written against, so BOTH are now DERIVED:
+    #   * the block is the `always @*` that INCLUDES `v30u_eu_step.svh`;
+    #   * the region is that block plus the TRANSITIVE CLOSURE of its
+    #     `` `include ``s, so a file that appears tomorrow is read tomorrow.
     starts = [i for i, l in enumerate(lines_raw) if l.startswith("always @* begin")]
-    chain_line = [i for i, l in enumerate(lines_raw) if "for (chain = 0;" in l][0]
-    start = max(s for s in starts if s < chain_line)
+    anchor = [i for i, l in enumerate(lines_raw) if 'include "v30u_eu_step.svh"' in l]
+    if not anchor:
+        print("cutset_census: COULD NOT RUN -- no `include \"v30u_eu_step.svh\"` "
+              "in v30u_eu.sv; the next-state block cannot be located.",
+              file=sys.stderr)
+        return 2
+    start = max(s for s in starts if s < anchor[0])
     # end = first line == "end" at column 0 after start
     end = next(i for i in range(start + 1, len(lines_raw)) if lines_raw[i].rstrip() == "end")
     region = strip_comments("\n".join(lines_raw[start:end + 1]))
-    for inc in ["v30u_eu_step.svh", "v30u_eu_row.svh", "v30u_eu_cond.svh",
-                "v30u_eu_1bl.svh", "v30u_eu_wd1.svh", "v30u_eu_poste.svh",
-                "v30u_eu_iend_late.svh"]:
-        region += "\n" + strip_comments((UC / inc).read_text())
+    seen = set()
+    frontier = re.findall(r'`include\s+"([^"]+)"', region)
+    incs = []
+    while frontier:
+        f = frontier.pop(0)
+        if f in seen:
+            continue
+        seen.add(f)
+        fp = UC / f
+        if not fp.exists():
+            continue
+        t = strip_comments(fp.read_text())
+        incs.append(f)
+        region += "\n" + t
+        frontier += re.findall(r'`include\s+"([^"]+)"', t)
+    if verbose:
+        print(f"next-state block: lines {start+1}..{end+1}; "
+              f"{len(incs)} include(s) closed over: {sorted(incs)}\n")
     read = idents(region)
 
     # ⚠ AND THE MODULE-LEVEL `reg`s DRIVEN BY THE *OTHER* COMBINATIONAL

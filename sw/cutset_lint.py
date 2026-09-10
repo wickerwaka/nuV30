@@ -76,11 +76,31 @@ LIVE = {"pin_int", "pin_nmi", "pin_poll_n",
         "eu_rd_edge", "eu_rd_edge_d",
         "eu_slot_busy_n", "q_ripe_lead_n"}
 
-# every file the next-state block textually includes, directly or not
-INCLUDES = ["v30u_eu_step.svh", "v30u_eu_row.svh", "v30u_eu_cond.svh",
-            "v30u_eu_1bl.svh", "v30u_eu_wd1.svh", "v30u_eu_poste.svh",
-            "v30u_eu_iend_late.svh", "v30u_eu_preload.svh",
-            "v30u_eu_ss_write.svh"]
+# ⚠ 2026-09-09 (WAVE 9) -- THE INCLUDE LIST IS NO LONGER A LIST.
+# It was a HARD-CODED nine names, and WAVE 7 then moved the nine chain-arm
+# bodies into `v30u_eu_arm_<state>.svh` -- files this list did not name, i.e.
+# X2 and X4 would have scanned RIGHT PAST the chain body on the flattened
+# tree and passed VACUOUSLY.  That is A-1's failure shape exactly (a set
+# derived from a list instead of from the RTL), so the list is DERIVED: the
+# TRANSITIVE CLOSURE of the next-state block's own `` `include ``s, computed
+# by `block_includes()` below.  A file that appears tomorrow is scanned
+# tomorrow, with nobody having to remember.
+def block_includes(block_text, uc):
+    """transitive closure of `` `include "x" `` starting from block_text"""
+    seen, out = set(), []
+    frontier = re.findall(r'`include\s+"([^"]+)"', block_text)
+    while frontier:
+        f = frontier.pop(0)
+        if f in seen:
+            continue
+        seen.add(f)
+        pth = uc / f
+        if not pth.exists():
+            continue
+        out.append(f)
+        t = nocomment(pth.read_text())
+        frontier += re.findall(r'`include\s+"([^"]+)"', t)
+    return out
 
 KEYWORDS = set("""begin end if else case endcase for while default posedge negedge
 wire reg logic assign always always_comb always_ff input output inout module
@@ -116,12 +136,24 @@ def main():
 
     # --- locate the next-state block --------------------------------------
     starts = [i for i, l in enumerate(lines) if l.startswith("always @* begin")]
-    chain = next(i for i, l in enumerate(lines) if "for (chain = 0;" in l)
-    b0 = max(s for s in starts if s < chain)
+    # ⚠ 2026-09-09 (WAVE 9): the anchor was `for (chain = 0;`, which WAVE 7
+    # DELETED -- and which survives on this tree ONLY AS A COMMENT, so an
+    # anchor that searched the raw text would have silently keyed on prose.
+    # The anchor is now the chain pass's own entry, and its absence is a
+    # REFUSAL and never a pass.
+    anch = [i for i, l in enumerate(lines)
+            if 'include "v30u_eu_step.svh"' in nocomment(l)]
+    if not anch:
+        print("  cutset_lint: COULD NOT RUN -- no `include \"v30u_eu_step.svh\"` "
+              "in v30u_eu.sv; the next-state block cannot be located.")
+        return 2
+    b0 = max(s for s in starts if s < anch[0])
     b1 = next(i for i in range(b0 + 1, len(lines)) if lines[i].rstrip() == "end")
     block_raw = "\n".join(lines[b0:b1 + 1])
     block = nocomment(block_raw)
     cut = block.index("s1_bus = {")
+    INCLUDES = block_includes(block, UC) + ["v30u_eu_preload.svh"]
+    print("  includes closed : %d  %s" % (len(INCLUDES), sorted(INCLUDES)))
 
     # --- the aliases -------------------------------------------------------
     alias = re.findall(r"^\s*(\w+)\s*=\s*s1w_(\w+)\s*;\s*$", block, re.M)
