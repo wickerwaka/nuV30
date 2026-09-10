@@ -432,6 +432,8 @@ v30u_biu u_biu (
 v30u_eu u_eu (
     .clk        (CLK),
     .ce         (CE),
+    // THE PHASE SPLIT: stage 1's capture edge.  Unconditional, like the port.
+    .ce_half    (CE_HALF),
     .srst       (RESET),
     .q_byte     (q_byte),
     .q_ripe     (q_ripe),
