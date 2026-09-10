@@ -129,7 +129,8 @@ def main():
                    not f.endswith('.arrivalpoints.txt') and
                    not f.endswith('.population.txt') and
                    not f.endswith('.truefmax.txt') and
-                   not f.endswith('.seedecho.txt') and f != 'report.txt')
+                   not f.endswith('.seedecho.txt') and
+                   not f.endswith('.nodeid.txt') and f != 'report.txt')
     P("")
     P("  per-draw STA controls (quoted from each draw's own file):")
     P("    draw               | PC-1 | PC-2 | PC-3 | PC-4 | PC-5 | verdict")
@@ -282,6 +283,103 @@ def main():
             top = ' '.join(f"{k[:18]}={v:.1f}" for k, v in acc.most_common(4))
             P(f"      {p['delay']:7.3f} ns  bnd {p['nbnd']}  "
               f"{FS.basename2(p['frm'])[:22]:22s} -> {FS.basename2(p['to'])[:18]:18s} | {top}")
+        P("")
+
+    # ---- §7 the NAMED contributors, which is what a candidate has to be
+    P("")
+    P("### §7  THE NAMED CONTRIBUTORS -- base name by base name, over the")
+    P("###     POPULATION.  A CANDIDATE MUST BE ONE OF THESE, NOT A STAGE.")
+    P("")
+    agg2 = collections.defaultdict(lambda: collections.defaultdict(float))
+    pres2 = collections.defaultdict(lambda: collections.defaultdict(int))
+    npaths_by_draw = {}
+    for d in draws:
+        pf = os.path.join(D, d + '.population.txt')
+        if not os.path.exists(pf):
+            continue
+        paths = read_population(pf)
+        npaths_by_draw[d] = len(paths)
+        for p in paths:
+            acc = collections.Counter()
+            for cum, inc, ty, name in p['pts']:
+                b = FS.basename2(name)
+                st = FS.classify(name, sig2sec, chain)
+                key = (st if st in ('BIU', 'ROMHEAD', 'OUTSIDE') else st, b)
+                acc[key] += inc
+            for k, v in acc.items():
+                agg2[d][k] += v
+                pres2[d][k] += 1
+    for d in draws:
+        if d not in npaths_by_draw:
+            continue
+        n = npaths_by_draw[d]
+        P(f"  --- {d}: {n} paths")
+        P(f"      base name              | stage                              "
+          f"| mean ns/path | presence | ns when present")
+        for (st, b), v in sorted(agg2[d].items(), key=lambda x: -x[1])[:22]:
+            P(f"      {b[:22]:22s} | {st[:34]:34s} | {v/n:12.3f} | "
+              f"{pres2[d][(st,b)]/n*100:7.1f} % | {v/max(1,pres2[d][(st,b)]):9.3f}")
+        P("")
+    # cross-draw, by name
+    P("  --- CROSS-DRAW, by NAME (mean ns per path; a name absent from a draw")
+    P("      contributes 0 to that draw's mean)")
+    names = set()
+    for d in agg2:
+        names |= set(agg2[d])
+    rows = []
+    for k in names:
+        per = [agg2[d].get(k, 0.0) / npaths_by_draw[d] for d in npaths_by_draw]
+        pr = [pres2[d].get(k, 0) / npaths_by_draw[d] for d in npaths_by_draw]
+        rows.append((statistics.mean(per), min(per), max(per),
+                     statistics.mean(pr), k))
+    rows.sort(reverse=True)
+    P(f"      base name              | stage                              | "
+      f"mean ns (min..max)      | presence")
+    for mn, lo, hi, pr, (st, b) in rows[:28]:
+        P(f"      {b[:22]:22s} | {st[:34]:34s} | {mn:7.3f} "
+          f"({lo:6.3f}..{hi:6.3f}) | {pr*100:6.1f} %")
+
+    # ---- §8 what the ANON cones are, by their NAMED neighbours
+    # An anonymous LUT cone (`Add57`, `Mux358`, `always6`) carries no RTL
+    # identifier.  What it DOES carry is its position: the named node it
+    # consumes and the named node it produces.  This table reports, per ANON
+    # base name, the distribution of its nearest NAMED predecessor and nearest
+    # NAMED successor over the population.  ⚠ IT IS AN ATTRIBUTION, NOT AN
+    # IDENTIFICATION, and it is labelled one everywhere it is quoted.
+    P("")
+    P("### §8  WHAT THE ANONYMOUS CONES ARE, BY THEIR NAMED NEIGHBOURS")
+    P("###     ⚠ AN ATTRIBUTION, NOT AN IDENTIFICATION")
+    P("")
+    for d in draws:
+        pf = os.path.join(D, d + '.population.txt')
+        if not os.path.exists(pf):
+            continue
+        paths = read_population(pf)
+        nb = collections.defaultdict(lambda: collections.Counter())
+        na = collections.defaultdict(lambda: collections.Counter())
+        tot = collections.Counter()
+        for p in paths:
+            bs = [FS.basename2(n[3]) for n in p['pts']]
+            sts = [FS.classify(n[3], sig2sec, chain) for n in p['pts']]
+            for i, (b, st) in enumerate(zip(bs, sts)):
+                if st != 'ANON':
+                    continue
+                tot[b] += p['pts'][i][1]
+                j = i - 1
+                while j >= 0 and sts[j] == 'ANON':
+                    j -= 1
+                nb[b][bs[j] if j >= 0 else '<LAUNCH>'] += 1
+                k = i + 1
+                while k < len(bs) and sts[k] == 'ANON':
+                    k += 1
+                na[b][bs[k] if k < len(bs) else '<DEST>'] += 1
+        P(f"  --- {d}")
+        P(f"      ANON name    | total ns | nearest NAMED predecessor        "
+          f"| nearest NAMED successor")
+        for b, v in tot.most_common(8):
+            pp = ' '.join(f'{x}({c})' for x, c in nb[b].most_common(3))
+            ss = ' '.join(f'{x}({c})' for x, c in na[b].most_common(3))
+            P(f"      {b[:12]:12s} | {v:8.1f} | {pp[:32]:32s} | {ss[:34]}")
         P("")
 
     if a.out:

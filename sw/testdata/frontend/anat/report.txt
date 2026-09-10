@@ -1,0 +1,461 @@
+============================================================================
+WAVE 8 -- THE FRONT-END ANATOMY.  MEASUREMENT ONLY; NOT A GATE.
+============================================================================
+
+### §1  THE POSITIVE CONTROLS, REPORTED FIRST (H-1)
+
+
+  MARKER SET (source-derived): st_n stop
+
+  per-draw STA controls (quoted from each draw's own file):
+    draw               | PC-1 | PC-2 | PC-3 | PC-4 | PC-5 | verdict
+    control_seed1      | PASS | PASS | PASS | PASS | PASS | ALL PASS
+    control_seed2      | PASS | PASS | PASS | PASS | PASS | ALL PASS
+    control_seed3      | PASS | PASS | PASS | PASS | PASS | ALL PASS
+    retention_seed1    | PASS | PASS | PASS | PASS | PASS | ALL PASS
+
+  === STA CONTROLS: ALL PASS on every draw ===
+
+### §2  THE WORST `ce -> ce` ARC, PER DRAW
+
+  draw               |   arc ns | levels | bnds | k/Tmin(SAME) | seed | endpoints
+  control_seed1      |   32.549 | 29     | 1    | 1.0000/34.220 |      | ram_block1a2 -> ram_block1a7
+  control_seed2      |   33.669 | 31     | 2    | 1.0000/35.313 |      | ram_block1a7 -> ram_block1a5
+  control_seed3      |   32.744 | 31     | 1    | 1.0000/34.461 |      | ram_block1a5 -> ram_block1a0
+  retention_seed1    |   32.916 | 32     | 2    | 1.0000/34.552 |      | ram_block1a1 -> ram_block1a9
+  mean 32.969   min 32.549   max 33.669   spread 1.120
+
+### §3a  THE POPULATION CENSUS BY STAGE -- STRICT
+
+  --- control_seed1: 400 endpoint-diverse paths, total arc 12220.9 ns, mean 30.552 ns
+      stage                                      |  mean ns/path | % of arc | on n paths | mean ns when present
+      CHAIN                                      |        10.340 |    33.8 % |        400 |    10.340
+      ANON                                       |         9.033 |    29.6 % |        400 |     9.033
+      ROMHEAD                                    |         5.054 |    16.5 % |        400 |     5.054
+      THE MICRO-ROW STANDING ON `upc`            |         2.177 |     7.1 % |        400 |     2.177
+      ARRAYMUX                                   |         2.012 |     6.6 % |        383 |     2.102
+      (g) THE PIN PIPELINES, ADVANCED AT THE *EN |         0.690 |     2.3 % |        150 |     1.841
+      THE ALU                                    |         0.158 |     0.5 % |         87 |     0.727
+      STALLS (the five named wires)              |         0.134 |     0.4 % |         43 |     1.242
+      COMBINATIONAL OUTPUTS -- what the BIU samp |         0.133 |     0.4 % |         43 |     1.235
+      UNMAPPED                                   |         0.099 |     0.3 % |         77 |     0.516
+      SOURCE / DESTINATION MUXES                 |         0.000 |     0.0 % |          2 |     0.000
+
+  --- control_seed2: 400 endpoint-diverse paths, total arc 12496.9 ns, mean 31.242 ns
+      stage                                      |  mean ns/path | % of arc | on n paths | mean ns when present
+      ANON                                       |        10.345 |    33.1 % |        400 |    10.345
+      CHAIN                                      |        10.256 |    32.8 % |        400 |    10.256
+      ROMHEAD                                    |         5.306 |    17.0 % |        400 |     5.306
+      STALLS (the five named wires)              |         1.604 |     5.1 % |        334 |     1.921
+      ARRAYMUX                                   |         1.320 |     4.2 % |        373 |     1.415
+      (g) THE PIN PIPELINES, ADVANCED AT THE *EN |         0.672 |     2.2 % |        150 |     1.792
+      THE ALU                                    |         0.505 |     1.6 % |        270 |     0.748
+      THE ROW'S DEMANDS                          |         0.252 |     0.8 % |         66 |     1.526
+      THE MICRO-ROW STANDING ON `upc`            |         0.228 |     0.7 % |         66 |     1.384
+      UNMAPPED                                   |         0.065 |     0.2 % |         58 |     0.449
+      SOURCE / DESTINATION MUXES                 |         0.000 |     0.0 % |          2 |     0.000
+
+  --- control_seed3: 400 endpoint-diverse paths, total arc 12244.1 ns, mean 30.610 ns
+      stage                                      |  mean ns/path | % of arc | on n paths | mean ns when present
+      CHAIN                                      |        10.565 |    34.5 % |        400 |    10.565
+      ANON                                       |         7.704 |    25.2 % |        400 |     7.704
+      ROMHEAD                                    |         5.736 |    18.7 % |        400 |     5.736
+      ARRAYMUX                                   |         1.753 |     5.7 % |        363 |     1.931
+      THE MICRO-ROW STANDING ON `upc`            |         0.972 |     3.2 % |        346 |     1.124
+      (g) THE PIN PIPELINES, ADVANCED AT THE *EN |         0.763 |     2.5 % |        151 |     2.022
+      THE ALU                                    |         0.753 |     2.5 % |        330 |     0.913
+      COMBINATIONAL OUTPUTS -- what the BIU samp |         0.709 |     2.3 % |        346 |     0.820
+      AMBIG                                      |         0.677 |     2.2 % |        346 |     0.783
+      UNMAPPED                                   |         0.186 |     0.6 % |         87 |     0.854
+      SOURCE / DESTINATION MUXES                 |         0.000 |     0.0 % |          2 |     0.000
+
+  --- retention_seed1: 400 endpoint-diverse paths, total arc 12142.4 ns, mean 30.356 ns
+      stage                                      |  mean ns/path | % of arc | on n paths | mean ns when present
+      ANON                                       |        10.844 |    35.7 % |        400 |    10.844
+      CHAIN                                      |         6.417 |    21.1 % |        400 |     6.417
+      ROMHEAD                                    |         4.834 |    15.9 % |        400 |     4.834
+      ARRAYMUX                                   |         1.973 |     6.5 % |        379 |     2.083
+      BIU                                        |         1.894 |     6.2 % |        400 |     1.894
+      THE ROW'S OWN TRANSFERS  (family A, U2 pas |         1.693 |     5.6 % |        400 |     1.693
+      COMBINATIONAL OUTPUTS -- what the BIU samp |         1.389 |     4.6 % |        400 |     1.389
+      (g) THE PIN PIPELINES, ADVANCED AT THE *EN |         0.425 |     1.4 % |        139 |     1.222
+      UNMAPPED                                   |         0.105 |     0.3 % |         62 |     0.679
+      THE ALU                                    |         0.023 |     0.1 % |         11 |     0.819
+
+  --- CROSS-DRAW (H-3: what is a TREE property and what is a DRAW property)
+      stage                                      | mean ns/path (min..max) | % of arc (min..max) | presence
+      ANON                                       |   9.481 ( 7.704..10.844) |   30.9 % ( 25.2.. 35.7) | 100.0 %
+      CHAIN                                      |   9.395 ( 6.417..10.565) |   30.6 % ( 21.1.. 34.5) | 100.0 %
+      ROMHEAD                                    |   5.232 ( 4.834.. 5.736) |   17.0 % ( 15.9.. 18.7) | 100.0 %
+      BIU                                        |   1.894 ( 1.894.. 1.894) |    6.2 % (  6.2..  6.2) | 100.0 %
+      ARRAYMUX                                   |   1.765 ( 1.320.. 2.012) |    5.8 % (  4.2..  6.6) |  93.6 %
+      THE ROW'S OWN TRANSFERS  (family A, U2 pas |   1.693 ( 1.693.. 1.693) |    5.6 % (  5.6..  5.6) | 100.0 %
+      THE MICRO-ROW STANDING ON `upc`            |   1.126 ( 0.228.. 2.177) |    3.7 % (  0.7..  7.1) |  67.7 %
+      STALLS (the five named wires)              |   0.869 ( 0.134.. 1.604) |    2.8 % (  0.4..  5.1) |  47.1 %
+      COMBINATIONAL OUTPUTS -- what the BIU samp |   0.744 ( 0.133.. 1.389) |    2.4 % (  0.4..  4.6) |  65.8 %
+      AMBIG                                      |   0.677 ( 0.677.. 0.677) |    2.2 % (  2.2..  2.2) |  86.5 %
+      (g) THE PIN PIPELINES, ADVANCED AT THE *EN |   0.638 ( 0.425.. 0.763) |    2.1 % (  1.4..  2.5) |  36.9 %
+      THE ALU                                    |   0.360 ( 0.023.. 0.753) |    1.2 % (  0.1..  2.5) |  43.6 %
+      THE ROW'S DEMANDS                          |   0.252 ( 0.252.. 0.252) |    0.8 % (  0.8..  0.8) |  16.5 %
+      UNMAPPED                                   |   0.114 ( 0.065.. 0.186) |    0.4 % (  0.2..  0.6) |  17.8 %
+      SOURCE / DESTINATION MUXES                 |   0.000 ( 0.000.. 0.000) |    0.0 % (  0.0..  0.0) |   0.5 %
+
+### §3b  THE POPULATION CENSUS BY STAGE -- CARRY-FORWARD (a READING, see frontend_srcmap.py)
+
+  --- control_seed1: 400 endpoint-diverse paths, total arc 12220.9 ns, mean 30.552 ns
+      stage                                      |  mean ns/path | % of arc | on n paths | mean ns when present
+      CHAIN                                      |        18.158 |    59.4 % |        400 |    18.158
+      ROMHEAD                                    |         5.054 |    16.5 % |        400 |     5.054
+      THE MICRO-ROW STANDING ON `upc`            |         2.177 |     7.1 % |        400 |     2.177
+      ARRAYMUX                                   |         2.012 |     6.6 % |        383 |     2.102
+      (g) THE PIN PIPELINES, ADVANCED AT THE *EN |         1.467 |     4.8 % |        150 |     3.912
+      TAIL-ANON                                  |         0.390 |     1.3 % |        100 |     1.561
+      STALLS (the five named wires)              |         0.277 |     0.9 % |         43 |     2.578
+      THE ALU                                    |         0.162 |     0.5 % |         87 |     0.743
+      COMBINATIONAL OUTPUTS -- what the BIU samp |         0.133 |     0.4 % |         43 |     1.235
+      SOURCE / DESTINATION MUXES                 |         0.000 |     0.0 % |          2 |     0.000
+
+  --- control_seed2: 400 endpoint-diverse paths, total arc 12496.9 ns, mean 31.242 ns
+      stage                                      |  mean ns/path | % of arc | on n paths | mean ns when present
+      CHAIN                                      |        18.939 |    60.6 % |        400 |    18.939
+      ROMHEAD                                    |         5.306 |    17.0 % |        400 |     5.306
+      STALLS (the five named wires)              |         2.879 |     9.2 % |        334 |     3.448
+      ARRAYMUX                                   |         1.320 |     4.2 % |        373 |     1.415
+      (g) THE PIN PIPELINES, ADVANCED AT THE *EN |         0.820 |     2.6 % |        150 |     2.187
+      THE ALU                                    |         0.512 |     1.6 % |        270 |     0.758
+      TAIL-ANON                                  |         0.297 |     0.9 % |         74 |     1.604
+      THE ROW'S DEMANDS                          |         0.252 |     0.8 % |         66 |     1.526
+      THE MICRO-ROW STANDING ON `upc`            |         0.228 |     0.7 % |         66 |     1.384
+      SOURCE / DESTINATION MUXES                 |         0.000 |     0.0 % |          2 |     0.000
+
+  --- control_seed3: 400 endpoint-diverse paths, total arc 12244.1 ns, mean 30.610 ns
+      stage                                      |  mean ns/path | % of arc | on n paths | mean ns when present
+      CHAIN                                      |        17.746 |    58.0 % |        400 |    17.746
+      ROMHEAD                                    |         5.736 |    18.7 % |        400 |     5.736
+      ARRAYMUX                                   |         1.753 |     5.7 % |        363 |     1.931
+      (g) THE PIN PIPELINES, ADVANCED AT THE *EN |         1.013 |     3.3 % |        151 |     2.683
+      THE MICRO-ROW STANDING ON `upc`            |         0.972 |     3.2 % |        346 |     1.124
+      THE ALU                                    |         0.841 |     2.7 % |        330 |     1.019
+      COMBINATIONAL OUTPUTS -- what the BIU samp |         0.709 |     2.3 % |        346 |     0.820
+      AMBIG                                      |         0.677 |     2.2 % |        346 |     0.783
+      TAIL-ANON                                  |         0.371 |     1.2 % |        100 |     1.485
+      SOURCE / DESTINATION MUXES                 |         0.000 |     0.0 % |          2 |     0.000
+
+  --- retention_seed1: 400 endpoint-diverse paths, total arc 12142.4 ns, mean 30.356 ns
+      stage                                      |  mean ns/path | % of arc | on n paths | mean ns when present
+      CHAIN                                      |        11.192 |    36.9 % |        400 |    11.192
+      THE ROW'S OWN TRANSFERS  (family A, U2 pas |         6.727 |    22.2 % |        400 |     6.727
+      ROMHEAD                                    |         4.834 |    15.9 % |        400 |     4.834
+      ARRAYMUX                                   |         1.975 |     6.5 % |        379 |     2.085
+      BIU                                        |         1.894 |     6.2 % |        400 |     1.894
+      COMBINATIONAL OUTPUTS -- what the BIU samp |         1.389 |     4.6 % |        400 |     1.389
+      (g) THE PIN PIPELINES, ADVANCED AT THE *EN |         1.173 |     3.9 % |        139 |     3.376
+      TAIL-ANON                                  |         0.390 |     1.3 % |         88 |     1.773
+      THE ALU                                    |         0.023 |     0.1 % |         11 |     0.819
+
+  --- CROSS-DRAW (H-3: what is a TREE property and what is a DRAW property)
+      stage                                      | mean ns/path (min..max) | % of arc (min..max) | presence
+      CHAIN                                      |  16.509 (11.192..18.939) |   53.7 % ( 36.9.. 60.6) | 100.0 %
+      THE ROW'S OWN TRANSFERS  (family A, U2 pas |   6.727 ( 6.727.. 6.727) |   22.2 % ( 22.2.. 22.2) | 100.0 %
+      ROMHEAD                                    |   5.232 ( 4.834.. 5.736) |   17.0 % ( 15.9.. 18.7) | 100.0 %
+      BIU                                        |   1.894 ( 1.894.. 1.894) |    6.2 % (  6.2..  6.2) | 100.0 %
+      ARRAYMUX                                   |   1.765 ( 1.320.. 2.012) |    5.8 % (  4.2..  6.6) |  93.6 %
+      STALLS (the five named wires)              |   1.578 ( 0.277.. 2.879) |    5.1 % (  0.9..  9.2) |  47.1 %
+      THE MICRO-ROW STANDING ON `upc`            |   1.126 ( 0.228.. 2.177) |    3.7 % (  0.7..  7.1) |  67.7 %
+      (g) THE PIN PIPELINES, ADVANCED AT THE *EN |   1.118 ( 0.820.. 1.467) |    3.7 % (  2.6..  4.8) |  36.9 %
+      COMBINATIONAL OUTPUTS -- what the BIU samp |   0.744 ( 0.133.. 1.389) |    2.4 % (  0.4..  4.6) |  65.8 %
+      AMBIG                                      |   0.677 ( 0.677.. 0.677) |    2.2 % (  2.2..  2.2) |  86.5 %
+      THE ALU                                    |   0.384 ( 0.023.. 0.841) |    1.2 % (  0.1..  2.7) |  43.6 %
+      TAIL-ANON                                  |   0.362 ( 0.297.. 0.390) |    1.2 % (  0.9..  1.3) |  22.6 %
+      THE ROW'S DEMANDS                          |   0.252 ( 0.252.. 0.252) |    0.8 % (  0.8..  0.8) |  16.5 %
+      SOURCE / DESTINATION MUXES                 |   0.000 ( 0.000.. 0.000) |    0.0 % (  0.0..  0.0) |   0.5 %
+
+### §4  THE BIU ROUND TRIP (`q_cnt -> q_ripe_lead_n`) OVER THE POPULATION
+
+  draw               | on worst arc | paths carrying it | mean span when present | max span | mean over ALL paths
+  control_seed1      | ABSENT       |    0 /  400       |                  0.000 |    0.000 |    0.000
+  control_seed2      | ABSENT       |    0 /  400       |                  0.000 |    0.000 |    0.000
+  control_seed3      | ABSENT       |    0 /  400       |                  0.000 |    0.000 |    0.000
+  retention_seed1    | 1.910 ns     |  400 /  400       |                  1.894 |    1.910 |    1.894
+
+### §5  THE ARRAY READ (`gpr` / `sreg` / `tmps` mux) OVER THE POPULATION
+
+  draw               | paths carrying it | mean ns when present | max | mean over ALL
+  control_seed1      |  383 /  400       |                2.102 |  3.464 |  2.012
+  control_seed2      |  373 /  400       |                1.415 |  2.143 |  1.320
+  control_seed3      |  363 /  400       |                1.931 |  3.371 |  1.753
+  retention_seed1    |  379 /  400       |                2.083 |  3.047 |  1.973
+
+### §6  THE BINDING POPULATION -- the 20 worst endpoint-diverse paths
+
+  --- control_seed1
+       32.549 ns  bnd 1  ram_block1a2           -> ram_block1a7       | CHAIN=18.1 ROMHEAD=6.0 (g) THE PIN PIPELI=3.5 THE MICRO-ROW STAN=2.3
+       32.392 ns  bnd 1  ram_block1a4           -> ram_block1a1       | CHAIN=16.1 ROMHEAD=5.4 (g) THE PIN PIPELI=3.5 STALLS (the five n=2.6
+       32.634 ns  bnd 1  ram_block1a4           -> ram_block1a1       | CHAIN=18.1 ROMHEAD=5.5 STALLS (the five n=2.6 ARRAYMUX=2.1
+       32.363 ns  bnd 1  ram_block1a4           -> ram_block1a1       | CHAIN=13.8 ROMHEAD=5.8 (g) THE PIN PIPELI=5.4 STALLS (the five n=2.6
+       32.330 ns  bnd 1  ram_block1a2           -> Equal61            | CHAIN=22.1 ROMHEAD=4.8 THE MICRO-ROW STAN=2.3 ARRAYMUX=2.1
+       32.562 ns  bnd 1  ram_block1a4           -> ram_block1a6       | CHAIN=18.1 ROMHEAD=5.4 STALLS (the five n=2.6 ARRAYMUX=2.1
+       32.284 ns  bnd 1  ram_block1a2           -> ram_block1a3       | CHAIN=18.1 ROMHEAD=5.8 (g) THE PIN PIPELI=3.5 THE MICRO-ROW STAN=2.3
+       32.295 ns  bnd 1  ram_block1a4           -> ram_block1a1       | CHAIN=13.8 ROMHEAD=5.7 (g) THE PIN PIPELI=5.4 STALLS (the five n=2.6
+       32.260 ns  bnd 1  ram_block1a2           -> ram_block1a0       | CHAIN=18.1 ROMHEAD=5.8 (g) THE PIN PIPELI=3.5 THE MICRO-ROW STAN=2.3
+       32.259 ns  bnd 1  ram_block1a2           -> ram_block1a7       | CHAIN=18.1 ROMHEAD=6.1 (g) THE PIN PIPELI=3.2 THE MICRO-ROW STAN=2.3
+       32.251 ns  bnd 1  ram_block1a2           -> Equal56            | CHAIN=22.0 ROMHEAD=4.8 THE MICRO-ROW STAN=2.3 ARRAYMUX=2.1
+       32.262 ns  bnd 1  ram_block1a2           -> ram_block1a7       | CHAIN=18.1 ROMHEAD=5.9 (g) THE PIN PIPELI=3.2 THE MICRO-ROW STAN=2.3
+       32.213 ns  bnd 1  ram_block1a2           -> ram_block1a0       | CHAIN=15.9 ROMHEAD=6.1 (g) THE PIN PIPELI=5.4 THE MICRO-ROW STAN=2.3
+       32.212 ns  bnd 1  ram_block1a2           -> ram_block1a7       | CHAIN=15.9 ROMHEAD=6.1 (g) THE PIN PIPELI=5.4 THE MICRO-ROW STAN=2.3
+       32.205 ns  bnd 1  ram_block1a2           -> ram_block1a3       | CHAIN=15.9 ROMHEAD=6.1 (g) THE PIN PIPELI=5.4 THE MICRO-ROW STAN=2.3
+       32.178 ns  bnd 1  ram_block1a2           -> ram_block1a3       | CHAIN=15.9 ROMHEAD=6.1 (g) THE PIN PIPELI=5.4 THE MICRO-ROW STAN=2.3
+       32.177 ns  bnd 1  ram_block1a2           -> ram_block1a4       | CHAIN=18.1 ROMHEAD=5.7 (g) THE PIN PIPELI=3.5 THE MICRO-ROW STAN=2.3
+       32.166 ns  bnd 1  ram_block1a2           -> ram_block1a5       | CHAIN=18.1 ROMHEAD=5.7 (g) THE PIN PIPELI=3.5 THE MICRO-ROW STAN=2.3
+       32.169 ns  bnd 1  ram_block1a4           -> ram_block1a6       | CHAIN=13.8 ROMHEAD=5.6 (g) THE PIN PIPELI=5.4 STALLS (the five n=2.6
+       32.204 ns  bnd 1  ram_block1a2           -> ram_block1a0       | CHAIN=18.1 ROMHEAD=5.8 (g) THE PIN PIPELI=3.2 THE MICRO-ROW STAN=2.3
+
+  --- control_seed2
+       33.669 ns  bnd 2  ram_block1a7           -> ram_block1a5       | CHAIN=17.7 ROMHEAD=6.6 STALLS (the five n=3.4 (g) THE PIN PIPELI=3.4
+       33.634 ns  bnd 2  ram_block1a7           -> ram_block1a2       | CHAIN=17.7 ROMHEAD=6.5 STALLS (the five n=3.4 (g) THE PIN PIPELI=3.4
+       33.516 ns  bnd 2  ram_block1a7           -> ram_block1a6       | CHAIN=17.7 ROMHEAD=6.4 STALLS (the five n=3.4 (g) THE PIN PIPELI=3.4
+       33.419 ns  bnd 2  ram_block1a6           -> ram_block1a3       | CHAIN=17.8 ROMHEAD=6.7 (g) THE PIN PIPELI=3.4 THE ROW'S DEMANDS=1.5
+       33.400 ns  bnd 2  ram_block1a6           -> ram_block1a7       | CHAIN=17.8 ROMHEAD=6.7 (g) THE PIN PIPELI=3.4 THE ROW'S DEMANDS=1.5
+       33.398 ns  bnd 2  ram_block1a6           -> ram_block1a0       | CHAIN=17.8 ROMHEAD=6.7 (g) THE PIN PIPELI=3.4 THE ROW'S DEMANDS=1.5
+       33.385 ns  bnd 2  ram_block1a6           -> ram_block1a1       | CHAIN=17.8 ROMHEAD=6.7 (g) THE PIN PIPELI=3.4 THE ROW'S DEMANDS=1.5
+       33.366 ns  bnd 2  ram_block1a6           -> ram_block1a4       | CHAIN=17.8 ROMHEAD=6.7 (g) THE PIN PIPELI=3.4 THE ROW'S DEMANDS=1.5
+       33.374 ns  bnd 2  ram_block1a7           -> ram_block1a5       | CHAIN=18.5 ROMHEAD=6.6 STALLS (the five n=3.4 (g) THE PIN PIPELI=2.1
+       33.589 ns  bnd 2  ram_block1a7           -> ram_block1a6       | CHAIN=19.6 ROMHEAD=6.3 STALLS (the five n=3.4 ARRAYMUX=1.4
+       33.370 ns  bnd 2  ram_block1a7           -> ram_block1a2       | CHAIN=18.5 ROMHEAD=6.6 STALLS (the five n=3.4 (g) THE PIN PIPELI=2.1
+       33.367 ns  bnd 2  ram_block1a7           -> ram_block1a6       | CHAIN=18.5 ROMHEAD=6.6 STALLS (the five n=3.4 (g) THE PIN PIPELI=2.1
+       33.263 ns  bnd 2  ram_block1a6           -> ram_block1a3       | CHAIN=17.8 ROMHEAD=6.7 (g) THE PIN PIPELI=3.1 THE ROW'S DEMANDS=1.5
+       33.237 ns  bnd 2  ram_block1a7           -> ram_block1a8       | CHAIN=17.7 ROMHEAD=6.1 STALLS (the five n=3.4 (g) THE PIN PIPELI=3.4
+       33.219 ns  bnd 2  ram_block1a6           -> ram_block1a1       | CHAIN=18.6 ROMHEAD=6.8 (g) THE PIN PIPELI=2.1 THE ROW'S DEMANDS=1.5
+       33.430 ns  bnd 2  ram_block1a6           -> ram_block1a0       | CHAIN=19.7 ROMHEAD=6.5 THE ROW'S DEMANDS=1.5 ARRAYMUX=1.4
+       33.170 ns  bnd 2  ram_block1a6           -> ram_block1a7       | CHAIN=17.8 ROMHEAD=6.6 (g) THE PIN PIPELI=3.1 THE ROW'S DEMANDS=1.5
+       33.221 ns  bnd 2  ram_block1a7           -> ram_block1a2       | CHAIN=17.7 ROMHEAD=6.3 STALLS (the five n=3.4 (g) THE PIN PIPELI=3.1
+       33.435 ns  bnd 2  ram_block1a7           -> ram_block1a2       | CHAIN=19.6 ROMHEAD=6.1 STALLS (the five n=3.4 ARRAYMUX=1.4
+       33.171 ns  bnd 2  ram_block1a7           -> ram_block1a5       | CHAIN=17.7 ROMHEAD=6.5 STALLS (the five n=3.4 (g) THE PIN PIPELI=3.0
+
+  --- control_seed3
+       32.744 ns  bnd 1  ram_block1a5           -> ram_block1a0       | CHAIN=17.1 ROMHEAD=6.8 (g) THE PIN PIPELI=2.8 ARRAYMUX=2.0
+       32.725 ns  bnd 1  ram_block1a5           -> ram_block1a6       | CHAIN=17.1 ROMHEAD=6.8 (g) THE PIN PIPELI=2.8 ARRAYMUX=2.0
+       32.699 ns  bnd 1  ram_block1a5           -> ram_block1a2       | CHAIN=17.1 ROMHEAD=6.8 (g) THE PIN PIPELI=2.8 ARRAYMUX=2.0
+       32.753 ns  bnd 1  ram_block1a5           -> ram_block1a6       | CHAIN=16.2 ROMHEAD=6.9 (g) THE PIN PIPELI=3.5 ARRAYMUX=2.0
+       32.661 ns  bnd 1  ram_block1a5           -> ram_block1a6       | CHAIN=17.1 ROMHEAD=6.8 (g) THE PIN PIPELI=2.8 ARRAYMUX=2.0
+       32.650 ns  bnd 1  ram_block1a5           -> ram_block1a2       | CHAIN=16.2 ROMHEAD=6.8 (g) THE PIN PIPELI=3.5 ARRAYMUX=2.0
+       32.664 ns  bnd 1  ram_block1a5           -> ram_block1a0       | CHAIN=16.2 ROMHEAD=6.8 (g) THE PIN PIPELI=3.5 ARRAYMUX=2.0
+       32.591 ns  bnd 1  ram_block1a5           -> ram_block1a4       | CHAIN=17.1 ROMHEAD=6.7 (g) THE PIN PIPELI=2.8 ARRAYMUX=2.0
+       32.590 ns  bnd 1  ram_block1a5           -> ram_block1a0       | CHAIN=17.1 ROMHEAD=6.9 (g) THE PIN PIPELI=3.5 ARRAYMUX=2.0
+       32.557 ns  bnd 1  ram_block1a5           -> ram_block1a4       | CHAIN=17.1 ROMHEAD=6.9 (g) THE PIN PIPELI=3.5 ARRAYMUX=2.0
+       32.536 ns  bnd 1  ram_block1a5           -> ram_block1a2       | CHAIN=17.1 ROMHEAD=6.6 (g) THE PIN PIPELI=2.8 ARRAYMUX=2.0
+       32.577 ns  bnd 1  ram_block1a5           -> ram_block1a2       | CHAIN=16.2 ROMHEAD=6.7 (g) THE PIN PIPELI=3.5 ARRAYMUX=2.0
+       32.569 ns  bnd 1  ram_block1a5           -> ram_block1a4       | CHAIN=16.2 ROMHEAD=6.7 (g) THE PIN PIPELI=3.5 ARRAYMUX=2.0
+       32.509 ns  bnd 1  ram_block1a5           -> ram_block1a0       | CHAIN=17.1 ROMHEAD=6.6 (g) THE PIN PIPELI=2.8 ARRAYMUX=2.0
+       32.506 ns  bnd 1  ram_block1a5           -> ram_block1a6       | CHAIN=16.2 ROMHEAD=6.8 (g) THE PIN PIPELI=3.4 ARRAYMUX=2.0
+       32.487 ns  bnd 1  ram_block1a5           -> ram_block1a4       | CHAIN=17.1 ROMHEAD=6.6 (g) THE PIN PIPELI=2.8 ARRAYMUX=2.0
+       32.504 ns  bnd 1  ram_block1a5           -> ram_block1a0       | CHAIN=16.2 ROMHEAD=6.8 (g) THE PIN PIPELI=3.4 ARRAYMUX=2.0
+       32.534 ns  bnd 1  ram_block1a5           -> ram_block1a0       | CHAIN=16.2 ROMHEAD=6.6 (g) THE PIN PIPELI=3.5 ARRAYMUX=2.0
+       32.469 ns  bnd 1  ram_block1a5           -> ram_block1a4       | CHAIN=16.2 ROMHEAD=6.8 (g) THE PIN PIPELI=3.4 ARRAYMUX=2.0
+       32.523 ns  bnd 1  ram_block1a5           -> ram_block1a6       | CHAIN=16.2 ROMHEAD=6.6 (g) THE PIN PIPELI=3.5 ARRAYMUX=2.0
+
+  --- retention_seed1
+       32.916 ns  bnd 2  ram_block1a1           -> ram_block1a9       | CHAIN=10.7 THE ROW'S OWN TRAN=6.7 ROMHEAD=5.8 (g) THE PIN PIPELI=3.6
+       32.868 ns  bnd 2  ram_block1a1           -> ram_block1a6       | CHAIN=10.7 THE ROW'S OWN TRAN=6.7 ROMHEAD=5.8 (g) THE PIN PIPELI=3.6
+       32.835 ns  bnd 2  ram_block1a1           -> ram_block1a0       | CHAIN=10.7 THE ROW'S OWN TRAN=6.7 ROMHEAD=5.8 (g) THE PIN PIPELI=3.5
+       32.811 ns  bnd 2  ram_block1a1           -> ram_block1a6       | CHAIN=10.7 THE ROW'S OWN TRAN=6.7 ROMHEAD=5.8 (g) THE PIN PIPELI=3.5
+       32.808 ns  bnd 2  ram_block1a0           -> ram_block1a2       | CHAIN=10.7 THE ROW'S OWN TRAN=6.6 ROMHEAD=6.0 (g) THE PIN PIPELI=3.5
+       32.710 ns  bnd 2  ram_block1a1           -> ram_block1a9       | CHAIN=10.7 THE ROW'S OWN TRAN=6.7 ROMHEAD=5.8 (g) THE PIN PIPELI=3.6
+       32.752 ns  bnd 2  ram_block1a1           -> ram_block1a9       | CHAIN=10.7 THE ROW'S OWN TRAN=6.7 ROMHEAD=5.9 (g) THE PIN PIPELI=3.4
+       32.776 ns  bnd 2  ram_block1a0           -> ram_block1a2       | CHAIN=10.7 THE ROW'S OWN TRAN=6.6 ROMHEAD=5.8 (g) THE PIN PIPELI=3.6
+       32.760 ns  bnd 2  ram_block1a0           -> ram_block1a1       | CHAIN=10.7 THE ROW'S OWN TRAN=6.6 ROMHEAD=5.9 (g) THE PIN PIPELI=3.5
+       32.709 ns  bnd 2  ram_block1a1           -> ram_block1a9       | CHAIN=10.7 THE ROW'S OWN TRAN=6.7 ROMHEAD=5.9 (g) THE PIN PIPELI=3.4
+       32.654 ns  bnd 2  ram_block1a1           -> ram_block1a6       | CHAIN=10.7 THE ROW'S OWN TRAN=6.7 ROMHEAD=6.0 (g) THE PIN PIPELI=3.3
+       32.653 ns  bnd 2  ram_block1a1           -> ram_block1a4       | CHAIN=10.7 THE ROW'S OWN TRAN=6.7 ROMHEAD=6.0 (g) THE PIN PIPELI=3.3
+       32.652 ns  bnd 2  ram_block1a1           -> ram_block1a6       | CHAIN=10.7 THE ROW'S OWN TRAN=6.7 ROMHEAD=5.8 (g) THE PIN PIPELI=3.6
+       32.699 ns  bnd 2  ram_block1a1           -> ram_block1a0       | CHAIN=10.7 THE ROW'S OWN TRAN=6.7 ROMHEAD=5.7 (g) THE PIN PIPELI=3.5
+       32.703 ns  bnd 2  ram_block1a1           -> ram_block1a0       | CHAIN=10.7 THE ROW'S OWN TRAN=6.7 ROMHEAD=5.8 (g) THE PIN PIPELI=3.4
+       32.685 ns  bnd 2  ram_block1a1           -> ram_block1a6       | CHAIN=10.7 THE ROW'S OWN TRAN=6.7 ROMHEAD=5.7 (g) THE PIN PIPELI=3.5
+       32.636 ns  bnd 2  ram_block1a1           -> ram_block1a6       | CHAIN=10.7 THE ROW'S OWN TRAN=6.7 ROMHEAD=5.9 (g) THE PIN PIPELI=3.5
+       32.715 ns  bnd 2  ram_block1a0           -> ram_block1a2       | CHAIN=10.7 THE ROW'S OWN TRAN=6.6 ROMHEAD=5.8 (g) THE PIN PIPELI=3.5
+       32.619 ns  bnd 2  ram_block1a1           -> ram_block1a3       | CHAIN=10.7 THE ROW'S OWN TRAN=6.7 ROMHEAD=6.0 (g) THE PIN PIPELI=3.3
+       32.618 ns  bnd 2  ram_block1a1           -> ram_block1a3       | CHAIN=10.7 THE ROW'S OWN TRAN=6.7 ROMHEAD=5.9 (g) THE PIN PIPELI=3.5
+
+
+### §7  THE NAMED CONTRIBUTORS -- base name by base name, over the
+###     POPULATION.  A CANDIDATE MUST BE ONE OF THESE, NOT A STAGE.
+
+  --- control_seed1: 400 paths
+      base name              | stage                              | mean ns/path | presence | ns when present
+      ucrom                  | ROMHEAD                            |        3.644 |   100.0 % |     3.644
+      always6                | ANON                               |        2.686 |   100.0 % |     2.686
+      Add57                  | ANON                               |        2.244 |   100.0 % |     2.244
+      rdq0_n                 | CHAIN                              |        2.026 |    89.2 % |     2.270
+      Ram9                   | ARRAYMUX                           |        1.991 |    95.5 % |     2.085
+      st_n                   | CHAIN                              |        1.899 |   100.0 % |     1.899
+      Mux358                 | ANON                               |        1.765 |   100.0 % |     1.765
+      ld_b_n                 | CHAIN                              |        1.650 |    95.8 % |     1.723
+      Equal243               | ANON                               |        1.302 |   100.0 % |     1.302
+      e_d1                   | THE MICRO-ROW STANDING ON `upc`    |        1.192 |    89.2 % |     1.336
+      opr_fresh_n            | CHAIN                              |        1.177 |    89.2 % |     1.319
+      portadataout           | ROMHEAD                            |        1.046 |   100.0 % |     1.046
+      stop                   | CHAIN                              |        0.989 |    95.8 % |     1.033
+      ext4s_arch_d1          | THE MICRO-ROW STANDING ON `upc`    |        0.871 |    89.2 % |     0.976
+      v1                     | CHAIN                              |        0.801 |   100.0 % |     0.801
+      dec_addr_next          | (g) THE PIN PIPELINES, ADVANCED AT |        0.690 |    37.5 % |     1.841
+      Equal264               | ANON                               |        0.671 |   100.0 % |     0.671
+      ld_hasrm_n             | CHAIN                              |        0.395 |    27.3 % |     1.451
+      portaaddr              | ROMHEAD                            |        0.364 |    32.5 % |     1.120
+      tmpa_n                 | CHAIN                              |        0.156 |    13.2 % |     1.181
+      Mux274                 | ANON                               |        0.144 |    10.8 % |     1.336
+      p                      | THE ALU                            |        0.137 |    18.8 % |     0.729
+
+  --- control_seed2: 400 paths
+      base name              | stage                              | mean ns/path | presence | ns when present
+      ucrom                  | ROMHEAD                            |        3.832 |   100.0 % |     3.832
+      opr_n                  | CHAIN                              |        2.293 |   100.0 % |     2.293
+      Add57                  | ANON                               |        2.235 |   100.0 % |     2.235
+      always6                | ANON                               |        2.209 |   100.0 % |     2.209
+      ld_b_n                 | CHAIN                              |        2.044 |    93.5 % |     2.186
+      Mux350                 | ANON                               |        1.984 |    84.5 % |     2.348
+      Mux360                 | ANON                               |        1.389 |    84.5 % |     1.644
+      mfs_frame_release      | STALLS (the five named wires)      |        1.338 |    83.5 % |     1.602
+      Selector426            | ANON                               |        1.275 |    83.5 % |     1.527
+      ld_hasrm_n             | CHAIN                              |        1.247 |    63.0 % |     1.979
+      rdq0_n                 | CHAIN                              |        1.168 |   100.0 % |     1.168
+      st_n                   | CHAIN                              |        1.077 |   100.0 % |     1.077
+      portadataout           | ROMHEAD                            |        1.046 |   100.0 % |     1.046
+      Ram11                  | ARRAYMUX                           |        0.953 |    67.8 % |     1.407
+      dec_addr_next          | (g) THE PIN PIPELINES, ADVANCED AT |        0.672 |    37.5 % |     1.792
+      stop                   | CHAIN                              |        0.664 |    84.5 % |     0.786
+      p                      | THE ALU                            |        0.462 |    65.5 % |     0.705
+      portaaddr              | ROMHEAD                            |        0.428 |    32.5 % |     1.316
+      Ram9                   | ARRAYMUX                           |        0.366 |    25.5 % |     1.436
+      v1                     | CHAIN                              |        0.343 |   100.0 % |     0.343
+      comb                   | ANON                               |        0.325 |    83.5 % |     0.389
+      opr_free_now           | STALLS (the five named wires)      |        0.266 |    83.5 % |     0.319
+
+  --- control_seed3: 400 paths
+      base name              | stage                              | mean ns/path | presence | ns when present
+      ucrom                  | ROMHEAD                            |        4.357 |   100.0 % |     4.357
+      opr_n                  | CHAIN                              |        1.938 |   100.0 % |     1.938
+      Equal243               | ANON                               |        1.747 |   100.0 % |     1.747
+      Ram9                   | ARRAYMUX                           |        1.738 |    90.8 % |     1.915
+      always6                | ANON                               |        1.724 |   100.0 % |     1.724
+      Add57                  | ANON                               |        1.653 |   100.0 % |     1.653
+      ld_b_n                 | CHAIN                              |        1.638 |    90.8 % |     1.805
+      opr_fresh_n            | CHAIN                              |        1.473 |   100.0 % |     1.473
+      Mux358                 | ANON                               |        1.303 |   100.0 % |     1.303
+      st_n                   | CHAIN                              |        1.258 |   100.0 % |     1.258
+      portadataout           | ROMHEAD                            |        1.046 |   100.0 % |     1.046
+      ld_hasrm_n             | CHAIN                              |        1.036 |    72.5 % |     1.429
+      r_nopmove              | THE MICRO-ROW STANDING ON `upc`    |        0.972 |    86.5 % |     1.124
+      dec_addr_next          | (g) THE PIN PIPELINES, ADVANCED AT |        0.763 |    37.8 % |     2.022
+      stop                   | CHAIN                              |        0.747 |    90.8 % |     0.823
+      rdq0_n                 | CHAIN                              |        0.740 |   100.0 % |     0.740
+      Equal264               | ANON                               |        0.730 |   100.0 % |     0.730
+      opr_wr_gate            | COMBINATIONAL OUTPUTS -- what the  |        0.709 |    86.5 % |     0.820
+      p                      | THE ALU                            |        0.690 |    79.0 % |     0.874
+      sreg                   | AMBIG                              |        0.677 |    86.5 % |     0.783
+      v1                     | CHAIN                              |        0.359 |   100.0 % |     0.359
+      portaaddr              | ROMHEAD                            |        0.333 |    32.5 % |     1.024
+
+  --- retention_seed1: 400 paths
+      base name              | stage                              | mean ns/path | presence | ns when present
+      ucrom                  | ROMHEAD                            |        3.386 |   100.0 % |     3.386
+      st_n                   | CHAIN                              |        2.885 |   100.0 % |     2.885
+      always6                | ANON                               |        2.658 |    87.5 % |     3.038
+      comb                   | ANON                               |        2.091 |   100.0 % |     2.091
+      Ram9                   | ARRAYMUX                           |        1.911 |    91.0 % |     2.100
+      Mux358                 | ANON                               |        1.769 |   100.0 % |     1.769
+      ind_now                | THE ROW'S OWN TRANSFERS  (family A |        1.693 |   100.0 % |     1.693
+      Mux277                 | ANON                               |        1.510 |   100.0 % |     1.510
+      ld_b_n                 | CHAIN                              |        1.392 |    94.8 % |     1.469
+      Selector426            | ANON                               |        1.384 |    93.5 % |     1.480
+      stop                   | CHAIN                              |        1.140 |   100.0 % |     1.140
+      Equal264               | ANON                               |        1.092 |   100.0 % |     1.092
+      portadataout           | ROMHEAD                            |        1.046 |   100.0 % |     1.046
+      q_cnt                  | BIU                                |        0.785 |   100.0 % |     0.785
+      eu_bnd_take            | COMBINATIONAL OUTPUTS -- what the  |        0.701 |   100.0 % |     0.701
+      retire_ok_e            | COMBINATIONAL OUTPUTS -- what the  |        0.688 |   100.0 % |     0.688
+      q_ripe_lead_n          | BIU                                |        0.682 |   100.0 % |     0.682
+      Add46                  | BIU                                |        0.426 |    94.8 % |     0.450
+      dec_addr_next          | (g) THE PIN PIPELINES, ADVANCED AT |        0.425 |    34.8 % |     1.222
+      portaaddr              | ROMHEAD                            |        0.402 |    32.5 % |     1.237
+      Add72                  | ANON                               |        0.164 |     5.0 % |     3.285
+      tmpb_n                 | CHAIN                              |        0.133 |     8.0 % |     1.663
+
+  --- CROSS-DRAW, by NAME (mean ns per path; a name absent from a draw
+      contributes 0 to that draw's mean)
+      base name              | stage                              | mean ns (min..max)      | presence
+      ucrom                  | ROMHEAD                            |   3.805 ( 3.386.. 4.357) |  100.0 %
+      always6                | ANON                               |   2.319 ( 1.724.. 2.686) |   96.9 %
+      st_n                   | CHAIN                              |   1.780 ( 1.077.. 2.885) |  100.0 %
+      ld_b_n                 | CHAIN                              |   1.681 ( 1.392.. 2.044) |   93.7 %
+      Add57                  | ANON                               |   1.533 ( 0.000.. 2.244) |   75.0 %
+      Ram9                   | ARRAYMUX                           |   1.502 ( 0.366.. 1.991) |   75.7 %
+      Mux358                 | ANON                               |   1.209 ( 0.000.. 1.769) |   75.0 %
+      opr_n                  | CHAIN                              |   1.086 ( 0.000.. 2.293) |   52.7 %
+      portadataout           | ROMHEAD                            |   1.046 ( 1.046.. 1.046) |  100.0 %
+      rdq0_n                 | CHAIN                              |   0.984 ( 0.000.. 2.026) |   72.3 %
+      stop                   | CHAIN                              |   0.885 ( 0.664.. 1.140) |   92.8 %
+      Equal243               | ANON                               |   0.820 ( 0.000.. 1.747) |   53.9 %
+      ld_hasrm_n             | CHAIN                              |   0.689 ( 0.078.. 1.247) |   42.0 %
+      Equal264               | ANON                               |   0.679 ( 0.221.. 1.092) |   78.9 %
+      Selector426            | ANON                               |   0.665 ( 0.000.. 1.384) |   44.2 %
+      opr_fresh_n            | CHAIN                              |   0.663 ( 0.000.. 1.473) |   47.3 %
+      dec_addr_next          | (g) THE PIN PIPELINES, ADVANCED AT |   0.638 ( 0.425.. 0.763) |   36.9 %
+      comb                   | ANON                               |   0.604 ( 0.000.. 2.091) |   45.9 %
+      Mux350                 | ANON                               |   0.496 ( 0.000.. 1.984) |   21.1 %
+      ind_now                | THE ROW'S OWN TRANSFERS  (family A |   0.423 ( 0.000.. 1.693) |   25.0 %
+      portaaddr              | ROMHEAD                            |   0.382 ( 0.333.. 0.428) |   32.5 %
+      Mux277                 | ANON                               |   0.377 ( 0.000.. 1.510) |   25.0 %
+      v1                     | CHAIN                              |   0.376 ( 0.000.. 0.801) |   75.0 %
+      Mux360                 | ANON                               |   0.347 ( 0.000.. 1.389) |   21.1 %
+      mfs_frame_release      | STALLS (the five named wires)      |   0.334 ( 0.000.. 1.338) |   20.9 %
+      p                      | THE ALU                            |   0.322 ( 0.000.. 0.690) |   40.8 %
+      e_d1                   | THE MICRO-ROW STANDING ON `upc`    |   0.298 ( 0.000.. 1.192) |   22.3 %
+      Ram11                  | ARRAYMUX                           |   0.263 ( 0.015.. 0.953) |   18.6 %
+
+### §8  WHAT THE ANONYMOUS CONES ARE, BY THEIR NAMED NEIGHBOURS
+###     ⚠ AN ATTRIBUTION, NOT AN IDENTIFICATION
+
+  --- control_seed1
+      ANON name    | total ns | nearest NAMED predecessor        | nearest NAMED successor
+      always6      |   1074.6 | Ram9(1104) ext4s_arch_d1(714) ld | opr_fresh_n(714) dec_addr_next(608
+      Add57        |    897.7 | v1(5514)                         | stop(5276) st_n(238)
+      Mux358       |    705.9 | v1(2400)                         | stop(2298) st_n(102)
+      Equal243     |    520.7 | v1(800)                          | stop(766) st_n(34)
+      Equal264     |    268.5 | v1(800)                          | stop(766) st_n(34)
+      Mux274       |     57.4 | e_s1(86)                         | f_wait(86)
+      Add72        |     46.6 | ld_rm_n(190)                     | <DEST>(168) ind(18) m_ea_n(4)
+      Add76        |     28.4 | ld_rm_n(80) st_n(4)              | <DEST>(68) ind(10) m_ea_n(6)
+
+  --- control_seed2
+      ANON name    | total ns | nearest NAMED predecessor        | nearest NAMED successor
+      Add57        |    894.1 | v1(7008)                         | stop(6760) st_n(248)
+      always6      |    883.4 | stop(676) Ram9(338) ld_hasrm_n(2 | st_n(760) dec_addr_next(142) tmpa_
+      Mux350       |    793.6 | v1(2028)                         | stop(2028)
+      Mux360       |    555.7 | v1(1352)                         | stop(1352)
+      Selector426  |    510.0 | ucrom(1336)                      | mfs_frame_release(1336)
+      comb         |    129.9 | opr_free_now(668)                | rdq0_n(668)
+      Equal243     |     92.7 | v1(124)                          | st_n(124)
+      Equal264     |     88.2 | v1(372)                          | st_n(372)
+
+  --- control_seed3
+      ANON name    | total ns | nearest NAMED predecessor        | nearest NAMED successor
+      Equal243     |    698.8 | v1(1600)                         | st_n(1600)
+      always6      |    689.5 | v1(800) ld_hasrm_n(394) p(80)    | st_n(814) dec_addr_next(200) tmpa_
+      Add57        |    661.2 | v1(2400)                         | st_n(2400)
+      Mux358       |    521.2 | v1(2400)                         | st_n(2400)
+      Equal264     |    292.0 | v1(800)                          | st_n(800)
+      Equal115     |     86.7 | ucrom(108)                       | opr_fresh_n(108)
+      Add72        |     74.5 | ld_rm_n(176)                     | <DEST>(120) ind(48) m_ea_n(8)
+      Add76        |     52.8 | ld_rm_n(360)                     | <DEST>(222) ind(132) m_ea_n(6)
+
+  --- retention_seed1
+      ANON name    | total ns | nearest NAMED predecessor        | nearest NAMED successor
+      always6      |   1063.2 | Ram9(1310) st_n(692) Ram11(10)   | st_n(1172) dec_addr_next(554) ld_h
+      comb         |    836.2 | ucrom(1600)                      | ind_now(1600)
+      Mux358       |    707.6 | q_ripe_lead_n(1600)              | stop(1600)
+      Mux277       |    604.0 | ucrom(2452)                      | ind_now(2452)
+      Selector426  |    553.5 | ucrom(1496)                      | ind_now(1496)
+      Equal264     |    436.9 | q_ripe_lead_n(1600)              | stop(1600)
+      Add72        |     65.7 | ld_rm_n(208)                     | <DEST>(132) ind(76)
+      Add76        |     38.4 | ld_rm_n(172) st_n(2)             | <DEST>(122) ind(52)
+

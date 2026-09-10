@@ -1,0 +1,86 @@
+=== WAVE 8 SOURCE-MAP POSITIVE CONTROLS (reported FIRST; a miss voids the wave) ===
+  PC-M0 chain_srcmap structure   : PASS  (33 arms / 24 guarded / 9 == st_zero_ok)
+  PC-M1 the marker RULE
+        POST-landing (worktree)  guards read S_BIND S_DECODE S_DECODE2 S_EA_CALC S_ENTER S_INSTR_END S_TAIL S_TAIL_POP S_TAKE_OPC st_n st_zero_ok stop
+                                 -> markers st_n stop
+        PRE-landing  (aba01feb07)  guards read chain cp_seen d0 st_n st_zero_ok stop
+                                 -> markers st_n stop
+        the rule gives the SAME set on both trees, and it is {st_n, stop} : PASS
+  PC-M2 the rule reproduces WAVE 5's own segmentation on WAVE 7's
+        committed PRE-LANDING artifacts (no Quartus in the loop)
+        control_seed1      bnds W5 4 / rule 4  COUNT-SAME  z-IDENTICAL  max|dcut| 0.000   spans 21.833 * 3.617 * 8.372 * 4.595 * 4.618
+        control_seed2      bnds W5 3 / rule 3  COUNT-SAME  z-IDENTICAL  max|dcut| 0.682   spans 20.860 * 6.707 * 7.798 * 6.418
+        control_seed3      bnds W5 3 / rule 3  COUNT-SAME  z-IDENTICAL  max|dcut| 1.135   spans 25.559 * 3.409 * 7.411 * 6.456
+        retention_seed1    bnds W5 3 / rule 3  COUNT-SAME  z-IDENTICAL  max|dcut| 0.000   spans 21.153 * 11.159 * 3.586 * 5.689
+        PC-M2a boundary COUNT identical on 4 draws (MUST be >= 4) : PASS
+        PC-M2b with `st_zero_ok` points deleted, segmentations byte-identical : PASS
+        PC-M2c THE ORIGINAL BAR, STILL COMPUTED: raw-stream segmentations identical on 2 of 4 draws;
+               max |delta cut| = 1.135 ns (control_seed3.arrivalpoints.txt), which is one `st_zero_ok` cell
+  PC-M3 NEGATIVE control: a marker that does not exist gives 0 boundaries (MUST be 0) : PASS
+  PC-S1 the STAGE rule reproduces WAVE 5 §5(a)'s FRONT-END / CHAINABLE
+        partition, derived here from the SOURCE and there from the
+        NETLIST copy census
+        CHAINABLE st_n               -> CHAIN                              ok
+        CHAINABLE stop               -> CHAIN                              ok
+        CHAINABLE ld_b_n             -> CHAIN                              ok
+        CHAINABLE pv                 -> CHAIN                              ok
+        CHAINABLE opc_base           -> CHAIN                              ok
+        CHAINABLE m_kind             -> CHAIN                              ok
+        CHAINABLE seg_override_n     -> CHAIN                              ok
+        FRONT-END sigma              -> THE ALU                            ok
+        FRONT-END s1_val             -> SOURCE / DESTINATION MUXES         ok
+        FRONT-END it_val             -> THE ALU                            ok
+        PC-S1 : PASS
+  PC-S2 NEGATIVE control: an invented signal classifies UNMAPPED (MUST be UNMAPPED) : PASS
+  PC-S3 hierarchy overrides (BIU / ROMHEAD / OUTSIDE) : PASS
+
+  === SOURCE-MAP CONTROLS: ALL PASS ===
+
+  MARKERS passed to the STA leg: st_n stop
+patched: uncommented set_multicycle_path lines = 0 (must be 0)
+
+=== MAP: control ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_map nec_test -c nec_test_ucore
+    exit 0  118s
+
+=== FIT: control seed 1 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=1 --recompile=off nec_test -c nec_test_ucore
+    exit 0  474s
+    ; Fitter Initial Placement Seed                                              ; 1                                     ; 1                                     ;
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_truefmax_probe.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/sw/testdata/frontend/anat/control_seed1
+    exit 0  16s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_frontend_anatomy.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/sw/testdata/frontend/anat/control_seed1 400 st_n stop
+    exit 0  8s
+
+=== FIT: control seed 2 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=2 --recompile=off nec_test -c nec_test_ucore
+    exit 0  471s
+    ; Fitter Initial Placement Seed                                              ; 2                                     ; 1                                     ;
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_truefmax_probe.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/sw/testdata/frontend/anat/control_seed2
+    exit 0  17s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_frontend_anatomy.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/sw/testdata/frontend/anat/control_seed2 400 st_n stop
+    exit 0  14s
+
+=== FIT: control seed 3 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=3 --recompile=off nec_test -c nec_test_ucore
+    exit 0  445s
+    ; Fitter Initial Placement Seed                                              ; 3                                     ; 1                                     ;
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_truefmax_probe.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/sw/testdata/frontend/anat/control_seed3
+    exit 0  24s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_frontend_anatomy.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/sw/testdata/frontend/anat/control_seed3 400 st_n stop
+    exit 0  8s
+
+=== MAP: retention ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_map --verilog_macro=X1_AD_RETENTION=1 nec_test -c nec_test_ucore
+    exit 0  109s
+
+=== FIT: retention seed 1 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=1 --recompile=off nec_test -c nec_test_ucore
+    exit 0  496s
+    ; Fitter Initial Placement Seed                                              ; 1                                     ; 1                                     ;
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_truefmax_probe.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/sw/testdata/frontend/anat/retention_seed1
+    exit 0  27s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_frontend_anatomy.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/sw/testdata/frontend/anat/retention_seed1 400 st_n stop
+    exit 0  13s
+
+hdl/ restored: CLEAN

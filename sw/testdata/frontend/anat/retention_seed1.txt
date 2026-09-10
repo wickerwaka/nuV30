@@ -1,0 +1,67 @@
+=== sta_frontend_anatomy (WAVE 8) ===
+  revision nec_test_ucore   npaths 400
+  MARKERS (source-derived, passed in, NOT chosen here): st_n stop
+  $v30u_ce 2149   $v30u_half 1
+
+=== A. POSITIVE CONTROLS (reported FIRST; a miss voids the wave) ===
+  PC-1 RESOLVER   probe node: emu|system_large|u_core|u_eu|u_ucrom|ucrom~845|combout
+       get_pins  collection 1 -> paths 1   (MUST be >= 1: the question can say YES)
+       get_nodes collection 1 -> paths 0   (WAVE 1 §0.2: silently 0)
+       PC-1 PASS
+  PC-2 WALKER     state 3 (MUST be 3)   data cells 33 (MUST be >= 3)
+                  walker data delay 32.916  vs Quartus -data_delay 32.916   diff 0.000 (MUST be <= 0.01)
+       PC-2 PASS
+  PC-3 SEGMENTER  marker pin census (compatibility_mode: `*` must cross `|`)
+       st_n             pins    47  (+0 indexed)
+       stop             pins    11  (+0 indexed)
+       st_zero_ok       pins     0  (+0 indexed)   <- NOT a marker under the rule (WAVE 5 cut on it; WAVE 7 deleted it)
+       boundaries on a path forced through ONE NAMED MARKER PIN : 2  (MUST be >= 1)
+       the pin that answered : emu|system_large|u_core|u_eu|st_n~25_Duplicate|combout   (single-pin tries: 1)
+       the SAME path under a marker that does not exist         : 0  (MUST be 0)
+       PC-3 PASS
+  PC-4 BIU        |u_biu| combout pins: 1190   (single-pin tries: 1)
+       BIU nodes on a path forced through ONE NAMED PIN : 8  (MUST be >= 1)
+       the pin that answered : emu|system_large|u_core|u_biu|q_ripe_lead_n~5|combout
+       ...that same path under the TYPE prefix          : 0  (WAVE 4 §6.1: the wrong test)
+       ...and the BULK -through of 1190 pins yields        : 6  BIU nodes
+       (a BULK figure BELOW the single-pin figure is `-through` being
+        ACCEPTED AND IGNORED -- printed, never relied on)
+       PC-4 PASS
+  PC-5 ROMHEAD    |u_ucrom| combout pins: 612   (single-pin tries: 1)
+       ROM nodes on a path forced through ONE NAMED PIN : 8  (MUST be >= 1)
+       the pin that answered : emu|system_large|u_core|u_eu|u_ucrom|ucrom~78|combout
+       ...and the BULK -through of 612 pins yields        : 8
+       PC-5 PASS
+
+  === CONTROLS: ALL PASS ===
+
+=== B. THE WORST ce->ce ARC ===
+  from : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a1~PORT_A_WRITE_ENABLE_REG
+  to   : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a9~porta_address_reg2
+  slack   -3.302   logic levels 32   data delay 32.916   walked cells 33  combout 32
+  arrival points -> /home/wickerwaka/src/nec_test/sw/testdata/frontend/anat/retention_seed1.arrivalpoints.txt
+
+=== C. THE PER-SEGMENT PROFILE (segments = chain positions' bodies) ===
+  boundaries found: 2   segments: 3
+  seg |   from ns |     to ns |   span ns | cells | comb | first .. last combout base names
+    0 |     0.000 |    20.762 |    20.762 |    21 |   20 | ucrom .. Equal264
+    1 |    20.762 |    27.278 |     6.516 |     5 |    5 | ld_b_n .. always6
+    2 |    27.278 |    32.290 |     5.012 |     3 |    3 | always6 .. dec_addr_next
+
+=== C.2  SEGMENT CONTENTS (base names, in order) ===
+  seg 0 (20.762 ns): ucrom ucrom ucrom Selector426 Selector426 comb comb Mux277 Mux277 Mux277 ind_now retire_ok_e eu_bnd_take q_cnt Add46 q_ripe_lead_n Mux358 Mux358 Equal264 Equal264
+  seg 1 (6.516 ns): ld_b_n Ram9 Ram9 always6 always6
+  seg 2 (5.012 ns): always6 always6 dec_addr_next
+
+=== D. THE BIU ROUND TRIP (q_cnt -> q_ripe_lead_n), ON THE WORST ARC ===
+      12.830 ns  emu|system_large|u_core|u_biu|q_cnt~2|datac
+      13.338 ns  emu|system_large|u_core|u_biu|q_cnt~2|combout
+      13.704 ns  emu|system_large|u_core|u_biu|Add46~0|dataf
+      13.788 ns  emu|system_large|u_core|u_biu|Add46~0|combout
+      14.032 ns  emu|system_large|u_core|u_biu|q_ripe_lead_n~2|datad
+      14.465 ns  emu|system_large|u_core|u_biu|q_ripe_lead_n~2|combout
+  BIU nodes on the worst ce->ce arc: 6
+  SPAN: 1.910 ns  (enters 12.555, leaves 14.465 of a 32.916 ns arc)
+
+=== I. THE POPULATION (endpoint-diverse, -nworst 1) ===
+  paths dumped: 400  -> /home/wickerwaka/src/nec_test/sw/testdata/frontend/anat/retention_seed1.population.txt

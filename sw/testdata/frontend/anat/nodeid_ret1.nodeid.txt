@@ -1,0 +1,45 @@
+=== sta_node_id (WAVE 8) ===
+  revision nec_test_ucore
+
+=== PC-N1  THE POSITIVE CONTROL, REPORTED FIRST ===
+  a name that DOES exist  (ucrom) : 612 LUTs, 10 distinct fanin names   (MUST be >= 1 and >= 1)
+  the invented name       (zzz_no_such_node) : 0 LUTs   (MUST be 0)
+  PC-N1 PASS
+
+=== THE CENSUS ===
+
+--- ucrom : 612 LUTs in v30u_eu
+    FANIN  (what it reads) : ram_block1a0(435) ram_block1a2(394) ram_block1a3(365) upc_loc(356) ram_block1a1(338) ram_block1a6(311) ram_block1a7(288) ram_block1a5(282) ram_block1a4(277) ram_block1a8(32)
+    FANOUT (what reads it) : 
+
+--- Add57 : 31 LUTs in v30u_eu
+    FANIN  (what it reads) : 
+    FANOUT (what reads it) : 
+
+--- always6 : 87 LUTs in v30u_eu
+    FANIN  (what it reads) : ld_b(14) rowq(6) ld_rm(6) rep_test(6) ld_page(4) wb_seg(4) opc_sel(3) ld_ext(3) opc_base(2) ld_pla(2) upc_loc(2) ld_grpd_OTERM394_OTERM4028(2) ld_grpd_OTERM394_OTERM4030(2) st(2)
+    FANOUT (what reads it) : al_eaval(16) rep_test(8) rowq(7) wb_seg(7) ld_page(5) ld_ext(4) r_ea(4) upc_opc(3) ld_pla(3) Selector980(2) row_posted_OTERM519(2) pop_is_first_OTERM1670_OTERM2870(2) upc_loc(2) pop_is_first_OTERM1670_OTERM2872(2)
+
+--- Ram9 : 7 LUTs in v30u_eu
+    FANIN  (what it reads) : 
+    FANOUT (what reads it) : irq_shadow_OTERM511(1)
+
+--- Ram11 : 16 LUTs in v30u_eu
+    FANIN  (what it reads) : 
+    FANOUT (what reads it) : eu_halted_OTERM15_OTERM2876(1) eu_halted_OTERM13_OTERM2884(1) eu_halted_OTERM13_OTERM2888(1) eu_halted_OTERM15_OTERM2874(1) xop(1)
+
+--- Mux358 : 25 LUTs in v30u_eu
+    FANIN  (what it reads) : st(36) int_p(2) nmi_latch(2)
+    FANOUT (what reads it) : 
+
+--- Equal243 : 11 LUTs in v30u_eu
+    FANIN  (what it reads) : 
+    FANOUT (what reads it) : 
+
+--- Equal264 : 10 LUTs in v30u_eu
+    FANIN  (what it reads) : st(5)
+    FANOUT (what reads it) : irq_shadow_OTERM509(1)
+
+--- Add72 : 47 LUTs in v30u_eu
+    FANIN  (what it reads) : 
+    FANOUT (what reads it) : ea_pair_rhs(15)

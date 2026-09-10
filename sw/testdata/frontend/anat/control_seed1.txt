@@ -1,0 +1,59 @@
+=== sta_frontend_anatomy (WAVE 8) ===
+  revision nec_test_ucore   npaths 400
+  MARKERS (source-derived, passed in, NOT chosen here): st_n stop
+  $v30u_ce 2154   $v30u_half 1
+
+=== A. POSITIVE CONTROLS (reported FIRST; a miss voids the wave) ===
+  PC-1 RESOLVER   probe node: emu|system_large|u_core|u_eu|u_ucrom|ucrom~764|combout
+       get_pins  collection 1 -> paths 1   (MUST be >= 1: the question can say YES)
+       get_nodes collection 1 -> paths 0   (WAVE 1 §0.2: silently 0)
+       PC-1 PASS
+  PC-2 WALKER     state 3 (MUST be 3)   data cells 36 (MUST be >= 3)
+                  walker data delay 32.549  vs Quartus -data_delay 32.549   diff 0.000 (MUST be <= 0.01)
+       PC-2 PASS
+  PC-3 SEGMENTER  marker pin census (compatibility_mode: `*` must cross `|`)
+       st_n             pins    43  (+0 indexed)
+       stop             pins     9  (+0 indexed)
+       st_zero_ok       pins     0  (+0 indexed)   <- NOT a marker under the rule (WAVE 5 cut on it; WAVE 7 deleted it)
+       boundaries on a path forced through ONE NAMED MARKER PIN : 2  (MUST be >= 1)
+       the pin that answered : emu|system_large|u_core|u_eu|st_n~22|combout   (single-pin tries: 1)
+       the SAME path under a marker that does not exist         : 0  (MUST be 0)
+       PC-3 PASS
+  PC-4 BIU        |u_biu| combout pins: 1227   (single-pin tries: 1)
+       BIU nodes on a path forced through ONE NAMED PIN : 10  (MUST be >= 1)
+       the pin that answered : emu|system_large|u_core|u_biu|q_ripe_lead_n~5|combout
+       ...that same path under the TYPE prefix          : 0  (WAVE 4 §6.1: the wrong test)
+       ...and the BULK -through of 1227 pins yields        : 8  BIU nodes
+       (a BULK figure BELOW the single-pin figure is `-through` being
+        ACCEPTED AND IGNORED -- printed, never relied on)
+       PC-4 PASS
+  PC-5 ROMHEAD    |u_ucrom| combout pins: 613   (single-pin tries: 1)
+       ROM nodes on a path forced through ONE NAMED PIN : 10  (MUST be >= 1)
+       the pin that answered : emu|system_large|u_core|u_eu|u_ucrom|ucrom~157|combout
+       ...and the BULK -through of 613 pins yields        : 10
+       PC-5 PASS
+
+  === CONTROLS: ALL PASS ===
+
+=== B. THE WORST ce->ce ARC ===
+  from : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a2~PORT_A_WRITE_ENABLE_REG
+  to   : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a7~porta_address_reg9
+  slack   -2.970   logic levels 29   data delay 32.549   walked cells 36  combout 28
+  arrival points -> /home/wickerwaka/src/nec_test/sw/testdata/frontend/anat/control_seed1.arrivalpoints.txt
+
+=== C. THE PER-SEGMENT PROFILE (segments = chain positions' bodies) ===
+  boundaries found: 1   segments: 2
+  seg |   from ns |     to ns |   span ns | cells | comb | first .. last combout base names
+    0 |     0.000 |    21.257 |    21.257 |    24 |   16 | ucrom .. Equal264
+    1 |    21.257 |    32.121 |    10.864 |     9 |    9 | ld_b_n .. dec_addr_next
+
+=== C.2  SEGMENT CONTENTS (base names, in order) ===
+  seg 0 (21.257 ns): ucrom ucrom ucrom ucrom e_d1 ext4s_arch_d1 always6 opr_fresh_n rdq0_n rdq0_n v1 Equal243 Mux358 Mux358 Mux358 Equal264
+  seg 1 (10.864 ns): ld_b_n ld_b_n Ram9 Ram9 always6 ld_hasrm_n always6 dec_addr_next dec_addr_next
+
+=== D. THE BIU ROUND TRIP (q_cnt -> q_ripe_lead_n), ON THE WORST ARC ===
+  BIU nodes on the worst ce->ce arc: 0
+    (none -- the binding arc is EU-internal on this draw)
+
+=== I. THE POPULATION (endpoint-diverse, -nworst 1) ===
+  paths dumped: 400  -> /home/wickerwaka/src/nec_test/sw/testdata/frontend/anat/control_seed1.population.txt
