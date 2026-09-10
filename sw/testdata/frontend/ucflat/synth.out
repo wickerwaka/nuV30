@@ -1,0 +1,81 @@
+
+=== MAP: ref ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_map cf -c cf
+    exit 0  55s
+
+=== FIT: ref seed 1 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=1 --recompile=off cf -c cf
+    exit 0  238s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chainflat.tcl cf cf /home/wickerwaka/src/nec_test/sw/testdata/frontend/ucflat/ref_seed1 400
+    exit 0  6s
+    {"alms": "5,399", "registers": "807", "seed": "1", "map_errors": 0, "hex_loaded": true, "hexdir_missing": 0, "sta_exists": true}
+
+=== FIT: ref seed 2 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=2 --recompile=off cf -c cf
+    exit 0  252s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chainflat.tcl cf cf /home/wickerwaka/src/nec_test/sw/testdata/frontend/ucflat/ref_seed2 400
+    exit 0  9s
+    {"alms": "5,416", "registers": "807", "seed": "2", "map_errors": 0, "hex_loaded": true, "hexdir_missing": 0, "sta_exists": true}
+
+=== FIT: ref seed 3 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=3 --recompile=off cf -c cf
+    exit 0  204s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chainflat.tcl cf cf /home/wickerwaka/src/nec_test/sw/testdata/frontend/ucflat/ref_seed3 400
+    exit 0  6s
+    {"alms": "5,407", "registers": "807", "seed": "3", "map_errors": 0, "hex_loaded": true, "hexdir_missing": 0, "sta_exists": true}
+
+=== FIT: ref seed 4 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=4 --recompile=off cf -c cf
+    exit 0  206s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chainflat.tcl cf cf /home/wickerwaka/src/nec_test/sw/testdata/frontend/ucflat/ref_seed4 400
+    exit 0  6s
+    {"alms": "5,383", "registers": "807", "seed": "4", "map_errors": 0, "hex_loaded": true, "hexdir_missing": 0, "sta_exists": true}
+
+=== FIT: ref seed 5 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=5 --recompile=off cf -c cf
+    exit 0  230s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chainflat.tcl cf cf /home/wickerwaka/src/nec_test/sw/testdata/frontend/ucflat/ref_seed5 400
+    exit 0  6s
+    {"alms": "5,404", "registers": "807", "seed": "5", "map_errors": 0, "hex_loaded": true, "hexdir_missing": 0, "sta_exists": true}
+
+=== MAP: ucflat ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_map cf -c cf
+    exit 0  142s
+
+=== FIT: ucflat seed 1 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=1 --recompile=off cf -c cf
+    exit 0  271s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chainflat.tcl cf cf /home/wickerwaka/src/nec_test/sw/testdata/frontend/ucflat/ucflat_seed1 400
+    exit 0  7s
+    {"alms": "4,882", "registers": "809", "seed": "1", "map_errors": 0, "hex_loaded": false, "hexdir_missing": 0, "sta_exists": true}
+
+=== FIT: ucflat seed 2 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=2 --recompile=off cf -c cf
+    exit 0  240s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chainflat.tcl cf cf /home/wickerwaka/src/nec_test/sw/testdata/frontend/ucflat/ucflat_seed2 400
+    exit 0  6s
+    {"alms": "4,857", "registers": "809", "seed": "2", "map_errors": 0, "hex_loaded": false, "hexdir_missing": 0, "sta_exists": true}
+
+=== FIT: ucflat seed 3 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=3 --recompile=off cf -c cf
+    exit 0  209s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chainflat.tcl cf cf /home/wickerwaka/src/nec_test/sw/testdata/frontend/ucflat/ucflat_seed3 400
+    exit 0  6s
+    {"alms": "4,867", "registers": "809", "seed": "3", "map_errors": 0, "hex_loaded": false, "hexdir_missing": 0, "sta_exists": true}
+
+=== FIT: ucflat seed 4 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=4 --recompile=off cf -c cf
+    exit 0  214s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chainflat.tcl cf cf /home/wickerwaka/src/nec_test/sw/testdata/frontend/ucflat/ucflat_seed4 400
+    exit 0  6s
+    {"alms": "4,865", "registers": "809", "seed": "4", "map_errors": 0, "hex_loaded": false, "hexdir_missing": 0, "sta_exists": true}
+
+=== FIT: ucflat seed 5 ===
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=5 --recompile=off cf -c cf
+    exit 0  212s
+  $ /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_chainflat.tcl cf cf /home/wickerwaka/src/nec_test/sw/testdata/frontend/ucflat/ucflat_seed5 400
+    exit 0  6s
+    {"alms": "4,856", "registers": "809", "seed": "5", "map_errors": 0, "hex_loaded": false, "hexdir_missing": 0, "sta_exists": true}
+
+hdl/ at end: CLEAN
+wrote /home/wickerwaka/src/nec_test/sw/testdata/frontend/ucflat/proto.json

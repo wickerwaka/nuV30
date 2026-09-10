@@ -1,0 +1,57 @@
+=== sta_chainflat (WAVE 6) ===
+  revision cf   npaths 400
+  registers in the netlist: 2729
+
+=== A. POSITIVE CONTROLS ===
+  PC-1 RESOLVER   probe node: opc_sel[2]~1|combout
+       get_pins  collection 1 -> paths 1   (MUST be >= 1)
+       get_nodes collection 1 -> paths 0   (WAVE 1: silently 0)
+       PC-1 PASS
+  PC-2 WALKER     state 3 (MUST be 3)   data cells 39 (MUST be >= 3)
+                  walker 34.269 vs Quartus -data_delay 34.269  diff 0.000 (MUST be <= 0.01)
+       PC-2 PASS
+  PC-3 SEGMENTER  st_n combout pins in the netlist: 71
+       the pin that answered: st_n~37|combout   (single-pin tries 1)
+       boundaries, real markers : 2  (MUST be >= 1)
+       boundaries, fake marker  : 0  (MUST be 0)
+       PC-3 PASS
+
+  CONTROLS: ALL PASS
+
+=== B. THE WORST reg -> reg ARC ===
+  slack        -3.752
+  data delay   34.269
+  levels       39 cells / 33 combout
+  from         opc_reg[5]
+  to           v30u_ucrom:u_ucrom|altsyncram:ucflat_rtl_0|altsyncram_csd1:auto_generated|ram_block1a16~porta_address_reg3
+  boundaries   1
+    seg 0     4.693 ->   24.888  =  20.195  cells 25  luts 19  opc_sel Equal56 sig_byte div_divisor LessThan7 LessThan7 div_hi1 Selector16 sigma
+    seg 1    24.888 ->   38.294  =  13.406  cells 12  luts 12  pop_is_first_n ld_b_n ld_b_n Ram9 Ram9 Decoder27 pv always6 always6
+
+=== C. BOUNDARY-BUCKETED SCAN (npaths 400) ===
+  paths walked 400
+  boundaries  0 : worst data delay   34.064   count 3
+  boundaries  1 : worst data delay   34.269   count 364
+  boundaries  2 : worst data delay   34.155   count 33
+
+=== D. COPY CENSUS (distinct combout cones per RTL base name) ===
+  combout cones in the netlist: 6099
+  st_n                   57
+  stop                   10
+  st_zero_ok             0
+  ld_b_n                 11
+  pv                     22
+  opc_base               16
+  m_kind                 8
+  seg_override_n         3
+  sigma                  122
+  s1_val                 53
+  it_val                 4
+  rst_ctr_n              0
+  ld_dlo_n               0
+  ld_ripe_prev_n         3
+  nmi_latch_n            0
+  rloop_n_n              1
+  zzz_no_such_signal     0
+
+RESULT controls=PASS

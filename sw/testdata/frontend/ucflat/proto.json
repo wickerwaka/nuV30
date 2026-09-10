@@ -1,0 +1,151 @@
+{
+ "hex": {
+  "entries": 32768,
+  "nonzero": 6624,
+  "valid_decodes": 1656,
+  "valid_flat_entries": 6624,
+  "distinct_row_words": 505,
+  "selfcheck_entries": 32768,
+  "selfcheck_bad": 0
+ },
+ "ref_identical": true,
+ "arm_diff": "--- /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu.sv\t2026-09-09 11:35:17.507477467 -0700\n+++ /home/wickerwaka/.cache/ucsimt-tmp/wave8/tree_ucflat/v30u_eu.sv\t2026-09-09 17:32:51.430423079 -0700\n@@ -590,20 +590,16 @@\n // NO SDC EDIT IS NEEDED OR TAKEN: `dec_q` is declared here, so its post-fit\n // node is `...|v30u_eu:u_eu|dec_q[*]`, which `nec_test.sdc`'s $v30u_regs glob\n // already selects, and it is `ce`-gated exactly as every other EU register.\n-wire [12:0] dec_addr_next;          // assigned beside THE COMMIT, below\n-wire        dec_valid_next;\n-wire  [8:0] dec_bank_next;\n-reg   [9:0] dec_q;\n-wire        dec_valid = dec_q[9];\n-wire  [8:0] dec_bank  = dec_q[8:0];\n-wire [28:0] row;\n+// WAVE 8 ARM `ucflat`: ONE table, ONE register, ONE lookup.\n+wire [14:0] uaddr_next;             // assigned beside THE COMMIT, below\n+wire [29:0] flat_word;\n+reg  [29:0] flat_q;\n+wire        dec_valid = flat_q[29];\n+wire [28:0] row       = flat_q[28:0];\n \n v30u_ucrom u_ucrom (\n-    .dec_addr (dec_addr_next),\n-    .dec_valid(dec_valid_next),\n-    .dec_bank (dec_bank_next),\n-    .rom_addr ({dec_bank, upc_loc[1:0]}),\n-    .rom_word (row)\n+    .flat_addr (uaddr_next),\n+    .flat_word (flat_word)\n );\n \n // sw/ucore_tables.py::MicroOp -- the field positions, verbatim\n@@ -3985,9 +3981,9 @@\n // select on the SAME condition (`srst && !ss_we`) and from the SAME pair of\n // sources (`upc_*_r`, `upc_*_n`).  If a future edit gives `upc_opc` a third arm\n // -- as `psw` has for the read's data edge -- this line must gain it too.\n-assign dec_addr_next = (srst && !ss_we)\n-        ? {upc_page_r, upc_opc_r, upc_loc_r[3:2]}\n-        : {upc_page_n, upc_opc_n, upc_loc_n[3:2]};\n+assign uaddr_next = (srst && !ss_we)\n+        ? {upc_page_r, upc_opc_r, upc_loc_r}\n+        : {upc_page_n, upc_opc_n, upc_loc_n};\n \n //--------------------------------------------------------------------------\n // THE COMMIT -- the ONLY place an EU state register is written, and the only\n@@ -4043,7 +4039,7 @@\n         // It is not state -- it is `ucdecode` of the state, one clock early --\n         // so it is DERIVED and whitelisted rather than SSA-mapped, which would\n         // give one fact two sources of truth.  See the header at u_ucrom.\n-        dec_q <= {dec_valid_next, dec_bank_next};\n+        flat_q <= flat_word;\n         seg_override <= (srst && !ss_we) ? seg_override_r : seg_override_n;\n         seg_ovr <= (srst && !ss_we) ? seg_ovr_r : seg_ovr_n;\n         rep_kind <= (srst && !ss_we) ? rep_kind_r : rep_kind_n;\n",
+ "arm_diff_lines": 29,
+ "trees": {
+  "ref": "/home/wickerwaka/.cache/ucsimt-tmp/wave8/tree_ref",
+  "ucflat": "/home/wickerwaka/.cache/ucsimt-tmp/wave8/tree_ucflat"
+ },
+ "projects": {
+  "ref": "/home/wickerwaka/.cache/ucsimt-tmp/wave8/proj_ref",
+  "ucflat": "/home/wickerwaka/.cache/ucsimt-tmp/wave8/proj_ucflat"
+ },
+ "verify": {
+  "ref": {
+   "golden": "TOTAL: 169000/169000",
+   "golden_rc": 0,
+   "lfsr_sigs": [
+    "1d01c9b269ffaa94",
+    "b39b040a98b28e5d",
+    "0997b773cd99c030",
+    "d05b6c3c3d9fbe78"
+   ],
+   "lfsr_depths": [
+    6,
+    6,
+    6,
+    6
+   ],
+   "tail": " (cycles 200, arch 200)\nINT.B8: 200/200 full  (cycles 200, arch 200)\nINT.F3AA: 200/200 full  (cycles 200, arch 200)\nINT.FB: 200/200 full  (cycles 200, arch 200)\nNMI.90: 200/200 full  (cycles 200, arch 200)\nNMI.B8: 200/200 full  (cycles 200, arch 200)\nPOLL.LO: 200/200 full  (cycles 200, arch 200)\nPOLL.REL: 200/200 full  (cycles 200, arch 200)\n\nTOTAL: 169000/169000 full (cycles 169000, arch 169000)\n"
+  },
+  "ucflat": {
+   "golden": "TOTAL: 169000/169000",
+   "golden_rc": 0,
+   "lfsr_sigs": [
+    "1d01c9b269ffaa94",
+    "b39b040a98b28e5d",
+    "0997b773cd99c030",
+    "d05b6c3c3d9fbe78"
+   ],
+   "lfsr_depths": [
+    6,
+    6,
+    6,
+    6
+   ],
+   "tail": " (cycles 200, arch 200)\nINT.B8: 200/200 full  (cycles 200, arch 200)\nINT.F3AA: 200/200 full  (cycles 200, arch 200)\nINT.FB: 200/200 full  (cycles 200, arch 200)\nNMI.90: 200/200 full  (cycles 200, arch 200)\nNMI.B8: 200/200 full  (cycles 200, arch 200)\nPOLL.LO: 200/200 full  (cycles 200, arch 200)\nPOLL.REL: 200/200 full  (cycles 200, arch 200)\n\nTOTAL: 169000/169000 full (cycles 169000, arch 169000)\n"
+  },
+  "PC-E0": true
+ },
+ "synth": {
+  "ref_seed1": {
+   "alms": "5,399",
+   "registers": "807",
+   "seed": "1",
+   "map_errors": 0,
+   "hex_loaded": true,
+   "hexdir_missing": 0,
+   "sta_exists": true
+  },
+  "ref_seed2": {
+   "alms": "5,416",
+   "registers": "807",
+   "seed": "2",
+   "map_errors": 0,
+   "hex_loaded": true,
+   "hexdir_missing": 0,
+   "sta_exists": true
+  },
+  "ref_seed3": {
+   "alms": "5,407",
+   "registers": "807",
+   "seed": "3",
+   "map_errors": 0,
+   "hex_loaded": true,
+   "hexdir_missing": 0,
+   "sta_exists": true
+  },
+  "ref_seed4": {
+   "alms": "5,383",
+   "registers": "807",
+   "seed": "4",
+   "map_errors": 0,
+   "hex_loaded": true,
+   "hexdir_missing": 0,
+   "sta_exists": true
+  },
+  "ref_seed5": {
+   "alms": "5,404",
+   "registers": "807",
+   "seed": "5",
+   "map_errors": 0,
+   "hex_loaded": true,
+   "hexdir_missing": 0,
+   "sta_exists": true
+  },
+  "ucflat_seed1": {
+   "alms": "4,882",
+   "registers": "809",
+   "seed": "1",
+   "map_errors": 0,
+   "hex_loaded": false,
+   "hexdir_missing": 0,
+   "sta_exists": true
+  },
+  "ucflat_seed2": {
+   "alms": "4,857",
+   "registers": "809",
+   "seed": "2",
+   "map_errors": 0,
+   "hex_loaded": false,
+   "hexdir_missing": 0,
+   "sta_exists": true
+  },
+  "ucflat_seed3": {
+   "alms": "4,867",
+   "registers": "809",
+   "seed": "3",
+   "map_errors": 0,
+   "hex_loaded": false,
+   "hexdir_missing": 0,
+   "sta_exists": true
+  },
+  "ucflat_seed4": {
+   "alms": "4,865",
+   "registers": "809",
+   "seed": "4",
+   "map_errors": 0,
+   "hex_loaded": false,
+   "hexdir_missing": 0,
+   "sta_exists": true
+  },
+  "ucflat_seed5": {
+   "alms": "4,856",
+   "registers": "809",
+   "seed": "5",
+   "map_errors": 0,
+   "hex_loaded": false,
+   "hexdir_missing": 0,
+   "sta_exists": true
+  }
+ }
+}

@@ -1,0 +1,8 @@
+[ref] TOTAL: 169000/169000  rc=0  LFSR sigs ['1d01c9b269ffaa94', 'b39b040a98b28e5d', '0997b773cd99c030', 'd05b6c3c3d9fbe78']  depths [6, 6, 6, 6]
+[ucflat] TOTAL: 169000/169000  rc=0  LFSR sigs ['1d01c9b269ffaa94', 'b39b040a98b28e5d', '0997b773cd99c030', 'd05b6c3c3d9fbe78']  depths [6, 6, 6, 6]
+
+PC-E0  the ARM tree computes the SAME function as REF           : PASS
+       golden  REF TOTAL: 169000/169000   ARM TOTAL: 169000/169000
+       LFSR    REF 1d01c9b269ffaa94 b39b040a98b28e5d 0997b773cd99c030 d05b6c3c3d9fbe78
+               ARM 1d01c9b269ffaa94 b39b040a98b28e5d 0997b773cd99c030 d05b6c3c3d9fbe78
+wrote /home/wickerwaka/src/nec_test/sw/testdata/frontend/ucflat/proto.json

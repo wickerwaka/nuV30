@@ -1,0 +1,58 @@
+=== sta_chainflat (WAVE 6) ===
+  revision cf   npaths 400
+  registers in the netlist: 2729
+
+=== A. POSITIVE CONTROLS ===
+  PC-1 RESOLVER   probe node: opc_sel[1]~3|combout
+       get_pins  collection 1 -> paths 1   (MUST be >= 1)
+       get_nodes collection 1 -> paths 0   (WAVE 1: silently 0)
+       PC-1 PASS
+  PC-2 WALKER     state 3 (MUST be 3)   data cells 38 (MUST be >= 3)
+                  walker 34.687 vs Quartus -data_delay 34.687  diff 0.000 (MUST be <= 0.01)
+       PC-2 PASS
+  PC-3 SEGMENTER  st_n combout pins in the netlist: 71
+       the pin that answered: st_n~37|combout   (single-pin tries 1)
+       boundaries, real markers : 2  (MUST be >= 1)
+       boundaries, fake marker  : 0  (MUST be 0)
+       PC-3 PASS
+
+  CONTROLS: ALL PASS
+
+=== B. THE WORST reg -> reg ARC ===
+  slack        -4.101
+  data delay   34.687
+  levels       38 cells / 32 combout
+  from         pe_opc_reg[4]
+  to           v30u_ucrom:u_ucrom|altsyncram:ucflat_rtl_0|altsyncram_csd1:auto_generated|ram_block1a99~porta_address_reg3
+  boundaries   2
+    seg 0     4.671 ->   26.252  =  21.581  cells 25  luts 19  opc_sel Equal56 sig_byte div_divisor LessThan7 LessThan7 div_hi1 Selector16 sigma
+    seg 1    26.252 ->   34.719  =   8.467  cells  7  luts  7  ld_b_n ld_b_n Ram11 Ram11 Decoder27 always6 always6
+    seg 2    34.719 ->   38.690  =   3.971  cells  2  luts  2  upc_loc_n uaddr_next
+
+=== C. BOUNDARY-BUCKETED SCAN (npaths 400) ===
+  paths walked 400
+  boundaries  1 : worst data delay   34.556   count 84
+  boundaries  2 : worst data delay   34.687   count 310
+  boundaries  3 : worst data delay   34.507   count 6
+
+=== D. COPY CENSUS (distinct combout cones per RTL base name) ===
+  combout cones in the netlist: 6100
+  st_n                   57
+  stop                   10
+  st_zero_ok             0
+  ld_b_n                 11
+  pv                     22
+  opc_base               16
+  m_kind                 8
+  seg_override_n         3
+  sigma                  122
+  s1_val                 53
+  it_val                 4
+  rst_ctr_n              0
+  ld_dlo_n               0
+  ld_ripe_prev_n         3
+  nmi_latch_n            0
+  rloop_n_n              1
+  zzz_no_such_signal     0
+
+RESULT controls=PASS

@@ -479,11 +479,22 @@ def parse_reports(proj):
     if os.path.exists(p):
         t = open(p, errors='replace').read()
         out['map_errors'] = len(MAP_ERR.findall(t))
-        # F44 POSITIVE check: a WRONG HEXDIR gives an all-zero ROM and a
-        # compile that SUCCEEDS.  The `ucrom.hex(1)` truncation warning is
-        # what PROVES the table was read.
-        out['hex_loaded'] = ('ucrom.hex' in t)
+        # F44 POSITIVE check.  ⚠ THE FIRST FORM OF THIS LINE LOOKED FOR THE
+        # STRING `ucrom.hex` AND REPORTED `hex_loaded false` ON AN ARM WHOSE
+        # TABLE IS `ucflat.hex` -- a REPORTING defect, and it looked exactly
+        # like the failure it is meant to catch.  The check is now the
+        # compiler's OWN inferred-memory record, which cannot be produced by a
+        # table that did not load: the `altsyncram` instance, its NUMWORDS and
+        # the INIT_FILE it names.
+        out['hex_loaded'] = bool(re.search(r'altsyncram:\w+_rtl_0', t))
+        m = re.search(r'INIT_FILE\s*;\s*(\S+)', t)
+        out['init_file'] = m.group(1) if m else None
+        m = re.search(r'NUMWORDS_A\s*;\s*(\d+)', t)
+        out['rom_numwords'] = int(m.group(1)) if m else 0
+        m = re.search(r'Implemented (\d+) RAM segments', t)
+        out['ram_segments'] = int(m.group(1)) if m else 0
         out['hexdir_missing'] = len(re.findall(r"can't find.*\.hex", t))
+        out['trunc_warnings'] = len(re.findall(r'Warning \(10230\)', t))
     return out
 
 
