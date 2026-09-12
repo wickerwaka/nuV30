@@ -881,16 +881,7 @@ def core_domain_fmax(tf):
     # destination/source, then 2.0/2.0 for one day under the deleted C-b, and
     # are 1.0/1.0 now that adjacent enables are legal and both cross-phase
     # exceptions are DELETED.  `SAME` (was `CE4`) fell 4.0 -> 2.0 the same way.
-    # ⚠ 2026-09-08, THE ce/ce_half PHASE SPLIT: `SAME` FALLS 2.0 -> 1.0, AND
-    # THAT IS THE CHECK THAT THE SDC DELETION REACHED THE COMPILER.  `v30u_eu`'s
-    # next-state cone is now split across the two phases (STAGE 1 captured on
-    # `ce_half`, STAGE 2 on `ce`), so ONE 2-period arc became TWO 1-period arcs
-    # and `nec_test.sdc`'s CE multicycle is DELETED.  All three core-domain
-    # classes are plain single-cycle checks now.  A draw still measuring
-    # `SAME` at k = 2.0 means the exception is still in the compiler's hands and
-    # lands in `off_class`, which is the landing's registered P-2.
-    # (`docs/notes/phase_split_landing_prereg_2026-09-08.md`.)
-    nominal = {"SAME": 1.0, "INTO": 1.0, "OUTOF": 1.0}
+    nominal = {"SAME": 2.0, "INTO": 1.0, "OUTOF": 1.0}
     off = [c for c, r in rows.items()
            if r.get("k") is not None and abs(r["k"] - nominal[c]) > 1e-6]
     binding = min(rows.items(), key=lambda kv: kv[1]["fmax_mhz"])

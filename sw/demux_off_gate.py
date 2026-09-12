@@ -20,17 +20,7 @@ THREE LEGS, and the second is the one that makes the first mean something.
   GONE  build the SAME testbench with a `.AD(...)` connection spliced into the
         core instantiation.  It must FAIL to elaborate, and the failure must
         NAME the pin.  A build that merely warns is not evidence that a port
-        was removed.  Repeated for `AD_OE`.
-
-        ⚠ `CE_HALF` WAS THE THIRD PIN ON THIS LEG UNTIL 2026-09-08 AND IS NOT
-        ANY MORE, AND IT WAS REMOVED BY A LANDING RATHER THAN BY AN OPINION.
-        The ce/ce_half PHASE SPLIT (WAVE 2) makes `ce_half` the capture edge of
-        `v30u_eu`'s STAGE 1, so it is a CORE CLOCKING input orthogonal to the
-        bus shape and is an UNCONDITIONAL port of `v30_core`.  Splicing it in
-        now SUCCEEDS, correctly, so asserting that it fails would be asserting
-        something false.  `AD` and `AD_OE` are untouched and must still fail
-        naming their pins -- which is what keeps this leg non-vacuous.
-        `docs/notes/phase_split_landing_prereg_2026-09-08.md` P-12.
+        was removed.  Repeated for `AD_OE` and `CE_HALF`.
 
   ON    build the same testbench WITH the define.  It must ALSO fail, because
         `tb_demux_min` connects `DATA_I`, which does not exist there.  This is
@@ -110,6 +100,7 @@ def leg_run(work, clocks, seed):
 GONE_PINS = {
     "AD":      "    .AD        (20'h0),\n",
     "AD_OE":   "    .AD_OE     (),\n",
+    "CE_HALF": "    .CE_HALF   (1'b0),\n",
 }
 
 
@@ -183,7 +174,7 @@ def main():
                 if not ok:
                     fails.append(f"RUN bar {name}: {val} < {bar}")
 
-        print("\n=== LEG 2/3  GONE -- AD / AD_OE are not ports")
+        print("\n=== LEG 2/3  GONE -- AD / AD_OE / CE_HALF are not ports")
         _, err = leg_gone(work)
         if err:
             fails.append(f"GONE: {err}")
@@ -204,7 +195,7 @@ def main():
             print(f"demux_off_gate: FAIL -- {f}")
         return 1
     print("=== demux_off_gate: PASS -- the de-muxed core builds and runs, the "
-          "two muxed ports are GONE, and the define is what removes them")
+          "three muxed ports are GONE, and the define is what removes them")
     return 0
 
 
