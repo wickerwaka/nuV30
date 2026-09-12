@@ -79,7 +79,7 @@ def parse_truefmax(p):
     out = {}
     for blk in re.split(r'\n--- ', t)[1:]:
         label = blk.split('\n')[0].split('(')[0].strip().split()[0]
-        m = re.search(r'k = ([\d.]+)\s+slack = ([-+][\d.]+)\s+->\s+T_min\s+([\d.]+) ns\s+=\s+([\d.]+) MHz', blk)
+        m = re.search(r'k = ([\d.]+)\s+slack =\s*([-+][\d.]+)\s+->\s+T_min\s+([\d.]+) ns\s+=\s+([\d.]+) MHz', blk)
         if m and label not in out:
             out[label] = {'k': float(m.group(1)), 'slack': float(m.group(2)),
                           'tmin': float(m.group(3)), 'mhz': float(m.group(4))}
@@ -197,10 +197,19 @@ def main():
             fa = A['carry'] / max(1, A['n'])
             fb = B['carry'] / max(1, B['n'])
             same = (fa >= 0.9) == (fb >= 0.9)
+            tag = '' if same else '   <-- DISAGREE on the >=90 % class'
             if not same:
                 dis += 1
-                P(f'    {c} s{r["seed"]}: POP-A {fa*100:.1f}%  POP-B {fb*100:.1f}%   <-- DISAGREE')
-    P(f'    draws on which the two populations disagree about presence: {dis}')
+            spread = abs(fa - fb)
+            if (not same) or spread > 0.10:
+                P(f'    {c} s{r["seed"]}: POP-A {fa*100:5.1f}%  POP-B {fb*100:5.1f}%  '
+                  f'spread {spread*100:5.1f} pt{tag}')
+    P(f'    draws on which the two populations disagree about PRESENCE (>=90 %): {dis}')
+    P('    (a spread printed above without DISAGREE is a difference of DEGREE:')
+    P('     POP-B reaches much further down the slack distribution, so a draw on')
+    P('     which only the very worst cone carries the round trip shows a high')
+    P('     POP-A fraction and a low POP-B one.  AX-3 is live in DEGREE even where')
+    P('     it is not live in PRESENCE.)')
 
     P('')
     P('=' * 100)

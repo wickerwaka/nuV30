@@ -85,6 +85,12 @@ def main():
                          '34.220.  Every cell of this wave is compiled from the same '
                          'db state, and this flag is what makes that true.')
     ap.add_argument('--dry-run', action='store_true')
+    ap.add_argument('--allow-arm-dirty', action='store_true',
+                    help='permit tracked changes under hdl/rtl/ucore/ in a SCRATCH '
+                         'WORKTREE -- this is how a CEILING PROBE ARM is compiled.  '
+                         '⚠ It is REFUSED unless --root is a worktree under '
+                         '~/.cache/ucsimt-tmp/, so it can never loosen the main '
+                         'tree\'s K-6 guarantee, and the permitted diff is PRINTED.')
     a = ap.parse_args()
     root = os.path.abspath(a.root)
     tcl = os.path.join(HERE, 'sta_biu_roundtrip.tcl')
@@ -99,10 +105,19 @@ def main():
     log = os.path.join(outdir, f'{a.label}.run.log')
     open(log, 'w').write(f'=== run_biu_roundtrip {a.label} root={root} ===\n')
 
+    scratch = os.path.expanduser('~/.cache/ucsimt-tmp/')
     dirty = sh("git status --porcelain hdl/ | grep -v '^??'", root).stdout.strip()
     if dirty:
-        print(f'REFUSING: {root}/hdl carries tracked changes:\n' + dirty)
-        return 2
+        if not (a.allow_arm_dirty and root.startswith(scratch)):
+            print(f'REFUSING: {root}/hdl carries tracked changes:\n' + dirty)
+            if a.allow_arm_dirty:
+                print('  (--allow-arm-dirty is REFUSED outside ~/.cache/ucsimt-tmp/)')
+            return 2
+        print('⚠⚠ CEILING-PROBE ARM: tracked changes under a SCRATCH WORKTREE are')
+        print('   permitted for this run and are PRINTED IN FULL.  THE ARM IS')
+        print('   BEHAVIOUR-BREAKING BY CONSTRUCTION AND IS NEVER LANDED.')
+        print(dirty)
+        print(sh('git diff -- hdl/', root).stdout)
     if not guard():
         return 2
 
