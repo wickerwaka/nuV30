@@ -1,0 +1,162 @@
+artifact: BUILD verilator_binary/hdl/tb/obj_dir_ab_ucore/tb_ab
+  verilator --binary --timing -Wno-fatal -DV30_MUXED_AD --top-module tb_ab -Mdir /home/wickerwaka/src/nec_test/hdl/tb/.obj_dir_ab_ucore.staging.76070 -o tb_ab -I/home/wickerwaka/src/nec_test/hdl/rtl/ucore /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_ss_pkg.sv /home/wickerwaka/src/nec_test/hdl/tb/tb_ab.sv /home/wickerwaka/src/nec_test/hdl/rtl/system_large.sv /home/wickerwaka/src/nec_test/hdl/rtl/nec_bus.sv /home/wickerwaka/src/nec_test/hdl/rtl/test_mem.sv /home/wickerwaka/src/nec_test/hdl/rtl/capture_buf.sv /home/wickerwaka/src/nec_test/hdl/rtl/wvec_buf.sv /home/wickerwaka/src/nec_test/hdl/rtl/iords_buf.sv /home/wickerwaka/src/nec_test/hdl/rtl/hps_axi_slave.sv /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30_core.sv /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_biu.sv /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_ucrom.sv /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu.sv
+%Warning-TIMESCALEMOD: /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_ss_pkg.sv:61:9: Timescale missing on this module as other modules have it (IEEE 1800-2023 3.14.2.3)
+   61 | package v30_ss_pkg;
+      |         ^~~~~~~~~~
+                       /home/wickerwaka/src/nec_test/hdl/tb/tb_ab.sv:27:8: ... Location of module with timescale
+   27 | module tb_ab;
+      |        ^~~~~
+                       ... For warning description see https://verilator.org/warn/TIMESCALEMOD?v=5.032
+                       ... Use "/* verilator lint_off TIMESCALEMOD */" and lint_on around source to disable this message.
+%Warning-WIDTHEXPAND: /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_ss_pkg.sv:136:27: Operator VAR 'SS_VERSION' expects 32 bits on the Initial value, but Initial value's CONST '8'h8f' generates 8 bits.
+  136 |   localparam int          SS_VERSION   = 8'h8F;    
+      |                           ^~~~~~~~~~
+%Warning-WIDTHEXPAND: /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu.sv:951:55: Operator LT expects 3 bits on the RHS, but RHS's VARREF 's1w_row_qn' generates 2 bits.
+                                                                                   : ... note: In instance 'tb_ab.dut.u_core.u_eu'
+  951 | wire s1w_row_need_q  = (st == S_ROW) && ({1'b0, rowq} < s1w_row_qn);
+      |                                                       ^
+%Warning-WIDTHEXPAND: /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_wd1.svh:24:47: Bit extraction of array[7:0] requires 3 bit index, not 2 bits.
+                                                                                       : ... note: In instance 'tb_ab.dut.u_core.u_eu'
+   24 |                          if (r_idx_n[2]) gpr_n[r_idx_n[1:0]][15:8] = v1[7:0];
+      |                                               ^
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_poste.svh:30:1: ... note: In file included from 'v30u_eu_poste.svh'
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu.sv:3792:1: ... note: In file included from 'v30u_eu.sv'
+%Warning-WIDTHEXPAND: /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_wd1.svh:25:45: Bit extraction of array[7:0] requires 3 bit index, not 2 bits.
+                                                                                       : ... note: In instance 'tb_ab.dut.u_core.u_eu'
+   25 |                          else          gpr_n[r_idx_n[1:0]][7:0]  = v1[7:0];
+      |                                             ^
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_poste.svh:30:1: ... note: In file included from 'v30u_eu_poste.svh'
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu.sv:3792:1: ... note: In file included from 'v30u_eu.sv'
+%Warning-WIDTHEXPAND: /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_wd1.svh:38:47: Bit extraction of array[7:0] requires 3 bit index, not 2 bits.
+                                                                                       : ... note: In instance 'tb_ab.dut.u_core.u_eu'
+   38 |                          if (m_idx_n[2]) gpr_n[m_idx_n[1:0]][15:8] = v1[7:0];
+      |                                               ^
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_poste.svh:30:1: ... note: In file included from 'v30u_eu_poste.svh'
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu.sv:3792:1: ... note: In file included from 'v30u_eu.sv'
+%Warning-WIDTHEXPAND: /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_wd1.svh:39:45: Bit extraction of array[7:0] requires 3 bit index, not 2 bits.
+                                                                                       : ... note: In instance 'tb_ab.dut.u_core.u_eu'
+   39 |                          else          gpr_n[m_idx_n[1:0]][7:0]  = v1[7:0];
+      |                                             ^
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_poste.svh:30:1: ... note: In file included from 'v30u_eu_poste.svh'
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu.sv:3792:1: ... note: In file included from 'v30u_eu.sv'
+%Warning-WIDTHEXPAND: /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_step.svh:300:28: Operator LT expects 3 bits on the RHS, but RHS's VARREF 'row_qn' generates 2 bits.
+                                                                                         : ... note: In instance 'tb_ab.dut.u_core.u_eu'
+  300 |         if ({1'b0, rowq_n} < row_qn) stop = 1'b1;          
+      |                            ^
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu.sv:3980:1: ... note: In file included from 'v30u_eu.sv'
+%Warning-WIDTHEXPAND: /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_wd1.svh:24:47: Bit extraction of array[7:0] requires 3 bit index, not 2 bits.
+                                                                                       : ... note: In instance 'tb_ab.dut.u_core.u_eu'
+   24 |                          if (r_idx_n[2]) gpr_n[r_idx_n[1:0]][15:8] = v1[7:0];
+      |                                               ^
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_row.svh:38:1: ... note: In file included from 'v30u_eu_row.svh'
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_step.svh:354:1: ... note: In file included from 'v30u_eu_step.svh'
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu.sv:3980:1: ... note: In file included from 'v30u_eu.sv'
+%Warning-WIDTHEXPAND: /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_wd1.svh:25:45: Bit extraction of array[7:0] requires 3 bit index, not 2 bits.
+                                                                                       : ... note: In instance 'tb_ab.dut.u_core.u_eu'
+   25 |                          else          gpr_n[r_idx_n[1:0]][7:0]  = v1[7:0];
+      |                                             ^
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_row.svh:38:1: ... note: In file included from 'v30u_eu_row.svh'
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_step.svh:354:1: ... note: In file included from 'v30u_eu_step.svh'
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu.sv:3980:1: ... note: In file included from 'v30u_eu.sv'
+%Warning-WIDTHEXPAND: /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_wd1.svh:38:47: Bit extraction of array[7:0] requires 3 bit index, not 2 bits.
+                                                                                       : ... note: In instance 'tb_ab.dut.u_core.u_eu'
+   38 |                          if (m_idx_n[2]) gpr_n[m_idx_n[1:0]][15:8] = v1[7:0];
+      |                                               ^
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_row.svh:38:1: ... note: In file included from 'v30u_eu_row.svh'
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_step.svh:354:1: ... note: In file included from 'v30u_eu_step.svh'
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu.sv:3980:1: ... note: In file included from 'v30u_eu.sv'
+%Warning-WIDTHEXPAND: /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_wd1.svh:39:45: Bit extraction of array[7:0] requires 3 bit index, not 2 bits.
+                                                                                       : ... note: In instance 'tb_ab.dut.u_core.u_eu'
+   39 |                          else          gpr_n[m_idx_n[1:0]][7:0]  = v1[7:0];
+      |                                             ^
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_row.svh:38:1: ... note: In file included from 'v30u_eu_row.svh'
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_step.svh:354:1: ... note: In file included from 'v30u_eu_step.svh'
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu.sv:3980:1: ... note: In file included from 'v30u_eu.sv'
+%Warning-WIDTHEXPAND: /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_wd1.svh:24:47: Bit extraction of array[7:0] requires 3 bit index, not 2 bits.
+                                                                                       : ... note: In instance 'tb_ab.dut.u_core.u_eu'
+   24 |                          if (r_idx_n[2]) gpr_n[r_idx_n[1:0]][15:8] = v1[7:0];
+      |                                               ^
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_step.svh:395:1: ... note: In file included from 'v30u_eu_step.svh'
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu.sv:3980:1: ... note: In file included from 'v30u_eu.sv'
+%Warning-WIDTHEXPAND: /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_wd1.svh:25:45: Bit extraction of array[7:0] requires 3 bit index, not 2 bits.
+                                                                                       : ... note: In instance 'tb_ab.dut.u_core.u_eu'
+   25 |                          else          gpr_n[r_idx_n[1:0]][7:0]  = v1[7:0];
+      |                                             ^
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_step.svh:395:1: ... note: In file included from 'v30u_eu_step.svh'
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu.sv:3980:1: ... note: In file included from 'v30u_eu.sv'
+%Warning-WIDTHEXPAND: /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_wd1.svh:38:47: Bit extraction of array[7:0] requires 3 bit index, not 2 bits.
+                                                                                       : ... note: In instance 'tb_ab.dut.u_core.u_eu'
+   38 |                          if (m_idx_n[2]) gpr_n[m_idx_n[1:0]][15:8] = v1[7:0];
+      |                                               ^
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_step.svh:395:1: ... note: In file included from 'v30u_eu_step.svh'
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu.sv:3980:1: ... note: In file included from 'v30u_eu.sv'
+%Warning-WIDTHEXPAND: /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_wd1.svh:39:45: Bit extraction of array[7:0] requires 3 bit index, not 2 bits.
+                                                                                       : ... note: In instance 'tb_ab.dut.u_core.u_eu'
+   39 |                          else          gpr_n[m_idx_n[1:0]][7:0]  = v1[7:0];
+      |                                             ^
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu_step.svh:395:1: ... note: In file included from 'v30u_eu_step.svh'
+                      /home/wickerwaka/src/nec_test/hdl/rtl/ucore/v30u_eu.sv:3980:1: ... note: In file included from 'v30u_eu.sv'
+%Warning-MULTIDRIVEN: /home/wickerwaka/src/nec_test/hdl/tb/tb_ab.sv:131:13: Variable also written to in always_comb (IEEE 1800-2023 9.2.2.2): 'hs_awready'
+                                                                          : ... note: In instance 'tb_ab'
+                      /home/wickerwaka/src/nec_test/hdl/tb/tb_ab.sv:131:13: 
+  131 |     wait_hs(hs_awready); axs_awvalid = 0;
+      |             ^~~~~~~~~~
+                      /home/wickerwaka/src/nec_test/hdl/tb/tb_ab.sv:122:13: ... Location of always_comb write
+  122 | always_comb hs_awready = axs_awready;
+      |             ^~~~~~~~~~
+%Warning-MULTIDRIVEN: /home/wickerwaka/src/nec_test/hdl/tb/tb_ab.sv:133:13: Variable also written to in always_comb (IEEE 1800-2023 9.2.2.2): 'hs_wready'
+                                                                          : ... note: In instance 'tb_ab'
+                      /home/wickerwaka/src/nec_test/hdl/tb/tb_ab.sv:133:13: 
+  133 |     wait_hs(hs_wready); axs_wvalid = 0; axs_wlast = 0;
+      |             ^~~~~~~~~
+                      /home/wickerwaka/src/nec_test/hdl/tb/tb_ab.sv:123:13: ... Location of always_comb write
+  123 | always_comb hs_wready  = axs_wready;
+      |             ^~~~~~~~~
+%Warning-MULTIDRIVEN: /home/wickerwaka/src/nec_test/hdl/tb/tb_ab.sv:134:29: Variable also written to in always_comb (IEEE 1800-2023 9.2.2.2): 'hs_bvalid'
+                                                                          : ... note: In instance 'tb_ab'
+                      /home/wickerwaka/src/nec_test/hdl/tb/tb_ab.sv:134:29: 
+  134 |     axs_bready = 1; wait_hs(hs_bvalid); axs_bready = 0;
+      |                             ^~~~~~~~~
+                      /home/wickerwaka/src/nec_test/hdl/tb/tb_ab.sv:124:13: ... Location of always_comb write
+  124 | always_comb hs_bvalid  = axs_bvalid;
+      |             ^~~~~~~~~
+%Warning-MULTIDRIVEN: /home/wickerwaka/src/nec_test/hdl/tb/tb_ab.sv:140:13: Variable also written to in always_comb (IEEE 1800-2023 9.2.2.2): 'hs_arready'
+                                                                          : ... note: In instance 'tb_ab'
+                      /home/wickerwaka/src/nec_test/hdl/tb/tb_ab.sv:140:13: 
+  140 |     wait_hs(hs_arready); axs_arvalid = 0;
+      |             ^~~~~~~~~~
+                      /home/wickerwaka/src/nec_test/hdl/tb/tb_ab.sv:125:13: ... Location of always_comb write
+  125 | always_comb hs_arready = axs_arready;
+      |             ^~~~~~~~~~
+%Warning-MULTIDRIVEN: /home/wickerwaka/src/nec_test/hdl/tb/tb_ab.sv:141:29: Variable also written to in always_comb (IEEE 1800-2023 9.2.2.2): 'hs_rvalid'
+                                                                          : ... note: In instance 'tb_ab'
+                      /home/wickerwaka/src/nec_test/hdl/tb/tb_ab.sv:141:29: 
+  141 |     axs_rready = 1; wait_hs(hs_rvalid); d = axs_rdata; axs_rready = 0;
+      |                             ^~~~~~~~~
+                      /home/wickerwaka/src/nec_test/hdl/tb/tb_ab.sv:126:13: ... Location of always_comb write
+  126 | always_comb hs_rvalid  = axs_rvalid;
+      |             ^~~~~~~~~
+make: Entering directory '/home/wickerwaka/src/nec_test/hdl/tb/.obj_dir_ab_ucore.staging.76070'
+g++ -Os  -I.  -MMD -I/usr/share/verilator/include -I/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=1 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -DVL_TIME_CONTEXT   -fcoroutines -c -o verilated.o /usr/share/verilator/include/verilated.cpp
+g++ -Os  -I.  -MMD -I/usr/share/verilator/include -I/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=1 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -DVL_TIME_CONTEXT   -fcoroutines -c -o verilated_timing.o /usr/share/verilator/include/verilated_timing.cpp
+g++ -Os  -I.  -MMD -I/usr/share/verilator/include -I/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=1 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -DVL_TIME_CONTEXT   -fcoroutines -c -o verilated_threads.o /usr/share/verilator/include/verilated_threads.cpp
+python3 /usr/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtb_ab.cpp Vtb_ab___024root__DepSet_h484c81f5__0.cpp Vtb_ab___024root__DepSet_h41cad6b9__0.cpp Vtb_ab__main.cpp Vtb_ab__ConstPool_0.cpp Vtb_ab___024root__Slow.cpp Vtb_ab___024root__DepSet_h484c81f5__0__Slow.cpp Vtb_ab___024root__DepSet_h41cad6b9__0__Slow.cpp Vtb_ab__Syms.cpp > Vtb_ab__ALL.cpp
+g++ -Os  -I.  -MMD -I/usr/share/verilator/include -I/usr/share/verilator/include/vltstd -DVM_COVERAGE=0 -DVM_SC=0 -DVM_TIMING=1 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-shadow -Wno-sign-compare -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable    -DVL_TIME_CONTEXT   -fcoroutines -c -o Vtb_ab__ALL.o Vtb_ab__ALL.cpp
+echo "" > Vtb_ab__ALL.verilator_deplist.tmp
+g++    verilated.o verilated_timing.o verilated_threads.o Vtb_ab__ALL.a    -pthread -lpthread -latomic   -o tb_ab
+rm Vtb_ab__ALL.verilator_deplist.tmp
+make: Leaving directory '/home/wickerwaka/src/nec_test/hdl/tb/.obj_dir_ab_ucore.staging.76070'
+- V e r i l a t i o n   R e p o r t: Verilator 5.032 2025-01-01 rev (Debian 5.032-1)
+- Verilator: Built from 1.776 MB sources in 14 modules, into 3.326 MB in 9 C++ files needing 0.003 MB
+- Verilator: Walltime 17.932 s (elab=0.050, cvt=0.481, bld=17.293); cpu 0.638 s on 1 threads; alloced 37.461 MB
+artifact: PROMOTED hdl/tb/obj_dir_ab_ucore/tb_ab  receipt 396c8c1f2f4d83c2…  (18.0s)
+== check_ab_sim: ucore core inside system_large, vs the chip's own boot capture ==
+   artifact hdl/tb/obj_dir_ab_ucore/tb_ab  receipt 396c8c1f2f4d83c2…
+
+loop CODE T1 @00100: real [26, 90, 154] core [26, 90, 154]
+
+AB SIM MATCHES CHIP BOOT over 187 rows from RESET release
+
+real	0m18.193s
+user	0m17.539s
+sys	0m0.789s

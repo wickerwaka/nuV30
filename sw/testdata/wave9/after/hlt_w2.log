@@ -1,0 +1,10 @@
+  HLT.INT idx 12 ('halt <halt/int d=38>'):
+    row 12 busstat: exp 'CODE' got 'PASV'
+HLT.INT: 20/21 full  (cycles 20, arch 21)  first-div: (12, 'busstat')x1
+HLT.RES: 25/25 full  (cycles 25, arch 25)
+
+TOTAL: 45/46 full (cycles 45, arch 46)
+
+real	0m0.204s
+user	0m0.186s
+sys	0m0.019s

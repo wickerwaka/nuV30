@@ -1,0 +1,15 @@
+=== sta_cutset_diag_pc (WAVE 9) -- THE CONTROLS ===
+  $v30u_ce 2792   shadow registers 633
+  PC-1  the SAME scan on a path that LAUNCHES FROM the shadow: 4 of 69 name |s1q
+        (MUST be > 0.  0 here means the scan is broken, not that the shadow is absent.)
+        from : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[454]
+        to   : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|upc_page[0]
+  PC-2  the SAME scan on a path that LANDS ON the shadow: 2 of 49 name |s1q
+        (MUST be > 0.)
+  the binding destination : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|upc_page[0]
+  PC-3  -through {emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|upc_page[0]|d*} resolves 0 pin(s), paths returned n/a
+  PC-3  -through {emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|upc_page[0]|asdata*} resolves 2 pin(s), paths returned 1
+        (WAVE 4's diag asks ONLY the `d` form.  On THIS destination it
+         resolves 0 and the control silently could not say YES.)
+  PC-4  the ORIGINAL `d` form on emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[726] : 1 pin(s), paths returned 1
+  J-3(b)  of the top 200 ce->ce paths, 0 name |s1q ANYWHERE on the path

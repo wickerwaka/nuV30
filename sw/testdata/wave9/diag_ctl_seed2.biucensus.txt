@@ -1,0 +1,9 @@
+=== sta_cutset_biu_census (WAVE 9) ===
+  PC-A  the binding path: |u_biu| nodes present = 1   (MUST be 1)
+  PC-B  the KNOWN-WRONG `v30u_biu:` type-prefix form on the SAME path = 0   (MUST be 0)
+  paths scanned                                   : 200
+  ...launching inside the microcode ROM           : 200
+  ...carrying the EU -> BIU -> EU round trip      : 200
+  ...carrying `q_ripe_lead_n` by name             : 200
+  ...naming the shadow |s1q anywhere              : 0
+  mean span of the round trip when present (ns)   : 2.786

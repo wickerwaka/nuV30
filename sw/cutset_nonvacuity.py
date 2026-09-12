@@ -16,6 +16,12 @@ and requires the named message.  Every patched file is restored with
   B2 ...AND ON A BYPASS THAT NO `s1w_` PREFIX BETRAYS -- name a module-level
      wire that was never part of the cut set (`sigma`, the ALU result rail).
      X2 cannot see that one; X4 must.
+  B3 ...AND ON A BYPASS IN AN **ARM FILE** (WAVE 9).  WAVE 7 moved the nine
+     chainable arm bodies into `v30u_eu_arm_<state>.svh`, files WAVE 4's
+     HARD-CODED nine-name include list did not name -- so on the flattened tree
+     that lint would have passed VACUOUSLY.  The list is now the transitive
+     closure of the block's own includes, and this case is that port's own
+     falsifier.
   C  S-1's `$fatal` FIRES AND ITS MESSAGE NAMES THE EU'S DEPENDENCE -- withhold
      `CE_HALF` entirely and the core must say that the EU consumes a STALE
      stage 1, not merely that `t1_half2` missed its turnaround.
@@ -93,6 +99,23 @@ case("B2  ...and on a bypass no `s1w_` prefix betrays (`sigma`, never in the set
      [r"VIOLATION X4", r"cutset_lint: FAIL"],
      "python3 sw/cutset_lint.py", build=False)
 
+# --- B3 --------------------------------------------------------------------
+# ⚠ WAVE 9's OWN: A BYPASS IN AN **ARM FILE**, WHICH IS THE CLASS WAVE 4's LINT
+# COULD NOT SEE AT ALL.  WAVE 7 moved the nine chainable arm bodies out of
+# `v30u_eu_step.svh` into `v30u_eu_arm_<state>.svh`, and `cutset_lint`'s INCLUDE
+# LIST was NINE HARD-CODED NAMES that named none of them.  With the anchor
+# repaired and the list left alone, X2 and X4 would have scanned RIGHT PAST the
+# chain body and passed VACUOUSLY on every tree from WAVE 7 onward.  The list is
+# now the transitive closure of the block's own `` `include ``s; THIS CASE IS
+# THE FALSIFIER FOR THAT PORT, and it is the reason the port is not just a
+# comment.  `sigma` again, so X2 is blind by construction and X4 must answer.
+case("B3  ...and on a bypass in an ARM FILE, which WAVE 4's include list could not reach",
+     [("hdl/rtl/ucore/v30u_eu_arm_decode2.svh",
+       "    pv = ld_ext_n ? pla3_ext(ld_b_n) : pla3_native(ld_b_n);",
+       "    pv = (ld_ext_n && (|sigma)) ? pla3_ext(ld_b_n) : pla3_native(ld_b_n);")],
+     [r"VIOLATION X4", r"cutset_lint: FAIL"],
+     "python3 sw/cutset_lint.py", build=False)
+
 # --- C ---------------------------------------------------------------------
 case("C   S-1 $fatal, and its message names the EU's dependence",
      [("hdl/tb/tb_v30_core.sv",
@@ -114,9 +137,9 @@ def main():
     # whatever the split is doing.
     if not SPLIT_PRESENT:
         print("the ce/ce_half CUT SET is NOT IN THIS TREE (`s1_bus = {` absent).\n"
-              "  A / A2 / B / B2 probe a mechanism that is not here and are SKIPPED;\n"
-              "  C is not, because S-1 does not depend on the split.")
-        del CASES[:4]
+              "  A / A2 / B / B2 / B3 probe a mechanism that is not here and are\n"
+              "  SKIPPED; C is not, because S-1 does not depend on the split.")
+        del CASES[:5]
     dirty = sh("git status --porcelain hdl/ | grep -v '^??'").stdout.strip()
     if dirty:
         print("REFUSING: hdl/ carries uncommitted tracked changes:\n" + dirty)

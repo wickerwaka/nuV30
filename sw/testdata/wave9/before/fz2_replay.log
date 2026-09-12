@@ -1,0 +1,121 @@
+  LEDGER   sw/testdata/fz2/fz2_failure_ledger_f20_2026-08-12.json   (fz2_replay fidelity reference)
+           2026-08-12T12:15:39Z   106 failures / denominator 3839   era sof 26d6e7916618…
+
+  --- FABRIC ERA GUARD ---
+    bitstream   26d6e79166183a21…  flashed 2026-08-12T11:51:37Z  git 3118a2db46-dirty
+    receipt     e71c45a9c1580550…  fz2 FLASH#20 RETENTION ret2
+    its inputs  71/88 hash IDENTICAL in the tree at HEAD
+      MOVED     hdl/files_ucore.qip   <-- RTL
+      MOVED     hdl/nec_test.qsf   <-- RTL
+      MOVED     hdl/nec_test.sdc   <-- RTL
+      MOVED     hdl/nec_test_ucore.qsf   [EXEMPT: Quartus rewrites it in place, §70.7; carries no RTL]
+      MOVED     hdl/rtl/system_large.sv   <-- RTL
+      MOVED     hdl/rtl/ucore/v30_core.sv   <-- RTL
+      MOVED     hdl/rtl/ucore/v30u_biu.sv   <-- RTL
+      MOVED     hdl/rtl/ucore/v30u_eu.sv   <-- RTL
+      MOVED     hdl/rtl/ucore/v30u_eu_cond.svh   <-- RTL
+      MOVED     hdl/rtl/ucore/v30u_eu_iend_late.svh   <-- RTL
+      MOVED     hdl/rtl/ucore/v30u_eu_poste.svh   <-- RTL
+      MOVED     hdl/rtl/ucore/v30u_eu_row.svh   <-- RTL
+      MOVED     hdl/rtl/ucore/v30u_eu_ss_read.svh   <-- RTL
+      MOVED     hdl/rtl/ucore/v30u_eu_ss_write.svh   <-- RTL
+      MOVED     hdl/rtl/ucore/v30u_eu_step.svh   <-- RTL
+      MOVED     hdl/rtl/ucore/v30u_eu_wd1.svh   <-- RTL
+      MOVED     hdl/rtl/ucore/v30u_ss_pkg.sv   <-- RTL
+    *** OVERRIDDEN by --no-fabric-era-guard ***
+
+  DUT tb_sys   hdl/tb/obj_dir_sys_ret/Vtb_sys
+               receipt 16f66ab3c23e3f525acddbccf97e53aa88d4f840e0f047f80850c36936674d60
+               tree    cbedc84d86b203dc…
+  git          cf43e65cb3-dirty
+
+  population   305 seeds with banked socket rows (105 fabric-FAIL, 200 fabric-PASS)
+  NOT SCOREABLE (no retained capture): 1  ['fz2e/527051']
+    25/305  (3s)
+    50/305  (4s)
+    75/305  (6s)
+    100/305  (9s)
+    125/305  (11s)
+    150/305  (13s)
+    175/305  (14s)
+    200/305  (16s)
+    225/305  (18s)
+    250/305  (20s)
+    275/305  (23s)
+    300/305  (25s)
+  ran in 25s, 0 errors
+
+=== THE FIDELITY TABLE: offline verdict vs FABRIC verdict ===
+
+  --- tb_sys REPLAY (both directives + overlay + the seed's own wait source) ---
+                            replay PASS  replay FAIL
+    fabric PASS                     200            0
+    fabric FAIL                       4          101
+    AGREEMENT 301 / 305 = 98.7 %
+    of the 101 both-FAIL seeds, first_bad IDENTICAL on 101
+
+  --- VERDICT agreement by WAIT MODE ---
+                            tb_sys
+    fixed            117 / 117  100%
+    wrand            112 / 115   97%
+    wvec              72 /  73   99%
+
+  --- VERDICT agreement by WHETHER THE SEED HAS A STIMULUS EVENT (the one-scheduler blindness) ---
+                                    tb_sys
+    no stimulus event        136 / 137   99%
+    stimulus event           165 / 168   98%
+
+  --- VERDICT agreement by LEDGER FAMILY ---
+                                                  tb_sys
+    (fabric PASS)                          200 / 200  100%
+    A1 qs-pop one clock late                 5 /   5  100%
+    A2 qs-pop other offset                   4 /   4  100%
+    A3 cycle-time slip (non-qs)             15 /  15  100%
+    B1 HALT-cycle address                    1 /   1  100%
+    B2 HALT entry (one leg only)             2 /   2  100%
+    C1 vector-1 trap MISSED by core          1 /   1  100%
+    C2 INTA-vectored delivery                8 /   9   89%
+    C3 NMI(vec2) entry                       1 /   1  100%
+    C4 other-vector delivery                 1 /   1  100%
+    D1 chip fetched, core did not            8 /   9   89%
+    D2 core fetched, chip did not            7 /   8   88%
+    D3 both fetched, different address       4 /   4  100%
+    E1 same-status data cycle, differe      38 /  39   97%
+    E2 different-status data cycle           2 /   2  100%
+    NEW/UNCLASSIFIED                         4 /   4  100%
+
+  --- FIRST-BAD-ROW agreement by WAIT MODE ---
+                            tb_sys
+    fixed             51 /  51  100%
+    wrand             39 /  39  100%
+    wvec              11 /  11  100%
+
+  --- FIRST-BAD-ROW agreement by WHETHER THE SEED HAS A STIMULUS EVENT (the one-scheduler blindness) ---
+                                    tb_sys
+    no stimulus event         43 /  43  100%
+    stimulus event            58 /  58  100%
+
+  --- FIRST-BAD-ROW agreement by LEDGER FAMILY ---
+                                                  tb_sys
+    (fabric PASS)                            0 /   0      
+    A1 qs-pop one clock late                 5 /   5  100%
+    A2 qs-pop other offset                   4 /   4  100%
+    A3 cycle-time slip (non-qs)             15 /  15  100%
+    B1 HALT-cycle address                    1 /   1  100%
+    B2 HALT entry (one leg only)             2 /   2  100%
+    C1 vector-1 trap MISSED by core          1 /   1  100%
+    C2 INTA-vectored delivery                8 /   8  100%
+    C3 NMI(vec2) entry                       1 /   1  100%
+    C4 other-vector delivery                 1 /   1  100%
+    D1 chip fetched, core did not            8 /   8  100%
+    D2 core fetched, chip did not            7 /   7  100%
+    D3 both fetched, different address       4 /   4  100%
+    E1 same-status data cycle, differe      38 /  38  100%
+    E2 different-status data cycle           2 /   2  100%
+    NEW/UNCLASSIFIED                         4 /   4  100%
+
+  wrote sw/testdata/wave9/before/fz2_replay.json
+
+real	0m25.408s
+user	0m0.586s
+sys	0m0.261s

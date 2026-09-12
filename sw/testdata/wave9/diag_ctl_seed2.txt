@@ -1,0 +1,27 @@
+=== sta_cutset_diag (WAVE 4) ===
+  $v30u_ce 2792   shadow registers matching |s1q* : 633
+  worst ce->ce
+    from  : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a6~PORT_A_WRITE_ENABLE_REG
+    to    : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|upc_page[0]
+    slack :   -2.012   logic levels 31   data delay 31.959
+    arrival points: 79   of which name |s1q : 0    <<<< C-3(b)
+    ...and of which live in v30u_biu : 8   v30u_eu : 3   elsewhere : 68
+    ⚠ THE ARC LEAVES THE EU AND COMES BACK -- an EU -> BIU -> EU
+      COMBINATIONAL ROUND TRIP.  first BIU node : emu|system_large|u_core|u_biu|q_cnt~2|datac
+                                  last  BIU node : emu|system_large|u_core|u_biu|q_ripe_lead_n~5|combout
+  positive control: -through the destination's own D pin resolves 0 pin(s)
+  --- C-8: the top 200 ce->ce paths, classified ---
+    STAGE 1  (* -> s1q)       count 0
+      worst: 
+    STAGE 2  (s1q -> *)       count 0
+      worst: 
+    NEITHER  (WAVE 2's signature)  count 200
+      worst:   -2.012  levels 31   data 31.959    emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a6~PORT_A_WRITE_ENABLE_REG  ->  emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|upc_page[0]
+  STAGE 1 (anything -> s1q), worst:
+    from  : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a6~PORT_A_WRITE_ENABLE_REG
+    to    : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[726]
+    slack :   +9.357   logic levels 16   data delay 20.235
+  STAGE 2 (s1q -> anything), worst:
+    from  : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[454]
+    to    : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|upc_page[0]
+    slack :   +2.670   logic levels 26   data delay 27.922
