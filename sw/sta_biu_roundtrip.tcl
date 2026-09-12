@@ -288,9 +288,26 @@ foreach {tag pat} [list d "${desc}|d" asdata "${desc}|asdata" datain "${desc}|da
 }
 emit "        (all four reading 0 is an M10K PORT REGISTER, which exposes no pin"
 emit "         objects -- the finding that voided this control's first two forms)"
-set w5a [get_collection_size [get_timing_paths -from $v30u_ce \
-             -to [get_registers -nowarn $desc] -setup -npaths 1]]
-emit [format "  PC-W5a  a path forced TO that ONE NAMED REGISTER : %d  (MUST be >= 1)" $w5a]
+# ⚠ W5a MUST NOT DEPEND ON RESOLVING A NAME.  Its first form did, and it FAILED
+# on `...|u_eu|eff_op[2]~2_OTERM2473` -- a physical-synthesis DUPLICATE whose
+# name carries `~` and `_OTERM` and which `get_registers` would not match even
+# with the brackets escaped.  A control that can only address the registers
+# whose names it can spell is a control that will fail on the next name shape.
+# Three forms are tried IN ORDER and the one that answered is NAMED; the NODE
+# OBJECT, which needs no name at all, is last and cannot miss.
+set w5a 0 ; set w5a_how ""
+foreach {how col} [list get_registers [get_registers -nowarn $desc] \
+                        get_keepers   [get_keepers   -nowarn $desc] \
+                        node_object   [get_path_info $W -to]] {
+    if {$w5a >= 1} { break }
+    if {[catch {set sz [get_collection_size $col]}]} { set sz "n/a(node)" }
+    if {[catch {set k [get_collection_size [get_timing_paths -from $v30u_ce \
+                           -to $col -setup -npaths 1]]}]} { set k 0 }
+    emit [format "  PC-W5a  -to via %-13s collection %-9s -> paths %d" $how $sz $k]
+    if {$k >= 1} { set w5a $k ; set w5a_how $how }
+}
+emit [format "  PC-W5a  a path forced TO that ONE DESTINATION : %d  via %s  (MUST be >= 1)" \
+          $w5a $w5a_how]
 
 set w5b_d 0 ; set w5b_as 0 ; set w5b_dpin "" ; set w5b_aspin ""
 foreach {tag pats} [list d   {{*|u_eu|upc_page*|d} {*|u_eu|*|d}} \
