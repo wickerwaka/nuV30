@@ -24,9 +24,15 @@
 #   PC-W2  THE MATCHER CAN SAY YES.  Forced through ONE NAMED `q_ripe_lead_n`
 #          combout pin, the counter must find BIU nodes -- so a 0 on the free
 #          population is a measurement and not a broken test.
-#   PC-W3  THE KNOWN-WRONG FORMS, printed beside PC-W2 and required to read 0:
-#          the `v30u_biu:` TYPE prefix (WAVE 4 sec.6.1 item 1) and an instance
-#          name that does not exist.
+#   PC-W3  THE KNOWN-WRONG FORMS, printed beside PC-W2: the `v30u_biu:` TYPE
+#          prefix (WAVE 4 sec.6.1 item 1) and an instance name that does not
+#          exist, both required to read 0 IN THE DATA SECTION.
+#          ⚠ THE TYPE-PREFIX CLAUSE IS A DATA-SECTION CLAUSE AND ALWAYS WAS, and
+#          WAVE 10's first form gated on ALL POINTS and therefore FAILED on its
+#          own ceiling-probe arm -- which ADDS A BIU REGISTER, and a REGISTER's
+#          name DOES carry the type prefix.  The all-points count is now
+#          REPORTED beside the gated one, where a nonzero reading is a free
+#          positive control that the arm reached the compiler.
 #   PC-W4  THE BULK `-through`, printed and never relied on.  A bulk figure
 #          BELOW the single-pin figure is `-through` accepted-and-ignored.
 #   PC-W5  THE DESTINATION PIN FORM, ENUMERATED FROM THE NETLIST.  WAVE 9's own
@@ -125,12 +131,22 @@ proc walk {p} {
 # Census ONE path.  Returns a flat list of the eight quantities the report
 # needs, computed under BOTH sections and BOTH span conventions.
 proc census1 {pts} {
-    set n9_all 0 ; set n9_dat 0 ; set n8_dat 0 ; set nkw 0 ; set nabs 0 ; set nrip 0
+    set n9_all 0 ; set n9_dat 0 ; set n8_dat 0 ; set nkw 0 ; set nkwa 0 ; set nabs 0 ; set nrip 0
     set f_tot -1.0 ; set f_pre -1.0 ; set l_tot -1.0
     set fd_tot -1.0 ; set fd_pre -1.0 ; set ld_tot -1.0
     foreach e $pts {
         foreach {nm cum inc ty sec} $e break
-        if {[pkw  $nm]} { incr nkw }
+        # ⚠ THE TYPE-PREFIX CONTROL IS A DATA-SECTION CONTROL AND ALWAYS WAS.
+        # Quartus prints `v30u_biu:` on REGISTER names and omits it on
+        # COMBINATIONAL ones (WAVE 4 sec.6.1 item 1), so a nonzero reading in the
+        # DATA SECTION means the raw `|u_biu|` match is picking up registers.
+        # At an ENDPOINT it means something else entirely -- the path launches
+        # from or lands in a BIU register -- which is IMPOSSIBLE on the shipped
+        # design and is EXACTLY WHAT THE CEILING PROBE ARM CREATES.  Counted
+        # separately; the data-section count gates, the all-points count is
+        # REPORTED and is a free positive control that the arm reached the
+        # compiler.
+        if {[pkw  $nm]} { incr nkwa ; if {$sec} { incr nkw } }
         if {[pabs $nm]} { incr nabs }
         if {[prip $nm] && $sec} { incr nrip }
         if {[p9 $nm]} {
@@ -151,7 +167,7 @@ proc census1 {pts} {
     # WAVE 8's span: data section, last.total - (first.total - first.incr).
     set s8 0.0
     if {$n9_dat > 0 && $ld_tot > $fd_pre} { set s8 [expr {$ld_tot - $fd_pre}] }
-    return [list $n9_all $n9_dat $n8_dat $nkw $nabs $nrip $s9 $s8]
+    return [list $n9_all $n9_dat $n8_dat $nkw $nabs $nrip $s9 $s8 $nkwa]
 }
 
 # ==========================================================================
@@ -188,7 +204,7 @@ emit [format "        get_nodes %d -> paths %d   (WAVE 1 sec.0.2: silently 0)" $
 if {$n_pins < 1} { set CTL_OK 0 ; emit "        *** PC-W1 FAILED ***" } else { emit "        PC-W1 PASS" }
 
 # --- PC-W2 / PC-W3  THE MATCHER CAN SAY YES, AND THE WRONG FORMS SAY NO.
-set biu_pos -1 ; set biu_kw -1 ; set biu_abs -1 ; set biu_pin "" ; set tries 0
+set biu_pos -1 ; set biu_kw -1 ; set biu_kwa -1 ; set biu_abs -1 ; set biu_pin "" ; set tries 0
 set biu_p8 -1
 foreach pat {{*|u_biu|q_ripe_lead_n~*|combout} {*|u_biu|q_cnt~*|combout}
              {*|u_biu|*|combout}} {
@@ -206,6 +222,7 @@ foreach pat {{*|u_biu|q_ripe_lead_n~*|combout} {*|u_biu|q_cnt~*|combout}
             if {[lindex $c 0] >= 1} {
                 set biu_pos [lindex $c 0] ; set biu_p8 [lindex $c 2]
                 set biu_kw [lindex $c 3] ; set biu_abs [lindex $c 4]
+                set biu_kwa [lindex $c 8]
                 set biu_pin [get_node_info $pin -name]
             }
         }
@@ -226,7 +243,8 @@ emit [format "  PC-W2 MATCHER    |u_biu| combout pins in the netlist: %d  (singl
           [get_collection_size $biup] $tries]
 emit [format "        BIU nodes on a path forced through ONE NAMED PIN : %d  (MUST be >= 1)" $biu_pos]
 emit "        the pin that answered : $biu_pin"
-emit [format "  PC-W3 WRONG FORMS  ...the `v30u_biu:` TYPE prefix, same path : %d  (MUST be 0)" $biu_kw]
+emit [format "  PC-W3 WRONG FORMS  ...the `v30u_biu:` TYPE prefix IN THE DATA SECTION : %d  (MUST be 0)" $biu_kw]
+emit [format "                     ...the same form over ALL points of that path  : %d  (REPORTED: > 0 means the path ENDS AT or LAUNCHES FROM a BIU register, which the shipped design has not got and the CEILING PROBE ARM has by construction)" $biu_kwa]
 emit [format "                     ...an instance that does not exist        : %d  (MUST be 0)" $biu_abs]
 emit [format "        (AX-1 live: WAVE 8's normalising predicate on the same path: %d)" $biu_p8]
 emit [format "  PC-W4 BULK       the BULK -through of %d pins yields : %d BIU nodes" \
@@ -325,7 +343,7 @@ close $ap
 # ==========================================================================
 proc population {tag paths outfh} {
     global fh
-    set n 0 ; set c9 0 ; set c9d 0 ; set c8 0 ; set crip 0 ; set ckw 0 ; set cabs 0
+    set n 0 ; set c9 0 ; set c9d 0 ; set c8 0 ; set crip 0 ; set ckw 0 ; set ckwa 0 ; set cabs 0
     set s9sum 0.0 ; set s8sum 0.0 ; set s9max 0.0
     set pairs [list]
     foreach_in_collection p $paths {
@@ -333,13 +351,14 @@ proc population {tag paths outfh} {
         if {!$K(ok)} { continue }
         incr n
         set c [census1 $K(pts)]
-        foreach {n9a n9d n8d nkw nabs nrip s9 s8} $c break
+        foreach {n9a n9d n8d nkw nabs nrip s9 s8 nkwa} $c break
         if {$n9a > 0} { incr c9 ; set s9sum [expr {$s9sum + $s9}]
                         if {$s9 > $s9max} { set s9max $s9 } }
         if {$n9d > 0} { incr c9d ; set s8sum [expr {$s8sum + $s8}] }
         if {$n8d > 0} { incr c8 }
         if {$nrip > 0} { incr crip }
         if {$nkw  > 0} { incr ckw }
+        if {$nkwa > 0} { incr ckwa }
         if {$nabs > 0} { incr cabs }
         lappend pairs "$K(from)\t$K(to)"
         puts $outfh [format "R %s %d %s %s %d %d %d %d %.3f %.3f %s %s" $tag $n \
@@ -355,7 +374,8 @@ proc population {tag paths outfh} {
     emit [format "    ...carrying it in the DATA SECTION           : %d   (AX-2 control: must equal the line above)" $c9d]
     emit [format "    ...under WAVE 8's normalising predicate      : %d   (AX-1 control: must equal it too)" $c8]
     emit [format "    ...carrying `q_ripe_lead_n` BY NAME          : %d" $crip]
-    emit [format "    ...matching the KNOWN-WRONG type prefix      : %d   (MUST be 0)" $ckw]
+    emit [format "    ...KNOWN-WRONG type prefix IN THE DATA SECTION: %d   (MUST be 0)" $ckw]
+    emit [format "    ...the same form at ANY point (endpoints too) : %d   (REPORTED, not gated -- a BIU REGISTER ENDPOINT, which only an arm that adds one can have)" $ckwa]
     emit [format "    ...matching an instance that does not exist  : %d   (MUST be 0)" $cabs]
     if {$c9 > 0} {
         emit [format "    mean span, WAVE 9 convention (ns)            : %.3f" [expr {$s9sum / $c9}]]
@@ -364,7 +384,7 @@ proc population {tag paths outfh} {
     if {$c9d > 0} {
         emit [format "    mean span, WAVE 8 convention (ns)            : %.3f" [expr {$s8sum / $c9d}]]
     }
-    return [list $n $c9 $c9d $c8 $ckw $cabs]
+    return [list $n $c9 $c9d $c8 $ckw $cabs $ckwa]
 }
 
 emit ""
@@ -381,7 +401,7 @@ emit ""
 emit "=== D. THE AX CONTROLS, SCORED ON THIS DRAW ==="
 set ax_ok 1
 foreach {tag R} [list A_topN $A B_nworst1 $B] {
-    foreach {n c9 c9d c8 ckw cabs} $R break
+    foreach {n c9 c9d c8 ckw cabs ckwa} $R break
     set a1 [expr {$c9 == $c8}]
     set a2 [expr {$c9 == $c9d}]
     emit [format "  %-10s AX-1 (both predicates agree) %s    AX-2 (data section == all points) %s    wrong forms %s" \
