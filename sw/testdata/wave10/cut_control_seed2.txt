@@ -1,0 +1,78 @@
+=== sta_biu_roundtrip (WAVE 10) ===
+  revision nec_test_ucore   NA 200 (no -nworst)   NB 400 (-nworst 1)
+  $v30u_ce 2792   $v30u_half 1
+
+=== A. POSITIVE CONTROLS (reported FIRST; a miss voids the draw) ===
+  PC-W1 RESOLVER   probe: emu|system_large|u_core|u_eu|u_ucrom|ucrom~796|combout
+        get_pins  1 -> paths 1   (MUST be >= 1)
+        get_nodes 1 -> paths 0   (WAVE 1 sec.0.2: silently 0)
+        PC-W1 PASS
+  PC-W2 MATCHER    |u_biu| combout pins in the netlist: 1260  (single-pin tries 1)
+        BIU nodes on a path forced through ONE NAMED PIN : 8  (MUST be >= 1)
+        the pin that answered : emu|system_large|u_core|u_biu|q_ripe_lead_n~5|combout
+  PC-W3 WRONG FORMS  ...the `v30u_biu:` TYPE prefix IN THE DATA SECTION : 0  (MUST be 0)
+                     ...the same form over ALL points of that path  : 0  (REPORTED: > 0 means the path ENDS AT or LAUNCHES FROM a BIU register, which the shipped design has not got and the CEILING PROBE ARM has by construction)
+                     ...an instance that does not exist        : 0  (MUST be 0)
+        (AX-1 live: WAVE 8's normalising predicate on the same path: 8)
+  PC-W4 BULK       the BULK -through of 1260 pins yields : 8 BIU nodes
+        (a BULK figure BELOW the single-pin figure is `-through` being
+         ACCEPTED AND IGNORED -- printed, never relied on)
+        PC-W2/W3 PASS
+  PC-W5 DESTINATION : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|upc_page[0]
+        pins named `d       ` on THAT register : 0
+        pins named `asdata  ` on THAT register : 0
+        pins named `datain  ` on THAT register : 0
+        pins named `any     ` on THAT register : 0
+        (all four reading 0 is an M10K PORT REGISTER, which exposes no pin
+         objects -- the finding that voided this control's first two forms)
+  PC-W5a  -to via get_registers collection 0         -> paths 0
+  PC-W5a  -to via get_keepers   collection 0         -> paths 0
+  PC-W5a  -to via node_object   collection n/a(node) -> paths 1
+  PC-W5a  a path forced TO that ONE DESTINATION : 1  via node_object  (MUST be >= 1)
+  PC-W5b  `|d` write-pin form : ANSWERED   emu|system_large|u_core|u_eu|upc_page[1]|d
+  PC-W5b  `|asdata` write-pin form : ANSWERED   emu|system_large|u_core|u_eu|upc_page[0]|asdata
+        PC-W5 PASS
+
+  === CONTROLS: ALL PASS ===
+
+=== B. THE WORST ce->ce ARC ===
+  from : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a6~PORT_A_WRITE_ENABLE_REG
+  to   : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|upc_page[0]
+  slack   -2.012   levels 31   data delay 31.959
+  BIU nodes (all points) 8   (data section) 8   q_ripe_lead_n points 4
+  span WAVE 9 convention 2.953 ns   span WAVE 8 convention 3.253 ns
+
+=== C. THE TWO POPULATIONS, ONE PREDICATE ===
+
+  --- POPULATION A_topN ---
+    paths scanned                                : 200
+    DISTINCT (from,to) endpoint pairs            : 11
+    ...carrying the round trip (all points)      : 200
+    ...carrying it in the DATA SECTION           : 200   (AX-2 control: must equal the line above)
+    ...under WAVE 8's normalising predicate      : 200   (AX-1 control: must equal it too)
+    ...carrying `q_ripe_lead_n` BY NAME          : 200
+    ...KNOWN-WRONG type prefix IN THE DATA SECTION: 0   (MUST be 0)
+    ...the same form at ANY point (endpoints too) : 0   (REPORTED, not gated -- a BIU REGISTER ENDPOINT, which only an arm that adds one can have)
+    ...matching an instance that does not exist  : 0   (MUST be 0)
+    mean span, WAVE 9 convention (ns)            : 2.786
+    max  span, WAVE 9 convention (ns)            : 3.284
+    mean span, WAVE 8 convention (ns)            : 3.274
+
+  --- POPULATION B_nworst1 ---
+    paths scanned                                : 400
+    DISTINCT (from,to) endpoint pairs            : 400
+    ...carrying the round trip (all points)      : 400
+    ...carrying it in the DATA SECTION           : 400   (AX-2 control: must equal the line above)
+    ...under WAVE 8's normalising predicate      : 400   (AX-1 control: must equal it too)
+    ...carrying `q_ripe_lead_n` BY NAME          : 389
+    ...KNOWN-WRONG type prefix IN THE DATA SECTION: 0   (MUST be 0)
+    ...the same form at ANY point (endpoints too) : 11   (REPORTED, not gated -- a BIU REGISTER ENDPOINT, which only an arm that adds one can have)
+    ...matching an instance that does not exist  : 0   (MUST be 0)
+    mean span, WAVE 9 convention (ns)            : 3.072
+    max  span, WAVE 9 convention (ns)            : 7.901
+    mean span, WAVE 8 convention (ns)            : 3.348
+
+=== D. THE AX CONTROLS, SCORED ON THIS DRAW ===
+  A_topN     AX-1 (both predicates agree) PASS    AX-2 (data section == all points) PASS    wrong forms PASS
+  B_nworst1  AX-1 (both predicates agree) PASS    AX-2 (data section == all points) PASS    wrong forms PASS
+  AX CONTROLS: ALL PASS

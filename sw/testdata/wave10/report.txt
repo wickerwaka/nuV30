@@ -1,0 +1,118 @@
+====================================================================================================
+WAVE 10 -- THE UNIFIED BIU ROUND-TRIP CENSUS.  CONTROLS FIRST (K-1).
+====================================================================================================
+
+  cell / seed            | PC-W1 | PC-W2/3 | PC-W5 | AX | pins->paths | nodes->paths | 1-pin BIU | bulk BIU
+  uncut_control      s1 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 10        | 0
+  uncut_control      s2 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 8         | 8
+  uncut_control      s3 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 6         | 6
+  uncut_control      s4 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 6         | 6
+  uncut_control      s5 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 10        | 0
+  uncut_control      s6 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 8         | 6
+  uncut_control      s7 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 8         | 8
+  uncut_control      s8 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 6         | 6
+  uncut_control      s9 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 10        | 8
+  uncut_control      s10 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 8         | 8
+  uncut_retention    s1 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 8         | 0
+  uncut_retention    s2 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 10        | 0
+  uncut_retention    s3 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 8         | 8
+  cut_control        s1 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 10        | 10
+  cut_control        s2 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 8         | 8
+  cut_control        s3 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 10        | 10
+  cut_retention      s1 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 8         | 8
+  cut_retention      s2 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 8         | 8
+  cut_retention      s3 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 8         | 8
+  qripe_reg_control  s1 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 27        | 0
+  qripe_reg_control  s2 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 29        | 0
+  qripe_reg_control  s3 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 27        | 0
+  qripe_reg_control  s4 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 21        | 0
+  qripe_reg_control  s5 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 29        | 0
+  qripe_reg_control  s6 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 20        | 0
+  qripe_reg_control  s7 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 25        | 0
+  qripe_reg_control  s8 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 27        | 0
+  qripe_reg_control  s9 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 27        | 0
+  qripe_reg_control  s10 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 25        | 0
+  cutarm_control     s1 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 20        | 12
+  cutarm_control     s2 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 19        | 25
+  cutarm_control     s3 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 16        | 8
+  cutarm_control     s4 | PASS  | PASS    | PASS  | OK |     1->1     |     1->0     | 18        | 14
+  cutarm_control     s5 | PASS  | PASS    | PASS  | ** |     1->1     |     1->0     | 21        | 23
+
+  CONTROLS: *** A DRAW FAILED -- ITS ROWS MAY NOT BE QUOTED ***
+
+====================================================================================================
+THE CENSUS.  BOTH POPULATIONS, ONE PREDICATE, PER DRAW.
+====================================================================================================
+
+  cell / seed            | SAME k | T_min  |   MHz | worst arc ns | BIU on worst | POP-A carry   | POP-B carry   | span9 A | span8 A
+  uncut_control      s1 | 1.0000 | 35.867 | 27.88 |       34.578 |   0 (0 ripe) |    0 / 200    0.0% |    0 / 400    0.0% |      -- |      --
+  uncut_control      s2 | 1.0000 | 36.372 | 27.49 |       35.065 |   8 (4 ripe) |  200 / 200  100.0% |  400 / 400  100.0% |   3.046 |   3.309
+  uncut_control      s3 | 1.0000 | 34.788 | 28.75 |       33.551 |   0 (0 ripe) |   93 / 200   46.5% |   19 / 400    4.8% |   1.769 |   2.020
+  uncut_control      s4 | 1.0000 | 36.148 | 27.66 |       34.774 |   6 (2 ripe) |  200 / 200  100.0% |  400 / 400  100.0% |   1.855 |   2.519
+  uncut_control      s5 | 1.0000 | 36.250 | 27.59 |       34.963 |   0 (0 ripe) |    0 / 200    0.0% |    0 / 400    0.0% |      -- |      --
+  uncut_control      s6 | 1.0000 | 35.360 | 28.28 |       34.062 |   0 (0 ripe) |    0 / 200    0.0% |    0 / 400    0.0% |      -- |      --
+  uncut_control      s7 | 1.0000 | 35.722 | 27.99 |       34.478 |   0 (0 ripe) |    0 / 200    0.0% |    0 / 400    0.0% |      -- |      --
+  uncut_control      s8 | 1.0000 | 35.865 | 27.88 |       34.521 |   6 (2 ripe) |  200 / 200  100.0% |  400 / 400  100.0% |   2.355 |   2.740
+  uncut_control      s9 | 1.0000 | 34.950 | 28.61 |       33.692 |   0 (0 ripe) |    0 / 200    0.0% |    0 / 400    0.0% |      -- |      --
+  uncut_control      s10 | 1.0000 | 36.466 | 27.42 |       35.174 |   8 (2 ripe) |  200 / 200  100.0% |  400 / 400  100.0% |   2.120 |   2.419
+  uncut_retention    s1 | 1.0000 | 35.119 | 28.47 |       33.739 |   0 (0 ripe) |    0 / 200    0.0% |    0 / 400    0.0% |      -- |      --
+  uncut_retention    s2 | 1.0000 | 36.970 | 27.05 |       35.305 |   0 (0 ripe) |    0 / 200    0.0% |    0 / 400    0.0% |      -- |      --
+  uncut_retention    s3 | 1.0000 | 35.333 | 28.30 |       33.659 |   8 (4 ripe) |  200 / 200  100.0% |  400 / 400  100.0% |   1.774 |   2.076
+  cut_control        s1 | 1.0000 | 32.309 | 30.95 |       31.023 |  10 (6 ripe) |  200 / 200  100.0% |  400 / 400  100.0% |   2.285 |   2.867
+  cut_control        s2 | 1.0000 | 33.262 | 30.06 |       31.959 |   8 (4 ripe) |  200 / 200  100.0% |  400 / 400  100.0% |   2.786 |   3.274
+  cut_control        s3 | 1.0000 | 32.966 | 30.33 |       31.939 |  10 (4 ripe) |  200 / 200  100.0% |  400 / 400  100.0% |   3.706 |   4.026
+  cut_retention      s1 | 1.0000 | 31.590 | 31.66 |       29.939 |   8 (6 ripe) |  200 / 200  100.0% |  400 / 400  100.0% |   3.035 |   3.304
+  cut_retention      s2 | 1.0000 | 31.729 | 31.52 |       30.057 |   8 (4 ripe) |  200 / 200  100.0% |  400 / 400  100.0% |   2.556 |   3.123
+  cut_retention      s3 | 1.0000 | 31.621 | 31.62 |       30.397 |   8 (6 ripe) |  200 / 200  100.0% |  400 / 400  100.0% |   3.086 |   3.342
+  qripe_reg_control  s1 | 1.0000 | 33.485 | 29.86 |       32.458 |   0 (0 ripe) |    0 / 200    0.0% |    3 / 400    0.8% |      -- |      --
+  qripe_reg_control  s2 | 1.0000 | 35.217 | 28.40 |       33.604 |   0 (0 ripe) |    0 / 200    0.0% |    0 / 400    0.0% |      -- |      --
+  qripe_reg_control  s3 | 1.0000 | 35.549 | 28.13 |       33.813 |   0 (0 ripe) |    0 / 200    0.0% |    0 / 400    0.0% |      -- |      --
+  qripe_reg_control  s4 | 1.0000 | 34.524 | 28.97 |       33.499 |   0 (0 ripe) |    0 / 200    0.0% |    0 / 400    0.0% |      -- |      --
+  qripe_reg_control  s5 | 1.0000 | 37.011 | 27.02 |       35.722 |   0 (0 ripe) |    0 / 200    0.0% |    0 / 400    0.0% |      -- |      --
+  qripe_reg_control  s6 | 1.0000 | 35.847 | 27.90 |       34.612 |   0 (0 ripe) |    0 / 200    0.0% |    0 / 400    0.0% |      -- |      --
+  qripe_reg_control  s7 | 1.0000 | 35.031 | 28.55 |       33.371 |   0 (0 ripe) |    0 / 200    0.0% |    0 / 400    0.0% |      -- |      --
+  qripe_reg_control  s8 | 1.0000 | 35.098 | 28.49 |       33.488 |   0 (0 ripe) |    0 / 200    0.0% |    0 / 400    0.0% |      -- |      --
+  qripe_reg_control  s9 | 1.0000 | 35.716 | 28.00 |       34.077 |   0 (0 ripe) |    0 / 200    0.0% |    0 / 400    0.0% |      -- |      --
+  qripe_reg_control  s10 | 1.0000 | 36.314 | 27.54 |       34.941 |   0 (0 ripe) |    0 / 200    0.0% |    0 / 400    0.0% |      -- |      --
+  cutarm_control     s1 | 1.0000 | 24.292 | 41.17 |       23.653 |  12 (0 ripe) |   56 / 200   28.0% |  212 / 400   53.0% |   4.982 |   5.375
+  cutarm_control     s2 | 1.0000 | 26.415 | 37.86 |       26.209 |   0 (0 ripe) |   22 / 200   11.0% |  157 / 400   39.2% |   0.563 |   0.000
+  cutarm_control     s3 | 1.0000 | 25.438 | 39.31 |       25.172 |   0 (0 ripe) |    0 / 200    0.0% |  146 / 400   36.5% |      -- |      --
+  cutarm_control     s4 | 1.0000 | 25.803 | 38.76 |       25.241 |   0 (0 ripe) |    0 / 200    0.0% |  160 / 400   40.0% |      -- |      --
+  cutarm_control     s5 | 1.0000 | 26.199 | 38.17 |       25.972 |   0 (0 ripe) |   54 / 200   27.0% |  164 / 400   41.0% |   0.571 |   0.000
+
+====================================================================================================
+P-1 .. P-5, SCORED AS REGISTERED.  k(cell) = draws whose POP-A carries it on >= 90 % of paths.
+====================================================================================================
+
+  k(uncut_control     ) = 4 of 10    *** SPLIT -- A DRAW EFFECT (P-4) ***
+  k(uncut_retention   ) = 1 of 3    *** SPLIT -- A DRAW EFFECT (P-4) ***
+  k(cut_control       ) = 3 of 3    ALL
+  k(cut_retention     ) = 3 of 3    ALL
+  k(qripe_reg_control ) = 0 of 10    NONE
+  k(cutarm_control    ) = 0 of 5    NONE
+
+  P-5  the two populations, within each draw:
+    uncut_control s3: POP-A  46.5%  POP-B   4.8%  spread  41.8 pt
+    cutarm_control s1: POP-A  28.0%  POP-B  53.0%  spread  25.0 pt
+    cutarm_control s2: POP-A  11.0%  POP-B  39.2%  spread  28.3 pt
+    cutarm_control s3: POP-A   0.0%  POP-B  36.5%  spread  36.5 pt
+    cutarm_control s4: POP-A   0.0%  POP-B  40.0%  spread  40.0 pt
+    cutarm_control s5: POP-A  27.0%  POP-B  41.0%  spread  14.0 pt
+    draws on which the two populations disagree about PRESENCE (>=90 %): 0
+    (a spread printed above without DISAGREE is a difference of DEGREE:
+     POP-B reaches much further down the slack distribution, so a draw on
+     which only the very worst cone carries the round trip shows a high
+     POP-A fraction and a low POP-B one.  AX-3 is live in DEGREE even where
+     it is not live in PRESENCE.)
+
+====================================================================================================
+THE ARC, PER CELL (means over the cell's draws)
+====================================================================================================
+
+  cell                   | n | worst arc ns  mean (min..max)      | T_min ns mean | MHz mean | MHz worst-of-n
+  uncut_control          | 10 |   34.486 (33.551..35.174) |        35.779 |    27.95 |          27.42
+  uncut_retention        | 3 |   34.234 (33.659..35.305) |        35.807 |    27.94 |          27.05
+  cut_control            | 3 |   31.640 (31.023..31.959) |        32.846 |    30.45 |          30.06
+  cut_retention          | 3 |   30.131 (29.939..30.397) |        31.647 |    31.60 |          31.52
+  qripe_reg_control      | 10 |   33.959 (32.458..35.722) |        35.379 |    28.29 |          27.02
+  cutarm_control         | 5 |   25.249 (23.653..26.209) |        25.629 |    39.05 |          37.86

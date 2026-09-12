@@ -1,0 +1,72 @@
+=== sta_biu_roundtrip (WAVE 10) ===
+  revision nec_test_ucore   NA 200 (no -nworst)   NB 400 (-nworst 1)
+  $v30u_ce 2107   $v30u_half 1
+
+=== A. POSITIVE CONTROLS (reported FIRST; a miss voids the draw) ===
+  PC-W1 RESOLVER   probe: emu|system_large|u_core|u_eu|u_ucrom|ucrom~785|combout
+        get_pins  1 -> paths 1   (MUST be >= 1)
+        get_nodes 1 -> paths 0   (WAVE 1 sec.0.2: silently 0)
+        PC-W1 PASS
+  PC-W2 MATCHER    |u_biu| combout pins in the netlist: 1202  (single-pin tries 1)
+        BIU nodes on a path forced through ONE NAMED PIN : 8  (MUST be >= 1)
+        the pin that answered : emu|system_large|u_core|u_biu|q_ripe_lead_n~2|combout
+  PC-W3 WRONG FORMS  ...the `v30u_biu:` TYPE prefix, same path : 0  (MUST be 0)
+                     ...an instance that does not exist        : 0  (MUST be 0)
+        (AX-1 live: WAVE 8's normalising predicate on the same path: 8)
+  PC-W4 BULK       the BULK -through of 1202 pins yields : 8 BIU nodes
+        (a BULK figure BELOW the single-pin figure is `-through` being
+         ACCEPTED AND IGNORED -- printed, never relied on)
+        PC-W2/W3 PASS
+  PC-W5 DESTINATION : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a1~porta_address_reg11
+        pins named `d       ` on THAT register : 0
+        pins named `asdata  ` on THAT register : 0
+        pins named `datain  ` on THAT register : 0
+        pins named `any     ` on THAT register : 0
+        (all four reading 0 is an M10K PORT REGISTER, which exposes no pin
+         objects -- the finding that voided this control's first two forms)
+  PC-W5a  a path forced TO that ONE NAMED REGISTER : 1  (MUST be >= 1)
+  PC-W5b  `|d` write-pin form : ANSWERED   emu|system_large|u_core|u_eu|upc_page[2]_NEW_REG3066|d
+  PC-W5b  `|asdata` write-pin form : ANSWERED   emu|system_large|u_core|u_eu|upc_page[1]_NEW_REG3049|asdata
+        PC-W5 PASS
+
+  === CONTROLS: ALL PASS ===
+
+=== B. THE WORST ce->ce ARC ===
+  from : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a2~PORT_A_WRITE_ENABLE_REG
+  to   : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a1~porta_address_reg11
+  slack   -4.083   levels 33   data delay 33.659
+  BIU nodes (all points) 8   (data section) 8   q_ripe_lead_n points 4
+  span WAVE 9 convention 1.992 ns   span WAVE 8 convention 2.289 ns
+
+=== C. THE TWO POPULATIONS, ONE PREDICATE ===
+
+  --- POPULATION A_topN ---
+    paths scanned                                : 200
+    DISTINCT (from,to) endpoint pairs            : 5
+    ...carrying the round trip (all points)      : 200
+    ...carrying it in the DATA SECTION           : 200   (AX-2 control: must equal the line above)
+    ...under WAVE 8's normalising predicate      : 200   (AX-1 control: must equal it too)
+    ...carrying `q_ripe_lead_n` BY NAME          : 200
+    ...matching the KNOWN-WRONG type prefix      : 0   (MUST be 0)
+    ...matching an instance that does not exist  : 0   (MUST be 0)
+    mean span, WAVE 9 convention (ns)            : 1.774
+    max  span, WAVE 9 convention (ns)            : 1.992
+    mean span, WAVE 8 convention (ns)            : 2.076
+
+  --- POPULATION B_nworst1 ---
+    paths scanned                                : 400
+    DISTINCT (from,to) endpoint pairs            : 400
+    ...carrying the round trip (all points)      : 400
+    ...carrying it in the DATA SECTION           : 400   (AX-2 control: must equal the line above)
+    ...under WAVE 8's normalising predicate      : 400   (AX-1 control: must equal it too)
+    ...carrying `q_ripe_lead_n` BY NAME          : 400
+    ...matching the KNOWN-WRONG type prefix      : 0   (MUST be 0)
+    ...matching an instance that does not exist  : 0   (MUST be 0)
+    mean span, WAVE 9 convention (ns)            : 1.992
+    max  span, WAVE 9 convention (ns)            : 1.992
+    mean span, WAVE 8 convention (ns)            : 2.289
+
+=== D. THE AX CONTROLS, SCORED ON THIS DRAW ===
+  A_topN     AX-1 (both predicates agree) PASS    AX-2 (data section == all points) PASS    wrong forms PASS
+  B_nworst1  AX-1 (both predicates agree) PASS    AX-2 (data section == all points) PASS    wrong forms PASS
+  AX CONTROLS: ALL PASS
