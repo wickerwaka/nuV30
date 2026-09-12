@@ -236,46 +236,65 @@ emit "         ACCEPTED AND IGNORED -- printed, never relied on)"
 if {$biu_pos < 1 || $biu_kw != 0 || $biu_abs != 0} {
     set CTL_OK 0 ; emit "        *** PC-W2/W3 FAILED ***" } else { emit "        PC-W2/W3 PASS" }
 
-# --- PC-W5  THE DESTINATION PIN FORM, ENUMERATED FROM THE NETLIST AND NEVER
-#     GUESSED.  WAVE 9 sec.5.1's own diagnostic control failed because
-#     `upc_page[0]` is a SYNCHRONOUS-LOAD register written through `|asdata`,
-#     not `|d`.  ⚠ WAVE 10's FIRST FORM OF THIS CONTROL FAILED FOR THE SAME
-#     REASON ONE STEP FURTHER OUT: it tried `|d`, `|asdata` and `|datain`, and
-#     the binding path's destination on the UNCUT tree is an M10K PORT
-#     REGISTER (`ram_block1a6~porta_address_reg7`) whose input pin is none of
-#     the three.  **A CONTROL THAT ENUMERATES A LIST OF PIN NAMES IS A CONTROL
-#     THAT WILL FAIL ON THE FOURTH KIND OF REGISTER.**  So the list is gone:
-#     the pins are ASKED OF THE NETLIST, tried ONE AT A TIME, and the one that
-#     answered is NAMED.  The three named forms are still printed beside it as
-#     NAMED KNOWN-ABSENT controls, exactly as WAVE 8's PC-3 prints `st_zero_ok`.
-set pc5_ok 0 ; set pc5_pin "" ; set pc5_tries 0
+# --- PC-W5  THE DESTINATION SIDE.  TWO CLAUSES, AND THE SECOND ONE IS K-1's.
+#
+# ⚠⚠ THIS CONTROL HAS NOW FAILED TWICE AND BOTH FAILURES ARE THE INSTRUMENT.
+#   (i)  WAVE 9 sec.5.1: its diagnostic forced through `|d` and `upc_page[0]` is
+#        a SYNCHRONOUS-LOAD register written through `|asdata`.
+#   (ii) WAVE 10's first form tried `|d`, `|asdata` AND `|datain`; the UNCUT
+#        tree's binding path ends at an M10K PORT REGISTER
+#        (`ram_block1a6~porta_address_reg7`) whose input pin is none of the
+#        three.  Its SECOND form asked the netlist for `<dest>|*` instead of
+#        guessing -- **and that returned 0 PINS, because an M10K port register
+#        EXPOSES NO PIN OBJECTS AT ALL.**  Printed below, because it is the
+#        reason a pin-based destination control cannot be the whole of this one.
+#
+# So the control is split into the two things it was actually for:
+#   W5a  THE CENSUS'S OWN REQUIREMENT -- a path can be forced to ONE NAMED
+#        DESTINATION REGISTER.  `get_registers`, not `get_pins`, so it holds for
+#        every register kind including an M10K port register.
+#   W5b  K-1's REQUIREMENT -- BOTH WRITE-PIN FORMS ARE HANDLED.  The netlist is
+#        searched for a `v30u_eu` register carrying a `|d` pin and one carrying
+#        an `|asdata` pin, a path is forced through ONE NAMED PIN of each, and
+#        BOTH are reported.  `upc_page` is named explicitly, because it is the
+#        register WAVE 9's control died on.
 set dreg [get_node_info [get_path_info $W -to] -name]
-# `string match` / glob treat `[` as a character class (WAVE 1 sec.3.0), and a
-# register name can carry a bus index, so the brackets are escaped.
 set desc $dreg
 regsub -all {\[} $desc {\\[} desc
 regsub -all {\]} $desc {\\]} desc
-foreach {tag pat} [list d "${desc}|d" asdata "${desc}|asdata" datain "${desc}|datain"] {
-    set cp [get_pins -nowarn -compatibility_mode $pat]
-    emit [format "  PC-W5 NAMED FORM %-8s pins %d   (a named KNOWN-ABSENT control when 0)" \
-              $tag [get_collection_size $cp]]
+emit "  PC-W5 DESTINATION : $dreg"
+foreach {tag pat} [list d "${desc}|d" asdata "${desc}|asdata" datain "${desc}|datain" \
+                        any "${desc}|*"] {
+    emit [format "        pins named `%-8s` on THAT register : %d" $tag \
+              [get_collection_size [get_pins -nowarn -compatibility_mode $pat]]]
 }
-set allp [get_pins -nowarn -compatibility_mode "${desc}|*"]
-emit [format "  PC-W5 ENUMERATED input pins of the destination register: %d" \
-          [get_collection_size $allp]]
-foreach_in_collection pin $allp {
-    if {$pc5_tries >= 40 || $pc5_ok} { break }
-    incr pc5_tries
-    set k [get_collection_size [get_timing_paths -from $v30u_ce -to $v30u_ce \
-                                    -through $pin -setup -npaths 1]]
-    if {$k >= 1} { set pc5_ok 1 ; set pc5_pin [get_node_info $pin -name] }
+emit "        (all four reading 0 is an M10K PORT REGISTER, which exposes no pin"
+emit "         objects -- the finding that voided this control's first two forms)"
+set w5a [get_collection_size [get_timing_paths -from $v30u_ce \
+             -to [get_registers -nowarn $desc] -setup -npaths 1]]
+emit [format "  PC-W5a  a path forced TO that ONE NAMED REGISTER : %d  (MUST be >= 1)" $w5a]
+
+set w5b_d 0 ; set w5b_as 0 ; set w5b_dpin "" ; set w5b_aspin ""
+foreach {tag pats} [list d   {{*|u_eu|upc_page*|d} {*|u_eu|*|d}} \
+                         as  {{*|u_eu|upc_page*|asdata} {*|u_eu|*|asdata}}] {
+    set got 0 ; set gotpin "" ; set tries 0
+    foreach pat $pats {
+        if {$got} { break }
+        foreach_in_collection pin [get_pins -nowarn -compatibility_mode $pat] {
+            if {$tries >= 40 || $got} { break }
+            incr tries
+            set k [get_collection_size [get_timing_paths -from $v30u_ce -to $v30u_ce \
+                                            -through $pin -setup -npaths 1]]
+            if {$k >= 1} { set got 1 ; set gotpin [get_node_info $pin -name] }
+        }
+    }
+    emit [format "  PC-W5b  `|%s` write-pin form : %s   %s" \
+              [expr {$tag eq "d" ? "d" : "asdata"}] \
+              [expr {$got ? {ANSWERED} : {*** NO PATH ***}}] $gotpin]
+    if {$tag eq "d"} { set w5b_d $got } else { set w5b_as $got }
 }
-emit "        destination register : $dreg"
-emit "        the pin that answered : $pc5_pin   (single-pin tries: $pc5_tries)"
-emit [format "        a path forced through ONE NAMED DESTINATION PIN : %s" \
-          [expr {$pc5_ok ? {YES} : {*** NO ***}}]]
-if {!$pc5_ok} { set CTL_OK 0 ; emit "        *** PC-W5 FAILED ***" } \
-    else { emit "        PC-W5 PASS" }
+if {$w5a < 1 || !$w5b_d || !$w5b_as} {
+    set CTL_OK 0 ; emit "        *** PC-W5 FAILED ***" } else { emit "        PC-W5 PASS" }
 
 emit ""
 emit "  === CONTROLS: [expr {$CTL_OK ? {ALL PASS} : {*** FAILED -- NOTHING BELOW MAY BE QUOTED ***}}] ==="
