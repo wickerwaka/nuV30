@@ -531,4 +531,55 @@ is on it by counting rather than by reading.**
    place the shadow's derivation is not covered by the runtime assert, which
    excludes `ss_we` by construction.  **BOOKED for the fourth time.**
 
+### 8.4 THE REVERT IS MEASURED, NOT ASSERTED — `cbb556a097`
+
+* **`git diff cf43e65cb3 -- hdl/` is EMPTY.**  `hdl/` is BYTE-IDENTICAL to the
+  tree this wave entered on; `hdl/rtl/ucore/v30u_eu_preload.svh` is deleted.
+  The same diff over `sw/quartus_gate.py`, `sw/sta_truefmax_probe.tcl`,
+  `sw/test_quartus_gate.py`, `sw/demux_off_gate.py` and
+  `sw/ss_flop_whitelist_ucore.txt` is **EMPTY** too.
+* **THE THREE INSTRUMENTS OF `451bbf26c5` ARE DELIBERATELY NOT REVERTED** —
+  `sw/cutset_census.py`, `sw/cutset_lint.py`, `sw/phase_split_width.py`.  They
+  are the ONLY files still differing from `cf43e65cb3`, they touch no `hdl/`
+  file, and the include-list repair they carry is what stopped `cutset_lint`
+  passing vacuously on every tree from WAVE 7 onward (§6.1).
+  `sw/sta_cutset_diag_pc.tcl` and `sw/sta_cutset_biu_census.tcl` are kept for the
+  same reason — **the second is the instrument that scores the next mechanism.**
+* **BOTH LINTS REFUSE**: `sw/cutset_lint.py` and `sw/phase_split_lint.py` each
+  exit **2, COULD NOT RUN**, naming the absent mechanism.  Neither is registered
+  in `standing_gates.md`, for the reason WAVE 2 and WAVE 4 gave: **a lint that
+  PASSED here would pass vacuously.**
+* **MEASURED BACK AT THEIR REGISTERED VALUES ON THE REVERTED TREE**: `r7_lint`
+  **PASS** (0 undeclared carriers / 0 undeclared unresolved / 0 `stop` sites) ·
+  `ss_lint` **PASS**, `ss_flopcensus` **228** architectural flops and **3**
+  whitelist entries — *the shadow's entry is gone and it is the only one that
+  went* · `test_quartus_gate` **255 / 255**.  **The functional ladder is not
+  re-run**: `hdl/` is byte-identical to `cf43e65cb3`, which is a stronger
+  statement than re-measuring it, and `sw/testdata/wave9/before/` already holds
+  that tree's column leg for leg.
+* `sw/cutset_nonvacuity.py` on the reverted tree: **A / A2 / B / B2 / B3
+  SKIPPED**, said to be, and said WHY (*"probe a mechanism that is not here"*);
+  **C FIRES on `REQUIREMENT VIOLATED (S-1)`** and **DOES NOT** contain
+  *"STAGE-1 capture edge"* — ⚠ **correctly**, because that wording came with
+  edit (a) and went with it, and on a tree with no phase split the EU has no
+  stage-1 dependence to name.  **WAVE 4 measured the identical behaviour on its
+  own reverted tree and this reproduces it.**  `hdl/ restored: CLEAN`.
+* **`git add -A` WAS NEVER USED.**  The ~18 pre-existing modified files (a
+  repo-wide hard-coded-path rename in flight, plus the three **append-only**
+  ledgers under `sw/testdata/receipts/`) are untouched, and the twelve
+  pre-existing untracked `hdl/quartus_gate_*.log` files are still untracked.
+  ⚠ **This wave adds two more of that same class** —
+  `hdl/quartus_gate_w9_noexc_{control,retention}.log` — **left untracked, like
+  the twelve, and named here rather than left to be discovered.**
+  ⚠ **The receipt ledgers carry this wave's appends and are DELIBERATELY LEFT
+  UNCOMMITTED**, because they were already modified at entry; every receipt id
+  quoted above is also present in the committed per-seed receipts under
+  `sw/testdata/g6dist/`, so nothing is unquotable for want of them.
+* `hdl/nec_test_ucore.qsf` moved during every Quartus run — the declared §70.7
+  exemption, E7's single permitted mover — and was restored with
+  `git checkout --` after each.  **Recorded because a file that moves and is put
+  back is still a file that moved**, and because failing to put it back cost
+  WAVE 4 a whole sweep.
+
+
 Claude-Session: https://claude.ai/code/session_01AZih22iifLegfB9mxcLZA5
