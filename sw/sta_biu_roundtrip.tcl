@@ -29,11 +29,14 @@
 #          name that does not exist.
 #   PC-W4  THE BULK `-through`, printed and never relied on.  A bulk figure
 #          BELOW the single-pin figure is `-through` accepted-and-ignored.
-#   PC-W5  BOTH DESTINATION PIN FORMS.  WAVE 9's own diagnostic control failed
-#          because `upc_page[0]` is a SYNCHRONOUS-LOAD register written through
-#          `|asdata`, not `|d`.  This forces a path to a named register through
-#          `|d` AND through `|asdata` and reports which answered.  At least one
-#          must.
+#   PC-W5  THE DESTINATION PIN FORM, ENUMERATED FROM THE NETLIST.  WAVE 9's own
+#          diagnostic control failed because `upc_page[0]` is a
+#          SYNCHRONOUS-LOAD register written through `|asdata`, not `|d`; WAVE
+#          10's first form of THIS control failed one step further out, on an
+#          M10K PORT REGISTER whose input pin is neither.  The pin list is
+#          therefore ASKED OF THE NETLIST and tried ONE AT A TIME, and `|d`,
+#          `|asdata` and `|datain` are printed beside it as NAMED KNOWN-ABSENT
+#          controls.
 #
 # EVERY `-through` IS ONE PIN AT A TIME (`get_pins`, never `get_nodes`).
 # `string match` on a name with a bus index FAILS (`[3]` is a character class),
@@ -233,25 +236,45 @@ emit "         ACCEPTED AND IGNORED -- printed, never relied on)"
 if {$biu_pos < 1 || $biu_kw != 0 || $biu_abs != 0} {
     set CTL_OK 0 ; emit "        *** PC-W2/W3 FAILED ***" } else { emit "        PC-W2/W3 PASS" }
 
-# --- PC-W5  BOTH DESTINATION PIN FORMS.  WAVE 9 sec.5.1: `upc_page[0]` is a
-#     SYNCHRONOUS-LOAD register written through `|asdata`, not `|d`.
-set pc5_d 0 ; set pc5_as 0 ; set pc5_name ""
+# --- PC-W5  THE DESTINATION PIN FORM, ENUMERATED FROM THE NETLIST AND NEVER
+#     GUESSED.  WAVE 9 sec.5.1's own diagnostic control failed because
+#     `upc_page[0]` is a SYNCHRONOUS-LOAD register written through `|asdata`,
+#     not `|d`.  ⚠ WAVE 10's FIRST FORM OF THIS CONTROL FAILED FOR THE SAME
+#     REASON ONE STEP FURTHER OUT: it tried `|d`, `|asdata` and `|datain`, and
+#     the binding path's destination on the UNCUT tree is an M10K PORT
+#     REGISTER (`ram_block1a6~porta_address_reg7`) whose input pin is none of
+#     the three.  **A CONTROL THAT ENUMERATES A LIST OF PIN NAMES IS A CONTROL
+#     THAT WILL FAIL ON THE FOURTH KIND OF REGISTER.**  So the list is gone:
+#     the pins are ASKED OF THE NETLIST, tried ONE AT A TIME, and the one that
+#     answered is NAMED.  The three named forms are still printed beside it as
+#     NAMED KNOWN-ABSENT controls, exactly as WAVE 8's PC-3 prints `st_zero_ok`.
+set pc5_ok 0 ; set pc5_pin "" ; set pc5_tries 0
 set dreg [get_node_info [get_path_info $W -to] -name]
-set pc5_name $dreg
-foreach {tag pat} [list d "${dreg}|d" asdata "${dreg}|asdata" datain "${dreg}|datain"] {
+# `string match` / glob treat `[` as a character class (WAVE 1 sec.3.0), and a
+# register name can carry a bus index, so the brackets are escaped.
+set desc $dreg
+regsub -all {\[} $desc {\\[} desc
+regsub -all {\]} $desc {\\]} desc
+foreach {tag pat} [list d "${desc}|d" asdata "${desc}|asdata" datain "${desc}|datain"] {
     set cp [get_pins -nowarn -compatibility_mode $pat]
-    set k 0
-    if {[get_collection_size $cp] > 0} {
-        set k [get_collection_size [get_timing_paths -from $v30u_ce -to $v30u_ce \
-                                        -through $cp -setup -npaths 1]]
-    }
-    emit [format "  PC-W5 PINFORM    %-8s pins %d -> paths %d" $tag [get_collection_size $cp] $k]
-    if {$tag eq "d"} { set pc5_d $k } elseif {$tag eq "asdata"} { set pc5_as $k }
+    emit [format "  PC-W5 NAMED FORM %-8s pins %d   (a named KNOWN-ABSENT control when 0)" \
+              $tag [get_collection_size $cp]]
 }
-emit "        destination register : $pc5_name"
-emit [format "        at least one form must answer : %s" \
-          [expr {($pc5_d + $pc5_as) >= 1 ? {YES} : {*** NO ***}}]]
-if {($pc5_d + $pc5_as) < 1} { set CTL_OK 0 ; emit "        *** PC-W5 FAILED ***" } \
+set allp [get_pins -nowarn -compatibility_mode "${desc}|*"]
+emit [format "  PC-W5 ENUMERATED input pins of the destination register: %d" \
+          [get_collection_size $allp]]
+foreach_in_collection pin $allp {
+    if {$pc5_tries >= 40 || $pc5_ok} { break }
+    incr pc5_tries
+    set k [get_collection_size [get_timing_paths -from $v30u_ce -to $v30u_ce \
+                                    -through $pin -setup -npaths 1]]
+    if {$k >= 1} { set pc5_ok 1 ; set pc5_pin [get_node_info $pin -name] }
+}
+emit "        destination register : $dreg"
+emit "        the pin that answered : $pc5_pin   (single-pin tries: $pc5_tries)"
+emit [format "        a path forced through ONE NAMED DESTINATION PIN : %s" \
+          [expr {$pc5_ok ? {YES} : {*** NO ***}}]]
+if {!$pc5_ok} { set CTL_OK 0 ; emit "        *** PC-W5 FAILED ***" } \
     else { emit "        PC-W5 PASS" }
 
 emit ""

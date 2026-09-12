@@ -77,6 +77,13 @@ def main():
     ap.add_argument('--na', default='200')
     ap.add_argument('--nb', default='400')
     ap.add_argument('--skip-map', action='store_true')
+    ap.add_argument('--clean-db', action='store_true',
+                    help='remove hdl/db + hdl/incremental_db before each MAP.  '
+                         '⚠ WAVE 10 CONTROL PC-C0: the QSF carries SMART_RECOMPILE ON, '
+                         'and a re-run of a BYTE-IDENTICAL tree at the SAME SEED against '
+                         'a db left by another tree drew 35.867 ns where WAVE 8 drew '
+                         '34.220.  Every cell of this wave is compiled from the same '
+                         'db state, and this flag is what makes that true.')
     ap.add_argument('--dry-run', action='store_true')
     a = ap.parse_args()
     root = os.path.abspath(a.root)
@@ -135,6 +142,13 @@ def main():
             if a.skip_map:
                 print(f'\n=== MAP: {a.label} {cfg} SKIPPED ===', flush=True)
             else:
+                if a.clean_db:
+                    for d in ('db', 'incremental_db', 'output_files_ucore'):
+                        pth = os.path.join(root, 'hdl', d)
+                        if os.path.isdir(pth):
+                            sh(f'rm -rf {pth}')
+                    print(f'  CLEAN DB: hdl/db, hdl/incremental_db, '
+                          f'hdl/output_files_ucore removed (PC-C0)')
                 print(f'\n=== MAP: {a.label} {cfg} ===', flush=True)
                 argv = [f'{QB}/quartus_map']
                 if cfg == 'retention':
