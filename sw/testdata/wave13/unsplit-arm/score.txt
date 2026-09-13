@@ -1,0 +1,42 @@
+==============================================================================
+sw/testdata/g6dist/w13-unsplit-noexc-control-n5/distribution.json
+  id                 bb5768d5313c4c22…
+  label              w13-unsplit-noexc-control-n5
+  verdict            RED   rc=0   2763 s
+  configuration      CONTROL/DEFAULT (no X1_AD_RETENTION)
+  DERIVED-from       DERIVED
+  input_manifest     2e3fffa743ab2b22…  (98 files)
+  WORST-OF-5         27.78 MHz  (seed 1)   quotable_as: worst-of-5@seeds{1,2,3,4,5} = 27.78 MHz
+  draws              27.78 · 28.52 · 28.52 · 28.84 · 29.06   median 28.52  spread 1.28
+  E11 (distribution) PASS   scanned=98  file_present=False  token_hits={}
+  seed  Fmax    setup      ALMs                    core k(SAME/INTO/OUTOF)  off_class   E11   rbf
+     1   27.78    -4.742  8,353 / 41,910 ( 20 % )  meas {'INTO': 1.0, 'OUTOF': 1.0, 'SAME': 1.0} / nom 1.0  []          ok   cb573be6051f
+     2   29.06    -3.160  8,348 / 41,910 ( 20 % )  meas {'INTO': 1.0, 'OUTOF': 1.0, 'SAME': 1.0} / nom 1.0  []          ok   e17906ba1fd2
+     3   28.52    -3.810  8,318 / 41,910 ( 20 % )  meas {'INTO': 1.0, 'OUTOF': 1.0, 'SAME': 1.0} / nom 1.0  []          ok   d4e934b3b7cb
+     4   28.52    -3.812  8,344 / 41,910 ( 20 % )  meas {'INTO': 1.0, 'OUTOF': 1.0, 'SAME': 1.0} / nom 1.0  []          ok   ccd8cb361149
+     5   28.84    -3.430  8,335 / 41,910 ( 20 % )  meas {'INTO': 1.0, 'OUTOF': 1.0, 'SAME': 1.0} / nom 1.0  []          ok   7e429d76d69d
+  N-1  every draw >= 32.0 MHz, setup > 0, tns_violations empty : *** FAIL on seeds [1, 2, 3, 4, 5] ***
+  N-2  off_class EMPTY on every draw                        : PASS
+  N-4  E11 true on every per-seed receipt                   : PASS
+  E-9  .rbf distinct across draws                           : 5 distinct of 5
+==============================================================================
+sw/testdata/g6dist/w13-unsplit-noexc-retention-n5/distribution.json
+  id                 9ed16d4a3866b04e…
+  label              w13-unsplit-noexc-retention-n5
+  verdict            RED   rc=0   2350 s
+  configuration      RETENTION (X1_AD_RETENTION=1)
+  DERIVED-from       DERIVED
+  input_manifest     2e3fffa743ab2b22…  (98 files)
+  WORST-OF-5         27.01 MHz  (seed 3)   quotable_as: worst-of-5@seeds{1,2,3,4,5} = 27.01 MHz
+  draws              27.01 · 27.58 · 27.81 · 28.17 · 28.58   median 27.81  spread 1.57
+  E11 (distribution) PASS   scanned=98  file_present=False  token_hits={}
+  seed  Fmax    setup      ALMs                    core k(SAME/INTO/OUTOF)  off_class   E11   rbf
+     1   28.58    -3.738  8,422 / 41,910 ( 20 % )  meas {'INTO': 1.0, 'OUTOF': 1.0, 'SAME': 1.0} / nom 1.0  []          ok   3faf57f0e8bd
+     2   27.58    -5.009  8,428 / 41,910 ( 20 % )  meas {'INTO': 1.0, 'OUTOF': 1.0, 'SAME': 1.0} / nom 1.0  []          ok   461941433a21
+     3   27.01    -5.770  8,442 / 41,910 ( 20 % )  meas {'INTO': 1.0, 'OUTOF': 1.0, 'SAME': 1.0} / nom 1.0  []          ok   76f8d844194b
+     4   27.81    -4.711  8,428 / 41,910 ( 20 % )  meas {'INTO': 1.0, 'OUTOF': 1.0, 'SAME': 1.0} / nom 1.0  []          ok   e1c45f5250bd
+     5   28.17    -4.253  8,416 / 41,910 ( 20 % )  meas {'INTO': 1.0, 'OUTOF': 1.0, 'SAME': 1.0} / nom 1.0  []          ok   707d429113c7
+  N-1  every draw >= 32.0 MHz, setup > 0, tns_violations empty : *** FAIL on seeds [1, 2, 3, 4, 5] ***
+  N-2  off_class EMPTY on every draw                        : PASS
+  N-4  E11 true on every per-seed receipt                   : PASS
+  E-9  .rbf distinct across draws                           : 5 distinct of 5
