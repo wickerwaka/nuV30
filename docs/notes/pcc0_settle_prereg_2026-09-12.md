@@ -141,3 +141,35 @@ registered here before the run.
   against a value a COMMITTED RECEIPT recorded.
 * No Codex.  No nested subagents.
 * **No figure in this wave is a receipt, a gate or a design Fmax.**
+
+---
+
+## §4 AMENDMENT A-1 — **N-1, THE NULL CONTROL.  REGISTERED AFTER PC-11 AND E-1
+WERE SCORED AND BEFORE N-1 WAS RUN.**
+
+PC-11 and E-1 are scored (see the results document): both arms reproduce their
+wave **byte-identically**, so **H-A is CONFIRMED and H-B is dead** — the same
+`--clean-db` procedure produced both outcomes, so the `db` state cannot be the
+cause, and **E-2 is therefore NOT RUN**, exactly as §2 said.
+
+What is *not* yet established is **what KIND of thing the stamp is.**  Two
+readings survive the two arms taken:
+
+* **(i) THE STAMP IS AN EXTRA FITTER SEED** — every distinct stamp is one more
+  draw from the same placement lottery, and 34.220 / 35.867 are two draws.
+* **(ii) THE STAMP HAS MODES** — something about the two particular strings
+  (length, parity, a differing character position) puts the compiler in one of
+  a small number of states.
+
+**N-1**: a THIRD stamp that **no wave has ever used**, `` `define BUILD_DATE
+"260910" ``, same pipeline, `--clean-db`, seed 1.
+
+**REGISTERED PREDICTION under (i)**: `T_min` lands inside the band this tree's
+draws already occupy, **[34.220, 36.466] ns**, and **equals neither 34.220 nor
+35.867 to the thousandth**.
+**WHAT FALSIFIES (i) AND SUPPORTS (ii)**: N-1 returning **exactly** 34.220 or
+**exactly** 35.867.
+**WHAT FALSIFIES BOTH**: N-1 landing outside [34.220, 36.466].
+
+**It is reported whatever it returns**, and it changes nothing about the cause,
+which E-1 has already demonstrated.
