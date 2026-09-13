@@ -1,0 +1,59 @@
+  w0: 372/372
+  w1: 328/346
+  w2: 318/333
+  w3: 302/320
+S16 TOTAL (ucore): 1320/1371
+  FAIL w1/p0/HLT.INT/8: tag=busstat_other golden_D=True first=(10, 7, 'CODE', 'PASV')
+  FAIL w1/p0/HLT.INT/9: tag=busstat_other golden_D=True first=(10, 7, 'CODE', 'PASV')
+  FAIL w1/p1/HLT.INT/8: tag=busstat_other golden_D=True first=(10, 7, 'CODE', 'PASV')
+  FAIL w1/p1/HLT.INT/9: tag=busstat_other golden_D=True first=(10, 7, 'CODE', 'PASV')
+  FAIL w1/p2/HLT.INT/8: tag=busstat_other golden_D=True first=(10, 7, 'CODE', 'PASV')
+  FAIL w1/p2/HLT.INT/9: tag=busstat_other golden_D=True first=(10, 7, 'CODE', 'PASV')
+  FAIL w1/p3/HLT.INT/8: tag=busstat_other golden_D=True first=(10, 7, 'CODE', 'PASV')
+  FAIL w1/p3/HLT.INT/9: tag=busstat_other golden_D=True first=(10, 7, 'CODE', 'PASV')
+
+BAR L1 (family A/C nibble signatures): 0   [bar: 0]
+BAR L2 (family E ube signatures):      0   [bar: 0]
+BAR L3 (fails with neither booked shape): 24   [bar: 0]
+    ('w1/p0/HLT.INT/8', 'busstat_other', (10, 7, 'CODE', 'PASV'), True)
+    ('w1/p0/HLT.INT/9', 'busstat_other', (10, 7, 'CODE', 'PASV'), True)
+    ('w1/p1/HLT.INT/8', 'busstat_other', (10, 7, 'CODE', 'PASV'), True)
+    ('w1/p1/HLT.INT/9', 'busstat_other', (10, 7, 'CODE', 'PASV'), True)
+    ('w1/p2/HLT.INT/8', 'busstat_other', (10, 7, 'CODE', 'PASV'), True)
+    ('w1/p2/HLT.INT/9', 'busstat_other', (10, 7, 'CODE', 'PASV'), True)
+    ('w1/p3/HLT.INT/8', 'busstat_other', (10, 7, 'CODE', 'PASV'), True)
+    ('w1/p3/HLT.INT/9', 'busstat_other', (10, 7, 'CODE', 'PASV'), True)
+    ('w1/p4/HLT.INT/8', 'busstat_other', (10, 7, 'CODE', 'PASV'), True)
+    ('w1/p4/HLT.INT/9', 'busstat_other', (10, 7, 'CODE', 'PASV'), True)
+    ('w1/p5/HLT.INT/8', 'busstat_other', (10, 7, 'CODE', 'PASV'), True)
+    ('w1/p5/HLT.INT/9', 'busstat_other', (10, 7, 'CODE', 'PASV'), True)
+    ('w2/p0/HLT.INT/12', 'busstat_other', (12, 7, 'CODE', 'PASV'), True)
+    ('w2/p1/HLT.INT/12', 'busstat_other', (12, 7, 'CODE', 'PASV'), True)
+    ('w2/p2/HLT.INT/12', 'busstat_other', (12, 7, 'CODE', 'PASV'), True)
+    ('w2/p3/HLT.INT/12', 'busstat_other', (12, 7, 'CODE', 'PASV'), True)
+    ('w2/p4/HLT.INT/12', 'busstat_other', (12, 7, 'CODE', 'PASV'), True)
+    ('w2/p5/HLT.INT/12', 'busstat_other', (12, 7, 'CODE', 'PASV'), True)
+    ('w3/p0/HLT.INT/15', 'busstat_other', (14, 7, 'CODE', 'PASV'), True)
+    ('w3/p1/HLT.INT/15', 'busstat_other', (14, 7, 'CODE', 'PASV'), True)
+    ('w3/p2/HLT.INT/15', 'busstat_other', (14, 7, 'CODE', 'PASV'), True)
+    ('w3/p3/HLT.INT/15', 'busstat_other', (14, 7, 'CODE', 'PASV'), True)
+    ('w3/p4/HLT.INT/15', 'busstat_other', (14, 7, 'CODE', 'PASV'), True)
+    ('w3/p5/HLT.INT/15', 'busstat_other', (14, 7, 'CODE', 'PASV'), True)
+ARCH failures: 27
+    ('w1/p2/HLT.RES/8', ['sp', 'bp'], 0, True)
+    ('w1/p2/HLT.RES/9', ['sp', 'bp'], 0, True)
+    ('w1/p3/HLT.RES/8', ['ax', 'dx'], 0, True)
+    ('w1/p3/HLT.RES/9', ['ax', 'dx'], 0, True)
+    ('w1/p5/HLT.RES/8', ['sp', 'si', 'flags'], 0, True)
+    ('w1/p5/HLT.RES/9', ['sp', 'si', 'flags'], 0, True)
+    ('w2/p2/HLT.RES/10', ['sp', 'bp'], 0, True)
+    ('w2/p2/HLT.RES/11', ['sp', 'bp'], 0, True)
+    ('w2/p2/HLT.RES/12', ['sp', 'bp'], 0, True)
+    ('w2/p3/HLT.RES/10', ['ax', 'dx'], 0, True)
+    ('w2/p3/HLT.RES/11', ['ax', 'dx'], 0, True)
+    ('w2/p3/HLT.RES/12', ['ax', 'dx'], 0, True)
+signature census: {'busstat_other': 24, 'ARCH': 27}
+
+real	0m4.011s
+user	0m7.770s
+sys	0m0.972s

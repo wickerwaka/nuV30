@@ -1,0 +1,37 @@
+  r7_lint              SAME     === r7_lint: PASS   (0 undeclared carrier(s), 0 undeclared unresolved, 0 `stop` site(s))
+  ss_lint              *** MOVED ***
+      before  ss_lint: PASS (109x2 BIU + 122x2 EU + tag = 232; constants OK) | ss_flopcensus: PASS (228 architectural flops, all SSA-mapped or whitelisted; 3 whitelist entries)
+      after   ss_lint: PASS (109x2 BIU + 122x2 EU + tag = 232; constants OK) | ss_flopcensus: PASS (229 architectural flops, all SSA-mapped or whitelisted; 4 whitelist entries)
+  cc_all               SAME     TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+  cc_8f0               SAME     TOTAL: 500/500 full (cycles 500, arch 500)
+  hlt_w0               SAME     TOTAL: 97/97 full (cycles 97, arch 97)
+  hlt_w1               SAME     TOTAL: 93/95 full (cycles 93, arch 95)
+  hlt_w2               SAME     TOTAL: 45/46 full (cycles 45, arch 46)
+  hlt_w3               SAME     TOTAL: 44/45 full (cycles 44, arch 45)
+  v01_w1               SAME     TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+  v01_w3               SAME     TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+  v01_w1_EB            SAME     TOTAL: 200/200 full (cycles 200, arch 200)
+  evt_w0               SAME     TOTAL: 200/200 full (cycles 200, arch 200)
+  evt_w1               SAME     TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+  evt_w2               SAME     TOTAL: 200/200 full (cycles 200, arch 200)
+  evt_w3               SAME     TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+  evt_biased           SAME     TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+  cc_all_div2          SAME     TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+  cc_all_div3          SAME     TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+  cc_all_div8          SAME     TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+  cc_div1_refused      SAME     check_core: --ce-div 1 is OUTSIDE THE ce/ce_half CONTRACT and is REFUSED.
+  ulockstep            SAME     ULOCKSTEP-GOLDEN: ALL CASES LOCKSTEP
+  ghost_launch         SAME     == ALL THREE POPULATIONS: 200/200 = 100.0 %
+  check_boot           SAME     BOOT REPLAY MATCHES over 220 rows from RESET release
+  check_boot400        SAME     BOOT REPLAY MATCHES over 400 rows from RESET release
+  check_ab_sim         SAME     AB SIM MATCHES CHIP BOOT over 187 rows from RESET release
+  s16                  SAME     S16 TOTAL (ucore): 1320/1371
+  demux_off            *** MOVED ***
+      before  === demux_off_gate: PASS -- the de-muxed core builds and runs, the three muxed ports are GONE, and the define is what removes them
+      after   === demux_off_gate: PASS -- the de-muxed core builds and runs, the two muxed ports are GONE, and the define is what removes them
+  test_artifact        SAME     === test_artifact: 45/45 checks pass
+  test_quartus_gate    SAME     287 / 287 checks pass
+  ucrom_mif            SAME     ucrom_mif_check: PASS -- every emitted microcode table matches its .hex word for word
+  chain_lfsr           SAME     chain_lfsr_gate: CHAIN_MAX = 7 (read from v30u_eu.sv), 4 seeds x 400000 fabric clocks |   seed 1: rc=0 CHAIN_D
+
+=== ladder diff: 29 SAME / 2 MOVED / 0 MISSING
