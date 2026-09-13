@@ -1,0 +1,14 @@
+WAVE 11 -- THE ONE VARIABLE.  `hdl/build_id.v` is GENERATED, .gitignore'd, and a
+DECLARED EXCLUSION from quartus_gate's `input_manifest`.  These are the exact
+bytes each arm was compiled with.  The 260909 sha256 is the value the COMMITTED
+receipt `sw/testdata/g6dist/wave7-chainflat-noexc-control-n5/seed1_quartus_gate.json`
+records in its own `build_id` field -- it was not computed from recall.
+
+arm                 bytes                              sha256
+pc11_bid260912      `define BUILD_DATE "260912"        5b4d6ad10ee2a48ffe4ea3c34b82d375d5a03da1140cb15c0241a40fd9bbc124
+e1_bid260909        `define BUILD_DATE "260909"        11e55ef99ab705c5e0aa1bfc0c5db15e7a230e011a76a62633c7cf95939c5247
+n1_bid260910        `define BUILD_DATE "260910"        8687a53791f4d2ec9449598a6d7ee696ef9939520c171f8f86c12c5deae58f03  (NEVER USED BY ANY WAVE -- the null)
+
+Tree: master HEAD, `hdl/` byte-identical to 0267e48a2c (WAVE 8's tree) and to
+2ceb8c3ba3 (WAVE 7's landing).  Pipeline: sw/run_biu_roundtrip.py --clean-db
+--control-seeds 1, i.e. WAVE 10's own driver, identical in all three arms.
