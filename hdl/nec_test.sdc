@@ -3,6 +3,50 @@ derive_clock_uncertainty
 
 # core specific constraints
 
+# ===========================================================================
+# ⚠⚠⚠  THE CE MULTICYCLE IS **DELETED**  (2026-09-08, the ce/ce_half PHASE
+#      SPLIT, WAVE 2).  EVERYTHING BELOW THIS BANNER DOWN TO THE COLLECTIONS
+#      IS **HISTORY**, KEPT BECAUSE A RATCHET IS ONLY READABLE AGAINST ITS OWN
+#      HISTORY, AND IS **NOT A DESCRIPTION OF THIS TREE**.
+# ===========================================================================
+#
+# WHAT CHANGED IS THE RTL, NOT THE DERIVATION.  The arithmetic below is still
+# correct about a core that does all its work on `ce`: S-1 puts a `ce_half`
+# strictly between consecutive `ce`s, C-a keeps it off both of them, so
+# `ce -> ce >= 2` and a 2.0-period budget was honest.
+#
+# `v30u_eu` NO LONGER DOES ALL ITS WORK ON `ce`.  Its next-state cone is SPLIT
+# ACROSS THE TWO PHASES: STAGE 1 (the microcode row read, the row-field decode,
+# the operand / queue-state select, the EA add, and the completion sampling) is
+# evaluated in the `ce -> ce_half` window and captured on `ce_half`; STAGE 2
+# (the unrolled chain loop, the pin pipelines and the `dec_addr_next` tail) is
+# evaluated in the `ce_half -> ce` window and captured on `ce`.  ONE 2-PERIOD
+# ARC BECAME TWO 1-PERIOD ARCS, and 1.0 period IS the default single-cycle
+# check, so the honest constraint is NO CONSTRAINT.  See THE PHASE SPLIT in
+# `hdl/rtl/ucore/v30u_eu.sv`, WAVE 1's measurement
+# (`docs/notes/phase_split_anatomy_2026-09-08.md`) and the landing
+# (`docs/notes/phase_split_landing_prereg_2026-09-08.md`).
+#
+# WHY THIS MATTERS BEYOND THIS FILE.  The exception covered 2,084-2,109
+# registers -- measured, WAVE 1 §6.1 -- and every downstream integrator had to
+# RE-DERIVE AND COPY IT into their own `.sdc`, from premises about an enable
+# train they do not control (`docs/notes/m72_downstream_timing_2026-08-12.md`
+# §1 is the measured cost).  There is now nothing to copy.  A downstream
+# integration inherits the core's timing with the DEFAULT checks and no
+# exception at all -- which is the whole purpose of the wave.
+#
+# ⚠ DO NOT RESTORE IT FROM `git show`.  On this RTL a `-setup 2` between two
+# `ce`-gated registers is a FALSE PASS BY A FACTOR OF TWO in the optimistic
+# direction on every stage-2 arc, because a stage-2 arc launches at `ce_half`,
+# not at `ce`.  If the phase split is ever reverted, the exception comes back
+# WITH it and not before it.
+#
+# ⚠ AND THE CONTRACT IS UNCHANGED AND STILL LOAD-BEARING -- MORE SO.  C-a and
+# S-1 are asserted in `hdl/rtl/ucore/v30_core.sv` exactly as before, and S-1 is
+# no longer only about `t1_half2`: with no `ce_half` between two `ce`s the EU
+# consumes a STALE STAGE 1.  `CE_HALF` is an UNCONDITIONAL port of the core for
+# the same reason.
+#
 # ---------------------------------------------------------------------------
 # THE V30 CORE ADVANCES ON A CLOCK ENABLE  (ucore U4 pass 3, sec.51.7/52;
 #        RE-DERIVED 2026-08-12 under the CE/CE_HALF PORTABILITY CONTRACT --
@@ -187,13 +231,33 @@ set v30u_regs [add_to_collection \
 # and `quartus_gate.py`'s `core_domain_fmax()` already book it.)
 set v30u_half [get_registers -nowarn {*|v30u_biu:*|t1_half2}]
 set v30u_ce   [remove_from_collection $v30u_regs $v30u_half]
+# ⚠ THE `ce -> ce` EXCEPTION STOOD HERE AND IS **DELETED** (2026-09-08).  It
+# read, for one exception and one info line:
+#
+#     set_multicycle_path -setup 2 -from $v30u_ce -to $v30u_ce
+#     set_multicycle_path -hold  1 -from $v30u_ce -to $v30u_ce
+#     post_message ... "CE multicycle 2/1 applied to N ce-gated v30u core
+#                       registers"
+#
+# The PHASE SPLIT makes every core arc a ONE-PERIOD arc -- `ce -> ce_half` or
+# `ce_half -> ce` -- and 1.0 period is the default check, so the honest
+# constraint is NO CONSTRAINT.  Writing `-setup 1` to say "one period" would be
+# writing the default down twice; writing `-setup 2` would be a false PASS by a
+# factor of two on every stage-2 arc.  See the banner at the head of this file.
+#
+# THE COLLECTIONS ABOVE ARE KEPT AND ARE STILL READ.  `$v30u_ce` and
+# `$v30u_half` are what `sw/sta_truefmax_probe.tcl` queries the three
+# core-domain classes with (SAME / INTO / OUTOF), and `sw/quartus_gate.py`'s
+# `core_domain_fmax()` checks each class's MEASURED k against its NOMINAL one.
+# All three nominals are now 1.0, and THAT is the check that this deletion
+# reached the compiler: a draw still reporting `SAME` at k = 2.0 lands in
+# `off_class` and is reported, which is the landing's P-2.
 if {[get_collection_size $v30u_ce] > 0} {
-    # ce -> ce : 2.0 periods.  C-a + S-1 (see the derivation at the top of this
-    # file); it was 4/3 under the deleted C-b.
-    set_multicycle_path -setup 2 -from $v30u_ce -to $v30u_ce
-    set_multicycle_path -hold  1 -from $v30u_ce -to $v30u_ce
     post_message -type info \
-        "nec_test.sdc: CE multicycle 2/1 applied to [get_collection_size $v30u_ce] ce-gated v30u core registers"
+        "nec_test.sdc: NO ce->ce exception -- [get_collection_size $v30u_ce] ce-gated v30u\
+         core registers are checked SINGLE-CYCLE; the EU's next-state cone is\
+         PHASE-SPLIT across ce/ce_half (2026-09-08) so every core arc is 1.0\
+         period.  See hdl/rtl/ucore/v30u_eu.sv, THE PHASE SPLIT."
 }
 # ⚠ THE TWO CROSS-PHASE EXCEPTIONS ARE DELETED, NOT MISSING.  `ce -> ce_half`
 # and `ce_half -> ce` are 1.0 periods under the corrected contract, because
@@ -205,11 +269,23 @@ if {[get_collection_size $v30u_ce] > 0} {
 # ⚠ DO NOT RESTORE THEM FROM `git show`.  Anything of that shape needs a
 # derivation in which the next enable assertion after a `ce` cannot be adjacent
 # -- and the contract's one premise is precisely that it CAN be.
+# ⚠ 2026-09-08: AND NOW THERE IS NO EXCEPTION FOR IT TO BE KEPT OUT OF.  The
+# split of `$v30u_regs` into `$v30u_ce` and `$v30u_half` SURVIVES because the
+# three core-domain CLASSES are still queried through it
+# (`sw/sta_truefmax_probe.tcl`, `sw/quartus_gate.py`'s `core_domain_fmax()`),
+# but its ROLE has changed from "protect a 1.0-period arc from a 2.0-period
+# exception" to "name the three classes".  `t1_half2` is now one of TWO
+# `ce_half`-gated registers in the design; the other is `v30u_eu|s1q`, the
+# phase-split shadow, and it is NOT in this collection -- it is a `v30u_eu`
+# register, so it lands in `$v30u_ce` where it draws the same single-cycle
+# check everything else does.  That is correct and deliberate: with no
+# exception anywhere, which collection a register lands in changes NO BUDGET.
 if {[get_collection_size $v30u_half] > 0} {
     post_message -type info \
         "nec_test.sdc: [get_collection_size $v30u_half] ce_half-gated register(s)\
-         kept OUT of the CE multicycle; cross-phase arcs are single-cycle by\
-         derivation (adjacent enables are legal)"
+         named separately for the core-domain class queries; NO exception is\
+         applied to any of the three arcs -- every core arc is 1.0 period\
+         since the ce/ce_half phase split (2026-09-08)"
 }
 
 # ---------------------------------------------------------------------------
