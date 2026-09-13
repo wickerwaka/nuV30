@@ -1,0 +1,20 @@
+quartus_gate: E1 gen_ucore_qsf --check -> PASS: gen_ucore_qsf: nec_test_ucore.qsf is up to date
+quartus_gate: /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sh --flow compile nec_test -c nec_test_ucore   (cwd /home/wickerwaka/src/nec_test/hdl)
+quartus_gate:   rc=0 in 469s
+quartus_gate: compile rc=0 in 469s (log /home/wickerwaka/.cache/ucsimt-tmp/wave12_m1.log)
+quartus_gate: configuration CONTROL/DEFAULT (no X1_AD_RETENTION) -- DERIVED from hdl/output_files_ucore/nec_test_ucore.flow.rpt, hdl/output_files_ucore/nec_test_ucore.map.rpt
+
+  --- quartus_gate (G6) ---
+  tool     : Version 17.1.0 Build 590 10/25/2017 SJ Lite Edition
+  config   : CONTROL/DEFAULT (no X1_AD_RETENTION) -- DERIVED from hdl/output_files_ucore/nec_test_ucore.flow.rpt, hdl/output_files_ucore/nec_test_ucore.map.rpt
+  inputs   : 98 files, sha256 72d48c643b09a6aa…
+  reports  : 9 files, sha256 24ebd07310a60568…
+  git      : 04efdc8d47-dirty  (tree DIRTY)
+  PASS E2_zero_errors   {'stage_errors': 0, 'error_lines': 0, 'map': 'Successful - Sat Sep 12 19:49:06 2026', 'fit': 'Successful - Sat Sep 12 19:54:01 2026', 'asm': True}
+  PASS E3_fmax          44.07
+  PASS E4_worst_setup   8.561
+  PASS E5_tns           []
+  PASS E7_input_stability {'pre_sha256': '72d48c643b09a6aaca4f7594e488dbf7bec141d148f49d43cabe803169836036', 'post_sha256': '72d48c643b09a6aaca4f7594e488dbf7bec141d148f49d43cabe803169836036', 'n_moved': 0, 'moved': [], 'moved_exempt': [], 'moved_offending': [], 'exemptions': ['hdl/nec_test_ucore.qsf']}
+  ALMs 8,123 / 41,910 ( 19 % )   latches 0   lpm_divide 0
+  receipt id : df6e531f5b06ae5f…   (history /home/wickerwaka/src/nec_test/sw/testdata/receipts/quartus_bitstream.jsonl)
+=== quartus_gate: PASS   receipt sw/testdata/wave12/m1/m1_quartus_gate.json

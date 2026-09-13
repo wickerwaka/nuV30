@@ -1,0 +1,64 @@
+=== M-2  'BUILD_DATE' and 'build_id' across the tree, EXCLUDING records ===
+--- (a) every file the compiler reads (quartus_gate.input_files(), the manifest's own closed list)
+files scanned: 98
+HITS: [('nec_test.sv', 'build_id', 2), ('sys/gen_cdf.tcl', 'build_id', 4)]
+
+--- (b) hdl/ tracked files, any hit
+hdl/.gitignore:32:# ⚠ `build_id.v` WAS IGNORED HERE UNTIL WAVE 12 (2026-09-12) AND THE ENTRY IS
+hdl/nec_test.sv:229:	        // It was the MiSTer OSD version string, fed from hdl/build_id.v -- a %y%m%d date
+hdl/nec_test.sv:238:	        // USER INSTRUCTION 2026-09-12: "Change the project so build_id.v isn't generated
+hdl/sys/gen_cdf.tcl:5:# ⚠ THIS FILE WAS `sys/build_id.tcl` UNTIL WAVE 12 (2026-09-12), AND IT DID TWO
+hdl/sys/gen_cdf.tcl:6:# UNRELATED THINGS.  `generateBuildID_Verilog` wrote `hdl/build_id.v`, a
+hdl/sys/gen_cdf.tcl:16:# USER INSTRUCTION 2026-09-12: *"Change the project so build_id.v isn't generated
+hdl/sys/gen_cdf.tcl:23:# restore `sys/build_id.tcl` and re-point `PRE_FLOW_SCRIPT_FILE` at it, and the
+
+--- (c) sw/ drivers and tools (excluding sw/testdata/, which are RECORDS)
+sw/quartus_gate.py:494:BUILD_STAMP_FILE = "build_id.v"
+sw/quartus_gate.py:500:    WHY THIS BAR EXISTS, AND IT IS NOT HYGIENE.  `hdl/build_id.v` used to be a
+sw/quartus_gate.py:504:    function's predecessor `build_id_state()` recorded it BESIDE the manifest
+sw/quartus_gate.py:522:    restores `sys/build_id.tcl` and re-points `PRE_FLOW_SCRIPT_FILE` at it, and
+sw/quartus_gate.py:526:    macro, and `hdl/build_id.v` does not exist.*  The scanned list is
+sw/quartus_gate.py:640:    # 2026-08-13 for ONE reason: `hdl/build_id.v` was ``include``d by
+sw/quartus_gate.py:1330:    # to write `hdl/build_id.v`, which no longer exists and is no longer read
+sw/run_adcone_anatomy.sh:29:# ⚠ WAVE 12 (2026-09-12) DELETED THE `quartus_sh -t sys/build_id.tcl preflow` LINE
+sw/run_adcone_anatomy.sh:30:# THAT STOOD HERE.  Its ONLY purpose was to write `hdl/build_id.v`, which
+sw/run_adcone_census.sh:26:    # ⚠ WAVE 12 (2026-09-12) DELETED THE `quartus_sh -t sys/build_id.tcl preflow` LINE
+sw/run_adcone_census.sh:27:    # THAT STOOD HERE.  Its ONLY purpose was to write `hdl/build_id.v`, which
+sw/run_biu_roundtrip.py:109:    # ⚠ WAVE 12 (2026-09-12) DELETED THE `hdl/build_id.v` COPY BLOCK THAT STOOD
+sw/run_biu_roundtrip.py:111:    # PRE_FLOW_SCRIPT_FILE, so a fresh worktree had no `hdl/build_id.v` and A&S
+sw/run_intcone_anatomy.sh:32:# ⚠ WAVE 12 (2026-09-12) DELETED THE `quartus_sh -t sys/build_id.tcl preflow` LINE
+sw/run_intcone_anatomy.sh:33:# THAT STOOD HERE.  Its ONLY purpose was to write `hdl/build_id.v`, which
+sw/run_phase_split_anatomy.sh:54:# ⚠ WAVE 12 (2026-09-12) DELETED THE `quartus_sh -t sys/build_id.tcl preflow` LINE
+sw/run_phase_split_anatomy.sh:55:# THAT STOOD HERE.  Its ONLY purpose was to write `hdl/build_id.v`, which
+sw/test_quartus_gate.py:39:  Q17 E11, THE BUILD STAMP (adopted 2026-09-12, WAVE 12).  `hdl/build_id.v`
+sw/test_quartus_gate.py:158:    # WAVE 12 (2026-09-12).  It was added because `hdl/build_id.v` was
+sw/test_quartus_gate.py:912:    demonstrated that `hdl/build_id.v` -- a generated, gitignored, untracked
+sw/test_quartus_gate.py:917:    FRAMEWORK CODE**: a future `sys/` update restores `sys/build_id.tcl` and
+sw/test_quartus_gate.py:939:          not (ROOT / "hdl" / "sys" / "build_id.tcl").exists())
+sw/test_quartus_gate.py:941:          "build_id.tcl" not in (ROOT / "hdl" / "sys" / "sys.tcl").read_text())
+sw/test_quartus_gate.py:954:        check("E11 FIRES on a regenerated build_id.v", f1["pass"] is False)
+sw/test_quartus_gate.py:989:        (hdl / "sys" / "build_id.tcl").write_text(
+sw/test_quartus_gate.py:992:        f3 = qg.build_stamp_state(hdl=hdl, files=["sys/build_id.tcl"])
+sw/test_quartus_gate.py:993:        check("E11 FIRES on a re-vendored sys/build_id.tcl", f3["pass"] is False)
+sw/test_quartus_gate.py:995:              f3["token_hits"] == {"sys/build_id.tcl": 1}, str(f3["token_hits"]))
+
+--- (d) untracked hdl/ artifacts that would be a reintroduction
+RM hdl/sys/build_id.tcl -> hdl/sys/gen_cdf.tcl
+?? hdl/quartus_gate_f17_ctl1.log
+?? hdl/quartus_gate_f17_ret1.log
+?? hdl/quartus_gate_f18_ctl1.log
+?? hdl/quartus_gate_f18_ret1.log
+?? hdl/quartus_gate_f20_ctl1.log
+?? hdl/quartus_gate_f20_ctl2.log
+?? hdl/quartus_gate_f20_ret1.log
+?? hdl/quartus_gate_f20_ret2.log
+?? hdl/quartus_gate_f21_ctl1.log
+?? hdl/quartus_gate_f21_ret1.log
+?? hdl/quartus_gate_repcl0_ctl1.log
+?? hdl/quartus_gate_repcl0_ret1.log
+?? hdl/quartus_gate_w9_noexc_control.log
+?? hdl/quartus_gate_w9_noexc_retention.log
+
+--- (e) RECORDS, LEFT ALONE AND COUNTED (build logs + banked artifacts)
+  hdl/quartus_gate_*.log files with a hit: 11
+  sw/testdata/** files with a hit: 216

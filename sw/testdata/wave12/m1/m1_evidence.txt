@@ -1,0 +1,29 @@
+=== WAVE 12 M-1 -- IT IS NOT GENERATED.  DEMONSTRATED, NOT ASSERTED. ===
+
+Tree: 04efdc8d47 (the landing).  Compile: python3 sw/quartus_gate.py, i.e.
+quartus_sh --flow compile -- THE ONLY PATH THAT HONOURS PRE_FLOW_SCRIPT_FILE,
+and therefore the only path on which the stamp could still be regenerated.
+
+--- BEFORE: the two controls, set up by hand
+  hdl/build_id.v : removed by the landing commit; absent at the start
+  hdl/jtag.cdf   : MOVED ASIDE to ~/.cache/ucsimt-tmp/jtag.cdf.pre-wave12,
+                   so that its reappearance proves the hook still RAN
+
+--- THE HOOK RAN, AND IT RAN THE RENAMED SCRIPT
+28:Info: Command: quartus_sh -t sys/gen_cdf.tcl compile nec_test nec_test_ucore
+30:Info (23030): Evaluation of Tcl script sys/gen_cdf.tcl was successful
+
+--- AND IT STILL DOES ITS REMAINING JOB: jtag.cdf IS BACK, BYTE-IDENTICAL
+-rw-rw-r-- 1 wickerwaka wickerwaka 299 Sep 12 19:46 hdl/jtag.cdf
+  cmp: BYTE-IDENTICAL to the pre-WAVE-12 file (generateCDF kept verbatim)
+
+--- AND NO STAMP WAS WRITTEN
+  hdl/build_id.v : ABSENT
+  log lines matching "Generated:" (the old generator announced itself) : 0
+  log lines matching Error (10054) / "can.t open"                     : 0
+  log lines matching BUILD_DATE                                        : 0
+
+⚠ THE NON-VACUITY OF THIS LEG: on 2026-08-13 the SAME absence produced
+  Error (10054): can't open Verilog Design File "build_id.v" -- measured,
+  exit 3 in 11 s (sw/quartus_gate.py, build_commands() docstring).  A&S
+  getting past nec_test.sv is therefore not a null result.
