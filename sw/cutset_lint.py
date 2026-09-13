@@ -152,7 +152,7 @@ def main():
     block_raw = "\n".join(lines[b0:b1 + 1])
     block = nocomment(block_raw)
     cut = block.index("s1_bus = {")
-    INCLUDES = block_includes(block, UC) + ["v30u_eu_preload.svh"]
+    INCLUDES = block_includes(block, UC)
     print("  includes closed : %d  %s" % (len(INCLUDES), sorted(INCLUDES)))
 
     # --- the aliases -------------------------------------------------------
