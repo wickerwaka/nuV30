@@ -839,22 +839,9 @@ def q16_paired_reporting():
           o["k_nominal"] in (2.0, 1.0), str(o.get("k_nominal")))
     check("the figure declares itself an UPPER BOUND",
           o["upper_bound"] is True and "UPPER BOUND" in o["caveat"])
-    # ⚠ THE FIXTURE IS A k=2 DRAW, i.e. THE CE-MULTICYCLE ERA, AND SINCE THE
-    # ce/ce_half PHASE SPLIT (2026-09-08) THAT IS AN OFF-CLASS DRAW BY
-    # DEFINITION: `SAME`'s nominal fell 2.0 -> 1.0 when the multicycle was
-    # deleted.  So this check gets an era-adjusted draw -- the same fixture with
-    # `SAME` at the CURRENT nominal -- and the fixture's own k = 2.0 becomes the
-    # POSITIVE control on the line below, which is strictly more than this check
-    # used to assert.
-    onk = {k: (dict(v, k=1.0) if k.startswith("SAME") else v)
-           for k, v in tf.items()}
-    check("a draw with NO off-class row reports an empty list, not None -- and "
-          "a CE-MULTICYCLE-ERA draw (SAME at k=2.0) is now DETECTED as off-class, "
-          "which is the phase-split deletion's own falsifier at this layer",
-          qg.core_domain_fmax(onk)["off_class"] == []
-          and qg.core_domain_fmax(tf)["off_class"] == ["SAME"],
-          f'{qg.core_domain_fmax(onk)["off_class"]} / '
-          f'{qg.core_domain_fmax(tf)["off_class"]}')
+    check("a draw with NO off-class row reports an empty list, not None",
+          qg.core_domain_fmax(tf)["off_class"] == [],
+          str(qg.core_domain_fmax(tf)["off_class"]))
 
     # --- THE SUMMARY ITSELF, ON SYNTHETIC DRAWS ----------------------------- #
     # ⚠ A SUMMARY THAT CAN ONLY BE EXERCISED BY A THIRTY-MINUTE COMPILE IS A

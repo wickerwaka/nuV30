@@ -15,22 +15,19 @@
 # exactly five and each has one `k`:
 #
 #   k = 1.0   everything with no exception (the default single-cycle class)
-#   k = 1.0   $v30u_ce   -> $v30u_ce     (NO exception since 2026-09-08)
+#   k = 2.0   $v30u_ce   -> $v30u_ce     (-setup 2, the CE multicycle)
 #   k = 1.0   $v30u_ce   -> $v30u_half   (NO exception since 2026-08-13)
 #   k = 1.0   $v30u_half -> $v30u_ce     (NO exception since 2026-08-13)
 #   k = 1.0   anything else -> $v30u_half (no exception, posedge->posedge)
 #
-# ⚠ THE k's ABOVE ARE THE 2026-09-08 PHASE SPLIT's, AND ALL FIVE ARE 1.0 --
-# `nec_test.sdc` NOW CARRIES NO EXCEPTION AT ALL.  History, because a ratchet is
-# only readable against its own: 1.0 / 4.0 / 1.5 / 2.5 / 0.5 in the negedge era,
-# 1.0 / 4.0 / 2.0 / 2.0 / 1.0 for one day after the posedge re-land, and
-# 1.0 / 2.0 / 1.0 / 1.0 / 1.0 from the 2026-08-13 contract correction until the
-# ce/ce_half phase split split `v30u_eu`'s next-state cone across the two phases
-# and turned the last 2-period arc into two 1-period ones.  **THE CLASSES ARE
-# STILL QUERIED SEPARATELY AND MUST BE**: they are STRUCTURALLY distinct
-# collections, `quartus_gate.py` CHECKS each measured k against its nominal, and
-# a `SAME` row still reading 2.0 is how a surviving exception would announce
-# itself.
+# ⚠ THE k's ABOVE ARE THE 2026-08-13 CONTRACT CORRECTION's.  They read
+# 1.0 / 4.0 / 1.5 / 2.5 / 0.5 in the negedge era and 1.0 / 4.0 / 2.0 / 2.0 / 1.0
+# for one day after the posedge re-land.  Adjacent enables being legal collapses
+# the CE multicycle to 2.0 and DELETES both cross-phase exceptions, so FOUR of
+# the five classes now measure k = 1.0.  The classes are still queried
+# separately -- they are STRUCTURALLY distinct collections and a future
+# exception could re-separate their k's -- and `quartus_gate.py` CHECKS each
+# measured k against its nominal.
 #
 # Each class's worst path is reported with its own corrected ceiling, and the
 # minimum over the five is the design's true Fmax.  That number is then
@@ -108,7 +105,7 @@ emit $fh "======================================================================
 emit $fh " THE FIVE EXCEPTION CLASSES, EACH WITH ITS OWN k"
 emit $fh " (labels are STRUCTURAL since 2026-08-13; the k each one SHOULD measure"
 emit $fh "  lives in quartus_gate.py's checked `nominal` table, not in a string:"
-emit $fh "  DEFAULT 1.0 * SAME 1.0 * INTO 1.0 * OUTOF 1.0 * ENABLE 1.0.  A label that"
+emit $fh "  DEFAULT 1.0 * SAME 2.0 * INTO 1.0 * OUTOF 1.0 * ENABLE 1.0.  A label that"
 emit $fh "  ASSERTS a k it no longer measures is a flag nobody reads -- which is"
 emit $fh "  why `CE4` was RENAMED `SAME` at the contract correction.)"
 emit $fh "=========================================================================="
@@ -118,7 +115,7 @@ emit $fh "======================================================================
 # slack, so the global worst IS in the default class here -- and the class
 # queries below prove it rather than assume it.
 klass $fh "DEFAULT (whole-design worst, expect k=1)" $T0
-klass $fh "SAME   \$v30u_ce -> \$v30u_ce   (no exception since the phase split)" $T0 -from $v30u_ce -to $v30u_ce
+klass $fh "SAME   \$v30u_ce -> \$v30u_ce   (the CE multicycle)" $T0 -from $v30u_ce -to $v30u_ce
 klass $fh "INTO   \$v30u_ce -> t1_half2" $T0 -from $v30u_ce -to $v30u_half
 klass $fh "OUTOF  t1_half2 -> \$v30u_ce" $T0 -from $v30u_half -to $v30u_ce
 klass $fh "ENABLE (not \$v30u_ce) -> t1_half2   -- the ENABLE arc" $T0 -from $notce -to $v30u_half

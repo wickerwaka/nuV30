@@ -3,8 +3,8 @@
 //  tb_demux_min -- THE DE-MUXED CONFIGURATION, PROVEN RATHER THAN ASSUMED.
 //
 //  A configuration nothing compiles is a configuration nothing knows is
-//  broken.  `V30_MUXED_AD` removes two ports from `v30_core` (`AD`, `AD_OE`)
-//  and all of the multiplexing machinery behind them; every
+//  broken.  `V30_MUXED_AD` removes three ports from `v30_core` (`AD`, `AD_OE`,
+//  `CE_HALF`) and all of the multiplexing machinery behind them; every
 //  standing gate in the tree builds the core WITH the define, so without this
 //  harness the OTHER configuration would never be elaborated at all.
 //
@@ -16,19 +16,10 @@
 //
 //    * the de-muxed core ELABORATES and RUNS,
 //    * the three ports carry a real instruction stream (the census bars),
-//    * `AD` / `AD_OE` are GONE (a build that connects one fails --
-//      `sw/demux_off_gate.py`'s second leg).
-//
-//  ⚠ 2026-09-08 -- ONE CLAUSE OF THIS HARNESS'S CHARTER IS WITHDRAWN, AND IT
-//  IS WITHDRAWN BY A LANDING, NOT BY AN OPINION.  It used to read *"`AD` /
-//  `AD_OE` / `CE_HALF` are GONE"* and *"the core needs NO half-cycle enable:
-//  there is one `ce` and nothing else, which is the whole point of removing
-//  the mux."*  The ce/ce_half PHASE SPLIT (WAVE 2) makes `ce_half` the capture
-//  edge of `v30u_eu`'s STAGE 1, so it is a CORE CLOCKING input in every
-//  configuration and `CE_HALF` is an unconditional port.  This harness
-//  therefore DRIVES it, to the same contract every other one does: C-a (never
-//  coincident with `CE`) and S-1 (at least one between consecutive `CE`s).
-//  `docs/notes/phase_split_landing_prereg_2026-09-08.md` P-12.
+//    * `AD` / `AD_OE` / `CE_HALF` are GONE (a build that connects one fails --
+//      `sw/demux_off_gate.py`'s second leg),
+//    * and the core needs NO half-cycle enable: there is one `ce` and nothing
+//      else, which is the whole point of removing the mux.
 //
 //  THE BUS PROTOCOL IS THE PART'S OWN, max mode: `BS` (S0-S2) announces, the
 //  T-state is reconstructed from `BS`/`READY` exactly as `nec_bus` does it in
@@ -72,15 +63,9 @@ always #5 clk = ~clk;
 
 integer ce_cnt = 0;
 logic   ce = 1'b0;
-// ...and the HALF-CYCLE enable, at the CPU cycle's MIDPOINT -- where `nec_bus`
-// has always put it and where `tb_v30_core` puts it.  C-a holds because
-// `ce_div >= 2` puts the two counts apart; S-1 holds because exactly one
-// falls in every cycle.
-logic   ce_half = 1'b0;
 always @(posedge clk) begin
     if (ce_cnt >= ce_div - 1) begin ce_cnt <= 0;           ce <= 1'b1; end
     else                      begin ce_cnt <= ce_cnt + 1;  ce <= 1'b0; end
-    ce_half <= (ce_cnt == (ce_div / 2) - 1);
 end
 
 //---------------------------------------------------------------------------
@@ -126,9 +111,8 @@ always @(posedge clk) if (ce) begin
 end
 
 //---------------------------------------------------------------------------
-// THE DE-MUXED PINS.  Note what is NOT here: no `AD` and no `AD_OE`.  The core
-// has no such ports in this configuration.  `CE_HALF` IS here, and since
-// 2026-09-08 it is here in every configuration -- see the header.
+// THE DE-MUXED PINS.  Note what is NOT here: no `AD`, no `AD_OE`, no
+// `ce_half`.  The core has no such ports in this configuration.
 //---------------------------------------------------------------------------
 wire [19:0] ADDR_O;
 wire [15:0] DATA_O;
@@ -143,7 +127,6 @@ wire        SS_ERR, SS_BUS_QUIET;
 v30_core dut (
     .CLK       (clk),
     .CE        (ce),
-    .CE_HALF   (ce_half),
     .RESET     (reset),
     .READY     (ready_r),
     .INT       (pin_int),
