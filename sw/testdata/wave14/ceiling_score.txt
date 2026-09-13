@@ -1,0 +1,192 @@
+=== P-1 POSITIVE CONTROL: reproduce WAVE 13's COMMITTED split distributions from their bytes ===
+  control    worst 30.53 (want 30.53)   draws [30.53, 30.62, 30.85, 30.98, 31.11]   spread 0.58   MATCH
+    map_reg  ['5686']
+    fit_reg  ['6689', '6713', '6729', '6732', '6740']   *** VARIES ***
+    biu_reg  ['434']
+    eu_reg   ['1326']
+  retention  worst 31.15 (want 31.15)   draws [31.15, 31.82, 32.43, 32.53, 32.75]   spread 1.6   MATCH
+    map_reg  ['5708']
+    fit_reg  ['6923', '6949', '6970', '6977', '6980']   *** VARIES ***
+    biu_reg  ['434']
+    eu_reg   ['1326']
+  SELFTEST PASS
+==============================================================================
+sw/testdata/g6dist/w14-base-control-n5/distribution.json
+  label            w14-base-control-n5
+  id               d565b21a4b6402e0…
+  verdict          RED   rc=0   2269 s
+  configuration    CONTROL/DEFAULT (no X1_AD_RETENTION)
+  input_manifest   d4ecdeff14444248…  (99 files)
+  seeds            [1, 2, 3, 4, 5]
+  WORST-OF-5       30.53 MHz (seed 2)   draws 30.53 · 30.62 · 30.85 · 30.98 · 31.11   spread 0.58
+  P-4  E11 (DISTRIBUTION level)  PASS
+  seed  Fmax     T_min      setup   ALMs        map_reg  fit_reg  biu_reg  eu_reg  biu_alut  eu_alut  off_class  E11
+     1   31.11    32.145   -0.895    8,018     5686     6713      434    1326      1112     4969         []  ok
+     2   30.53    32.756   -1.506    8,024     5686     6740      434    1326      1112     4969         []  ok
+     3   30.85    32.412   -1.162    8,011     5686     6732      434    1326      1112     4969         []  ok
+     4   30.98    32.275   -1.025    8,030     5686     6689      434    1326      1112     4969         []  ok
+     5   30.62    32.663   -1.413    8,006     5686     6729      434    1326      1112     4969         []  ok
+  P-4  E11 on every PER-SEED receipt      PASS
+  N-2  off_class EMPTY on every draw      PASS
+  P-3  map_reg  across the sweep        CONSTANT 5686
+  P-3  fit_reg  across the sweep        *** VARIES ['6689', '6713', '6729', '6732', '6740'] ***
+  P-3  biu_reg  across the sweep        CONSTANT 434
+  P-3  eu_reg   across the sweep        CONSTANT 1326
+==============================================================================
+sw/testdata/g6dist/w14-tie-control-n5/distribution.json
+  label            w14-tie-control-n5
+  id               9119600631b7d287…
+  verdict          PASS   rc=0   2200 s
+  configuration    CONTROL/DEFAULT (no X1_AD_RETENTION)
+  input_manifest   8910f61ba025a3c7…  (99 files)
+  seeds            [1, 2, 3, 4, 5]
+  WORST-OF-5       37.39 MHz (seed 5)   draws 37.39 · 37.6 · 38.46 · 38.49 · 39.27   spread 1.88
+  P-4  E11 (DISTRIBUTION level)  PASS
+  seed  Fmax     T_min      setup   ALMs        map_reg  fit_reg  biu_reg  eu_reg  biu_alut  eu_alut  off_class  E11
+     1   38.46    25.999   +5.251    8,630     5687     7306      434    1326      1332     5150         []  ok
+     2    37.6    26.596   +4.654    8,648     5687     7327      434    1326      1332     5150         []  ok
+     3   39.27    25.462   +5.788    8,616     5687     7302      434    1326      1332     5150         []  ok
+     4   38.49    25.981   +5.269    8,648     5687     7321      434    1326      1332     5150         []  ok
+     5   37.39    26.746   +4.504    8,659     5687     7345      434    1326      1332     5150         []  ok
+  P-4  E11 on every PER-SEED receipt      PASS
+  N-2  off_class EMPTY on every draw      PASS
+  P-3  map_reg  across the sweep        CONSTANT 5687
+  P-3  fit_reg  across the sweep        *** VARIES ['7302', '7306', '7321', '7327', '7345'] ***
+  P-3  biu_reg  across the sweep        CONSTANT 434
+  P-3  eu_reg   across the sweep        CONSTANT 1326
+==============================================================================
+sw/testdata/g6dist/w14-hold-control-n5/distribution.json
+  label            w14-hold-control-n5
+  id               ed7d743c740a88b1…
+  verdict          PASS   rc=0   2504 s
+  configuration    CONTROL/DEFAULT (no X1_AD_RETENTION)
+  input_manifest   70a60f5d70e27fc8…  (99 files)
+  seeds            [1, 2, 3, 4, 5]
+  WORST-OF-5       36.87 MHz (seed 5)   draws 36.87 · 38.11 · 38.24 · 38.7 · 40.17   spread 3.3
+  P-4  E11 (DISTRIBUTION level)  PASS
+  seed  Fmax     T_min      setup   ALMs        map_reg  fit_reg  biu_reg  eu_reg  biu_alut  eu_alut  off_class  E11
+     1   40.17    24.896   +6.354    8,663     5686     7498      434    1326      1256     5071         []  ok
+     2   38.11    26.241   +5.009    8,661     5686     7482      434    1326      1256     5071         []  ok
+     3    38.7    25.837   +5.413    8,672     5686     7430      434    1326      1256     5071         []  ok
+     4   38.24    26.149   +5.101    8,663     5686     7472      434    1326      1256     5071         []  ok
+     5   36.87    27.122   +4.128    8,673     5686     7461      434    1326      1256     5071         []  ok
+  P-4  E11 on every PER-SEED receipt      PASS
+  N-2  off_class EMPTY on every draw      PASS
+  P-3  map_reg  across the sweep        CONSTANT 5686
+  P-3  fit_reg  across the sweep        *** VARIES ['7430', '7461', '7472', '7482', '7498'] ***
+  P-3  biu_reg  across the sweep        CONSTANT 434
+  P-3  eu_reg   across the sweep        CONSTANT 1326
+##### PAIR base -> tie (control)
+THE PAIRED DIFFERENCE  (arm - base, per seed; a POSITIVE ns figure means the arm's arc is SHORTER)
+  seed sets   base [1, 2, 3, 4, 5]   arm [1, 2, 3, 4, 5]   SAME
+  seed   base T_min   arm T_min    Δns      base MHz  arm MHz   ΔMHz
+     1      32.145      25.999   +6.146      31.11    38.46   +7.35
+     2      32.756      26.596   +6.160      30.53    37.60   +7.07
+     3      32.412      25.462   +6.950      30.85    39.27   +8.42
+     4      32.275      25.981   +6.294      30.98    38.49   +7.51
+     5      32.663      26.746   +5.917      30.62    37.39   +6.77
+  T_min paired mean +6.293 ns   sd 0.391   se 0.175   95 % CI [+5.808, +6.779]   t +35.97
+   Fmax paired mean +7.424 MHz   sd 0.624   se 0.279   95 % CI [+6.649, +8.199]   t +26.60
+  worst-of-5   base 30.53 MHz   arm 37.39 MHz   Δ +6.86 MHz
+##### PAIR base -> hold (control)
+THE PAIRED DIFFERENCE  (arm - base, per seed; a POSITIVE ns figure means the arm's arc is SHORTER)
+  seed sets   base [1, 2, 3, 4, 5]   arm [1, 2, 3, 4, 5]   SAME
+  seed   base T_min   arm T_min    Δns      base MHz  arm MHz   ΔMHz
+     1      32.145      24.896   +7.249      31.11    40.17   +9.06
+     2      32.756      26.241   +6.515      30.53    38.11   +7.58
+     3      32.412      25.837   +6.575      30.85    38.70   +7.85
+     4      32.275      26.149   +6.126      30.98    38.24   +7.26
+     5      32.663      27.122   +5.541      30.62    36.87   +6.25
+  T_min paired mean +6.401 ns   sd 0.628   se 0.281   95 % CI [+5.622, +7.181]   t +22.79
+   Fmax paired mean +7.600 MHz   sd 1.016   se 0.455   95 % CI [+6.338, +8.862]   t +16.72
+  worst-of-5   base 30.53 MHz   arm 36.87 MHz   Δ +6.34 MHz
+==============================================================================
+sw/testdata/g6dist/w14-base-retention-n5/distribution.json
+  label            w14-base-retention-n5
+  id               fb06b349a2ca1353…
+  verdict          RED   rc=0   2376 s
+  configuration    RETENTION (X1_AD_RETENTION=1)
+  input_manifest   d4ecdeff14444248…  (99 files)
+  seeds            [1, 2, 3, 4, 5]
+  WORST-OF-5       31.15 MHz (seed 3)   draws 31.15 · 31.82 · 32.43 · 32.53 · 32.75   spread 1.6
+  P-4  E11 (DISTRIBUTION level)  PASS
+  seed  Fmax     T_min      setup   ALMs        map_reg  fit_reg  biu_reg  eu_reg  biu_alut  eu_alut  off_class  E11
+     1   32.43    30.836   +0.414    8,255     5708     6949      434    1326      1102     5033         []  ok
+     2   32.75    30.537   +0.713    8,228     5708     6980      434    1326      1102     5033         []  ok
+     3   31.15    32.105   -0.855    8,215     5708     6977      434    1326      1102     5033         []  ok
+     4   32.53    30.741   +0.509    8,221     5708     6970      434    1326      1102     5033         []  ok
+     5   31.82    31.427   -0.177    8,240     5708     6923      434    1326      1102     5033         []  ok
+  P-4  E11 on every PER-SEED receipt      PASS
+  N-2  off_class EMPTY on every draw      PASS
+  P-3  map_reg  across the sweep        CONSTANT 5708
+  P-3  fit_reg  across the sweep        *** VARIES ['6923', '6949', '6970', '6977', '6980'] ***
+  P-3  biu_reg  across the sweep        CONSTANT 434
+  P-3  eu_reg   across the sweep        CONSTANT 1326
+==============================================================================
+sw/testdata/g6dist/w14-tie-retention-n5/distribution.json
+  label            w14-tie-retention-n5
+  id               06386e856c7ae3e7…
+  verdict          PASS   rc=0   2106 s
+  configuration    RETENTION (X1_AD_RETENTION=1)
+  input_manifest   8910f61ba025a3c7…  (99 files)
+  seeds            [1, 2, 3, 4, 5]
+  WORST-OF-5       36.45 MHz (seed 3)   draws 36.45 · 37.35 · 38.22 · 38.45 · 38.99   spread 2.54
+  P-4  E11 (DISTRIBUTION level)  PASS
+  seed  Fmax     T_min      setup   ALMs        map_reg  fit_reg  biu_reg  eu_reg  biu_alut  eu_alut  off_class  E11
+     1   37.35    26.774   +4.476    8,665     5708     7318      434    1326      1288     5119         []  ok
+     2   38.45    26.006   +5.244    8,644     5708     7328      434    1326      1288     5119         []  ok
+     3   36.45    27.432   +3.818    8,643     5708     7348      434    1326      1288     5119         []  ok
+     4   38.99    25.650   +5.600    8,651     5708     7288      434    1326      1288     5119         []  ok
+     5   38.22    26.167   +5.083    8,662     5708     7352      434    1326      1288     5119         []  ok
+  P-4  E11 on every PER-SEED receipt      PASS
+  N-2  off_class EMPTY on every draw      PASS
+  P-3  map_reg  across the sweep        CONSTANT 5708
+  P-3  fit_reg  across the sweep        *** VARIES ['7288', '7318', '7328', '7348', '7352'] ***
+  P-3  biu_reg  across the sweep        CONSTANT 434
+  P-3  eu_reg   across the sweep        CONSTANT 1326
+==============================================================================
+sw/testdata/g6dist/w14-hold-retention-n5/distribution.json
+  label            w14-hold-retention-n5
+  id               7f26da36b4d89148…
+  verdict          PASS   rc=0   2174 s
+  configuration    RETENTION (X1_AD_RETENTION=1)
+  input_manifest   70a60f5d70e27fc8…  (99 files)
+  seeds            [1, 2, 3, 4, 5]
+  WORST-OF-5       37.16 MHz (seed 5)   draws 37.16 · 37.62 · 37.79 · 38.24 · 38.31   spread 1.15
+  P-4  E11 (DISTRIBUTION level)  PASS
+  seed  Fmax     T_min      setup   ALMs        map_reg  fit_reg  biu_reg  eu_reg  biu_alut  eu_alut  off_class  E11
+     1   38.24    26.152   +5.098    8,554     5707     7230      434    1326      1197     5121         []  ok
+     2   37.62    26.580   +4.670    8,538     5707     7233      434    1326      1197     5121         []  ok
+     3   37.79    26.461   +4.789    8,572     5707     7249      434    1326      1197     5121         []  ok
+     4   38.31    26.101   +5.149    8,563     5707     7231      434    1326      1197     5121         []  ok
+     5   37.16    26.910   +4.340    8,532     5707     7269      434    1326      1197     5121         []  ok
+  P-4  E11 on every PER-SEED receipt      PASS
+  N-2  off_class EMPTY on every draw      PASS
+  P-3  map_reg  across the sweep        CONSTANT 5707
+  P-3  fit_reg  across the sweep        *** VARIES ['7230', '7231', '7233', '7249', '7269'] ***
+  P-3  biu_reg  across the sweep        CONSTANT 434
+  P-3  eu_reg   across the sweep        CONSTANT 1326
+##### PAIR base -> tie (retention)
+THE PAIRED DIFFERENCE  (arm - base, per seed; a POSITIVE ns figure means the arm's arc is SHORTER)
+  seed sets   base [1, 2, 3, 4, 5]   arm [1, 2, 3, 4, 5]   SAME
+  seed   base T_min   arm T_min    Δns      base MHz  arm MHz   ΔMHz
+     1      30.836      26.774   +4.062      32.43    37.35   +4.92
+     2      30.537      26.006   +4.531      32.75    38.45   +5.70
+     3      32.105      27.432   +4.673      31.15    36.45   +5.30
+     4      30.741      25.650   +5.091      32.53    38.99   +6.46
+     5      31.427      26.167   +5.260      31.82    38.22   +6.40
+  T_min paired mean +4.723 ns   sd 0.474   se 0.212   95 % CI [+4.134, +5.312]   t +22.27
+   Fmax paired mean +5.756 MHz   sd 0.675   se 0.302   95 % CI [+4.919, +6.593]   t +19.08
+  worst-of-5   base 31.15 MHz   arm 36.45 MHz   Δ +5.30 MHz
+##### PAIR base -> hold (retention)
+THE PAIRED DIFFERENCE  (arm - base, per seed; a POSITIVE ns figure means the arm's arc is SHORTER)
+  seed sets   base [1, 2, 3, 4, 5]   arm [1, 2, 3, 4, 5]   SAME
+  seed   base T_min   arm T_min    Δns      base MHz  arm MHz   ΔMHz
+     1      30.836      26.152   +4.684      32.43    38.24   +5.81
+     2      30.537      26.580   +3.957      32.75    37.62   +4.87
+     3      32.105      26.461   +5.644      31.15    37.79   +6.64
+     4      30.741      26.101   +4.640      32.53    38.31   +5.78
+     5      31.427      26.910   +4.517      31.82    37.16   +5.34
+  T_min paired mean +4.688 ns   sd 0.608   se 0.272   95 % CI [+3.933, +5.444]   t +17.24
+   Fmax paired mean +5.688 MHz   sd 0.656   se 0.293   95 % CI [+4.874, +6.502]   t +19.40
+  worst-of-5   base 31.15 MHz   arm 37.16 MHz   Δ +6.01 MHz

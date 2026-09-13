@@ -102,8 +102,13 @@ def gen(name, base):
     if name != 'base':
         ARMS[name](wt)
     d = sh(f'git diff --stat -- {BIU}', wt).stdout.strip()
+    # ⚠ WAVE 10's counter reads `l[:1] in '+-'`, and in Python `'' in '+-'` is
+    # TRUE -- an EMPTY diff splits to [''] and counts as ONE changed line, so a
+    # clean reference worktree is refused as dirty.  Measured here, 2026-09-13,
+    # the first time this wave asked for an unmodified arm.  `l` must be
+    # non-empty before its first character is classified.
     n = len([l for l in sh(f'git diff -- {BIU}', wt).stdout.split('\n')
-             if l[:1] in '+-' and l[:3] not in ('+++', '---')])
+             if l and l[0] in '+-' and l[:3] not in ('+++', '---')])
     print(f'  arm edit: {n} changed source lines\n  {d}')
     print(sh(f'git diff -- {BIU}', wt).stdout)
     if name != 'base' and n == 0:

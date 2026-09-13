@@ -1,0 +1,26 @@
+=== sta_wave14_shadow_pc ===
+  PC-S1  $v30u_ce 3351   $shadow 623
+         first three shadow names:
+           emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[284]
+           emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[249]
+           emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[754]~DUPLICATE
+  PC-S2  forced -to ONE register (node object): emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[284]
+         path returned, destination            : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[284]
+         VERDICT: PASS -- `-to` IS honoured
+  PC-S3  the free query `-from $v30u_ce -to $shadow`, top 5:
+         1  IN             slack   +5.083  data 25.610  to emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|psw_n~13_OTERM7509
+         2  IN             slack   +5.102  data 25.586  to emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v1~20_OTERM7480
+         3  IN             slack   +5.103  data 25.590  to emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|psw_n~13_OTERM7509
+         4  IN             slack   +5.104  data 25.589  to emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|psw_n~13_OTERM7509
+         5  IN             slack   +5.105  data 25.588  to emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|psw_n~13_OTERM7509
+         5 of 5 destinations are IN the collection
+  PC-S4  the same query with get_nodes (5191 nodes) returns 0 path(s)
+         (printed as the KNOWN-WRONG resolver form, never relied on)
+  STAGE 1 (* -> s1q) worst:
+    from : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|Selector978~5_OTERM7525_OTERM7626   (not in shadow)
+    to   : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|psw_n~13_OTERM7509   (IN shadow)
+    slack   +5.083   levels 25   data delay 25.610
+  STAGE 2 (s1q -> *) worst:
+    from : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v1~23_OTERM7482   (IN shadow)
+    to   : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|psw_n~13_OTERM7509   (IN shadow)
+    slack   +5.607   levels 26   data delay 25.419

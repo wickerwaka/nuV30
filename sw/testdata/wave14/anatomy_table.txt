@@ -1,0 +1,28 @@
+====================================================================================================
+P-1  THE POSITIVE CONTROLS, REPORTED FIRST
+  leg                     sta_biu_roundtrip controls   AX   PC-W1 pins->paths / nodes->paths   PC-W2   PC-W4 bulk
+  w14-base/control        ALL PASS                   PASS 1->1 / 1->0                  8       (1216, 6)
+  w14-base/retention      ALL PASS                   PASS 1->1 / 1->0                  8       (1290, 8)
+  w14-tie/control         ALL PASS                   PASS 1->1 / 1->0                  21      (2031, 23)
+  w14-tie/retention       ALL PASS                   PASS 1->1 / 1->0                  20      (1913, 14)
+  w14-hold/control        ALL PASS                   PASS 1->1 / 1->0                  11      (2049, 15)
+  w14-hold/retention      ALL PASS                   PASS 1->1 / 1->0                  10      (1854, 13)
+  ⚠ PC-W4 is the KNOWN-WRONG bulk form, printed and never relied on: a bulk figure
+    BELOW PC-W2's single-pin figure is `-through` accepted-and-ignored.
+  ⚠ sta_cutset_diag's OWN D-pin control reads: w14-base/control 0, w14-base/retention 0, w14-tie/control 0, w14-tie/retention 0, w14-hold/control 0, w14-hold/retention 0
+    0 is the M10K PORT REGISTER finding (WAVE 10 §1.1 item 2), not a new defect;
+    its STAGE figures use -from/-to collections and no -through at all.
+====================================================================================================
+P-3  THE ANATOMY.  A STAGE BOUNDARY IS A REGISTER; NO ARM ADDS ONE.
+  leg                     $v30u_ce  s1q   worst ce->ce ns (lv)   RT?  BIU   STAGE1 ns (lv)   STAGE2 ns (lv)   top200 S1/S2/NEITHER   POP-A rt/n  span
+  w14-base/control            2783   652    31.433 (32)        YES    6    18.963 (12)      27.880 (26)                0/0/200     200/200   2.149
+  w14-base/retention          2982   635     30.13 (31)        YES    8    19.788 (16)      28.019 (26)                0/0/200     200/200   2.562
+  w14-tie/control             3415   635    25.022 (21)        YES   23    24.672 (22)      23.716 (23)                0/0/200     200/200   9.581
+  w14-tie/retention           3351   623     25.61 (25)        no     0    25.610 (25)      25.419 (26)                0/0/200       0/200   4.976
+  w14-hold/control            3524   635    26.514 (25)        no     0    26.181 (25)      25.930 (23)                0/0/200       0/200   5.507
+  w14-hold/retention          3284   633    26.677 (27)        no     0    26.677 (27)      26.677 (27)                0/0/200       6/200   0.574
+  RT? = the worst ce->ce arc is an EU -> BIU -> EU combinational round trip
+  first/last BIU node on the worst arc:
+    w14-base/control       emu|system_large|u_core|u_biu|q_cnt~3|datae  ->  emu|system_large|u_core|u_biu|q_ripe_lead_n~3|combout
+    w14-base/retention     emu|system_large|u_core|u_biu|q_cnt~2|datac  ->  emu|system_large|u_core|u_biu|q_ripe_lead_n~5|combout
+    w14-tie/control        emu|system_large|u_core|u_biu|comb~1|datae  ->  emu|system_large|u_core|u_biu|r_cur_halt_OTERM4491_NEW_REG6266|ena

@@ -1,0 +1,33 @@
+=== ARM qripe_tie  (850ef46559) ===
+--- ss_lint --core ucore
+BIU: 109 symbols, each x2 in v30u_biu.sv -> OK
+EU: 122 symbols, each x2 in v30u_eu.sv +20 includes -> OK
+ss_lint: PASS (109x2 BIU + 122x2 EU + tag = 232; constants OK)
+
+BIU (v30u_biu.sv): 91 architectural flops -> 91 SSA-mapped, 0 whitelisted, 0 UNMAPPED; 0 sim-only exempt (203 comb/next-state regs skipped)
+EU (v30u_eu.sv +20 includes): 138 architectural flops -> 134 SSA-mapped, 4 whitelisted, 0 UNMAPPED; 3 sim-only exempt (430 comb/next-state regs skipped)
+
+ss_flopcensus: PASS (229 architectural flops, all SSA-mapped or whitelisted; 4 whitelist entries)
+rc=0
+--- r7_lint
+  OK: no undeclared carrier
+
+  --- (b) `stop` under a live-READY condition ---
+  tainted signals     : 3 (eu_rd_edge, rd_edge_psw_take, rd_edge_take_raw)
+  `stop` sites      : 41 in v30u_eu_step.svh, v30u_eu_row.svh
+  OK: no `stop` sits under a live-READY condition
+
+=== r7_lint: PASS   (0 undeclared carrier(s), 0 undeclared unresolved, 0 `stop` site(s))
+rc=0
+--- phase_split_lint
+  preload incl : 2
+  live-in-stage1: none
+
+=== phase_split_lint: PASS   (156 members / 778 bits / 0 violations)
+rc=0
+--- cutset_lint
+  module combinational values the block names : 0 (must be 0)
+  live-tainted members : none
+
+=== cutset_lint: PASS   (80 members / 0 violations)
+rc=0

@@ -1,0 +1,26 @@
+=== sta_wave14_shadow_pc ===
+  PC-S1  $v30u_ce 2982   $shadow 635
+         first three shadow names:
+           emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[754]
+           emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[194]
+           emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[752]
+  PC-S2  forced -to ONE register (node object): emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[754]
+         path returned, destination            : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[754]
+         VERDICT: PASS -- `-to` IS honoured
+  PC-S3  the free query `-from $v30u_ce -to $shadow`, top 5:
+         1  IN             slack   +9.852  data 19.788  to emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[738]~DUPLICATE
+         2  IN             slack   +9.867  data 19.776  to emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[738]
+         3  IN             slack   +9.904  data 19.735  to emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[724]
+         4  IN             slack   +9.904  data 19.735  to emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[737]
+         5  IN             slack   +9.907  data 19.733  to emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[738]~DUPLICATE
+         5 of 5 destinations are IN the collection
+  PC-S4  the same query with get_nodes (5067 nodes) returns 0 path(s)
+         (printed as the KNOWN-WRONG resolver form, never relied on)
+  STAGE 1 (* -> s1q) worst:
+    from : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a7~PORT_A_WRITE_ENABLE_REG   (not in shadow)
+    to   : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[738]~DUPLICATE   (IN shadow)
+    slack   +9.852   levels 16   data delay 19.788
+  STAGE 2 (s1q -> *) worst:
+    from : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[187]   (IN shadow)
+    to   : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a7~porta_address_reg10   (not in shadow)
+    slack   +2.529   levels 26   data delay 28.019

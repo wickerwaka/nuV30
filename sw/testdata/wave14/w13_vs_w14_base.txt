@@ -1,0 +1,19 @@
+WAVE 13's SPLIT arm vs WAVE 14's BASE arm -- compared FIELD BY FIELD, not by a digest
+
+control: manifest W13 d4ecdeff14444248  W14 d4ecdeff14444248  SAME
+  worst-of-5  W13 30.53   W14 30.53   SAME
+  seed 1  W13 fmax=31.11 setup=-0.895 alms=8,018   W14 fmax=31.11 setup=-0.895 alms=8,018   ==
+  seed 2  W13 fmax=30.53 setup=-1.506 alms=8,024   W14 fmax=30.53 setup=-1.506 alms=8,024   ==
+  seed 3  W13 fmax=30.85 setup=-1.162 alms=8,011   W14 fmax=30.85 setup=-1.162 alms=8,011   ==
+  seed 4  W13 fmax=30.98 setup=-1.025 alms=8,030   W14 fmax=30.98 setup=-1.025 alms=8,030   ==
+  seed 5  W13 fmax=30.62 setup=-1.413 alms=8,006   W14 fmax=30.62 setup=-1.413 alms=8,006   ==
+  ALL FIVE DRAWS IDENTICAL IN ALL THREE FIELDS: True
+
+retention: manifest W13 d4ecdeff14444248  W14 d4ecdeff14444248  SAME
+  worst-of-5  W13 31.15   W14 31.15   SAME
+  seed 1  W13 fmax=32.43 setup=0.414 alms=8,255   W14 fmax=32.43 setup=0.414 alms=8,255   ==
+  seed 2  W13 fmax=32.75 setup=0.713 alms=8,228   W14 fmax=32.75 setup=0.713 alms=8,228   ==
+  seed 3  W13 fmax=31.15 setup=-0.855 alms=8,215   W14 fmax=31.15 setup=-0.855 alms=8,215   ==
+  seed 4  W13 fmax=32.53 setup=0.509 alms=8,221   W14 fmax=32.53 setup=0.509 alms=8,221   ==
+  seed 5  W13 fmax=31.82 setup=-0.177 alms=8,240   W14 fmax=31.82 setup=-0.177 alms=8,240   ==
+  ALL FIVE DRAWS IDENTICAL IN ALL THREE FIELDS: True

@@ -1,0 +1,27 @@
+=== sta_cutset_diag (WAVE 4) ===
+  $v30u_ce 2783   shadow registers matching |s1q* : 652
+  worst ce->ce
+    from  : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a7~PORT_A_WRITE_ENABLE_REG
+    to    : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a0~porta_address_reg2
+    slack :   -1.413   logic levels 32   data delay 31.433
+    arrival points: 81   of which name |s1q : 0    <<<< C-3(b)
+    ...and of which live in v30u_biu : 6   v30u_eu : 3   elsewhere : 72
+    ⚠ THE ARC LEAVES THE EU AND COMES BACK -- an EU -> BIU -> EU
+      COMBINATIONAL ROUND TRIP.  first BIU node : emu|system_large|u_core|u_biu|q_cnt~3|datae
+                                  last  BIU node : emu|system_large|u_core|u_biu|q_ripe_lead_n~3|combout
+  positive control: -through the destination's own D pin resolves 0 pin(s)
+  --- C-8: the top 200 ce->ce paths, classified ---
+    STAGE 1  (* -> s1q)       count 0
+      worst: 
+    STAGE 2  (s1q -> *)       count 0
+      worst: 
+    NEITHER  (WAVE 2's signature)  count 200
+      worst:   -1.413  levels 32   data 31.433    emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a7~PORT_A_WRITE_ENABLE_REG  ->  emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a0~porta_address_reg2
+  STAGE 1 (anything -> s1q), worst:
+    from  : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a5~PORT_A_WRITE_ENABLE_REG
+    to    : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[730]
+    slack :  +10.674   logic levels 12   data delay 18.963
+  STAGE 2 (s1q -> anything), worst:
+    from  : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[187]
+    to    : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a0~porta_address_reg2
+    slack :   +3.122   logic levels 26   data delay 27.880
