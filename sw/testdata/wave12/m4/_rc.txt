@@ -1,0 +1,2 @@
+control rc=0
+retention rc=0

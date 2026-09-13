@@ -1,0 +1,12 @@
+WAVE 12 M-3 -- THE FALSIFIER.  These are WAVE 11's TWO CONDITIONS, reproduced on
+the changed tree.  `hdl/build_id.v` is written BY HAND in each arm because
+nothing generates it any more; the point of the wave is that it is now INERT.
+The two sha256s are the ones WAVE 11 recorded, and the 260909 one is the value a
+COMMITTED RECEIPT holds (sw/testdata/g6dist/wave7-chainflat-noexc-control-n5/
+seed1_quartus_gate.json, its `build_id` field) -- not a value computed from recall.
+Pipeline: sw/run_biu_roundtrip.py --clean-db --control-seeds 1 --retention-seeds ''
+(WAVE 10's driver, WAVE 11's invocation), no-exception SDC, identical in both arms.
+
+arm                 bytes                              sha256
+w12a_bid260909      `define BUILD_DATE "260909"        11e55ef99ab705c5e0aa1bfc0c5db15e7a230e011a76a62633c7cf95939c5247
+w12b_bid260912      `define BUILD_DATE "260912"        5b4d6ad10ee2a48ffe4ea3c34b82d375d5a03da1140cb15c0241a40fd9bbc124

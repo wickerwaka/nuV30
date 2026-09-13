@@ -1,0 +1,23 @@
+=== M-3.  THE TWO CONDITIONS WAVE 11 SEPARATED, ON THE CHANGED TREE ===
+
+arm                                 $v30u_ce   T_min ns      MHz
+W12-A  build_id.v = "260909"            2175     35.992    27.78
+W12-B  build_id.v = "260912"            2175     35.992    27.78
+
+--- WAVE 11, the SAME two conditions on the tree that still had the stamp
+WAVE 11 E-1   "260909"                  2154     34.220    29.22
+WAVE 11 PC-11 "260912"                  1918     35.867    27.88
+
+REGISTERED PREDICTION: the two arms return the SAME $v30u_ce, the SAME
+T_min to the thousandth, and BYTE-IDENTICAL truefmax artifacts.
+
+  $v30u_ce  : 2175 vs 2175   -> SAME
+  T_min     : 35.992 vs 35.992 ns  -> SAME
+  truefmax  : BYTE-IDENTICAL from line 2 on   (79 lines)
+
+  .txt                 IDENTICAL  (70 lines)
+  .rows.txt            DIFFERS  (601 lines)
+  .arrivalpoints.txt   IDENTICAL  (90 lines)
+
+WAVE 11 measured these two conditions 1.647 ns apart (1.34 MHz) on the same seed.
+WAVE 12 measures them 0.000 ns apart.
