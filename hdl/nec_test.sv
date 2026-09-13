@@ -197,7 +197,6 @@ wire [1:0] ar = status[122:121];
 assign VIDEO_ARX = (!ar) ? 12'd4 : (ar - 1'd1);
 assign VIDEO_ARY = (!ar) ? 12'd3 : 12'd0;
 
-`include "build_id.v" 
 localparam CONF_STR = {
 	"nec_test;;",
 	"-;",
@@ -223,10 +222,27 @@ localparam CONF_STR = {
 	"-;",
 	"T[0],Reset;",
 	"R[0],Reset and close OSD;",
-	"v,0;", // [optional] config version 0-99. 
+	"v,0;"  // [optional] config version 0-99. 
 	        // If CONF_STR options are changed in incompatible way, then change version number too,
 			  // so all options will get default values on first start.
-	"V,v",`BUILD_DATE 
+	        // ⚠ WAVE 12 (2026-09-12) DELETED THE VERSION ELEMENT THAT FOLLOWED THIS ONE.
+	        // It was the MiSTer OSD version string, fed from hdl/build_id.v -- a %y%m%d date
+	        // stamp written by the PRE_FLOW script, gitignored, untracked, and a DECLARED
+	        // EXCLUSION from quartus_gate's input_manifest.  WAVE 11 measured what that cost:
+	        // on a BYTE-IDENTICAL tree at ONE fitter seed, two ASCII characters of it moved
+	        // $v30u_ce 2,154 -> 1,918 and T_min 34.220 -> 35.867 ns (1.647 ns / 1.34 MHz),
+	        // where FIVE FITTER SEEDS spanned 0.603 ns.  The core's synthesised netlist is
+	        // INVARIANT under it -- 1,181 ce-gated registers every time; what moves is ~91
+	        // logic cells of THIS mux, outside the core, and the fitter's timing-driven
+	        // register duplication on the microcode ROM's read loop follows.
+	        // USER INSTRUCTION 2026-09-12: "Change the project so build_id.v isn't generated
+	        // and isn't used."  The element is OPTIONAL: hps_io is the only consumer of
+	        // CONF_STR in hdl/sys/, it serves the string byte-positionally with no parsing,
+	        // and past the end the HPS reads 0.  The cost is the OSD version text, nothing else.
+	        // ⚠ THE STAMP'S MACRO NAME IS DELIBERATELY NOT SPELLED ANYWHERE IN THIS FILE:
+	        // quartus_gate bar E11 REFUSES a build whose sources mention it, and a comment
+	        // that tripped the gate it documents would be a gate nobody could keep green.
+	        // docs/notes/buildid_removal_prereg_2026-09-12.md
 };
 
 wire forced_scandoubler;

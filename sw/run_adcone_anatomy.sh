@@ -26,7 +26,12 @@ done
 
 cd "$ROOT/hdl"
 rm -rf db incremental_db
-"$Q/quartus_sh" -t sys/build_id.tcl preflow nec_test nec_test_ucore
+# ⚠ WAVE 12 (2026-09-12) DELETED THE `quartus_sh -t sys/build_id.tcl preflow` LINE
+# THAT STOOD HERE.  Its ONLY purpose was to write `hdl/build_id.v`, which
+# `nec_test.sv` `include`d and which a direct `quartus_map` does not generate
+# (PRE_FLOW is honoured by `quartus_sh --flow compile` and nothing else), so A&S
+# died with `Error (10054)` without it.  The stamp is gone from the RTL, so the
+# stage has nothing to do.  `docs/notes/buildid_removal_prereg_2026-09-12.md`
 "$Q/quartus_map" nec_test -c nec_test_ucore > "$ROOT/$OUT/map.log" 2>&1
 echo "MAP done"
 

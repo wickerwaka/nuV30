@@ -487,55 +487,120 @@ def report_manifest(tree, logpath):
 # WHAT THE GATE ACTUALLY RUNS -- one function, so a reviewer and a test can
 # both read the command list without starting a ten-minute compile.
 # --------------------------------------------------------------------------- #
-def preflow_command():
-    """The project's own `PRE_FLOW_SCRIPT_FILE`, run explicitly.  -> argv
-
-    ⚠ A RIG DEFECT FOUND BY THIS WAVE, AND IT IS NOT THE SWEEP'S.
-    `hdl/sys/sys.tcl:211` sets
-
-        set_global_assignment -name PRE_FLOW_SCRIPT_FILE "quartus_sh:sys/build_id.tcl"
-
-    and that hook is honoured by `quartus_sh --flow compile` and by NOTHING
-    ELSE.  Any path that invokes `quartus_map` directly skips it, so
-    `hdl/build_id.v` -- which `nec_test.sv:200` ``include`s -- is never
-    generated and Analysis & Synthesis dies with
-
-        Error (10054): ... can't open Verilog Design File "build_id.v"
-
-    **That defect is in the RECORDED FOUR-STEP `--retention` RECIPE too**, and
-    it has been latent since that recipe was first written: `build_id.v` is
-    gitignored (`hdl/.gitignore:32`) and left behind by any previous CONTROL
-    `--flow compile`, so every retention build ever taken found one already
-    there.  On a FRESH tree -- a new clone, a new worktree, or a `db` clean
-    that also removed it -- `--retention` fails at map.  Measured here, on this
-    worktree, exit 3 in 11 s.  The fix is to run the hook explicitly rather
-    than to depend on a leftover.
-
-    `$quartus(args)` 1 and 2 are the project and the revision (index 0 is the
-    flow name), which is how `--flow compile` calls it."""
-    return [str(QUARTUS_BIN / "quartus_sh"), "-t", "sys/build_id.tcl",
-            "preflow", PROJECT, REVISION]
+# --------------------------------------------------------------------------- #
+# E11 -- THE BUILD STAMP MUST STAY GONE.  (WAVE 12, 2026-09-12.)
+# --------------------------------------------------------------------------- #
+BUILD_STAMP_TOKEN = "BUILD_" + "DATE"        # split so this file cannot trip E11
+BUILD_STAMP_FILE = "build_id.v"
 
 
-def build_id_state():
-    """What `build_id.v` holds -- RECORDED, deliberately NOT in the manifest.
+def build_stamp_state(hdl=None, files=None):
+    """Is a %y%m%d build stamp back on the build path?  -> dict
 
-    It is a genuine build input (`nec_test.sv:200` includes it) that
-    `input_files()` does not name, and it CANNOT be added without cost: it
-    carries `BUILD_DATE` as a `%y%m%d` stamp, so folding it into the manifest
-    would move the input hash every midnight and destroy the comparability that
-    lets this wave say its 88-file manifest `c23e63aa4cf19684…` is the same one
-    the k=0.5 wave and the CHAIN_MAX draws were taken on.  So it is recorded
-    beside the manifest instead of inside it, and the gap is named rather than
-    closed silently."""
-    p = HDL / "build_id.v"
-    if not p.is_file():
-        return {"present": False, "text": None, "sha256": None,
-                "note": "absent -- the PRE_FLOW script has not run"}
-    return {"present": True, "text": p.read_text(errors="replace").strip(),
-            "sha256": art.sha256_file(p),
-            "note": "a build input NOT in input_manifest: it is a %y%m%d date "
-                    "stamp and would move the manifest hash daily"}
+    WHY THIS BAR EXISTS, AND IT IS NOT HYGIENE.  `hdl/build_id.v` used to be a
+    %y%m%d date stamp written by the MiSTer PRE_FLOW script and ``include``d by
+    `nec_test.sv` into the LAST ELEMENT OF `CONF_STR`.  It was `.gitignore`d,
+    untracked, and a DECLARED EXCLUSION from `input_manifest` -- this
+    function's predecessor `build_id_state()` recorded it BESIDE the manifest
+    instead of inside it, in words, in every receipt.  **The layer was honest
+    and nobody read the field.**
+
+    WAVE 11 measured the cost (`docs/notes/pcc0_settle_results_2026-09-12.md`).
+    On a BYTE-IDENTICAL tree at ONE fitter seed, `--clean-db` in every arm,
+    changing TWO ASCII CHARACTERS of the stamp moved `$v30u_ce`
+    2,154 -> 1,936 -> 1,918 and T_min 34.220 -> 34.773 -> 35.867 ns.
+    **1.647 ns / 1.34 MHz across three stamps at ONE seed, against 0.603 ns
+    across WAVE 7's FIVE SEEDS at one stamp.**  The core's synthesised netlist
+    is invariant -- 1,181 ce-gated registers under every stamp; what moves is
+    ~91 logic cells of OSD byte-mux OUTSIDE the core, and the fitter's
+    timing-driven register duplication on the microcode ROM's read loop
+    follows.  Two waves were differenced across that and no gate objected.
+
+    WAVE 12 removed it (`docs/notes/buildid_removal_prereg_2026-09-12.md`).
+    **THIS IS THE GATE THAT KEEPS IT REMOVED, AND IT IS NEEDED BECAUSE
+    `hdl/sys/` IS VENDORED MiSTer FRAMEWORK CODE**: a future `sys/` update
+    restores `sys/build_id.tcl` and re-points `PRE_FLOW_SCRIPT_FILE` at it, and
+    the stamp is back with no edit anyone made and no diff anyone reviewed.
+
+    ONE PREDICATE, TWO CHECKS.  *No file the compiler reads mentions the stamp
+    macro, and `hdl/build_id.v` does not exist.*  The scanned list is
+    `input_files()` -- the SAME closed list the manifest already hashes, which
+    names both `.qsf`s, `nec_test.sdc`, `nec_test.sv`, the whole ucore and
+    every `.tcl`/`.v`/`.sv`/`.qip` under `hdl/sys/` -- so a re-vendored
+    generator is caught by its own text, a re-added ``include`` by the
+    reference it needs, and a leftover generated file by existing at all.
+
+    ⚠ IT REFUSES, IT DOES NOT MERELY RECORD.  A build taken under a
+    re-introduced stamp is not comparable to one taken without it, and an
+    incomparable figure that scores is worse than no figure.
+
+    ⚠ `BUILD_STAMP_TOKEN` IS ASSEMBLED FROM TWO HALVES ON PURPOSE.  This file
+    is not on the scanned list, but the falsifier and the reviewer both read
+    it, and a checker that cannot be quoted in its own documentation is a
+    checker people work around.
+
+    `hdl` and `files` are injectable ONLY so the falsifier can plant a stamp in
+    a tree it owns; nothing in the tool passes them."""
+    hdl = Path(hdl) if hdl is not None else HDL
+    files = list(files) if files is not None else input_files()
+    stamp = hdl / BUILD_STAMP_FILE
+    present = stamp.is_file()
+    hits = {}
+    for rel in files:
+        f = hdl / rel
+        if not f.is_file():
+            continue
+        try:
+            txt = f.read_text(errors="replace")
+        except OSError:                                      # noqa: BLE001
+            continue
+        n = sum(1 for ln in txt.splitlines() if BUILD_STAMP_TOKEN in ln)
+        if n:
+            hits[rel] = n
+    return {"bar": f"no {BUILD_STAMP_FILE} on disk and no {BUILD_STAMP_TOKEN} "
+                   f"in any file the compiler reads",
+            "token": BUILD_STAMP_TOKEN,
+            "file": BUILD_STAMP_FILE,
+            "file_present": present,
+            "file_sha256": art.sha256_file(stamp) if present else None,
+            "token_hits": hits,
+            "files_scanned": len(files),
+            "pass": (not present) and not hits,
+            "note": "WAVE 12.  The %y%m%d OSD date stamp was worth 1.647 ns / "
+                    "1.34 MHz at ONE seed (WAVE 11) and was an unlabelled "
+                    "SECOND fitter dimension.  hdl/sys/ is VENDORED, so a "
+                    "framework update can bring it back with no edit anyone "
+                    "made: this bar REFUSES such a build rather than recording "
+                    "it."}
+
+
+def build_stamp_refusal(st):
+    """The refusal text, or None when the tree is clean.  -> str | None"""
+    if st["pass"]:
+        return None
+    why = []
+    if st["file_present"]:
+        why.append(f"  hdl/{st['file']} EXISTS "
+                   f"(sha256 {st['file_sha256'][:16]}...)")
+    for rel, n in sorted(st["token_hits"].items()):
+        why.append(f"  hdl/{rel} names {st['token']} on {n} line(s)")
+    return ("quartus_gate: REFUSING TO RUN.  A %y%m%d BUILD STAMP IS BACK ON "
+            "THE BUILD PATH.\n"
+            + "\n".join(why) + "\n"
+            "  WAVE 11 measured what that is: on a BYTE-IDENTICAL tree at ONE "
+            "seed, two ASCII\n"
+            "  characters of this stamp moved T_min 34.220 -> 35.867 ns "
+            "(1.647 ns / 1.34 MHz),\n"
+            "  where FIVE FITTER SEEDS spanned 0.603 ns.  It is a SECOND, "
+            "UNLABELLED fitter\n"
+            "  dimension: a figure taken under it may not be differenced "
+            "against one taken\n"
+            "  without it, and two waves already were.  hdl/sys/ is VENDORED "
+            "MiSTer code and\n"
+            "  this is exactly how it comes back.  Remove it (WAVE 12,\n"
+            "  docs/notes/buildid_removal_prereg_2026-09-12.md) or, if it is "
+            "wanted, land that\n"
+            "  as its own change with its own pre-registration.  (exit 2)")
 
 
 def build_commands(retention=False):
@@ -570,15 +635,16 @@ def build_commands(retention=False):
     #     quartus_map --verilog_macro=X1_AD_RETENTION=1 nec_test -c nec_test_ucore
     # i.e. UNQUOTED is what Quartus actually received, every time.
     #
-    # ⚠ THE PRE_FLOW STAGE IS PREPENDED, AND IT IS A FIX, NOT A DEVIATION.
-    # The four recorded stages below are UNCHANGED in content and in order.
-    # What precedes them is the project's own `PRE_FLOW_SCRIPT_FILE`, which
-    # `quartus_sh --flow compile` runs and a direct `quartus_map` does not --
-    # see `preflow_command()`.  Without it this recipe cannot build on a tree
-    # that has no leftover `hdl/build_id.v`, which every previous retention
-    # build silently relied on.
+    # ⚠ WAVE 12 (2026-09-12) REMOVED THE PREPENDED PRE_FLOW STAGE AND THE
+    # RECIPE IS THE RECORDED FOUR AGAIN.  That fifth stage was added on
+    # 2026-08-13 for ONE reason: `hdl/build_id.v` was ``include``d by
+    # `nec_test.sv`, PRE_FLOW is honoured by `quartus_sh --flow compile` and by
+    # nothing else, so a direct `quartus_map` on a tree without a leftover copy
+    # died at `Error (10054)`.  The stamp is gone from the RTL (WAVE 11 measured
+    # it at 1.647 ns / 1.34 MHz at ONE seed -- see `build_stamp_state()`), so
+    # the stage has nothing to generate.  The four recorded stages below have
+    # never changed in content or in order.
     return [
-        preflow_command(),
         [q("quartus_map"), f"--verilog_macro={RETENTION_MACRO}=1",
          PROJECT, "-c", REVISION],
         [q("quartus_fit"), PROJECT, "-c", REVISION],
@@ -1259,19 +1325,19 @@ def run_sweep(a, tree, receipt_path, logpath):
         stages_log.append({"tag": tag, "cmd": cmd, "rc": rc, "seconds": el})
         return rc
 
-    # --- THE PRE_FLOW HOOK, THEN THE SINGLE SHARED MAP ---------------------- #
-    # `quartus_map` invoked directly does NOT run PRE_FLOW_SCRIPT_FILE, so
-    # `hdl/build_id.v` would be missing and A&S would die at nec_test.sv:200.
-    # See `preflow_command()`.
+    # --- THE SINGLE SHARED MAP --------------------------------------------- #
+    # ⚠ WAVE 12: the PRE_FLOW stage that stood here is GONE.  It existed only
+    # to write `hdl/build_id.v`, which no longer exists and is no longer read
+    # (bar E11, `build_stamp_state()`).  E11 has already REFUSED this run in
+    # `main()` if a stamp is back, so by here the tree is known stamp-free; the
+    # state is recorded in every receipt below.
+    stamp = build_stamp_state()
+    print(f"quartus_gate: E11 build stamp -> ABSENT "
+          f"({stamp['files_scanned']} files scanned, 0 hits)", flush=True)
     with open(logpath, "w") as lf:
-        rc = stage(preflow_command(), lf, "preflow")
-        if rc == 0:
-            rc = stage(map_command(a.retention), lf, "map")
-    bid = build_id_state()
-    print(f"quartus_gate: build_id.v {bid['text']!r} "
-          f"(recorded beside the manifest, not inside it)", flush=True)
+        rc = stage(map_command(a.retention), lf, "map")
     if rc != 0:
-        print(f"quartus_gate: the shared preflow/map FAILED (rc={rc}) -- no "
+        print(f"quartus_gate: the shared map FAILED (rc={rc}) -- no "
               f"seed was "
               f"fitted.  (exit 1)  log {logpath}")
         return 1
@@ -1355,7 +1421,7 @@ def run_sweep(a, tree, receipt_path, logpath):
                                   "salvaged_despite_rc": tf_salvaged,
                                   "artifact": (art.relpath(tf_path)
                                                if tf_path else None)},
-               "build_id": bid,
+               "E11_no_build_stamp": stamp,
                "seconds": round(time.time() - t0, 1),
                "build": {"note": "one shared quartus_map; this receipt is ONE "
                                  "FIT of the sweep",
@@ -1460,7 +1526,7 @@ def run_sweep(a, tree, receipt_path, logpath):
             "configuration": (per_seed[0]["configuration"] if per_seed
                               else "UNDETERMINED -- no seed completed"),
             "tree": str(tree), "artifact_dir": art.relpath(art_dir),
-            "E1_gen_ucore_qsf": e1, "build_id": bid,
+            "E1_gen_ucore_qsf": e1, "E11_no_build_stamp": stamp,
             "seeds": seeds, "n_seeds": n,
             "per_seed": per_seed,
             "fmax": _stat(fmaxes),
@@ -1675,6 +1741,17 @@ def main():
         except ValueError as e:
             print(f"quartus_gate: REFUSING TO RUN.  --seeds: {e}  (exit 2)")
             return 2
+    # --- E11: THE BUILD STAMP.  BEFORE EVERYTHING, ON EVERY PATH. ---------- #
+    # ⚠ NOT EXEMPTED FOR `--dry-run` OR `--parse-only`, DELIBERATELY.  One rule
+    # with no exceptions is the only kind that survives: the stamp came back
+    # into a build nobody edited, and a gate with a quiet path is a gate that
+    # will be reached by one.  See `build_stamp_state()` for what it cost.
+    stamp = build_stamp_state()
+    refusal = build_stamp_refusal(stamp)
+    if refusal is not None:
+        print(refusal)
+        return 2
+
     if (a.no_asm or a.no_truefmax or a.artifact_dir) and not a.seeds:
         print("quartus_gate: REFUSING TO RUN.  --no-asm / --no-truefmax / "
               "--artifact-dir are\n"
@@ -1692,9 +1769,6 @@ def main():
             print(f"quartus_gate --dry-run: DISTRIBUTION, "
                   f"{'RETENTION' if a.retention else 'CONTROL/DEFAULT'}, "
                   f"{len(seeds)} seed(s) {seeds}, cwd {HDL}")
-            print("  " + " ".join(preflow_command())
-                  + "     # ONCE (PRE_FLOW_SCRIPT_FILE; a direct "
-                    "quartus_map does not run it)")
             print("  " + " ".join(map_command(a.retention)) + "     # ONCE")
             for c in seed_commands(seeds[0], not a.no_asm):
                 print("  " + " ".join(c) + "     # per seed")
@@ -1782,6 +1856,11 @@ def main():
            "configuration": "UNDETERMINED -- no reports gated",
            "configuration_detail": None,
            "reports": None,
+           # E11 -- WAVE 12.  The absence is RECORDED, not merely enforced: a
+           # receipt that cannot say the tree was stamp-free cannot be
+           # differenced against one that can.  The REFUSAL already fired in
+           # `main()` above, so this can only ever read `pass: true` here.
+           "E11_no_build_stamp": stamp,
            "tree": str(tree)}
 
     # --- E1: the revision file, BEFORE the build --------------------------- #

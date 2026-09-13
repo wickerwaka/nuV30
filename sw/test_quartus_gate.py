@@ -36,6 +36,14 @@ comes back**.  So:
       CONTROL no matter what the flag said.
   Q8  (asked on EVERY subprocess, not as its own section) the append-only
       receipt history does not grow by a single byte.  See `_DISARM`.
+  Q17 E11, THE BUILD STAMP (adopted 2026-09-12, WAVE 12).  `hdl/build_id.v`
+      was a %y%m%d date stamp in CONF_STR: gitignored, untracked, a DECLARED
+      EXCLUSION from `input_manifest`, and worth 1.647 ns / 1.34 MHz at ONE
+      fitter seed where FIVE SEEDS spanned 0.603.  It was a second, unlabelled
+      fitter dimension and two waves were differenced across it.  `hdl/sys/` is
+      VENDORED, so a framework update brings it back with no edit anyone made:
+      the bar refuses such a build, and every clause of it is demonstrated
+      FIRING here, in a temp tree, with the real tree as the positive control.
   Q16 THE PAIRED FIGURE (adopted 2026-08-13).  G6's registered output is a
       PAIR -- whole-design worst-of-N (the promotion gate, unchanged) beside
       core-domain worst-of-N (what an integration inherits) -- so the falsifier
@@ -146,40 +154,43 @@ def q1_retention_commands():
     print("\nQ1  --retention builds the RECORDED four-stage recipe, "
           "PRECEDED by the PRE_FLOW hook")
     cmds = qg.build_commands(retention=True)
-    # ⚠ THE RECIPE GAINED A STAGE ON 2026-08-13, AND THE FOUR RECORDED ONES ARE
-    # UNCHANGED.  `hdl/sys/sys.tcl:211` sets PRE_FLOW_SCRIPT_FILE, which
-    # `quartus_sh --flow compile` honours and a direct `quartus_map` does not --
-    # so on a tree with no leftover `hdl/build_id.v` the recorded four-step
-    # recipe CANNOT BUILD (measured: A&S Error 10054, exit 3 in 11 s).  Every
-    # retention build ever taken found a `build_id.v` left behind by an earlier
-    # CONTROL `--flow compile`.  The hook now runs explicitly.
-    check("five stages: the PRE_FLOW hook + the recorded four",
-          len(cmds) == 5, f"got {len(cmds)}")
+    # ⚠ THE RECIPE GAINED A PRE_FLOW STAGE ON 2026-08-13 AND LOST IT AGAIN AT
+    # WAVE 12 (2026-09-12).  It was added because `hdl/build_id.v` was
+    # ``include``d by `nec_test.sv` and PRE_FLOW_SCRIPT_FILE is honoured by
+    # `quartus_sh --flow compile` and by nothing else, so a direct
+    # `quartus_map` on a tree with no leftover copy died at A&S Error 10054
+    # (measured, exit 3 in 11 s).  WAVE 12 deleted the stamp from the RTL --
+    # WAVE 11 had measured it at 1.647 ns / 1.34 MHz at ONE fitter seed -- so
+    # the stage has nothing to generate.  **THE FOUR RECORDED STAGES HAVE NEVER
+    # CHANGED IN CONTENT OR IN ORDER, THROUGH BOTH EDITS.**
+    check("four stages: the RECORDED recipe, and no PRE_FLOW stage",
+          len(cmds) == 4, f"got {len(cmds)}")
     names = [Path(c[0]).name for c in cmds]
-    check("the PRE_FLOW hook runs FIRST",
-          names[0] == "quartus_sh" and "sys/build_id.tcl" in cmds[0],
-          str(cmds[0]))
     check("the RECORDED four are unchanged and in order: map, fit, asm, sta",
-          names[1:] == ["quartus_map", "quartus_fit", "quartus_asm",
-                        "quartus_sta"], str(names))
-    check("the PRE_FLOW hook is the project's own script, not a reimplementation",
-          (ROOT / "hdl" / "sys" / "build_id.tcl").is_file()
-          and "sys/build_id.tcl" in " ".join(cmds[0]))
+          names == ["quartus_map", "quartus_fit", "quartus_asm",
+                    "quartus_sta"], str(names))
+    check("no stage runs a PRE_FLOW script any more",
+          not any("-t" in c for c in cmds)
+          and not any("preflow" in " ".join(c) for c in cmds), str(cmds))
     macro = f"--verilog_macro={qg.RETENTION_MACRO}=1"
-    check("the macro is on quartus_map", macro in cmds[1], str(cmds[1]))
+    check("the macro is on quartus_map", macro in cmds[0], str(cmds[0]))
     # UNQUOTED, because this runs without a shell.  Checked against the
     # artifact: all twelve archived retention receipts record
     # `--verilog_macro=X1_AD_RETENTION=1` as what Quartus received.
     check("the macro is UNQUOTED (no shell in the loop)",
-          all('"' not in tok for tok in cmds[1]), str(cmds[1]))
+          all('"' not in tok for tok in cmds[0]), str(cmds[0]))
     check("the macro is on NO other stage",
-          not any(any("verilog_macro" in t for t in c)
-                  for c in cmds[:1] + cmds[2:]))
-    for c in cmds[1:]:
+          not any(any("verilog_macro" in t for t in c) for c in cmds[1:]))
+    for c in cmds:
         check(f"{Path(c[0]).name} names the project and revision",
               c[-3:] == [qg.PROJECT, "-c", qg.REVISION], str(c))
-    check("the PRE_FLOW hook names the project and revision too",
-          cmds[0][-2:] == [qg.PROJECT, qg.REVISION], str(cmds[0]))
+    # ⚠ THE STAGE COUNT IS CHECKED BOTH WAYS.  A recipe that silently grew a
+    # stage is how the PRE_FLOW one arrived; a recipe that silently lost one is
+    # how it would leave again.  WAVE 12 removed it DELIBERATELY and this is
+    # the assertion that says so.
+    check("the recipe is exactly four stages and every one is a quartus_ tool",
+          all(Path(c[0]).name.startswith("quartus_") for c in cmds)
+          and len({Path(c[0]).name for c in cmds}) == 4, str(cmds))
     # ...and the dry run prints exactly that.
     rc, out = run_gate(["--dry-run", "--retention"])
     check("--dry-run --retention exits 0", rc == 0, out.strip()[-200:])
@@ -349,9 +360,9 @@ def q9_sweep_commands():
     check("...prints the map ONCE",
           sum(1 for ln in cmdlines if "bin/quartus_map" in ln) == 1,
           "\n".join(cmdlines))
-    check("...and the PRE_FLOW hook ONCE, before it",
-          [i for i, ln in enumerate(cmdlines) if "sys/build_id.tcl" in ln]
-          == [0], "\n".join(cmdlines))
+    check("...and NO PRE_FLOW hook stage at all (WAVE 12)",
+          not any("preflow" in ln or "-t sys/" in ln for ln in cmdlines),
+          "\n".join(cmdlines))
     check("...says worst-of-8", "worst-of-8@seeds{1,2,3,4,5,6,7,8}" in out, out)
     check("...builds nothing", "compile rc=" not in out and "[map]" not in out)
     rc, out2 = run_gate(["--dry-run", "--seeds", "2"])
@@ -893,6 +904,120 @@ def q16_paired_reporting():
           rc == 0, out.strip()[-200:])
 
 
+
+def q17_build_stamp_bar():
+    """E11 -- THE %y%m%d BUILD STAMP MUST STAY GONE, AND THE CHECK MUST FIRE.
+
+    WAVE 12 (`docs/notes/buildid_removal_prereg_2026-09-12.md`).  WAVE 11
+    demonstrated that `hdl/build_id.v` -- a generated, gitignored, untracked
+    date stamp in the last element of `CONF_STR` -- was worth **1.647 ns /
+    1.34 MHz at ONE fitter seed**, against 0.603 ns across WAVE 7's FIVE seeds.
+    It was a SECOND, UNLABELLED fitter dimension; two waves were differenced
+    across it and nothing objected.  ⚠ **`hdl/sys/` IS VENDORED MiSTer
+    FRAMEWORK CODE**: a future `sys/` update restores `sys/build_id.tcl` and
+    re-points `PRE_FLOW_SCRIPT_FILE` at it, with no edit anyone made and no
+    diff anyone reviews.  So the bar is checked against the TREE on every run.
+
+    ⚠ **A GATE THAT ONLY EVER PASSES IS NOT A GATE.**  Every clause below is
+    demonstrated FIRING, in a temp tree this test owns -- the real tree is
+    never perturbed -- and the positive control is that the real tree PASSES."""
+    print("\nQ17 E11: no %y%m%d build stamp on the build path -- and the bar FIRES")
+
+    # --- the POSITIVE CONTROL, reported first: the real tree is clean ------ #
+    live = qg.build_stamp_state()
+    check("the real tree PASSES E11 (the positive control, reported first)",
+          live["pass"] is True, str({k: live[k] for k in
+                                     ("file_present", "token_hits")}))
+    check("...and it scanned the manifest's own closed list, not a guess",
+          live["files_scanned"] == len(qg.input_files())
+          and live["files_scanned"] > 50, str(live["files_scanned"]))
+    check("...so build_stamp_refusal() returns None on it",
+          qg.build_stamp_refusal(live) is None)
+    check("the stamp file is really absent from the tree",
+          not (ROOT / "hdl" / qg.BUILD_STAMP_FILE).exists())
+    check("the vendored generator is really gone",
+          not (ROOT / "hdl" / "sys" / "build_id.tcl").exists())
+    check("...and the PRE_FLOW hook no longer names it",
+          "build_id.tcl" not in (ROOT / "hdl" / "sys" / "sys.tcl").read_text())
+
+    # --- NON-VACUITY 1: the generated file comes back ---------------------- #
+    with tempfile.TemporaryDirectory(prefix="qgtest-stamp-") as d:
+        hdl = Path(d)
+        (hdl / "clean.sv").write_text("module m; endmodule\n")
+        ok = qg.build_stamp_state(hdl=hdl, files=["clean.sv"])
+        check("a synthetic CLEAN tree passes (the instrument is not stuck RED)",
+              ok["pass"] is True, str(ok["token_hits"]))
+
+        (hdl / qg.BUILD_STAMP_FILE).write_text(
+            '`define ' + qg.BUILD_STAMP_TOKEN + ' "260912"\n')
+        f1 = qg.build_stamp_state(hdl=hdl, files=["clean.sv"])
+        check("E11 FIRES on a regenerated build_id.v", f1["pass"] is False)
+        check("...and it names the file, with its sha256",
+              f1["file_present"] is True and len(f1["file_sha256"]) == 64)
+        r1 = qg.build_stamp_refusal(f1)
+        check("...and the refusal text names the file",
+              r1 is not None and qg.BUILD_STAMP_FILE in r1, str(r1))
+        check("...and says REFUSING and what it costs",
+              "REFUSING" in r1 and "1.647" in r1, str(r1))
+        # ⚠ AND THE TOKEN CLAUSE MUST NOT HAVE FIRED HERE -- otherwise the two
+        # clauses are one clause and a sources-only reintroduction is missed.
+        check("...while the TOKEN clause stayed quiet (two clauses, not one)",
+              f1["token_hits"] == {}, str(f1["token_hits"]))
+
+    # --- NON-VACUITY 2: the macro comes back into a SOURCE file ------------ #
+    with tempfile.TemporaryDirectory(prefix="qgtest-stamp-") as d:
+        hdl = Path(d)
+        (hdl / "nec_test.sv").write_text(
+            'localparam CONF_STR = {"x;;", "V,v", `' + qg.BUILD_STAMP_TOKEN
+            + '};\n')
+        f2 = qg.build_stamp_state(hdl=hdl, files=["nec_test.sv"])
+        check("E11 FIRES on the macro re-entering the RTL", f2["pass"] is False)
+        check("...and it names the file and the line count",
+              f2["token_hits"] == {"nec_test.sv": 1}, str(f2["token_hits"]))
+        check("...while the FILE clause stayed quiet",
+              f2["file_present"] is False)
+        r2 = qg.build_stamp_refusal(f2)
+        check("...and the refusal names the source file",
+              r2 is not None and "nec_test.sv" in r2, str(r2))
+
+    # --- NON-VACUITY 3: a RE-VENDORED hdl/sys/ generator -------------------- #
+    # This is the case the bar exists for: nobody edits anything, `sys/` is
+    # updated, and the generator's own text is the only evidence.
+    with tempfile.TemporaryDirectory(prefix="qgtest-stamp-") as d:
+        hdl = Path(d)
+        (hdl / "sys").mkdir()
+        (hdl / "sys" / "build_id.tcl").write_text(
+            'set buildDate "`define ' + qg.BUILD_STAMP_TOKEN
+            + ' \\"[clock format [clock seconds] -format %y%m%d]\\""\n')
+        f3 = qg.build_stamp_state(hdl=hdl, files=["sys/build_id.tcl"])
+        check("E11 FIRES on a re-vendored sys/build_id.tcl", f3["pass"] is False)
+        check("...naming the vendored file",
+              f3["token_hits"] == {"sys/build_id.tcl": 1}, str(f3["token_hits"]))
+
+    # --- AND THE WHOLE TOOL REFUSES, END TO END ---------------------------- #
+    # A planted stamp in the REAL hdl/, removed in a finally.  `--dry-run`
+    # builds nothing, so this is safe -- and it is deliberately the dry-run
+    # path, because E11 is registered as having NO quiet path.
+    planted = ROOT / "hdl" / qg.BUILD_STAMP_FILE
+    check("nothing is in the way of the end-to-end probe",
+          not planted.exists())
+    try:
+        planted.write_text('`define ' + qg.BUILD_STAMP_TOKEN + ' "260912"\n')
+        rc, out = run_gate(["--dry-run"])
+        check_refused("E11 end-to-end (--dry-run, a path that builds nothing)",
+                      rc, out)
+        check("...the refusal names the stamp file",
+              qg.BUILD_STAMP_FILE in out, out.strip()[-400:])
+        rc, out = run_gate(["--dry-run", "--seeds", "5"])
+        check_refused("E11 end-to-end (--dry-run --seeds 5)", rc, out)
+    finally:
+        planted.unlink(missing_ok=True)
+    check("the planted stamp is removed again", not planted.exists())
+    rc, out = run_gate(["--dry-run"])
+    check("...and the gate goes back to exit 0 on the clean tree",
+          rc == 0, out.strip()[-200:])
+
+
 def main():
     global VERBOSE
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
@@ -916,6 +1041,7 @@ def main():
     q14_truefmax_parse()
     q15_summary_stats()
     q16_paired_reporting()
+    q17_build_stamp_bar()
 
     print(f"\n{NCHECK - len(FAILS)} / {NCHECK} checks pass")
     for f in FAILS:
