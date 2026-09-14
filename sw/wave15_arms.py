@@ -32,6 +32,7 @@ ROOT = os.path.abspath(os.path.join(HERE, '..'))
 SCRATCH = os.path.expanduser('~/.cache/ucsimt-tmp/wave15')
 BASE_COMMIT = '850ef46559'
 
+R7 = 'sw/r7_lint.py'
 BIU = 'hdl/rtl/ucore/v30u_biu.sv'
 EU = 'hdl/rtl/ucore/v30u_eu.sv'
 CORE = 'hdl/rtl/ucore/v30_core.sv'
@@ -254,6 +255,11 @@ def arm_qripe_presel(wt, nonvacuity=False, nonvacuity2=False, nonvacuity3=False)
     _sub(eu, A_EUSEL, B_EUSEL)
     _sub(core, A_CWIRE, B_CWIRE)
     _sub(core, A_CMAP, B_CMAP, count=2)
+    # THE DECLARED COST: `r7_lint`'s unresolved list must name the two nets the
+    # one it declares was split into.  Declared here, in the arm, so that it is
+    # visible in the arm's own diff and cannot be mistaken for a repo-wide
+    # loosening.
+    _sub(os.path.join(wt, R7), A_R7, B_R7)
     if nonvacuity:
         # ⚠ THE NON-VACUITY DEMONSTRATION.  Perturb ONE term of the published
         # pair and the falsifier must fire.  A falsifier that cannot fail is
@@ -279,7 +285,123 @@ def arm_qripe_presel(wt, nonvacuity=False, nonvacuity2=False, nonvacuity3=False)
                   "    pop_eff = q_pop; q_cnt_np = 4'd0;   // PERTURBED (nonvacuity3)")
 
 
-ARMS = {'qripe_presel': arm_qripe_presel}
+A_R7 = """    "q_ripe_lead_n":
+        "§73's own list of REGISTER-ONLY EU inputs.  Driven from `poppable_n` "
+        "off the queue's procedural next-state (`q_cnt`, `grn_ttl`, `grn_n`), "
+        "which is the queue's own bookkeeping and not the READY sample.",
+}"""
+
+B_R7 = """    "q_ripe_lead_n":
+        "§73's own list of REGISTER-ONLY EU inputs.  Driven from `poppable_n` "
+        "off the queue's procedural next-state (`q_cnt`, `grn_ttl`, `grn_n`), "
+        "which is the queue's own bookkeeping and not the READY sample.",
+    # ⚠ WAVE 15 C1 SPLIT THE NET ABOVE IN TWO, AND THE TWO ENTRIES BELOW ARE
+    # PART OF THE MECHANISM'S DECLARED COST -- not a silent widening.  The
+    # ARGUMENT IS UNCHANGED, character for character: both are driven from the
+    # queue's procedural next-state (`q_cnt_np`, `grn_ttl`, `grn_n`) and neither
+    # is the READY sample.  What changed is that the predicate is now published
+    # once per value of the EU's own pop, so that the EU's act does not have to
+    # travel into this module and back to be answered.  The entry the two
+    # replace is kept above so that a reader can see the list did not grow by
+    # forgetting anything.
+    "q_ripe_lead_n0":
+        "§73's own list of REGISTER-ONLY EU inputs, WAVE 15 C1's no-pop half.  "
+        "Driven from `poppable_n0` off the queue's procedural next-state "
+        "(`q_cnt_np`, `grn_ttl`, `grn_n`), which is the queue's own bookkeeping "
+        "and not the READY sample.",
+    "q_ripe_lead_n1":
+        "§73's own list of REGISTER-ONLY EU inputs, WAVE 15 C1's pop half.  "
+        "Driven from `poppable_n1` off the same procedural next-state minus the "
+        "EU's own pop, which is the queue's own bookkeeping and not the READY "
+        "sample.",
+}"""
+
+
+# --------------------------------------------------------------------------- #
+# ARM-B `qripe_s1q` -- C2, the CONDITIONAL second arm of the pre-registration
+# §4.  ARM-A plus: the mux SELECT is taken off the phase split's own `s1q`
+# shadow instead of live stage-1 logic, so stage 2's cone for this value
+# launches at a REGISTER on both of its inputs.  ⚠ IT ADDS ONE FLOP, `s1q`
+# 778 -> 779, and it is SPLIT-DEPENDENT.
+# --------------------------------------------------------------------------- #
+A_S1Q_EUSEL = """wire q_ripe_lead_n = (q_pop && q_ripe && !q_flush) ? q_ripe_lead_n1
+                                                   : q_ripe_lead_n0;"""
+B_S1Q_EUSEL = """// WAVE 15 C2 -- ...AND THE SELECT RIDES THE PHASE SPLIT'S OWN SHADOW.
+// `q_pop`, `q_ripe` and `q_flush` are all constant across the CPU cycle
+// (`q_ripe` is a BIU REGISTER; the other two are stage-1 quantities), so this
+// one bit belongs in `s1_bus` like every other stage-1 output -- and the
+// split's OWN premise assertion `$fatal`s if it is not constant, which is this
+// arm's free falsifier.  With the select shadowed, stage 2 reads THREE
+// registers -- the two published levels and this bit -- and the `ce -> ce` cone
+// no longer contains any of stage 1's logic on this path.
+wire s1w_qripe_pop = q_pop && q_ripe && !q_flush;"""
+
+A_S1Q_DECL = """reg            row_flush;"""
+B_S1Q_DECL = """reg            qripe_pop;      // WAVE 15 C2: the shadowed 1BL-lead select
+reg            q_ripe_lead_n;  // ...and the level it selects, stage 2 only
+reg            row_flush;"""
+
+A_S1Q_ALIAS = "    q_bnd_pop              = s1w_q_bnd_pop;"
+B_S1Q_ALIAS = ("    q_bnd_pop              = s1w_q_bnd_pop;\n"
+               "    qripe_pop              = s1w_qripe_pop;")
+
+A_S1Q_PACK = """        it_writes_tmpa
+        };"""
+B_S1Q_PACK = """        it_writes_tmpa, qripe_pop
+        };"""
+
+A_S1Q_UNPACK = """        it_writes_tmpa
+        } = s1q;"""
+B_S1Q_UNPACK = """        it_writes_tmpa, qripe_pop
+        } = s1q;"""
+
+A_S1Q_W = "localparam int S1W = 778;   // 495 loop-carried + 283 wire cone.  RE-DERIVED"
+B_S1Q_W = ("localparam int S1W = 779;   // WAVE 15 C2: 778 + `qripe_pop`, THE ONE FLOP\n"
+           "                           // THIS ARM ADDS AND THE ONLY ONE.  `s1q` is\n"
+           "                           // DERIVED state and is deliberately NOT\n"
+           "                           // save-state mapped, so `SS_COUNT` does not\n"
+           "                           // move -- see THE PHASE SPLIT below.\n"
+           "                            // 495 loop-carried + 283 wire cone.  RE-DERIVED")
+
+A_S1Q_SSWE = """            `include "v30u_eu_preload.svh"
+            `include "v30u_eu_ss_write.svh"
+        end else begin"""
+B_S1Q_SSWE = """            `include "v30u_eu_preload.svh"
+            `include "v30u_eu_ss_write.svh"
+            // WAVE 15 C2: `q_ripe_lead_n` is a stage-2 value and this arm never
+            // reads it, but an `always @*` reg must be written on every path or
+            // it infers a LATCH -- and G6 gates on 0 latches.
+            q_ripe_lead_n = q_ripe_lead_n0;
+        end else begin"""
+
+A_S1Q_STOP = """        } = s1q;
+
+
+        stop = 1'b0;"""
+B_S1Q_STOP = """        } = s1q;
+
+        // WAVE 15 C2 -- THE SELECTION, OFF THE SHADOW.  Both inputs are BIU
+        // register cones and `qripe_pop` is a flop, so nothing in this
+        // expression launches in stage 1.
+        q_ripe_lead_n = qripe_pop ? q_ripe_lead_n1 : q_ripe_lead_n0;
+
+        stop = 1'b0;"""
+
+
+def arm_qripe_s1q(wt, nonvacuity=False, nonvacuity2=False, nonvacuity3=False):
+    arm_qripe_presel(wt)
+    eu = os.path.join(wt, EU)
+    _sub(eu, A_S1Q_EUSEL, B_S1Q_EUSEL)
+    _sub(eu, A_S1Q_DECL, B_S1Q_DECL)
+    _sub(eu, A_S1Q_ALIAS, B_S1Q_ALIAS)
+    _sub(eu, A_S1Q_PACK, B_S1Q_PACK)
+    _sub(eu, A_S1Q_UNPACK, B_S1Q_UNPACK)
+    _sub(eu, A_S1Q_W, B_S1Q_W)
+    _sub(eu, A_S1Q_SSWE, B_S1Q_SSWE)
+    _sub(eu, A_S1Q_STOP, B_S1Q_STOP)
+
+
+ARMS = {'qripe_presel': arm_qripe_presel, 'qripe_s1q': arm_qripe_s1q}
 
 
 def wt_of(name):
@@ -303,7 +425,7 @@ def gen(name, base, nonvacuity=False, nonvacuity2=False, nonvacuity3=False):
     if name != 'base':
         ARMS[name](wt, nonvacuity=nonvacuity, nonvacuity2=nonvacuity2,
                nonvacuity3=nonvacuity3)
-    files = f'{BIU} {EU} {CORE}'
+    files = f'{BIU} {EU} {CORE} {R7}'
     dif = sh(f'git diff -- {files}', wt).stdout
     n = len([l for l in dif.split('\n')
              if l and l[0] in '+-' and l[:3] not in ('+++', '---')])
@@ -326,7 +448,7 @@ def gen(name, base, nonvacuity=False, nonvacuity2=False, nonvacuity3=False):
     # ...and the whole tree must be otherwise untouched.
     other = [l for l in sh('git status --porcelain', wt).stdout.split('\n')
              if l and not l.startswith('??')
-             and l.split()[-1] not in (BIU, EU, CORE)]
+             and l.split()[-1] not in (BIU, EU, CORE, R7)]
     print(f'  tree check: {len(other)} other tracked modification(s)')
     for l in other:
         print('    ' + l)
