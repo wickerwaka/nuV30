@@ -1,0 +1,151 @@
+=== WAVE 15 -- THE PAIRED SCORE ===
+=== P-1 POSITIVE CONTROL: reproduce WAVE 13's COMMITTED split distributions from their bytes ===
+  control    worst 30.53 (want 30.53)   draws [30.53, 30.62, 30.85, 30.98, 31.11]   spread 0.58   MATCH
+    map_reg  ['5686']
+    fit_reg  ['6689', '6713', '6729', '6732', '6740']   *** VARIES ***
+    biu_reg  ['434']
+    eu_reg   ['1326']
+  retention  worst 31.15 (want 31.15)   draws [31.15, 31.82, 32.43, 32.53, 32.75]   spread 1.6   MATCH
+    map_reg  ['5708']
+    fit_reg  ['6923', '6949', '6970', '6977', '6980']   *** VARIES ***
+    biu_reg  ['434']
+    eu_reg   ['1326']
+  SELFTEST PASS
+
+==============================================================================
+sw/testdata/g6dist/w15-base-control-n5/distribution.json
+  label            w15-base-control-n5
+  id               1241a229264a7950…
+  verdict          RED   rc=0   2232 s
+  configuration    CONTROL/DEFAULT (no X1_AD_RETENTION)
+  input_manifest   d4ecdeff14444248…  (99 files)
+  seeds            [1, 2, 3, 4, 5]
+  WORST-OF-5       30.53 MHz (seed 2)   draws 30.53 · 30.62 · 30.85 · 30.98 · 31.11   spread 0.58
+  P-4  E11 (DISTRIBUTION level)  PASS
+  seed  Fmax     T_min      setup   ALMs        map_reg  fit_reg  biu_reg  eu_reg  biu_alut  eu_alut  off_class  E11
+     1   31.11    32.145   -0.895    8,018     5686     6713      434    1326      1112     4969         []  ok
+     2   30.53    32.756   -1.506    8,024     5686     6740      434    1326      1112     4969         []  ok
+     3   30.85    32.412   -1.162    8,011     5686     6732      434    1326      1112     4969         []  ok
+     4   30.98    32.275   -1.025    8,030     5686     6689      434    1326      1112     4969         []  ok
+     5   30.62    32.663   -1.413    8,006     5686     6729      434    1326      1112     4969         []  ok
+  P-4  E11 on every PER-SEED receipt      PASS
+  N-2  off_class EMPTY on every draw      PASS
+  P-3  map_reg  across the sweep        CONSTANT 5686
+  P-3  fit_reg  across the sweep        *** VARIES ['6689', '6713', '6729', '6732', '6740'] ***
+  P-3  biu_reg  across the sweep        CONSTANT 434
+  P-3  eu_reg   across the sweep        CONSTANT 1326
+
+==============================================================================
+sw/testdata/g6dist/w15-presel-control-n5/distribution.json
+  label            w15-presel-control-n5
+  id               cf9438a9672ebbaf…
+  verdict          PASS   rc=0   2029 s
+  configuration    CONTROL/DEFAULT (no X1_AD_RETENTION)
+  input_manifest   c3305d40f62e497f…  (99 files)
+  seeds            [1, 2, 3, 4, 5]
+  WORST-OF-5       33.0 MHz (seed 2)   draws 33.0 · 33.48 · 33.93 · 34.14 · 34.39   spread 1.39
+  P-4  E11 (DISTRIBUTION level)  PASS
+  seed  Fmax     T_min      setup   ALMs        map_reg  fit_reg  biu_reg  eu_reg  biu_alut  eu_alut  off_class  E11
+     1   34.39    29.078   +2.172    8,275     5687     6921      434    1326      1151     5075         []  ok
+     2    33.0    30.307   +0.943    8,273     5687     6951      434    1326      1151     5075         []  ok
+     3   33.48    29.866   +1.384    8,224     5687     6929      434    1326      1151     5075         []  ok
+     4   33.93    29.474   +1.776    8,252     5687     6897      434    1326      1151     5075         []  ok
+     5   34.14    29.293   +1.957    8,245     5687     6898      434    1326      1151     5075         []  ok
+  P-4  E11 on every PER-SEED receipt      PASS
+  N-2  off_class EMPTY on every draw      PASS
+  P-3  map_reg  across the sweep        CONSTANT 5687
+  P-3  fit_reg  across the sweep        *** VARIES ['6897', '6898', '6921', '6929', '6951'] ***
+  P-3  biu_reg  across the sweep        CONSTANT 434
+  P-3  eu_reg   across the sweep        CONSTANT 1326
+
+==============================================================================
+sw/testdata/g6dist/w15-s1q-control-n5/distribution.json
+  label            w15-s1q-control-n5
+  id               62290f092f263dda…
+  verdict          PASS   rc=0   2285 s
+  configuration    CONTROL/DEFAULT (no X1_AD_RETENTION)
+  input_manifest   ee6a4eff46e483d3…  (99 files)
+  seeds            [1, 2, 3, 4, 5]
+  WORST-OF-5       34.48 MHz (seed 4)   draws 34.48 · 34.68 · 34.68 · 34.91 · 34.95   spread 0.47
+  P-4  E11 (DISTRIBUTION level)  PASS
+  seed  Fmax     T_min      setup   ALMs        map_reg  fit_reg  biu_reg  eu_reg  biu_alut  eu_alut  off_class  E11
+     1   34.68    28.831   +2.419    8,434     5688     6849      434    1327      1285     5142         []  ok
+     2   34.68    28.837   +2.413    8,429     5688     6877      434    1327      1285     5142         []  ok
+     3   34.91    28.641   +2.609    8,436     5688     6885      434    1327      1285     5142         []  ok
+     4   34.48    29.005   +2.245    8,413     5688     6854      434    1327      1285     5142         []  ok
+     5   34.95    28.612   +2.638    8,432     5688     6885      434    1327      1285     5142         []  ok
+  P-4  E11 on every PER-SEED receipt      PASS
+  N-2  off_class EMPTY on every draw      PASS
+  P-3  map_reg  across the sweep        CONSTANT 5688
+  P-3  fit_reg  across the sweep        *** VARIES ['6849', '6854', '6877', '6885'] ***
+  P-3  biu_reg  across the sweep        CONSTANT 434
+  P-3  eu_reg   across the sweep        CONSTANT 1327
+
+==============================================================================
+sw/testdata/g6dist/w15-base-retention-n5/distribution.json
+  label            w15-base-retention-n5
+  id               b1ccbddf84ff089b…
+  verdict          RED   rc=0   2162 s
+  configuration    RETENTION (X1_AD_RETENTION=1)
+  input_manifest   d4ecdeff14444248…  (99 files)
+  seeds            [1, 2, 3, 4, 5]
+  WORST-OF-5       31.15 MHz (seed 3)   draws 31.15 · 31.82 · 32.43 · 32.53 · 32.75   spread 1.6
+  P-4  E11 (DISTRIBUTION level)  PASS
+  seed  Fmax     T_min      setup   ALMs        map_reg  fit_reg  biu_reg  eu_reg  biu_alut  eu_alut  off_class  E11
+     1   32.43    30.836   +0.414    8,255     5708     6949      434    1326      1102     5033         []  ok
+     2   32.75    30.537   +0.713    8,228     5708     6980      434    1326      1102     5033         []  ok
+     3   31.15    32.105   -0.855    8,215     5708     6977      434    1326      1102     5033         []  ok
+     4   32.53    30.741   +0.509    8,221     5708     6970      434    1326      1102     5033         []  ok
+     5   31.82    31.427   -0.177    8,240     5708     6923      434    1326      1102     5033         []  ok
+  P-4  E11 on every PER-SEED receipt      PASS
+  N-2  off_class EMPTY on every draw      PASS
+  P-3  map_reg  across the sweep        CONSTANT 5708
+  P-3  fit_reg  across the sweep        *** VARIES ['6923', '6949', '6970', '6977', '6980'] ***
+  P-3  biu_reg  across the sweep        CONSTANT 434
+  P-3  eu_reg   across the sweep        CONSTANT 1326
+
+==============================================================================
+sw/testdata/g6dist/w15-presel-retention-n5/distribution.json
+  label            w15-presel-retention-n5
+  id               4783bf2c0281ff86…
+  verdict          PASS   rc=0   2296 s
+  configuration    RETENTION (X1_AD_RETENTION=1)
+  input_manifest   c3305d40f62e497f…  (99 files)
+  seeds            [1, 2, 3, 4, 5]
+  WORST-OF-5       33.2 MHz (seed 5)   draws 33.2 · 33.64 · 33.72 · 33.84 · 33.96   spread 0.76
+  P-4  E11 (DISTRIBUTION level)  PASS
+  seed  Fmax     T_min      setup   ALMs        map_reg  fit_reg  biu_reg  eu_reg  biu_alut  eu_alut  off_class  E11
+     1   33.64    29.729   +1.521    8,250     5708     6840      434    1326      1138     5044         []  ok
+     2   33.84    29.548   +1.702    8,246     5708     6848      434    1326      1138     5044         []  ok
+     3   33.96    29.443   +1.807    8,206     5708     6815      434    1326      1138     5044         []  ok
+     4   33.72    29.656   +1.594    8,193     5708     6811      434    1326      1138     5044         []  ok
+     5    33.2    30.125   +1.125    8,221     5708     6841      434    1326      1138     5044         []  ok
+  P-4  E11 on every PER-SEED receipt      PASS
+  N-2  off_class EMPTY on every draw      PASS
+  P-3  map_reg  across the sweep        CONSTANT 5708
+  P-3  fit_reg  across the sweep        *** VARIES ['6811', '6815', '6840', '6841', '6848'] ***
+  P-3  biu_reg  across the sweep        CONSTANT 434
+  P-3  eu_reg   across the sweep        CONSTANT 1326
+
+==============================================================================
+sw/testdata/g6dist/w15-s1q-retention-n5/distribution.json
+  label            w15-s1q-retention-n5
+  id               06a77db1e5e06319…
+  verdict          PASS   rc=0   2012 s
+  configuration    RETENTION (X1_AD_RETENTION=1)
+  input_manifest   ee6a4eff46e483d3…  (99 files)
+  seeds            [1, 2, 3, 4, 5]
+  WORST-OF-5       34.41 MHz (seed 4)   draws 34.41 · 34.72 · 34.85 · 34.99 · 35.24   spread 0.83
+  P-4  E11 (DISTRIBUTION level)  PASS
+  seed  Fmax     T_min      setup   ALMs        map_reg  fit_reg  biu_reg  eu_reg  biu_alut  eu_alut  off_class  E11
+     1   34.99    28.580   +2.670    8,443     5709     6854      434    1327      1259     5163         []  ok
+     2   34.85    28.692   +2.558    8,448     5709     6841      434    1327      1259     5163         []  ok
+     3   35.24    28.378   +2.872    8,460     5709     6889      434    1327      1259     5163         []  ok
+     4   34.41    29.065   +2.185    8,459     5709     6863      434    1327      1259     5163         []  ok
+     5   34.72    28.804   +2.446    8,461     5709     6896      434    1327      1259     5163         []  ok
+  P-4  E11 on every PER-SEED receipt      PASS
+  N-2  off_class EMPTY on every draw      PASS
+  P-3  map_reg  across the sweep        CONSTANT 5709
+  P-3  fit_reg  across the sweep        *** VARIES ['6841', '6854', '6863', '6889', '6896'] ***
+  P-3  biu_reg  across the sweep        CONSTANT 434
+  P-3  eu_reg   across the sweep        CONSTANT 1327

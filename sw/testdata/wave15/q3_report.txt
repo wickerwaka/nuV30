@@ -1,0 +1,70 @@
+=== WAVE 15 Q-3, sw/wave15_q3.py -- POST-PROCESSING OF THE UNEDITED sta_biu_roundtrip.tcl ROWS ===
+--- the classifier's own selftest, against WAVE 14's committed rows
+  w14-base/control       paths  200   Q-3a `q_ripe_lead_n*` BY NAME  200   Q-3b EU->BIU->EU via ripe  200   Q-3c EU->BIU->EU any  200   (BIU in data section 200, non-EU launch 0, non-EU landing 0)
+      expect Q-3a 200 Q-3b 200 over 200  ->  OK
+  w14-base/retention     paths  200   Q-3a `q_ripe_lead_n*` BY NAME  200   Q-3b EU->BIU->EU via ripe  200   Q-3c EU->BIU->EU any  200   (BIU in data section 200, non-EU launch 0, non-EU landing 0)
+      expect Q-3a 200 Q-3b 200 over 200  ->  OK
+  w14-tie/control        paths  200   Q-3a `q_ripe_lead_n*` BY NAME    0   Q-3b EU->BIU->EU via ripe    0   Q-3c EU->BIU->EU any  115   (BIU in data section 200, non-EU launch 0, non-EU landing 85)
+      expect Q-3a 0 Q-3b 0 over 200  ->  OK
+  w14-tie/retention      paths  200   Q-3a `q_ripe_lead_n*` BY NAME    0   Q-3b EU->BIU->EU via ripe    0   Q-3c EU->BIU->EU any    0   (BIU in data section 0, non-EU launch 0, non-EU landing 0)
+      expect Q-3a 0 Q-3b 0 over 200  ->  OK
+  w14-hold/control       paths  200   Q-3a `q_ripe_lead_n*` BY NAME    0   Q-3b EU->BIU->EU via ripe    0   Q-3c EU->BIU->EU any    0   (BIU in data section 0, non-EU launch 0, non-EU landing 0)
+      expect Q-3a 0 Q-3b 0 over 200  ->  OK
+  w14-hold/retention     paths  200   Q-3a `q_ripe_lead_n*` BY NAME    0   Q-3b EU->BIU->EU via ripe    0   Q-3c EU->BIU->EU any    0   (BIU in data section 6, non-EU launch 6, non-EU landing 0)
+      expect Q-3a 0 Q-3b 0 over 200  ->  OK
+
+=== wave15_q3 SELFTEST: PASS ===
+
+########## control  ARM-A (w15-presel) ##########
+=== Q-3, population A_topN ===
+  THE POSITIVE CONTROL FIRST:
+  BASE (control)         paths  200   Q-3a `q_ripe_lead_n*` BY NAME  200   Q-3b EU->BIU->EU via ripe  200   Q-3c EU->BIU->EU any  200   (BIU in data section 200, non-EU launch 0, non-EU landing 0)
+  ARM                    paths  200   Q-3a `q_ripe_lead_n*` BY NAME  200   Q-3b EU->BIU->EU via ripe    0   Q-3c EU->BIU->EU any    0   (BIU in data section 0, non-EU launch 0, non-EU landing 0)
+
+  control: the base must read 200/200 on BOTH questions  ->  PASS
+  Q-3a  arm 200 of 200   (bar: 0)  -> MISSED
+  Q-3b  arm 0 of 200   (bar: 0)  -> MET
+  Q-3c  arm 0 of 200   (REPORTED, NOT GATED -- base 200; WAVE 14`s tie/control read 115)
+
+########## control  ARM-B (w15-s1q) ##########
+=== Q-3, population A_topN ===
+  THE POSITIVE CONTROL FIRST:
+  BASE (control)         paths  200   Q-3a `q_ripe_lead_n*` BY NAME  200   Q-3b EU->BIU->EU via ripe  200   Q-3c EU->BIU->EU any  200   (BIU in data section 200, non-EU launch 0, non-EU landing 0)
+  ARM                    paths  200   Q-3a `q_ripe_lead_n*` BY NAME  200   Q-3b EU->BIU->EU via ripe  200   Q-3c EU->BIU->EU any  200   (BIU in data section 200, non-EU launch 0, non-EU landing 0)
+
+  control: the base must read 200/200 on BOTH questions  ->  PASS
+  Q-3a  arm 200 of 200   (bar: 0)  -> MISSED
+  Q-3b  arm 200 of 200   (bar: 0)  -> MISSED
+  Q-3c  arm 200 of 200   (REPORTED, NOT GATED -- base 200; WAVE 14`s tie/control read 115)
+
+########## retention  ARM-A (w15-presel) ##########
+=== Q-3, population A_topN ===
+  THE POSITIVE CONTROL FIRST:
+  BASE (control)         paths  200   Q-3a `q_ripe_lead_n*` BY NAME  200   Q-3b EU->BIU->EU via ripe  200   Q-3c EU->BIU->EU any  200   (BIU in data section 200, non-EU launch 0, non-EU landing 0)
+  ARM                    paths  200   Q-3a `q_ripe_lead_n*` BY NAME  200   Q-3b EU->BIU->EU via ripe   30   Q-3c EU->BIU->EU any   30   (BIU in data section 30, non-EU launch 0, non-EU landing 0)
+
+  control: the base must read 200/200 on BOTH questions  ->  PASS
+  Q-3a  arm 200 of 200   (bar: 0)  -> MISSED
+  Q-3b  arm 30 of 200   (bar: 0)  -> MISSED
+  Q-3c  arm 30 of 200   (REPORTED, NOT GATED -- base 200; WAVE 14`s tie/control read 115)
+
+########## retention  ARM-B (w15-s1q) ##########
+=== Q-3, population A_topN ===
+  THE POSITIVE CONTROL FIRST:
+  BASE (control)         paths  200   Q-3a `q_ripe_lead_n*` BY NAME  200   Q-3b EU->BIU->EU via ripe  200   Q-3c EU->BIU->EU any  200   (BIU in data section 200, non-EU launch 0, non-EU landing 0)
+  ARM                    paths  200   Q-3a `q_ripe_lead_n*` BY NAME  200   Q-3b EU->BIU->EU via ripe    8   Q-3c EU->BIU->EU any    8   (BIU in data section 8, non-EU launch 0, non-EU landing 0)
+
+  control: the base must read 200/200 on BOTH questions  ->  PASS
+  Q-3a  arm 200 of 200   (bar: 0)  -> MISSED
+  Q-3b  arm 8 of 200   (bar: 0)  -> MISSED
+  Q-3c  arm 8 of 200   (REPORTED, NOT GATED -- base 200; WAVE 14`s tie/control read 115)
+
+=== THE EXCURSION'S SIZE, from the same committed rows (ANATOMY, NOT A BAR) ===
+--- control
+  base          n=200  paths carrying a BIU node 200  BIU nodes/path max 8  span9 mean(all) 2.149 ns  mean(nonzero) 2.149  max 2.659
+  ARM-A presel  n=200  paths carrying a BIU node 0  BIU nodes/path max 0  span9 mean(all) 0.000 ns  mean(nonzero) 0.000  max 0.000
+  ARM-B s1q     n=200  paths carrying a BIU node 200  BIU nodes/path max 2  span9 mean(all) 0.497 ns  mean(nonzero) 0.497  max 0.514
+--- retention
+  base          n=200  paths carrying a BIU node 200  BIU nodes/path max 10  span9 mean(all) 2.562 ns  mean(nonzero) 2.562  max 2.787
+  ARM-A presel  n=200  paths carrying a BIU node 30  BIU nodes/path max 6  span9 mean(all) 0.183 ns  mean(nonzero) 1.219  max 2.019
+  ARM-B s1q     n=200  paths carrying a BIU node 8  BIU nodes/path max 2  span9 mean(all) 0.022 ns  mean(nonzero) 0.555  max 0.570

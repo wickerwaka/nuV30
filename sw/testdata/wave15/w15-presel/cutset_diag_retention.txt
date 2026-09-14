@@ -1,0 +1,24 @@
+=== sta_cutset_diag (WAVE 4) ===
+  $v30u_ce 2898   shadow registers matching |s1q* : 639
+  worst ce->ce
+    from  : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a2~PORT_A_WRITE_ENABLE_REG
+    to    : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a9~porta_address_reg10
+    slack :   +1.125   logic levels 26   data delay 28.508
+    arrival points: 69   of which name |s1q : 0    <<<< C-3(b)
+    ...and of which live in v30u_biu : 0   v30u_eu : 3   elsewhere : 66
+  positive control: -through the destination's own D pin resolves 0 pin(s)
+  --- C-8: the top 200 ce->ce paths, classified ---
+    STAGE 1  (* -> s1q)       count 0
+      worst: 
+    STAGE 2  (s1q -> *)       count 0
+      worst: 
+    NEITHER  (WAVE 2's signature)  count 200
+      worst:   +1.125  levels 26   data 28.508    emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a2~PORT_A_WRITE_ENABLE_REG  ->  emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a9~porta_address_reg10
+  STAGE 1 (anything -> s1q), worst:
+    from  : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|tmpc[1]
+    to    : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[731]
+    slack :  +10.258   logic levels 15   data delay 20.340
+  STAGE 2 (s1q -> anything), worst:
+    from  : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|s1q[187]
+    to    : emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a9~porta_address_reg10
+    slack :   +4.408   logic levels 23   data delay 26.233

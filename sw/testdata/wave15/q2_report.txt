@@ -1,0 +1,107 @@
+=== WAVE 15 -- Q-2 LADDER, BASE vs ARM-A vs ARM-B, LEG BY LEG ===
+binaries: base a85a4104f7a69ed8  ARM-A 74a2a09796d70878  ARM-B f40ce2fe6e11102d
+cc_all          TOTAL: 169000/169000 full (cycles 169000, arch 169000)  TOTAL: 169000/169000 full (cycles 169000, arch 169000)  TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+cc_8f0          TOTAL: 500/500 full (cycles 500, arch 500)      TOTAL: 500/500 full (cycles 500, arch 500)      TOTAL: 500/500 full (cycles 500, arch 500)    
+hlt_w0          TOTAL: 97/97 full (cycles 97, arch 97)          TOTAL: 97/97 full (cycles 97, arch 97)          TOTAL: 97/97 full (cycles 97, arch 97)        
+hlt_w1          TOTAL: 93/95 full (cycles 93, arch 95)          TOTAL: 93/95 full (cycles 93, arch 95)          TOTAL: 93/95 full (cycles 93, arch 95)        
+hlt_w2          TOTAL: 45/46 full (cycles 45, arch 46)          TOTAL: 45/46 full (cycles 45, arch 46)          TOTAL: 45/46 full (cycles 45, arch 46)        
+hlt_w3          TOTAL: 44/45 full (cycles 44, arch 45)          TOTAL: 44/45 full (cycles 44, arch 45)          TOTAL: 44/45 full (cycles 44, arch 45)        
+v01_w1          TOTAL: 1200/1200 full (cycles 1200, arch 1200)  TOTAL: 1200/1200 full (cycles 1200, arch 1200)  TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+v01_w3          TOTAL: 1200/1200 full (cycles 1200, arch 1200)  TOTAL: 1200/1200 full (cycles 1200, arch 1200)  TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+v01_w1_EB       TOTAL: 200/200 full (cycles 200, arch 200)      TOTAL: 200/200 full (cycles 200, arch 200)      TOTAL: 200/200 full (cycles 200, arch 200)    
+evt_w0          TOTAL: 200/200 full (cycles 200, arch 200)      TOTAL: 200/200 full (cycles 200, arch 200)      TOTAL: 200/200 full (cycles 200, arch 200)    
+evt_w1          TOTAL: 1200/1200 full (cycles 1200, arch 1200)  TOTAL: 1200/1200 full (cycles 1200, arch 1200)  TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+evt_w2          TOTAL: 200/200 full (cycles 200, arch 200)      TOTAL: 200/200 full (cycles 200, arch 200)      TOTAL: 200/200 full (cycles 200, arch 200)    
+evt_w3          TOTAL: 1200/1200 full (cycles 1200, arch 1200)  TOTAL: 1200/1200 full (cycles 1200, arch 1200)  TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+evt_biased      TOTAL: 1200/1200 full (cycles 1200, arch 1200)  TOTAL: 1200/1200 full (cycles 1200, arch 1200)  TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+cc_all_div2     TOTAL: 169000/169000 full (cycles 169000, arch 169000)  TOTAL: 169000/169000 full (cycles 169000, arch 169000)  TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+cc_all_div3     TOTAL: 169000/169000 full (cycles 169000, arch 169000)  TOTAL: 169000/169000 full (cycles 169000, arch 169000)  TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+cc_all_div8     TOTAL: 169000/169000 full (cycles 169000, arch 169000)  TOTAL: 169000/169000 full (cycles 169000, arch 169000)  TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+
+-- ulockstep
+   base         ULOCKSTEP-GOLDEN: ALL CASES LOCKSTEP
+   arm          ULOCKSTEP-GOLDEN: ALL CASES LOCKSTEP
+   s1q          ULOCKSTEP-GOLDEN: ALL CASES LOCKSTEP
+-- ghost_launch
+   base         == ALL THREE POPULATIONS: 200/200 = 100.0 %
+   arm          == ALL THREE POPULATIONS: 200/200 = 100.0 %
+   s1q          == ALL THREE POPULATIONS: 200/200 = 100.0 %
+-- check_boot
+   base         BOOT REPLAY MATCHES over 220 rows from RESET release
+   arm          BOOT REPLAY MATCHES over 220 rows from RESET release
+   s1q          BOOT REPLAY MATCHES over 220 rows from RESET release
+-- check_boot400
+   base         BOOT REPLAY MATCHES over 400 rows from RESET release
+   arm          BOOT REPLAY MATCHES over 400 rows from RESET release
+   s1q          BOOT REPLAY MATCHES over 400 rows from RESET release
+-- check_ab_sim
+   base         AB SIM MATCHES CHIP BOOT over 187 rows from RESET release
+   arm          AB SIM MATCHES CHIP BOOT over 187 rows from RESET release
+   s1q          AB SIM MATCHES CHIP BOOT over 187 rows from RESET release
+-- s16
+   base         signature census: {'busstat_other': 24, 'ARCH': 27}
+   arm          signature census: {'busstat_other': 24, 'ARCH': 27}
+   s1q          signature census: {'busstat_other': 24, 'ARCH': 27}
+-- demux_off
+   base         === demux_off_gate: PASS -- the de-muxed core builds and runs, the two muxed ports are GONE, and the define is what removes them
+   arm          === demux_off_gate: PASS -- the de-muxed core builds and runs, the two muxed ports are GONE, and the define is what removes them
+   s1q          === demux_off_gate: PASS -- the de-muxed core builds and runs, the two muxed ports are GONE, and the define is what removes them
+-- test_artifact
+   base             through an irrelevant change.  NON-VACUOUS.
+   arm              through an irrelevant change.  NON-VACUOUS.
+   s1q              through an irrelevant change.  NON-VACUOUS.
+-- test_quartus_gate
+   base         === test_quartus_gate: PASS
+   arm          === test_quartus_gate: PASS
+   s1q          === test_quartus_gate: PASS
+-- chain_lfsr
+   base         chain_lfsr_gate: PASS -- CHAIN_MAX 7, observed depth [6], 0 overflows, 4 seeds x 400000 clocks
+   arm          chain_lfsr_gate: PASS -- CHAIN_MAX 7, observed depth [6], 0 overflows, 4 seeds x 400000 clocks
+   s1q          chain_lfsr_gate: PASS -- CHAIN_MAX 7, observed depth [6], 0 overflows, 4 seeds x 400000 clocks
+-- ss_lint
+   base         ss_flopcensus: PASS (229 architectural flops, all SSA-mapped or whitelisted; 4 whitelist entries)
+   arm          ss_flopcensus: PASS (229 architectural flops, all SSA-mapped or whitelisted; 4 whitelist entries)
+   s1q          ss_flopcensus: PASS (229 architectural flops, all SSA-mapped or whitelisted; 4 whitelist entries)
+-- phase_split_lint
+   base         === phase_split_lint: PASS   (156 members / 778 bits / 0 violations)
+   arm          === phase_split_lint: PASS   (156 members / 778 bits / 0 violations)
+   s1q          === phase_split_lint: PASS   (157 members / 779 bits / 0 violations)
+-- cutset_lint
+   base         === cutset_lint: PASS   (80 members / 0 violations)
+   arm          === cutset_lint: FAIL   (80 members / 1 violations)
+   s1q          === cutset_lint: PASS   (81 members / 0 violations)
+-- r7_lint
+   base         === r7_lint: PASS   (0 undeclared carrier(s), 0 undeclared unresolved, 0 `stop` site(s))
+   arm          === r7_lint: FAIL   (0 undeclared carrier(s), 2 undeclared unresolved, 0 `stop` site(s))
+   s1q          === r7_lint: PASS   (0 undeclared carrier(s), 0 undeclared unresolved, 0 `stop` site(s))
+-- chainflat_reloc
+   base         chainflat_relocation_check: PASS -- 9 arms, one copy each, byte-identical to aba01feb07, reconstruction exact
+   arm          chainflat_relocation_check: PASS -- 9 arms, one copy each, byte-identical to aba01feb07, reconstruction exact
+   s1q          chainflat_relocation_check: PASS -- 9 arms, one copy each, byte-identical to aba01feb07, reconstruction exact
+
+-- the 181 goldens WAVE 14's probes failed
+   base     FA: 500/500 full  (cycles 500, arch 500) FB: 500/500 full  (cycles 500, arch 500) INT.FB: 200/200 full  (cycles 200, arch 200) 
+   arm      FA: 500/500 full  (cycles 500, arch 500) FB: 500/500 full  (cycles 500, arch 500) INT.FB: 200/200 full  (cycles 200, arch 200) 
+   s1q      FA: 500/500 full  (cycles 500, arch 500) FB: 500/500 full  (cycles 500, arch 500) INT.FB: 200/200 full  (cycles 200, arch 200) 
+
+-- chain_lfsr signatures
+   base: sig=1d01c9b269ffaa94 sig=b39b040a98b28e5d sig=0997b773cd99c030 sig=d05b6c3c3d9fbe78 
+   arm: sig=1d01c9b269ffaa94 sig=b39b040a98b28e5d sig=0997b773cd99c030 sig=d05b6c3c3d9fbe78 
+   s1q: sig=1d01c9b269ffaa94 sig=b39b040a98b28e5d sig=0997b773cd99c030 sig=d05b6c3c3d9fbe78 
+
+-- fz2_replay, 305 seeds, FIELD BY FIELD (never a digest computed here)
+   base vs ARM-A:
+  rows: base 305   arm 305
+  fields compared, by name: ['cid', 'fabric_bad', 'fabric_first', 'family', 'has_evt', 'k', 'seed', 'sys', 'tier', 'wait_mode', 'win']
+
+=== 305 rows x 11 fields: IDENTICAL ===
+   base vs ARM-B:
+  rows: base 305   arm 305
+  fields compared, by name: ['cid', 'fabric_bad', 'fabric_first', 'family', 'has_evt', 'k', 'seed', 'sys', 'tier', 'wait_mode', 'win']
+
+=== 305 rows x 11 fields: IDENTICAL ===
+
+-- ucrom_mif_check, RE-RUN AFTER THE SWEEPS (a fresh worktree has no hdl/db)
+   wt_base            ucrom_mif_check: PASS -- every emitted microcode table matches its .hex word for word
+   wt_qripe_presel    ucrom_mif_check: PASS -- every emitted microcode table matches its .hex word for word
+   wt_qripe_s1q       ucrom_mif_check: PASS -- every emitted microcode table matches its .hex word for word
