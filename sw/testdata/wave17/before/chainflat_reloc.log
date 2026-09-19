@@ -1,0 +1,27 @@
+  G-12 S_TAKE_OPC    relocated byte-identical,   5 lines
+  G-12 S_DECODE      relocated byte-identical,  30 lines
+  G-12 S_DECODE2     relocated byte-identical, 148 lines
+  G-12 S_EA_CALC     relocated byte-identical,  34 lines
+  G-12 S_BIND        relocated byte-identical, 119 lines
+  G-12 S_ENTER       relocated byte-identical,   8 lines
+  G-12 S_TAIL        relocated byte-identical,   5 lines
+  G-12 S_TAIL_POP    relocated byte-identical,  24 lines
+  G-12 S_INSTR_END   relocated byte-identical,  29 lines
+
+  G-11 S_TAKE_OPC    exactly one copy: hdl/rtl/ucore/v30u_eu_arm_take_opc.svh
+  G-11 S_DECODE      exactly one copy: hdl/rtl/ucore/v30u_eu_arm_decode.svh
+  G-11 S_DECODE2     exactly one copy: hdl/rtl/ucore/v30u_eu_arm_decode2.svh
+  G-11 S_EA_CALC     exactly one copy: hdl/rtl/ucore/v30u_eu_arm_ea_calc.svh
+  G-11 S_BIND        exactly one copy: hdl/rtl/ucore/v30u_eu_arm_bind.svh
+  G-11 S_ENTER       exactly one copy: hdl/rtl/ucore/v30u_eu_arm_enter.svh
+  G-11 S_TAIL        exactly one copy: hdl/rtl/ucore/v30u_eu_arm_tail.svh
+  G-11 S_TAIL_POP    exactly one copy: hdl/rtl/ucore/v30u_eu_arm_tail_pop.svh
+  G-11 S_INSTR_END   exactly one copy: hdl/rtl/ucore/v30u_eu_arm_instr_end.svh
+
+  G-12 reconstruction from `case (st_n)` onward: IDENTICAL to aba01feb07
+
+chainflat_relocation_check: PASS -- 9 arms, one copy each, byte-identical to aba01feb07, reconstruction exact
+
+real	0m0.086s
+user	0m0.060s
+sys	0m0.007s

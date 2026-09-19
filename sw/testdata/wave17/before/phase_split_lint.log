@@ -1,0 +1,15 @@
+  pack sites   : 0
+  unpack sites : 0
+  the phase split is NOT IN THIS TREE -- no `s1_bus = {...}` and no
+  `{...} = s1q`.  This lint has nothing to check and says so rather
+  than passing: **exit 2, COULD NOT RUN**, never exit 0.  The WAVE 2
+  landing was REVERTED under its own P-9 when G6 came back RED
+  (docs/notes/phase_split_landing_results_2026-09-08.md); this file is
+  retained because the next attempt needs it, not because it gates
+  this tree.
+
+=== phase_split_lint: COULD NOT RUN (the split is absent)
+
+real	0m0.025s
+user	0m0.019s
+sys	0m0.005s

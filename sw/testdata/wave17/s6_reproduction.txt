@@ -1,0 +1,27 @@
+WAVE 17 vs WAVE 15's COMMITTED presel COLUMN -- COMPARED BY NAMED FIELD.
+This is a FREE CONTROL nobody registered: the inputs are proved identical
+(all 127 tracked hdl/ files sha256-identical), so the ten fits are a
+like-for-like re-run four days later in a different tree.
+
+========================================================================
+CONTROL
+  distribution scalars: 11 IDENTICAL / 0 differing
+  per-seed: 15 field names x 5 seeds = 65 IDENTICAL / 10 differing
+  differing names: ['outputs', 'receipt_id']   (receipt_id is an identity field and is REQUIRED to differ)
+    seed 1: .rbf 853eda3050f08b2f vs 853eda3050f08b2f  BYTE-IDENTICAL   output files moved: ['nec_test_ucore.fit.summary', 'nec_test_ucore.sof']
+    seed 2: .rbf 45e2e10111b571ef vs 45e2e10111b571ef  BYTE-IDENTICAL   output files moved: ['nec_test_ucore.fit.summary', 'nec_test_ucore.sof']
+    seed 3: .rbf aaf256f16390c63d vs aaf256f16390c63d  BYTE-IDENTICAL   output files moved: ['nec_test_ucore.fit.summary', 'nec_test_ucore.sof']
+    seed 4: .rbf 9c82ddbfbc3cc3f1 vs 9c82ddbfbc3cc3f1  BYTE-IDENTICAL   output files moved: ['nec_test_ucore.fit.summary', 'nec_test_ucore.sof']
+    seed 5: .rbf d194050f783c70fa vs d194050f783c70fa  BYTE-IDENTICAL   output files moved: ['nec_test_ucore.fit.summary', 'nec_test_ucore.sof']
+  per-entity hierarchy (registers + comb ALUTs, every module): 5 of 5 draws IDENTICAL
+========================================================================
+RETENTION
+  distribution scalars: 11 IDENTICAL / 0 differing
+  per-seed: 15 field names x 5 seeds = 65 IDENTICAL / 10 differing
+  differing names: ['outputs', 'receipt_id']   (receipt_id is an identity field and is REQUIRED to differ)
+    seed 1: .rbf 20fac47ef98e00fa vs 20fac47ef98e00fa  BYTE-IDENTICAL   output files moved: ['nec_test_ucore.fit.summary', 'nec_test_ucore.sof']
+    seed 2: .rbf a4b1613fe9aa540b vs a4b1613fe9aa540b  BYTE-IDENTICAL   output files moved: ['nec_test_ucore.fit.summary', 'nec_test_ucore.sof']
+    seed 3: .rbf 4ff753fc95f81c33 vs 4ff753fc95f81c33  BYTE-IDENTICAL   output files moved: ['nec_test_ucore.fit.summary', 'nec_test_ucore.sof']
+    seed 4: .rbf 63ea9426026aacbd vs 63ea9426026aacbd  BYTE-IDENTICAL   output files moved: ['nec_test_ucore.fit.summary', 'nec_test_ucore.sof']
+    seed 5: .rbf c1e36e046dd1fe68 vs c1e36e046dd1fe68  BYTE-IDENTICAL   output files moved: ['nec_test_ucore.fit.summary', 'nec_test_ucore.sof']
+  per-entity hierarchy (registers + comb ALUTs, every module): 5 of 5 draws IDENTICAL

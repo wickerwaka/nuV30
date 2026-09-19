@@ -1,0 +1,10 @@
+=== BUILD IDENTITY (REQUIRED to differ; printed, never compared) ===
+  tb_sys_receipt   base 8e616b9f24ed28a2aee413d7   arm fbb3e15ea1fb5f9f464bd44a   DIFFER (expected)
+  tb_sys_tree      base b96f3770ce4f42f5fdd15dda   arm a00bfa461ae2c58359a7aef2   DIFFER (expected)
+  git              base {'head': '4a796cc7546575   arm {'head': 'd3c295cdef387c   DIFFER (expected)
+
+=== SCORED CONTENT ===
+  rows: base 305   arm 305
+  fields compared, by name: ['cid', 'fabric_bad', 'fabric_first', 'family', 'has_evt', 'k', 'seed', 'sys', 'tier', 'wait_mode', 'win']
+
+=== 305 rows x 11 fields: IDENTICAL ===
