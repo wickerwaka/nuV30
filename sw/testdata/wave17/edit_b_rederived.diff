@@ -1,0 +1,2081 @@
+diff --git a/hdl/rtl/ucore/v30_core.sv b/hdl/rtl/ucore/v30_core.sv
+index 9e376ba7dc..0296beff86 100644
+--- a/hdl/rtl/ucore/v30_core.sv
++++ b/hdl/rtl/ucore/v30_core.sv
+@@ -432,6 +432,8 @@ v30u_biu u_biu (
+ v30u_eu u_eu (
+     .clk        (CLK),
+     .ce         (CE),
++    // THE PHASE SPLIT: stage 1's capture edge.  Unconditional, like the port.
++    .ce_half    (CE_HALF),
+     .srst       (RESET),
+     .q_byte     (q_byte),
+     .q_ripe     (q_ripe),
+diff --git a/hdl/rtl/ucore/v30u_eu.sv b/hdl/rtl/ucore/v30u_eu.sv
+index 58fe4ade45..ccaf7e2c8c 100644
+--- a/hdl/rtl/ucore/v30u_eu.sv
++++ b/hdl/rtl/ucore/v30u_eu.sv
+@@ -63,6 +63,11 @@
+ module v30u_eu (
+     input             clk,
+     input             ce,
++    // THE PHASE SPLIT (WAVE 2, 2026-09-08): the CPU clock's half-cycle enable,
++    // which is where STAGE 1 of the next-state cone is captured.  See THE PHASE
++    // SPLIT below.  It is an UNCONDITIONAL port of `v30_core` for this reason
++    // -- `V30_MUXED_AD` governs the bus shape, and this is core clocking.
++    input             ce_half,
+     input             srst,
+ 
+     // queue port
+@@ -596,42 +601,42 @@ wire  [8:0] dec_bank_next;
+ reg   [9:0] dec_q;
+ wire        dec_valid = dec_q[9];
+ wire  [8:0] dec_bank  = dec_q[8:0];
+-wire [28:0] row;
++wire [28:0] s1w_row;
+ 
+ v30u_ucrom u_ucrom (
+     .dec_addr (dec_addr_next),
+     .dec_valid(dec_valid_next),
+     .dec_bank (dec_bank_next),
+     .rom_addr ({dec_bank, upc_loc[1:0]}),
+-    .rom_word (row)
++    .rom_word (s1w_row)
+ );
+ 
+ // sw/ucore_tables.py::MicroOp -- the field positions, verbatim
+-wire [4:0] r_s1   = row[28:24];
+-wire [4:0] r_d1   = row[23:19];
+-wire [3:0] r_s2   = row[18:15];
+-wire [1:0] r_d2   = row[14:13];
+-wire       r_f    = ~row[12];
+-wire       r_w    = ~row[11];
+-wire       r_e    = ~row[10];
+-wire [1:0] r_type = row[9] ? TY_CTL : (row[8] ? TY_JMP : TY_ALU);
+-wire [4:0] r_aluop= row[7:3];
+-wire [1:0] r_alutmp = row[2:1];
+-wire       r_r    = row[0] && (r_type == TY_ALU);
+-wire [3:0] r_cond = row[7:4];
+-wire [3:0] r_loc  = row[3:0];
+-wire [3:0] r_ictl = row[9:6] & 4'hF;   // {row[9]=1 marks CTL}: ictl = row[8:5]
+-wire [2:0] r_ectl = row[4:2];
+-wire [1:0] r_sr   = row[1:0];
++wire [4:0] r_s1   = s1w_row[28:24];
++wire [4:0] r_d1   = s1w_row[23:19];
++wire [3:0] r_s2   = s1w_row[18:15];
++wire [1:0] r_d2   = s1w_row[14:13];
++wire       r_f    = ~s1w_row[12];
++wire       r_w    = ~s1w_row[11];
++wire       r_e    = ~s1w_row[10];
++wire [1:0] r_type = s1w_row[9] ? TY_CTL : (s1w_row[8] ? TY_JMP : TY_ALU);
++wire [4:0] s1w_r_aluop= s1w_row[7:3];
++wire [1:0] s1w_r_alutmp = s1w_row[2:1];
++wire       r_r    = s1w_row[0] && (r_type == TY_ALU);
++wire [3:0] s1w_r_cond = s1w_row[7:4];
++wire [3:0] s1w_r_loc  = s1w_row[3:0];
++wire [3:0] r_ictl = s1w_row[9:6] & 4'hF;   // {row[9]=1 marks CTL}: ictl = row[8:5]
++wire [2:0] r_ectl = s1w_row[4:2];
++wire [1:0] r_sr   = s1w_row[1:0];
+ 
+ // The CTL field split, taken literally from the reference parse:
+ //     ictl = (bits >> 5) & 15 ; ectl = (bits >> 2) & 7 ; sr = bits & 3
+-wire [3:0] c_ictl = row[8:5];
+-wire [2:0] c_ectl = row[4:2];
+-wire [1:0] c_sr   = row[1:0];
++wire [3:0] c_ictl = s1w_row[8:5];
++wire [2:0] c_ectl = s1w_row[4:2];
++wire [1:0] c_sr   = s1w_row[1:0];
+ 
+ wire       r_farjmp = (r_type == TY_CTL) && (c_ictl == I_FARJMP);
+-wire [4:0] r_farloc = {c_ectl, c_sr};
++wire [4:0] s1w_r_farloc = {c_ectl, c_sr};
+ wire       r_nopmove = (r_s1 == 5'h1F) && (r_d1 == 5'h1F);
+ wire       r_hasconst = (r_s1 == 5'h17);
+ wire [5:0] r_constval = {r_s2, r_d2};
+@@ -640,43 +645,43 @@ wire [2:0] r_ect = r_farjmp ? 3'd7 : c_ectl;
+ 
+ // unmapped micro-address: the model substitutes a NOP CTL row
+ wire       row_nop = !dec_valid;
+-wire [4:0] e_s1    = row_nop ? 5'h1F : r_s1;
+-wire [4:0] e_d1    = row_nop ? 5'h1F : r_d1;
+-wire [3:0] e_s2    = row_nop ? 4'hF  : r_s2;
+-wire [1:0] e_d2    = row_nop ? 2'd3  : r_d2;
+-wire       e_f     = row_nop ? 1'b0  : r_f;
+-wire       e_w     = row_nop ? 1'b0  : r_w;
+-wire       e_e     = row_nop ? 1'b0  : r_e;
++wire [4:0] s1w_e_s1    = row_nop ? 5'h1F : r_s1;
++wire [4:0] s1w_e_d1    = row_nop ? 5'h1F : r_d1;
++wire [3:0] s1w_e_s2    = row_nop ? 4'hF  : r_s2;
++wire [1:0] s1w_e_d2    = row_nop ? 2'd3  : r_d2;
++wire       s1w_e_f     = row_nop ? 1'b0  : r_f;
++wire       s1w_e_w     = row_nop ? 1'b0  : r_w;
++wire       s1w_e_e     = row_nop ? 1'b0  : r_e;
+ wire       e_r     = row_nop ? 1'b0  : r_r;
+-wire [1:0] e_type  = row_nop ? TY_CTL : r_type;
+-wire [3:0] e_ictl  = row_nop ? 4'hF  : c_ictl;
+-wire [2:0] e_ectl  = row_nop ? 3'd7  : r_ect;
++wire [1:0] s1w_e_type  = row_nop ? TY_CTL : r_type;
++wire [3:0] s1w_e_ictl  = row_nop ? 4'hF  : c_ictl;
++wire [2:0] s1w_e_ectl  = row_nop ? 3'd7  : r_ect;
+ wire [1:0] e_sr    = row_nop ? 2'd3  : c_sr;
+-wire       e_farjmp= row_nop ? 1'b0  : r_farjmp;
+-wire       e_nopmv = row_nop ? 1'b1  : r_nopmove;
++wire       s1w_e_farjmp= row_nop ? 1'b0  : r_farjmp;
++wire       s1w_e_nopmv = row_nop ? 1'b1  : r_nopmove;
+ wire       e_hasc  = row_nop ? 1'b0  : r_hasconst;
+ 
+-wire e_is_rloop = (e_type == TY_ALU) && e_r;
+-wire e_have1 = !e_nopmv;
+-wire e_have2 = !e_hasc && ((e_s2 != 4'd15) || (e_d2 != 2'd3));
++wire s1w_e_is_rloop = (s1w_e_type == TY_ALU) && e_r;
++wire s1w_e_have1 = !s1w_e_nopmv;
++wire s1w_e_have2 = !e_hasc && ((s1w_e_s2 != 4'd15) || (s1w_e_d2 != 2'd3));
+ 
+ // The 0F21 negative/no-carry result rail advances the E hand-over to row 5 and inhibits
+ // the stale architectural writeback that would otherwise ride that shortened
+ // path.  A non-negative 0F21 capture and four 0F23 captures all retain the
+ // ordinary row-6 hand-over, so the condition is the ALU sign rail, not an
+ // opcode-wide timing shortcut.
+-wire ext4s_early_e = (upc_page == 3'd4) && (upc_opc == 8'h21) &&
++wire s1w_ext4s_early_e = (upc_page == 3'd4) && (upc_opc == 8'h21) &&
+                      (upc_loc == 4'd5) && stat[FS] && !stat[FCY];
+-wire ext4s_early_wblock = (upc_page == 3'd4) && (upc_opc == 8'h21) &&
+-                          (upc_loc == 4'd3) && sig_flags[FS] && !sig_flags[FCY];
++wire s1w_ext4s_early_wblock = (upc_page == 3'd4) && (upc_opc == 8'h21) &&
++                          (upc_loc == 4'd3) && s1w_sig_flags[FS] && !s1w_sig_flags[FCY];
+ // On the shortened path row 6 is the post-E overlap.  On the ordinary path it
+ // is the E row itself and `poste` is still clear, which makes this distinction
+ // state-free.
+-wire ext4s_early_post = poste && (upc_page == 3'd4) &&
++wire s1w_ext4s_early_post = poste && (upc_page == 3'd4) &&
+                         (upc_opc == 8'h21) && (upc_loc == 4'd6);
+-wire ext4s_arch_d1 = (e_d1 <= 5'd4) || (e_d1 == 5'd15) ||
+-                     (e_d1 == 5'd18) || (e_d1 == 5'd19) ||
+-                     (e_d1 >= 5'd24);
++wire s1w_ext4s_arch_d1 = (s1w_e_d1 <= 5'd4) || (s1w_e_d1 == 5'd15) ||
++                     (s1w_e_d1 == 5'd18) || (s1w_e_d1 == 5'd19) ||
++                     (s1w_e_d1 >= 5'd24);
+ 
+ //============================================================================
+ // SEGMENT / WIDTH HELPERS
+@@ -717,7 +722,7 @@ wire [19:0] row_phys = {seg_val, 4'd0} + {4'd0, ind};
+ // touch (exec_impl.h::deliver_read).  A row that READS OPR waits for the read
+ // that fills it; a row that only LOADS OPR waits only for a store to give OPR
+ // back.
+-wire row_reads_opr = (e_s1 == 5'd6);
++wire s1w_row_reads_opr = (s1w_e_s1 == 5'd6);
+ 
+ // wait_next_read(extra): the next outstanding EU read, in order.
+ //
+@@ -734,7 +739,7 @@ wire row_reads_opr = (e_s1 == 5'd6);
+ // The consumer sees the count already incremented because block (a) runs
+ // BEFORE the chain in the same edge.
+ wire nr_have   = (rd_done_cnt != 2'd0) || eu_rd_done_n;
+-wire nr_wait   = !nr_have && (rd_pending != 2'd0);
++wire s1w_nr_wait   = !nr_have && (rd_pending != 2'd0);
+ // ...and `extra` (wait_opr's +1) bites only when the completion is on THIS
+ // clock -- otherwise the deadline is already past.
+ wire nr_extra_block = nr_have && rd_age0;
+@@ -791,7 +796,7 @@ wire nr_extra_block = nr_have && rd_age0;
+ // only -- `eu_wr_done_n` is registered logic (see the BIU's `done_fire`), so
+ // the act decode may read it, and act and step MUST read the same thing: they
+ // are the same event seen from two sides (F11).
+-wire retire_ok_n = (wr_out == 2'd0) ||
++wire s1w_retire_ok_n = (wr_out == 2'd0) ||
+                    ((wr_out == 2'd1) && eu_wr_done_n);
+ 
+ // W7 -- THE MFS FRAME STORE RELEASES AT ITS COMPLETION EVAL.  The consumer is
+@@ -801,12 +806,12 @@ wire retire_ok_n = (wr_out == 2'd0) ||
+ // the write stretched; waiting through retire added two invented clocks.  The
+ // completion pulse leaves the three real intervening rows to set the gap.
+ // This names the row's controls, not its ROM address or an opcode.
+-wire mfs_frame_release = (st == S_ROW) && e_f &&
+-                         (e_type == TY_JMP) && (r_cond == C_CNTZ) &&
+-                         e_have1 && (e_s1 == 5'd1) && (e_d1 == 5'd6);
++wire mfs_frame_release = (st == S_ROW) && s1w_e_f &&
++                         (s1w_e_type == TY_JMP) && (s1w_r_cond == C_CNTZ) &&
++                         s1w_e_have1 && (s1w_e_s1 == 5'd1) && (s1w_e_d1 == 5'd6);
+ wire eval_ok_n = (wr_out == 2'd0) ||
+                  ((wr_out == 2'd1) && eu_wr_eval);
+-wire opr_free_now = mode8080          ? retire_ok_n
++wire s1w_opr_free_now = mode8080          ? s1w_retire_ok_n
+                   : mfs_frame_release ? eval_ok_n
+                                       : eu_opr_free;
+ 
+@@ -836,13 +841,13 @@ wire opr_free_now = mode8080          ? retire_ok_n
+ // *Falsifier*: any golden case, in any suite, that reaches this wire (a golden
+ // is a captured chip record, and a stalled chip records no case); or a form
+ // outside the seven that stalls on silicon; or one of the seven that does not.
+-wire opr_starved = row_reads_opr && !opr_loaded && !nr_have &&
++wire opr_starved = s1w_row_reads_opr && !opr_loaded && !nr_have &&
+                    (rd_pending == 2'd0) && (rdq_n == 2'd0);
+ 
+ // ONE view: the `_n` twin is gone with the pulse it read (F31).  `nr_wait` is
+ // register-only lookahead (F18/F11a) and is legal in the act decode.
+-wire f_wait = row_reads_opr ? (nr_wait || opr_starved || !opr_free_now)
+-                            : !opr_free_now;
++wire f_wait = s1w_row_reads_opr ? (s1w_nr_wait || opr_starved || !s1w_opr_free_now)
++                            : !s1w_opr_free_now;
+ 
+ // BUSY is the 9B POLL_N pin, sampled through the same 3-deep pin pipeline the
+ // INT level goes through (biu_timed.h::poll_busy, "AND IT IS THE SAME 3-DEEP
+@@ -853,7 +858,7 @@ wire f_wait = row_reads_opr ? (nr_wait || opr_starved || !opr_free_now)
+ // ones instead made the first three clocks read BUSY, which is exactly the
+ // `POLL.LO` half that failed at row 3.
+ reg [2:0] poll_pipe;
+-wire poll_busy = poll_pipe[2];
++wire s1w_poll_busy = poll_pipe[2];
+ 
+ //----------------------------------------------------------------------------
+ // THE RECOGNITION (interrupt_model.md's two laws, and nothing else)
+@@ -868,7 +873,7 @@ wire poll_busy = poll_pipe[2];
+ // top of the edge, so the REGISTERS already hold the NEXT clock's view while
+ // the wires still hold THIS clock's (F11b's trap, and the whole module's
+ // convention).
+-wire irq_pin_int = int_p[2];                       // the pin at c-3
++wire s1w_irq_pin_int = int_p[2];                       // the pin at c-3
+ // SM3 SITTING 11 -- THE GATE READS IE TWICE, AND THE SECOND READ IS THE LIVE
+ // ONE.  `ie_p[2]` alone says only "IE was up three clocks ago"; a `CLI` since
+ // then does not take it back, so the recognition fires at a boundary where the
+@@ -911,8 +916,8 @@ wire irq_pin_int = int_p[2];                       // the pin at c-3
+ wire irq_int_lvl = (int_p[2] ||
+                     (intr_pending && (rep_kind == REP_NONE) && !ie_p[3])) &&
+                    ie_p[2] && psw[FIE];
+-wire irq_nmi_lvl = nmi_latch;
+-wire irq_any     = irq_nmi_lvl || irq_int_lvl;
++wire s1w_irq_nmi_lvl = nmi_latch;
++wire irq_any     = s1w_irq_nmi_lvl || irq_int_lvl;
+ // A REP iteration boundary samples at the SAME depth below its own decision
+ // EDGE (interrupt_model.md, "REP abort": pin@edge-4) and reads the LIVE IE,
+ // not the pipelined one -- but its edge is NOT the loop row's clock, and the
+@@ -933,17 +938,17 @@ wire irq_any     = irq_nmi_lvl || irq_int_lvl;
+ // as a negative result: [0] 174, [1] 178, [2] 179, [3] 175) -- the two
+ // boundaries want DIFFERENT depths, because they are anchored to different
+ // edges.  Nothing here is fitted: both taps are `edge - 4`.
+-wire irq_rep_1st = irq_nmi_lvl || (int_p[2] && psw[FIE]);   // edge = c+1
+-wire irq_rep_chn = irq_nmi_lvl || (int_p[1] && psw[FIE]);   // edge = c+2
++wire s1w_irq_rep_1st = s1w_irq_nmi_lvl || (int_p[2] && psw[FIE]);   // edge = c+1
++wire s1w_irq_rep_chn = s1w_irq_nmi_lvl || (int_p[1] && psw[FIE]);   // edge = c+2
+ 
+ //============================================================================
+ // THE ROW'S DEMANDS
+ //============================================================================
+ // A queue byte: Source1 [-07-] (Q) and Source2 [-05-] (Q).
+-wire row_q1 = e_have1 && (e_s1 == 5'd7);
+-wire row_q2 = e_have2 && (e_s2 == 4'd5);
+-wire [1:0] row_qn = {1'b0, row_q1} + {1'b0, row_q2};
+-wire row_need_q  = (st == S_ROW) && ({1'b0, rowq} < row_qn);
++wire s1w_row_q1 = s1w_e_have1 && (s1w_e_s1 == 5'd7);
++wire s1w_row_q2 = s1w_e_have2 && (s1w_e_s2 == 4'd5);
++wire [1:0] s1w_row_qn = {1'b0, s1w_row_q1} + {1'b0, s1w_row_q2};
++wire s1w_row_need_q  = (st == S_ROW) && ({1'b0, rowq} < s1w_row_qn);
+ 
+ // The bus rows.  [-06-] commits OPR to the r/m operand only when that operand
+ // is memory (the 8F mod==3 ghost).
+@@ -953,14 +958,14 @@ wire row_need_q  = (st == S_ROW) && ({1'b0, rowq} < row_qn);
+ // read the register a clock behind.  Without it `38`/`39`/`80.7` posted a store
+ // that never happened, `pend_after` deferred the successor's pop, and the F
+ // landed one clock late.
+-wire suppress_now = (e_s1 == 5'd20) && !sig_commits &&
+-                    (e_d1 == 5'd19) && (m_kind == OK_MEM);
++wire suppress_now = (s1w_e_s1 == 5'd20) && !s1w_sig_commits &&
++                    (s1w_e_d1 == 5'd19) && (m_kind == OK_MEM);
+ wire row_wb_mem  = (wb_kind == OK_MEM) && !suppress_commit && !suppress_now;
+-wire row_is_read = (e_type == TY_CTL) && (e_ectl == E_MEMR);
+-wire row_is_wr   = (e_type == TY_CTL) && (e_ectl == E_MEMW);
+-wire row_is_wb   = (e_type == TY_CTL) && (e_ectl == E_WRITEBACK) && row_wb_mem;
+-wire row_is_inta = (e_type == TY_CTL) && (e_ectl == E_INTA);
+-wire row_bus     = row_is_read || row_is_wr || row_is_wb || row_is_inta;
++wire row_is_read = (s1w_e_type == TY_CTL) && (s1w_e_ectl == E_MEMR);
++wire s1w_row_is_wr   = (s1w_e_type == TY_CTL) && (s1w_e_ectl == E_MEMW);
++wire s1w_row_is_wb   = (s1w_e_type == TY_CTL) && (s1w_e_ectl == E_WRITEBACK) && row_wb_mem;
++wire s1w_row_is_inta = (s1w_e_type == TY_CTL) && (s1w_e_ectl == E_INTA);
++wire s1w_row_bus     = row_is_read || s1w_row_is_wr || s1w_row_is_wb || s1w_row_is_inta;
+ 
+ // THE 8F GHOST **READ**, AND ONLY THE READ.  The ghost FEED
+ // (`ghost_rd_feed`, `ghost_rd_ready`, `eu_rd_wait`, the `S_PRERD`
+@@ -987,11 +992,11 @@ wire row_bus     = row_is_read || row_is_wr || row_is_wb || row_is_inta;
+ // The same row geometry is shared by ordinary POP-register paths, so the
+ // undocumented 8F page and its absent memory operand are both part of the
+ // select.
+-wire ghost_read_stale_alu = (upc_page == 3'd0) && (upc_opc == 8'h8f) &&
++wire s1w_ghost_read_stale_alu = (upc_page == 3'd0) && (upc_opc == 8'h8f) &&
+                             row_is_read && (row_seg == 3'd2) &&
+                             (m_kind == OK_REG) && (wb_kind == OK_REG) &&
+-                            e_have1 && (e_s1 == 5'd28) && (e_d1 == 5'd5) &&
+-                            e_have2 && (e_s2 == 4'd12) && (e_d2 == 2'd1);
++                            s1w_e_have1 && (s1w_e_s1 == 5'd28) && (s1w_e_d1 == 5'd5) &&
++                            s1w_e_have2 && (s1w_e_s2 == 4'd12) && (s1w_e_d2 == 2'd1);
+ // The ghost's own micro-row is still standing while the loader's pre-decode
+ // read for the successor runs.  That overlap is what puts the stale word-lane
+ // and segment rails on the successor's access below.
+@@ -1002,24 +1007,24 @@ wire ghost_preread_tail = (st == S_PRERD) && (upc_page == 3'd0) &&
+ // the access this row asks for.  Its OFFSET is `ind_now`, which is the row's
+ // OWN IND write when it has one -- see "THE ROW'S OWN TRANSFERS" below, next
+ // to the source muxes it needs.
+-wire [2:0] acc_seg   = row_is_wb ? wb_seg : row_seg;
++wire [2:0] s1w_acc_seg   = s1w_row_is_wb ? wb_seg : row_seg;
+ // PF_LOST reaches the successor's bus-space select as well as its stale
+ // address.  On the measured REP-prefixed E4 successor the I/O rail is absent,
+ // so the otherwise identical read is a word memory cycle at offset 0042.
+ wire       ghost_lost_io = row_io && (upc_page == 3'd1) &&
+                            (upc_opc == 8'he4) && (pe_opc_reg == 8'h8f);
+-wire       acc_byte  = row_is_wb ? wb_byte : (row_bbyte && !ghost_lost_io);
+-wire       acc_io    = row_is_wb ? 1'b0 : (row_io && !ghost_lost_io);
+-wire [15:0] acc_segv = (acc_seg == SEG_ZERO) ? 16'h0000 : sreg[acc_seg[1:0]];
++wire       s1w_acc_byte  = s1w_row_is_wb ? wb_byte : (row_bbyte && !ghost_lost_io);
++wire       s1w_acc_io    = s1w_row_is_wb ? 1'b0 : (row_io && !ghost_lost_io);
++wire [15:0] acc_segv = (s1w_acc_seg == SEG_ZERO) ? 16'h0000 : sreg[s1w_acc_seg[1:0]];
+ 
+ // The PRE-DECODE operand read (loader_impl.h): the operand the sequence
+ // READS, and only that one.
+ wire        pr_use_m = (m_kind == OK_MEM);
+ wire  [2:0] pr_seg   = pr_use_m ? m_seg : r_seg;
+ wire [15:0] pr_ea    = pr_use_m ? m_ea   : r_ea;
+-wire        pr_byte  = pr_use_m ? m_byte : r_byte;
++wire        s1w_pr_byte  = pr_use_m ? m_byte : r_byte;
+ wire [19:0] pr_phys  = {sreg[pr_seg[1:0]], 4'd0} + {4'd0, pr_ea};
+-wire        pr_split = !pr_byte && pr_phys[0];
++wire        pr_split = !s1w_pr_byte && pr_phys[0];
+ // A PF_LOST overlap on an odd pre-read leaves the normal segment rail on its
+ // first byte and the default data-segment rail on its second.  The BIU already
+ // stores each split half independently; publish both rails with the two
+@@ -1104,7 +1109,7 @@ endfunction
+ // write to one of `iend_late`'s remaining fields.
+ wire [7:0] opc_reg_eff = poste ? pe_opc_reg : opc_reg;
+ wire       opc8080_eff = poste ? pe_opc8080 : opc8080;
+-wire       op8_eff     = poste ? pe_op8     : op8;
++wire       s1w_op8_eff     = poste ? pe_op8     : op8;
+ wire [7:0] pfxcnt_eff  = poste ? pe_pfxcnt  : pfxcnt;
+ wire [2:0] opc_sel = opc_from_modrm ? modrm_reg : opc_reg_eff[5:3];
+ function automatic [4:0] opc8080_map(input [2:0] s);
+@@ -1124,7 +1129,7 @@ wire [4:0] alu_opc_sel = opc8080_eff ? opc8080_map(opc_sel)
+ 
+ wire [4:0] eff_op = (al_op == A_OPC) ? alu_opc_sel : al_op;
+ // the operation the row NOW standing latches (exec_impl.h's `new_op`)
+-wire [4:0] nxt_op = (r_aluop == A_OPC) ? alu_opc_sel : r_aluop;
++wire [4:0] s1w_nxt_op = (s1w_r_aluop == A_OPC) ? alu_opc_sel : s1w_r_aluop;
+ wire is_iter = ((eff_op >= A_ROL) && (eff_op <= A_SAR)) ||
+                (eff_op == A_ROL12) || (eff_op == A_DIV) || (eff_op == A_MUL);
+ 
+@@ -1186,11 +1191,11 @@ assign tmps_lat[3] = 16'd0;
+ wire al_tag_b = (al_tmp == 2'd0) ? tmpa_byte
+               : (al_tmp == 2'd1) ? tmpb_byte
+               : (al_tmp == 2'd2) ? tmpc_byte : 1'b0;
+-wire al_width_byte = (eff_op == A_ABS) ? op8_eff : (tmpb_byte || al_tag_b);
++wire s1w_al_width_byte = (eff_op == A_ABS) ? s1w_op8_eff : (tmpb_byte || al_tag_b);
+ 
+ // The datapath is 16 bits ALWAYS for the ADD-class ops; `byte` selects only
+ // where the flag taps sit (ledger, "ALU width").
+-wire ev_byte = al_width_byte && (eff_op != A_INC2) && (eff_op != A_DEC2);
++wire ev_byte = s1w_al_width_byte && (eff_op != A_INC2) && (eff_op != A_DEC2);
+ wire [15:0] port_a = tmpb;
+ wire [15:0] port_b_raw = tmps[al_tmp];
+ wire [15:0] port_b = al_bitarm ? (port_b_raw & (16'd1 << al_bitn))
+@@ -1350,17 +1355,17 @@ end
+ // --- the ONE shared iterative stepper --------------------------------------
+ // MUL (shift-add), DIV (restoring), ROL12 and the shift/rotate family are the
+ // SAME unit stepped once per clock; no lpm_divide, no per-op datapath.
+-wire        it_byte = al_width_byte;
++wire        it_byte = s1w_al_width_byte;
+ wire [15:0] it_a    = it_byte ? {8'd0, tmpb[7:0]} : tmpb;
+ wire [15:0] it_bop  = tmps[al_tmp];
+ wire [15:0] it_mask = it_byte ? 16'h00FF : 16'hFFFF;
+ wire        it_msb  = it_byte ? it_a[7] : it_a[15];
+ wire        it_lsb  = it_a[0];
+-reg  [15:0] it_val;      // the SIGMA the step presents
+-reg  [15:0] it_tmpa;     // the multiplier / quotient register after the step
+-reg  [15:0] it_flags;
+-reg  [15:0] it_fmask;
+-reg         it_writes_tmpa;
++reg  [15:0] s1w_it_val;      // the SIGMA the step presents
++reg  [15:0] s1w_it_tmpa;     // the multiplier / quotient register after the step
++reg  [15:0] s1w_it_flags;
++reg  [15:0] s1w_it_fmask;
++reg         s1w_it_writes_tmpa;
+ 
+ // MUL
+ wire [15:0] mul_mplier = it_byte ? {8'd0, tmpa[7:0]} : tmpa;
+@@ -1421,56 +1426,56 @@ wire [7:0] sh_hi = sh_left ? {tmpb[14:8], tmpb[7]}
+                            : {sh_fb, tmpb[15:9]};
+ 
+ always @* begin
+-    it_val   = 16'd0;
+-    it_tmpa  = tmpa;
+-    it_flags = 16'd0;
+-    it_fmask = 16'd0;
+-    it_writes_tmpa = 1'b0;
++    s1w_it_val   = 16'd0;
++    s1w_it_tmpa  = tmpa;
++    s1w_it_flags = 16'd0;
++    s1w_it_fmask = 16'd0;
++    s1w_it_writes_tmpa = 1'b0;
+     case (eff_op)
+         A_MUL: begin
+-            it_val  = it_byte ? {tmpb[15:8], mul_hi[7:0]} : mul_hi;
+-            it_tmpa = it_byte ? {tmpa[15:8], mul_lo[7:0]} : mul_lo;
+-            it_writes_tmpa = 1'b1;
++            s1w_it_val  = it_byte ? {tmpb[15:8], mul_hi[7:0]} : mul_hi;
++            s1w_it_tmpa = it_byte ? {tmpa[15:8], mul_lo[7:0]} : mul_lo;
++            s1w_it_writes_tmpa = 1'b1;
+         end
+         A_DIV: begin
+-            it_val  = it_byte ? {tmpb[15:8], div_hi1[7:0]} : div_hi1;
+-            it_tmpa = it_byte ? {tmpa[15:8], div_lo2[7:0]} : div_lo2;
+-            it_writes_tmpa = 1'b1;
++            s1w_it_val  = it_byte ? {tmpb[15:8], div_hi1[7:0]} : div_hi1;
++            s1w_it_tmpa = it_byte ? {tmpa[15:8], div_lo2[7:0]} : div_lo2;
++            s1w_it_writes_tmpa = 1'b1;
+         end
+         A_ROL12: begin
+-            it_val = {tmpb[14:0], tmpb[11]};
++            s1w_it_val = {tmpb[14:0], tmpb[11]};
+         end
+         default: begin
+-            it_flags[FCY] = sh_cy;
+-            it_flags[FV]  = sh_v;
++            s1w_it_flags[FCY] = sh_cy;
++            s1w_it_flags[FV]  = sh_v;
+             if ((eff_op == A_SHL) || (eff_op == A_SHR) ||
+                 (eff_op == A_SAR) || (eff_op == A_SHL6)) begin
+-                it_flags = it_flags | szp({1'b0, sh_r}, it_byte);
+-                it_fmask = ARITH_MASK;
++                s1w_it_flags = s1w_it_flags | szp({1'b0, sh_r}, it_byte);
++                s1w_it_fmask = ARITH_MASK;
+             end else begin
+-                it_fmask = (16'd1 << FCY) | (16'd1 << FV);
++                s1w_it_fmask = (16'd1 << FCY) | (16'd1 << FV);
+             end
+-            it_val = it_byte ? {sh_hi, sh_r[7:0]} : sh_r;
++            s1w_it_val = it_byte ? {sh_hi, sh_r[7:0]} : sh_r;
+         end
+     endcase
+ end
+ 
+ // SIGMA: what the row's Source1 [-14-] presents.
+ wire [15:0] sigma = al_eaconst ? al_eaval
+-                  : is_iter ? (al_spent ? tmpb : it_val)
++                  : is_iter ? (al_spent ? tmpb : s1w_it_val)
+                             : ev_val;
+-wire [15:0] sig_flags = is_iter ? it_flags : ev_flags;
+-wire [15:0] sig_mask  = al_eaconst ? 16'd0
+-                      : is_iter ? (al_spent ? 16'd0 : it_fmask)
++wire [15:0] s1w_sig_flags = is_iter ? s1w_it_flags : ev_flags;
++wire [15:0] s1w_sig_mask  = al_eaconst ? 16'd0
++                      : is_iter ? (al_spent ? 16'd0 : s1w_it_fmask)
+                                 : ev_mask;
+-wire        sig_commits = al_eaconst ? 1'b1 : (is_iter ? 1'b1 : ev_commits);
++wire        s1w_sig_commits = al_eaconst ? 1'b1 : (is_iter ? 1'b1 : ev_commits);
+ // ...AND SIGMA CARRIES THE WIDTH THE ALU WORKED AT, so a `SIGMA -> tmp`
+ // transfer PROPAGATES the tag instead of losing it.  It is the ALU's OWN
+ // width and NOT a property of what `sigma` happens to mux -- an `ea_const`
+ // row is deliberately NOT special-cased here, exactly as `exec_impl.h` does
+ // not special-case it (`ctx.byte = alu_width_byte(...)`, unconditional, while
+ // `alu_eval` returns the EA early).
+-wire        sig_byte    = al_width_byte;
++wire        sig_byte    = s1w_al_width_byte;
+ 
+ //============================================================================
+ // SOURCE / DESTINATION MUXES
+@@ -1488,17 +1493,17 @@ endfunction
+ // The current group microcode page excludes immediate and fixed-register PUSH
+ // rows, whose unused M decode metadata can otherwise have the same values.
+ wire m_modrm_stack_word = (upc_page == 3'd3) &&
+-                          (m_kind == OK_REG) && m_byte && e_e &&
+-                          row_is_wr && (row_seg == 3'd2) &&
+-                          e_have1 && (e_s1 == 5'd19) && (e_d1 == 5'd6);
++                          (m_kind == OK_REG) && m_byte && s1w_e_e &&
++                          s1w_row_is_wr && (row_seg == 3'd2) &&
++                          s1w_e_have1 && (s1w_e_s1 == 5'd19) && (s1w_e_d1 == 5'd6);
+ // The FE group's undocumented register-direct jump rows have the same
+ // physical exception.  Although the ModR/M metadata is byte-coded, the row
+ // is `M -> PC; FLUSH` and silicon redirects to the whole parent register
+ // (FE E6 with DW=7940 goes to 7940, not the rb16 view 4079).
+ wire m_modrm_pc_word = (upc_page == 3'd3) &&
+                        (m_kind == OK_REG) && m_byte &&
+-                       e_have1 && (e_s1 == 5'd19) && (e_d1 == 5'd4) &&
+-                       (e_ictl == I_FLUSH);
++                       s1w_e_have1 && (s1w_e_s1 == 5'd19) && (s1w_e_d1 == 5'd4) &&
++                       (s1w_e_ictl == I_FLUSH);
+ wire m_modrm_parent_word = m_modrm_stack_word || m_modrm_pc_word;
+ // THE PARENT-WORD INDEX IS A FULL-WIDTH REGISTER-FILE ADDRESS, NAMED.
+ //
+@@ -1533,7 +1538,7 @@ wire [15:0] r_rd = (r_kind == OK_REG)  ? (r_byte ? rb16(r_idx, gpr[r_par_idx])
+                  : (r_kind == OK_SREG) ? sreg[r_idx[1:0]]
+                  : (r_kind == OK_MEM)  ? opr : 16'd0;
+ 
+-wire [15:0] dirsz = (op8_eff ? (psw[FDIR] ? 16'hFFFF : 16'h0001)
++wire [15:0] dirsz = (s1w_op8_eff ? (psw[FDIR] ? 16'hFFFF : 16'h0001)
+                              : (psw[FDIR] ? 16'hFFFE : 16'h0002));
+ 
+ //----------------------------------------------------------------------------
+@@ -1581,50 +1586,50 @@ wire [15:0] dirsz = (op8_eff ? (psw[FDIR] ? 16'hFFFF : 16'h0001)
+ // is unobservable and carries no evidence either way.  The datum criterion
+ // decides it, and it decides it WORD.
+ //----------------------------------------------------------------------------
+-reg  [15:0] s1_val;
+-reg         s1_byte;
+-reg         s1_wbyte;
++reg  [15:0] s1w_s1_val;
++reg         s1w_s1_byte;
++reg         s1w_s1_wbyte;
+ always @* begin
+-    s1_byte  = 1'b0;
+-    s1_wbyte = 1'b0;                 // WORD unless the case says otherwise
+-    case (e_s1)
+-        5'd0,5'd1,5'd2,5'd3: s1_val = sreg[e_s1[1:0]];
+-        5'd4:  s1_val = pc;
+-        5'd6:  begin s1_val = opr;  s1_wbyte = opr_byte; end
+-        5'd7:  begin s1_val = {8'd0, q_byte}; s1_byte = 1'b1; s1_wbyte = 1'b1; end
+-        5'd8:  s1_val = dirsz;
+-        5'd9:  s1_val = 16'd0;
+-        5'd10: s1_val = {8'd0, pfxcnt_eff};        // F22
+-        5'd12: begin s1_val = tmpa; s1_wbyte = tmpa_byte; end
+-        5'd13: begin s1_val = tmpb; s1_wbyte = tmpb_byte; end
+-        5'd14: begin s1_val = tmpc; s1_wbyte = tmpc_byte; end
+-        5'd15: s1_val = flags_rd;
+-        5'd16: begin s1_val = {gpr[R_AW][7:0], gpr[R_AW][15:8]}; s1_wbyte = 1'b1; end
+-        5'd17: s1_val = count;
+-        5'd18: begin s1_val = r_rd; s1_wbyte = r_byte; end
+-        5'd19: begin s1_val = m_rd; s1_wbyte = m_byte; end
+-        5'd20: begin s1_val = sigma; s1_wbyte = sig_byte; end
+-        5'd21: s1_val = 16'hFFFF;
+-        5'd22: s1_val = {8'd0, opc_reg & 8'h38};
+-        5'd23: begin s1_val = {10'd0, r_constval}; s1_byte = 1'b1; end
+-        default: s1_val = (e_s1 >= 5'd24) ? gpr[e_s1[2:0]] : 16'd0;
++    s1w_s1_byte  = 1'b0;
++    s1w_s1_wbyte = 1'b0;                 // WORD unless the case says otherwise
++    case (s1w_e_s1)
++        5'd0,5'd1,5'd2,5'd3: s1w_s1_val = sreg[s1w_e_s1[1:0]];
++        5'd4:  s1w_s1_val = pc;
++        5'd6:  begin s1w_s1_val = opr;  s1w_s1_wbyte = opr_byte; end
++        5'd7:  begin s1w_s1_val = {8'd0, q_byte}; s1w_s1_byte = 1'b1; s1w_s1_wbyte = 1'b1; end
++        5'd8:  s1w_s1_val = dirsz;
++        5'd9:  s1w_s1_val = 16'd0;
++        5'd10: s1w_s1_val = {8'd0, pfxcnt_eff};        // F22
++        5'd12: begin s1w_s1_val = tmpa; s1w_s1_wbyte = tmpa_byte; end
++        5'd13: begin s1w_s1_val = tmpb; s1w_s1_wbyte = tmpb_byte; end
++        5'd14: begin s1w_s1_val = tmpc; s1w_s1_wbyte = tmpc_byte; end
++        5'd15: s1w_s1_val = flags_rd;
++        5'd16: begin s1w_s1_val = {gpr[R_AW][7:0], gpr[R_AW][15:8]}; s1w_s1_wbyte = 1'b1; end
++        5'd17: s1w_s1_val = count;
++        5'd18: begin s1w_s1_val = r_rd; s1w_s1_wbyte = r_byte; end
++        5'd19: begin s1w_s1_val = m_rd; s1w_s1_wbyte = m_byte; end
++        5'd20: begin s1w_s1_val = sigma; s1w_s1_wbyte = sig_byte; end
++        5'd21: s1w_s1_val = 16'hFFFF;
++        5'd22: s1w_s1_val = {8'd0, opc_reg & 8'h38};
++        5'd23: begin s1w_s1_val = {10'd0, r_constval}; s1w_s1_byte = 1'b1; end
++        default: s1w_s1_val = (s1w_e_s1 >= 5'd24) ? gpr[s1w_e_s1[2:0]] : 16'd0;
+     endcase
+ end
+ 
+ // Source2, the SAME classification: ONES (0), ZEROS (6) and the 16-bit
+ // register-file reads (>=8) are WORD; SIGMA (4) propagates; Q (5) is the queue
+ // byte; R (7) is the decoder's own operand width.
+-reg [15:0] s2_val;
+-reg        s2_wbyte;
++reg [15:0] s1w_s2_val;
++reg        s1w_s2_wbyte;
+ always @* begin
+-    s2_wbyte = 1'b0;
+-    case (e_s2)
+-        4'd0: s2_val = 16'hFFFF;
+-        4'd4: begin s2_val = sigma; s2_wbyte = sig_byte; end
+-        4'd5: begin s2_val = {8'd0, q_byte}; s2_wbyte = 1'b1; end
+-        4'd6: s2_val = 16'd0;
+-        4'd7: begin s2_val = r_rd; s2_wbyte = r_byte; end
+-        default: s2_val = (e_s2 >= 4'd8) ? gpr[e_s2[2:0]] : 16'd0;
++    s1w_s2_wbyte = 1'b0;
++    case (s1w_e_s2)
++        4'd0: s1w_s2_val = 16'hFFFF;
++        4'd4: begin s1w_s2_val = sigma; s1w_s2_wbyte = sig_byte; end
++        4'd5: begin s1w_s2_val = {8'd0, q_byte}; s1w_s2_wbyte = 1'b1; end
++        4'd6: s1w_s2_val = 16'd0;
++        4'd7: begin s1w_s2_val = r_rd; s1w_s2_wbyte = r_byte; end
++        default: s1w_s2_val = (s1w_e_s2 >= 4'd8) ? gpr[s1w_e_s2[2:0]] : 16'd0;
+     endcase
+ end
+ 
+@@ -1650,18 +1655,18 @@ end
+ // in the same edge the step then pops it, so the act decode must read
+ // `eu_rdata_n` directly.  `C3`'s `00F3 OPR -> PC  F E  CTL FLUSH` redirects
+ // off exactly that word, and read the STALE PC without this.
+-wire [15:0] opr_live = (e_f && (rdq_n != 2'd0)) ? rdq0
+-                     : (e_f && eu_rd_done_n)    ? eu_rdata_n
++wire [15:0] opr_live = (s1w_e_f && (rdq_n != 2'd0)) ? rdq0
++                     : (s1w_e_f && eu_rd_done_n)    ? eu_rdata_n
+                      : opr;
+-wire [15:0] s1_now = (e_s1 == 5'd7) ? {8'd0, q_byte}
+-                   : (e_s1 == 5'd6) ? opr_live
+-                   : s1_val;
+-wire [15:0] s2_now = (e_s2 == 4'd5) ? {8'd0, q_byte} : s2_val;
++wire [15:0] s1_now = (s1w_e_s1 == 5'd7) ? {8'd0, q_byte}
++                   : (s1w_e_s1 == 5'd6) ? opr_live
++                   : s1w_s1_val;
++wire [15:0] s2_now = (s1w_e_s2 == 4'd5) ? {8'd0, q_byte} : s1w_s2_val;
+ // The CMP suppression: a SIGMA source that does not commit drives nothing.
+-wire wr_ind1 = e_have1 && (e_d1 == 5'd5) &&
+-               !((e_s1 == 5'd20) && !sig_commits);
+-wire wr_ind2 = e_have2 && (e_d2 == 2'd2) &&
+-               !((e_s2 == 4'd4) && !sig_commits);
++wire wr_ind1 = s1w_e_have1 && (s1w_e_d1 == 5'd5) &&
++               !((s1w_e_s1 == 5'd20) && !s1w_sig_commits);
++wire wr_ind2 = s1w_e_have2 && (s1w_e_d2 == 2'd2) &&
++               !((s1w_e_s2 == 4'd4) && !s1w_sig_commits);
+ wire [15:0] ind_now = wr_ind2 ? s2_now : wr_ind1 ? s1_now : ind;
+ 
+ // F14, the same rule for the REDIRECT.  `exec_impl.h`'s CTL block calls
+@@ -1671,16 +1676,16 @@ wire [15:0] ind_now = wr_ind2 ? s2_now : wr_ind1 ? s1_now : ind;
+ // FLUSH`).  Reading the register gave the PRE-jump PC, so the refill fetched
+ // from `target - disp`.  The queue pops a row makes also advance PC, and they
+ // happen before the transfer, exactly as in `rd_src1`.
+-wire [15:0] pc_after_q = pc + {15'd0, row_q1} + {15'd0, row_q2};
+-wire wr_pc1 = e_have1 && (e_d1 == 5'd4) &&
+-              !((e_s1 == 5'd20) && !sig_commits);
+-wire wr_cs1 = e_have1 &&
+-              ((e_d1 == {3'd0, SR_CS}) ||
+-               ((e_d1 == 5'd18) && (r_kind == OK_SREG) &&
++wire [15:0] pc_after_q = pc + {15'd0, s1w_row_q1} + {15'd0, s1w_row_q2};
++wire wr_pc1 = s1w_e_have1 && (s1w_e_d1 == 5'd4) &&
++              !((s1w_e_s1 == 5'd20) && !s1w_sig_commits);
++wire wr_cs1 = s1w_e_have1 &&
++              ((s1w_e_d1 == {3'd0, SR_CS}) ||
++               ((s1w_e_d1 == 5'd18) && (r_kind == OK_SREG) &&
+                 (r_idx[1:0] == SR_CS)) ||
+-               ((e_d1 == 5'd19) && (m_kind == OK_SREG) &&
++               ((s1w_e_d1 == 5'd19) && (m_kind == OK_SREG) &&
+                 (m_idx[1:0] == SR_CS))) &&
+-              !((e_s1 == 5'd20) && !sig_commits);
++              !((s1w_e_s1 == 5'd20) && !s1w_sig_commits);
+ wire [15:0] pc_now = wr_pc1 ? s1_now : pc_after_q;
+ wire [15:0] cs_now = wr_cs1 ? s1_now : sreg[SR_CS];
+ 
+@@ -1794,27 +1799,27 @@ wire ghost_next_byte = q_ripe &&
+ // `ghost_uses_mul_hi` IS GONE (F-A) -- see its epitaph at the top of this
+ // block.  What is left is ONE expression for every ghost, with no class named.
+ wire [15:0] ghost_bus_off = ghost_off & gpr[R_SP];
+-wire [15:0] acc_off  = ghost_read_stale_alu ? ghost_bus_off
+-                       : row_is_wb          ? wb_ea : ind_now;
+-wire [19:0] acc_phys_base = acc_io ? {4'd0, acc_off}
++wire [15:0] acc_off  = s1w_ghost_read_stale_alu ? ghost_bus_off
++                       : s1w_row_is_wb          ? wb_ea : ind_now;
++wire [19:0] acc_phys_base = s1w_acc_io ? {4'd0, acc_off}
+                                    : ({acc_segv, 4'd0} + {4'd0, acc_off});
+ wire [19:0] ghost_stack_phys = {acc_segv, 4'd0} + {4'd0, ind_now};
+ // An odd stack POP has already launched its first byte from SS:SP when the
+ // stale address reaches the second half.  Even-stack ghosts launch directly
+ // from the stale value.  The real stack address, not the stale pin value,
+ // decides whether the word is split.
+-wire [19:0] acc_phys = (ghost_read_stale_alu && ghost_stack_phys[0] &&
++wire [19:0] acc_phys = (s1w_ghost_read_stale_alu && ghost_stack_phys[0] &&
+                         eu_ghost_stack_first)
+                      ? ghost_stack_phys : acc_phys_base;
+ // On an idle odd-stack hand-off the first byte sees the contended stale
+ // address, while the second byte sees the un-contended scratch rail.  This is
+ // the same split already selected from the real stack address above; no extra
+ // history is needed.
+-wire [19:0] acc_phys2= (ghost_read_stale_alu && eu_ghost_idle &&
++wire [19:0] acc_phys2= (s1w_ghost_read_stale_alu && eu_ghost_idle &&
+                         !ghost_uses_ea && ghost_stack_phys[0])
+                       ? (({acc_segv, 4'd0} + {4'd0, ghost_off}) + 20'd1)
+-                      : ghost_read_stale_alu ? (acc_phys_base + 20'd1)
+-                     : acc_io ? {4'd0, acc_off + 16'd1}
++                      : s1w_ghost_read_stale_alu ? (acc_phys_base + 20'd1)
++                     : s1w_acc_io ? {4'd0, acc_off + 16'd1}
+                               : ({acc_segv, 4'd0} + {4'd0, acc_off + 16'd1});
+ // F-B (`ghost_preflash20_prereg_2026-08-12.md` §2) -- THE GHOST'S SPLIT IS
+ // TAKEN FROM THE `dGR == 0` DRIVER, AND THE TWO-CASE RULE IS DELETED.
+@@ -1862,9 +1867,9 @@ wire [19:0] acc_phys2= (ghost_read_stale_alu && eu_ghost_idle &&
+ // AN ACCESS SPLITS IFF IT TRANSFERS A WORD ACROSS AN ODD BOUNDARY.
+ // The non-ghost arm is byte-for-byte what it was, so `row_wr_add` and
+ // `pr_active` are untouched.
+-wire       acc_split = ghost_read_stale_alu
++wire       acc_split = s1w_ghost_read_stale_alu
+                        ? (eu_word && ghost_stack_phys[0])
+-                       : (!acc_byte && acc_phys[0]);
++                       : (!s1w_acc_byte && acc_phys[0]);
+ // §73 / R7' -- THE WRITE-ACCOUNTING SPLIT, AND WHY IT IS EXACT.
+ // `acc_split` above is the BUS value: it drives `eu_split` and `eu_pair2`,
+ // which land in the BIU's request registers.  It is ALSO read by
+@@ -1876,10 +1881,10 @@ wire       acc_split = ghost_read_stale_alu
+ // IN VALUE and joined only IN TEXT.  This is the write side's own value,
+ // ghost-free by construction -- not an approximation, and identical to what
+ // this expression computed before the read landed.
+-wire [15:0] acc_off_nog  = row_is_wb ? wb_ea : ind_now;
+-wire [19:0] acc_phys_nog = acc_io ? {4'd0, acc_off_nog}
+-                                  : ({acc_segv, 4'd0} + {4'd0, acc_off_nog});
+-wire       acc_split_wr  = !acc_byte && acc_phys_nog[0];
++wire [15:0] s1w_acc_off_nog  = s1w_row_is_wb ? wb_ea : ind_now;
++wire [19:0] acc_phys_nog = s1w_acc_io ? {4'd0, s1w_acc_off_nog}
++                                  : ({acc_segv, 4'd0} + {4'd0, s1w_acc_off_nog});
++wire       s1w_acc_split_wr  = !s1w_acc_byte && acc_phys_nog[0];
+ 
+ // THE TWO DRIVERS' OWN COMPOSED ADDRESSES, for the BIU to pick between at the
+ // launch.  Both are formed HERE, at the clock the ghost's micro-row is
+@@ -1894,7 +1899,7 @@ wire [19:0] ghost_phys_bare = {acc_segv, 4'd0} + {4'd0, ghost_off};
+ // COMBINATIONAL OUTPUTS -- what the BIU samples during THIS clock
+ //============================================================================
+ // The F interlock has to be clear before any of the row's acts happen.
+-wire row_blocked = (st == S_ROW) && e_f && f_wait;
++wire s1w_row_blocked = (st == S_ROW) && s1w_e_f && f_wait;
+ 
+ //----------------------------------------------------------------------------
+ // SM3 SITTING 12 (R7') -- THE READ'S DATA EDGE, AND WHY IT IS A `D`-PIN MUX
+@@ -1950,13 +1955,13 @@ wire row_blocked = (st == S_ROW) && e_f && f_wait;
+ //
+ // Both falsifiers are on the RAW take -- without `row_blocked` -- so they see
+ // every clock the old form would have written on, and they STAY in the tree.
+-wire        rd_edge_take_raw  = eu_rd_edge && (st == S_ROW) && e_f &&
+-                                (e_s1 == 5'd6) && (e_d1 == 5'd15);
+-wire        rd_edge_psw_take  = rd_edge_take_raw && row_blocked;
++wire        rd_edge_take_raw  = eu_rd_edge && (st == S_ROW) && s1w_e_f &&
++                                (s1w_e_s1 == 5'd6) && (s1w_e_d1 == 5'd15);
++wire        rd_edge_psw_take  = rd_edge_take_raw && s1w_row_blocked;
+ wire [15:0] rd_edge_psw       = (eu_rd_edge_d & PSW_WRITABLE) | PSW_FORCED;
+ 
+ // The row's own queue demand
+-wire q_demand_row = row_need_q && !row_blocked;
++wire q_demand_row = s1w_row_need_q && !s1w_row_blocked;
+ 
+ // The interrupt entry's first IVT read is reserved while row 7.10.0 is
+ // standing, two micro-rows before 7.10.2 accounts for the read.  This is the
+@@ -1976,10 +1981,10 @@ wire vector_tail = eu_fetch_tail && vector_fixed &&
+                    (!q_ripe || (irq_sel_nmi && irq_fast_inta));
+ wire vector_overlap = (st == S_ROW) &&
+                       ((eu_direct_fetch && !q_ripe) || vector_tail);
+-wire vector_early = !row_blocked && vector_overlap &&
++wire vector_early = !s1w_row_blocked && vector_overlap &&
+                     (upc_page == 3'd7) && (upc_opc == 8'h10) &&
+                     (upc_loc == 4'd0);
+-wire vector_first = (st == S_ROW) &&
++wire s1w_vector_first = (st == S_ROW) &&
+                     (upc_page == 3'd7) && (upc_opc == 8'h10) &&
+                     (upc_loc == 4'd2);
+ wire [15:0] vector_number = irq_sel_nmi ? 16'd2
+@@ -1988,7 +1993,7 @@ wire [19:0] vector_phys_early = {2'b0, vector_number, 2'b0};
+ // When the reservation is still short of T1, the BIU's ordinary slot latch is
+ // its provenance at 7.10.2.  All non-overlapped entries arrive here with the
+ // slot free and post in the normal way.
+-wire vector_reserved = vector_first && (eu_slot_busy || eu_access_active);
++wire vector_reserved = s1w_vector_first && (eu_slot_busy || eu_access_active);
+ 
+ // The E row's successor pop (max-of-two-deadlines: the E row's own clock and
+ // the retire deadline).  A staged write defers it to the sequence tail.
+@@ -2001,21 +2006,21 @@ wire vector_reserved = vector_first && (eu_slot_busy || eu_access_active);
+ // (it reads `wr_out` after its own increment) and the pre-edge wire did not.
+ // 7.10.2 owns the read reserved by 7.10.0, so an occupied slot there is its
+ // own access, not a reason to post or wait for a second copy.
+-wire       row_slot_wait = row_bus && !row_posted &&
++wire       s1w_row_slot_wait = s1w_row_bus && !row_posted &&
+                            eu_slot_busy &&
+                            !vector_reserved;
+-wire [2:0] row_wr_add    = (row_is_wr || row_is_wb)
+-                           ? (acc_split_wr ? 3'd2 : 3'd1) : 3'd0;
++wire [2:0] row_wr_add    = (s1w_row_is_wr || s1w_row_is_wb)
++                           ? (s1w_acc_split_wr ? 3'd2 : 3'd1) : 3'd0;
+ wire [2:0] wr_after      = {1'b0, wr_out} + row_wr_add;
+-wire       retire_ok_e   = (wr_after == 3'd0) ||
++wire       s1w_retire_ok_e   = (wr_after == 3'd0) ||
+                            ((wr_after == 3'd1) && eu_wr_done_n);
+ // ...and the E row's OWN pairing latch.  `exec_impl.h`'s
+ // `if (pend_.active && opr_fresh_) emit_pending();` runs IMMEDIATELY BEFORE the
+ // cadence, so the cadence sees the latch CLEARED -- reading the pre-edge
+ // `pend_active` here would take a byte the bus was never asked for.  Same two
+ // terms as `eu_pair` below, which is the act that does the clearing.
+-wire pend_new   = pend_active || (row_is_wr || row_is_wb);
+-wire pend_after = pend_new && !(opr_fresh || row_wr_opr);
++wire pend_new   = pend_active || (s1w_row_is_wr || s1w_row_is_wb);
++wire s1w_pend_after = pend_new && !(opr_fresh || row_wr_opr);
+ // F24 -- A ROW THAT FLUSHES CANNOT POP.  `exec_impl.h`'s CTL block calls
+ // `biu_.flush()` BEFORE the cadence block reaches `opcode_prefetch`, so on a
+ // redirect row the queue the pop would take from has already been emptied and
+@@ -2024,11 +2029,11 @@ wire pend_after = pend_new && !(opr_fresh || row_wr_opr);
+ // discard: `EB idx 0` popped its successor at row 5, where the golden shows
+ // PASV and the flush's own `E` on row 6.  The whole taken-JMP family (Jcc,
+ // E9/E8/EB/EA, FF.2/.4, RET, INT) is this one term.
+-wire row_flush = (e_type == TY_CTL) && !e_farjmp && (e_ictl == I_FLUSH);
+-wire row_epop = (st == S_ROW) && (e_e || ext4s_early_e) &&
+-                !pend_after && !opc_valid &&
+-                !row_blocked && (rowq >= row_qn) && !row_pre_wait &&
+-                !row_slot_wait && retire_ok_e && !row_flush && !bnd_fire;
++wire s1w_row_flush = (s1w_e_type == TY_CTL) && !s1w_e_farjmp && (s1w_e_ictl == I_FLUSH);
++wire row_epop = (st == S_ROW) && (s1w_e_e || s1w_ext4s_early_e) &&
++                !s1w_pend_after && !opc_valid &&
++                !s1w_row_blocked && (rowq >= s1w_row_qn) && !s1w_row_pre_wait &&
++                !s1w_row_slot_wait && s1w_retire_ok_e && !s1w_row_flush && !s1w_bnd_fire;
+ 
+ //----------------------------------------------------------------------------
+ // THE BOUNDARY, AND WHY IT IS NOT THE POP
+@@ -2056,25 +2061,25 @@ wire row_epop = (st == S_ROW) && (e_e || ext4s_early_e) &&
+ // MEASURED: `INT.90 idx 14`, retire met on row 3 with a dry queue and the pin
+ // maturing on row 4; the chip's row-4 pop is SUPPRESSED.  A one-clock boundary
+ // declines it and pops.
+-wire bnd_row  = (st == S_ROW) && (e_e || ext4s_early_e) &&
+-                !pend_after && !opc_valid &&
+-                !row_blocked && (rowq >= row_qn) && !row_pre_wait &&
+-                !row_slot_wait && retire_ok_e;
++wire bnd_row  = (st == S_ROW) && (s1w_e_e || s1w_ext4s_early_e) &&
++                !s1w_pend_after && !opc_valid &&
++                !s1w_row_blocked && (rowq >= s1w_row_qn) && !s1w_row_pre_wait &&
++                !s1w_row_slot_wait && s1w_retire_ok_e;
+ // ...and `tailw_go` is a pop point too, so it is a boundary point too: the
+ // model's tail is `{deliver; emit;} ... if (at_fire_boundary()) ...
+ // opcode_prefetch()`, one check covering both.  MEASURED, `INT.F3AA idx 2`:
+ // `irq_take` was already true on the `E` row (which deferred, a store being
+ // staged) and the tail popped one clock later with no boundary evaluated.
+ wire bnd_epop = ((st == S_EPOP) || (st == S_TAIL_POP) || tailw_go) &&
+-                retire_ok_n;
++                s1w_retire_ok_n;
+ // ...and the boundary of a PRE-DECODE-EXECUTED form, which has no `E` row at
+ // all: `step()` checks it after `loader_decode` returns (S9b), i.e. on the
+ // clock the successor's cold pop would ride.  `bnd_armed` is what separates
+ // that `S_OPC_POP` from the one a PREFIX hands over -- the model's prefix loop
+ // is INSIDE `loader_decode`, so there is no boundary between a prefix and its
+ // instruction, which is the measured "no sample between 26 and 8B".
+-wire bnd_opc  = (st == S_OPC_POP) && bnd_armed;
+-wire at_bnd   = bnd_row || bnd_epop || bnd_opc;
++wire s1w_bnd_opc  = (st == S_OPC_POP) && bnd_armed;
++wire at_bnd   = bnd_row || bnd_epop || s1w_bnd_opc;
+ 
+ // THE SHADOW IS A DECODE-TIME CLASS, NOT A WRITE.  "Recognition-deferring
+ // instructions: every segment-register load -- measured on `MOV SS,AW` AND
+@@ -2110,13 +2115,13 @@ wire at_bnd   = bnd_row || bnd_epop || bnd_opc;
+ // carry the suspend that goes with it.  MEASURED: without this term the entry
+ // after an NMI suspends a fetch the chip runs, and `NMI.B8` falls 200 -> 188
+ // (12 cases, all `row 6 busstat: exp CODE got PASV`).
+-wire irq_take = irq_any && !irq_shadow;
++wire s1w_irq_take = irq_any && !irq_shadow;
+ // §86 -- AND THE TRAP RIDES THE SAME BOUNDARY.  `at_fire_boundary()` in the
+ // model is `ext_fire() || brk_take_`: ONE recognition path with one more term
+ // on it, not a second path.  The floor is `ie_p`'s sentence one bit over --
+ // "TF up NOW **and** up three clocks ago" -- and the take is the ARM, which
+ // was sampled at the PREVIOUS boundary (see `brk_smp` below).
+-wire brk_seen = psw[FBRK] && brk_p[BRK_FLOOR-1];
++wire s1w_brk_seen = psw[FBRK] && brk_p[BRK_FLOOR-1];
+ // W3.1 -- **...AND THE TRAP RIDES THE SHADOW TOO.**  §86.A booked its absence
+ // as a divergence with a falsifier written down (*"the trap is not shadowed
+ // behind a segment-register load ... silicon is documented to, this tree has
+@@ -2168,14 +2173,14 @@ wire brk_seen = psw[FBRK] && brk_p[BRK_FLOOR-1];
+ // *Falsifier*: a capture in which the chip takes an external interrupt at a
+ // boundary with `PSW.TF` armed and does NOT then read vector 1 before the
+ // handler's first instruction retires.
+-wire brk_take = brk_arm && !irq_shadow;
+-wire bnd_take = irq_take || brk_take;
+-wire bnd_fire = at_bnd && bnd_take;
++wire s1w_brk_take = brk_arm && !irq_shadow;
++wire s1w_bnd_take = s1w_irq_take || s1w_brk_take;
++wire s1w_bnd_fire = at_bnd && s1w_bnd_take;
+ // ...and the boundary that fires is the one that CLEARS the arm and suspends
+ // the prefetcher.  `at_bnd` implies `!opc_valid` on all three of its arms,
+ // which is `boundary_no_pop()`'s own early return ("already latched: this IS
+ // the pop clock") -- a pre-popped successor never reaches the floor at all.
+-assign eu_bnd_take = bnd_fire;
++assign eu_bnd_take = s1w_bnd_fire;
+ // §86 -- ...AND THE SUSPEND BELONGS TO THE RECOGNITION THAT PAID THE IE
+ // FLOOR, WHICH THE TRAP NEVER DOES.  `irq_take` is the added term.  It is
+ // INERT on every path that existed before the trap, because this wire is only
+@@ -2186,7 +2191,7 @@ assign eu_bnd_take = bnd_fire;
+ // inside `if (post_redirect && live)` with `live = maskable() && ...`, and
+ // `maskable()` is `ev_pin_ == 0`: a run with no pin directive never suspends,
+ // which is every seed a BRK trap fires in.
+-assign eu_bnd_post = irq_take && !ie_p[3] && !irq_nmi_lvl;
++assign eu_bnd_post = s1w_irq_take && !ie_p[3] && !s1w_irq_nmi_lvl;
+ 
+ // §35.4 -- ...AND F11's RULE APPLIES TO THE TAIL'S OWN FALL-THROUGH.  With
+ // `S_TAIL_W` made zero-cost the tail's POP now happens inside the delivery's
+@@ -2195,9 +2200,9 @@ assign eu_bnd_post = irq_take && !ie_p[3] && !irq_nmi_lvl;
+ // first attempt did exactly that: the three string forms' ARCH fell from
+ // 500 to their cycle counts while nothing timed moved).
+ wire tailw_go = (st == S_TAIL_W) && !opc_valid &&
+-                (opr_fresh || !(nr_wait || !opr_free_now));
++                (opr_fresh || !(s1w_nr_wait || !s1w_opr_free_now));
+ 
+-wire q_demand = ((st == S_OPC_POP) && !bnd_fire) ||
++wire q_demand = ((st == S_OPC_POP) && !s1w_bnd_fire) ||
+                 (st == S_EXT_POP) || (st == S_MODRM) ||
+                 (st == S_D16_LO) ||
+                 ((st == S_D8_B)   && (!ld_ripe_prev ? (chg == 2'd1) : 1'b1)) ||
+@@ -2206,6 +2211,6 @@ wire q_demand = ((st == S_OPC_POP) && !bnd_fire) ||
+                 // F11 again: both deferred-pop states TAKE the byte only past
+                 // the retire deadline, so neither may DEMAND it before.
+                 (((st == S_EPOP) || (st == S_TAIL_POP) || tailw_go) &&
+-                 retire_ok_n && !bnd_fire);
++                 s1w_retire_ok_n && !s1w_bnd_fire);
+ 
+ assign q_pop   = q_demand;
+@@ -2247,7 +2252,7 @@ assign q_first = (st == S_OPC_POP) ? pop_is_first
+ //
+ // The three other `q_first` consumers -- the `QS` pins, `eu_halt` and
+ // `first_pop_seen` -- deliberately keep asking the PIN question.
+-wire q_bnd_pop = q_first || (st == S_EXT_POP);
++wire s1w_q_bnd_pop = q_first || (st == S_EXT_POP);
+ 
+ // --- the bus request -------------------------------------------------------
+ // exec_impl.h::bus_read / bus_write: a staged write must run before the next
+@@ -2261,21 +2266,21 @@ wire q_bnd_pop = q_first || (st == S_EXT_POP);
+ // by the NEXT iteration's read row -- and it is what tripped C3's assertion at
+ // CX==3 (two completed reads in the store because none were ever taken out).
+ wire pend_go = pend_active && opr_fresh;
+-wire row_pre_pair = row_bus && pend_active;
+-wire row_pre_wait = row_pre_pair && !opr_fresh && (nr_wait || !opr_free_now);
++wire row_pre_pair = s1w_row_bus && pend_active;
++wire s1w_row_pre_wait = row_pre_pair && !opr_fresh && (s1w_nr_wait || !s1w_opr_free_now);
+ 
+-wire row_acts_ok = (st == S_ROW) && !row_blocked && (rowq >= row_qn) &&
+-                   !row_pre_wait;
++wire row_acts_ok = (st == S_ROW) && !s1w_row_blocked && (rowq >= s1w_row_qn) &&
++                   !s1w_row_pre_wait;
+ 
+ wire pr_active = (st == S_PRERD) && !row_posted;
+-wire row_post_now = row_acts_ok && row_bus && !row_posted &&
++wire row_post_now = row_acts_ok && s1w_row_bus && !row_posted &&
+                     !vector_reserved;
+ // First hardware acknowledge contested-slot law: ordinary microcode
+ // retirement reserves a direct CODE tail until the next idle clock.  A cold
+ // opcode-pop boundary, or recognition that already paid the IE floor, keeps
+ // the immediate replacement.  This separates the four slow collisions from
+ // the mc2/2062 immediate control without a bus-state table.
+-wire inta_first = row_is_inta && (upc_page == 3'd7) &&
++wire s1w_inta_first = s1w_row_is_inta && (upc_page == 3'd7) &&
+                   (upc_opc == 8'h02) && (upc_loc == 4'd0);
+ // A HALT wake reaches the interrupt dispatcher while the wake prefetch may
+ // still be only an announcement.  Publish that one-clock provenance before
+@@ -2284,11 +2289,11 @@ wire inta_first = row_is_inta && (upc_page == 3'd7) &&
+ assign eu_post = (vector_early || pr_active || row_post_now) && !eu_slot_busy;
+ assign eu_post_hold = (vector_early && vector_tail && !eu_direct_fetch &&
+                       !q_ripe && !eu_slot_busy) ||
+-                      (row_post_now && inta_first && eu_direct_fetch &&
++                      (row_post_now && s1w_inta_first && eu_direct_fetch &&
+                        !irq_fast_inta && !eu_slot_busy) ||
+                       (row_post_now && (rdq_n == 2'd2) && !eu_slot_busy);
+ assign eu_halt_irq = irq_halt_entry;
+-assign eu_vector_post = eu_post && vector_first;
++assign eu_vector_post = eu_post && s1w_vector_first;
+ // P4'-space -- THE GHOST READ'S SPACE IS THE DECODE STANDING AT ITS OWN T1.
+ //
+ // The 8F mod==3 ghost is the one cycle in this machine that reaches the bus
+@@ -2341,16 +2346,16 @@ assign eu_vector_post = eu_post && vector_first;
+ // which a 6E/6F successor makes the ghost IOR.
+ // (docs/notes/fz2_w4_prereg_2026-08-10.md sec.2)
+ wire [13:0] ghost_t1_pla = pla3_native(q_byte);
+-wire ghost_space_io = ghost_read_stale_alu && q_ripe && !q_byte[1] &&
++wire ghost_space_io = s1w_ghost_read_stale_alu && q_ripe && !q_byte[1] &&
+                       ((pla3_xop(ghost_t1_pla) == 4'hF) ||
+                        (pla3_xop(ghost_t1_pla) == 4'h6));
+ assign eu_bs   = vector_early ? BS_MEMR
+                : pr_active   ? BS_MEMR
+-               : row_is_inta ? BS_INTA
+-               : row_is_read ? ((acc_io || ghost_space_io) ? BS_IOR : BS_MEMR)
+-                             : (acc_io ? BS_IOW : BS_MEMW);
++               : s1w_row_is_inta ? BS_INTA
++               : row_is_read ? ((s1w_acc_io || ghost_space_io) ? BS_IOR : BS_MEMR)
++                             : (s1w_acc_io ? BS_IOW : BS_MEMW);
+ assign eu_addr = vector_early ? vector_phys_early
+-               : pr_active ? pr_phys : (row_is_inta ? 20'd0 : acc_phys);
++               : pr_active ? pr_phys : (s1w_row_is_inta ? 20'd0 : acc_phys);
+ // The launch-law's two publications.  `eu_ghost_row` is the ROW's currency and
+ // nothing else -- the BIU takes its RISING EDGE as the age's arm, which is the
+ // law's own anchor, `upc_opc == 8'h8f && upc_loc == 4'd4` going current.
+@@ -2358,34 +2363,34 @@ assign eu_addr = vector_early ? vector_phys_early
+ // the ghost's own, which is what tags the BIU's request slot; the pre-decode
+ // read and the vector's early post use the same wires for their own addresses
+ // and must not be tagged.
+-assign eu_ghost_row  = ghost_read_stale_alu;
++assign eu_ghost_row  = s1w_ghost_read_stale_alu;
+ assign eu_ghost_acc  = eu_ghost_row && !vector_early && !pr_active;
+ assign eu_ghost_sp   = ghost_phys_sp;
+ assign eu_ghost_bare = ghost_phys_bare;
+ assign eu_addr2= vector_early ? (vector_phys_early + 20'd1)
+                : pr_active ? pr_phys2 : acc_phys2;
+ assign eu_split= vector_early ? 1'b0
+-               : pr_active ? pr_split : (!row_is_inta && acc_split);
++               : pr_active ? pr_split : (!s1w_row_is_inta && acc_split);
+ assign eu_seg  = vector_early ? 2'd2
+                : pr_active ? seg_code(pr_seg)
+-               : row_is_inta ? 2'd2 : (acc_io ? 2'd2 : seg_code(acc_seg));
++               : s1w_row_is_inta ? 2'd2 : (s1w_acc_io ? 2'd2 : seg_code(s1w_acc_seg));
+ assign eu_seg2 = vector_early ? 2'd2
+                : pr_active ? seg_code(pr_seg2)
+-               : row_is_inta ? 2'd2 : (acc_io ? 2'd2 : seg_code(acc_seg));
++               : s1w_row_is_inta ? 2'd2 : (s1w_acc_io ? 2'd2 : seg_code(s1w_acc_seg));
+ assign eu_word = vector_early ? 1'b1
+                // The stale 8F word-lane rail outlives its absent operand and
+                // overlays the following byte pre-read on silicon.
+-               : pr_active ? (ghost_preread_tail ? 1'b1 : !pr_byte)
++               : pr_active ? (ghost_preread_tail ? 1'b1 : !s1w_pr_byte)
+                // The ghost posts on the successor-opcode overlap.  Its lane
+                // mux therefore sees the successor's ordinary PLA width; C0
+                // and C6 successors are the two current-socket byte witnesses.
+                // Retain the earlier full-phase C0 witness as the same mux's
+                // absent-operand input.
+-               : (ghost_read_stale_alu &&
++               : (s1w_ghost_read_stale_alu &&
+                   (ghost_next_byte ||
+                    (eu_ghost_full && (modrm_reg == 3'd0) &&
+                     (m_idx == 3'd0)))) ? 1'b0
+-               : (row_is_inta ? 1'b1 : !acc_byte);
++               : (s1w_row_is_inta ? 1'b1 : !s1w_acc_byte);
+ 
+ // The data pairing (`emit_pending`).  The row's OWN `-> OPR` write counts:
+ // the model writes OPR and then emits, both on the row's clock, so the value
+@@ -2400,20 +2405,20 @@ assign eu_word = vector_early ? 1'b1
+ // happens on is the clock `poste` STANDS on, so the pairing act belongs there.
+ // Without this the deferred store ran with whatever OPR held (`50 idx 2`:
+ // data 0000 against the golden's AX) -- eu_pair never asserted at all.
+-wire opr_wr_gate = e_have1 &&
+-                   ((e_d1 == 5'd6) ||
+-                    ((e_d1 == 5'd18) && (r_kind == OK_MEM)) ||
+-                    ((e_d1 == 5'd19) && (m_kind == OK_MEM))) &&
+-                   !((e_s1 == 5'd20) && !sig_commits);
+-wire row_wr_opr = (st == S_ROW) && !row_blocked && (rowq >= row_qn) &&
++wire opr_wr_gate = s1w_e_have1 &&
++                   ((s1w_e_d1 == 5'd6) ||
++                    ((s1w_e_d1 == 5'd18) && (r_kind == OK_MEM)) ||
++                    ((s1w_e_d1 == 5'd19) && (m_kind == OK_MEM))) &&
++                   !((s1w_e_s1 == 5'd20) && !s1w_sig_commits);
++wire row_wr_opr = (st == S_ROW) && !s1w_row_blocked && (rowq >= s1w_row_qn) &&
+                   opr_wr_gate;
+ wire poste_wr_opr = poste && opr_wr_gate;
+ // F20's delivery is a transfer like any other, so the `emit_pending()` that
+ // follows it takes the word it delivers -- the head of the completed-read
+ // store.  The row's OWN `-> OPR` write comes FIRST in the model's order
+ // (transfers, then the row-type block's bus call), so it wins.
+-wire row_pre_deliver = (st == S_ROW) && !row_blocked && (rowq >= row_qn) &&
+-                       !row_pre_wait && row_pre_pair && !opr_fresh &&
++wire row_pre_deliver = (st == S_ROW) && !s1w_row_blocked && (rowq >= s1w_row_qn) &&
++                       !s1w_row_pre_wait && row_pre_pair && !opr_fresh &&
+                        !row_wr_opr;
+ // ...and F11a's rule on the READ side applies to THIS delivery too.  When the
+ // completion IS the lookahead (`nr_have`'s `eu_rd_done_n`) the word is not in
+@@ -2434,16 +2439,16 @@ wire [15:0] opr_now = ghost_edge_pair                    ? eu_rd_edge_d
+                     : (row_pre_deliver && (rdq_n != 2'd0)) ? rdq0
+                     : (row_pre_deliver && eu_rd_done_n)    ? eu_rdata_n
+                     : opr;
+-assign eu_pair  = ((st == S_ROW) && !row_blocked && (rowq >= row_qn) &&
+-                   !row_pre_wait &&
+-                   (pend_active || row_is_wr || row_is_wb) &&
++assign eu_pair  = ((st == S_ROW) && !s1w_row_blocked && (rowq >= s1w_row_qn) &&
++                   !s1w_row_pre_wait &&
++                   (pend_active || s1w_row_is_wr || s1w_row_is_wb) &&
+                    (opr_fresh || row_wr_opr || row_pre_deliver))
+                || (poste && pend_active && (opr_fresh || poste_wr_opr));
+ assign eu_pair2 = pend_active ? pend_split : acc_split;
+ assign eu_wdata = opr_now;
+ 
+ // --- the CTL strobes -------------------------------------------------------
+-assign q_flush  = row_acts_ok && row_flush;
++assign q_flush  = row_acts_ok && s1w_row_flush;
+ // The REP-withdrawal redirect can coincide with the tail of an element whose
+ // accepted bus result is still draining into the EU.  Publish that one-bit
+ // ownership fact with the flush; the BIU uses it only to choose which side of
+@@ -2460,7 +2465,7 @@ assign flush_stage = q_flush && pend_active;
+ // has a completed element read to deliver.  A bare pairing latch has no read
+ // behind it and the single-step path consumes its tail in parallel with the
+ // redirect; neither owns an extra BIU arbitration point.
+-assign flush_pend = q_flush && pend_active && (rdq_n != 2'd0) && !brk_take;
++assign flush_pend = q_flush && pend_active && (rdq_n != 2'd0) && !s1w_brk_take;
+ // Publish the two interrupt rails that physically meet the withdrawal edge.
+ // NMI is the part's recognition latch; maskable INT is the live package pin,
+ // whose release distinguishes a short impulse from an asserted hold without
+@@ -2471,7 +2476,7 @@ assign flush_pend = q_flush && pend_active && (rdq_n != 2'd0) && !brk_take;
+ // arm reads the same rail on the withdrawal's own preceding row, where the
+ // flush strobe is still low.  Removing the gate changes nothing the two old
+ // readers see and gives the third the pin it is asking about.
+-assign flush_nmi = irq_nmi_lvl;
++assign flush_nmi = s1w_irq_nmi_lvl;
+ assign flush_int_live = pin_int;
+ // P5'-stall -- A CS WRITE IS PUBLISHED ON THE CLOCK ITS ROW ACTS, NOT ON EVERY
+ // CLOCK OF THE ROW'S STALL.
+@@ -2512,8 +2517,8 @@ assign flush_cs_we = flush_cs_now;
+ assign flush_ip = pc_now;
+ // F25: ...and the prefetcher is held through the reset dispatch.
+ assign eu_susp  = (st == S_RESET) ||
+-                  (row_acts_ok && (e_type == TY_CTL) && !e_farjmp &&
+-                   (e_ictl == I_SUSP));
++                  (row_acts_ok && (s1w_e_type == TY_CTL) && !s1w_e_farjmp &&
++                   (s1w_e_ictl == I_SUSP));
+ assign eu_resume = 1'b0;
+ 
+ // S9a -- HLT IS DECODED, NOT MICROCODED, AND THE DECODE IS WHERE IT ACTS.
+@@ -2554,7 +2559,7 @@ wire qb_is_halt = pla3_one_byte_logic(pla3_lookup(
+ // *Falsifier*: a capture in which the chip drives a HALT cycle at a `HLT`
+ // whose own retire boundary has the BRK/TF arm standing.
+ assign eu_halt = q_pop && q_ripe && q_first && qb_is_halt && !mode8080 &&
+-                 !eu_halted && !brk_seen;
++                 !eu_halted && !s1w_brk_seen;
+ 
+ // THE WAKE.  A halted part has no instruction boundary to sample, so the
+ // decision sits at the EARLIEST CLOCK THE PIN PIPELINE ALLOWS -- which is the
+@@ -2573,7 +2578,7 @@ assign eu_halt = q_pop && q_ripe && q_first && qb_is_halt && !mode8080 &&
+ // The INT wake is IE-INDEPENDENT (measured, and it is where the V30 differs
+ // from the 8086): a masked INT resumes the stream without vectoring, which is
+ // the same `S_OPC_POP` with `irq_take` false.
+-wire hlt_wake_int = (st == S_HALTED) && !irq_nmi_lvl && irq_pin_int;
++wire hlt_wake_int = (st == S_HALTED) && !s1w_irq_nmi_lvl && s1w_irq_pin_int;
+ assign eu_unhalt = hlt_wake_int || unhalt_pend;
+ 
+ // F43 -- THE HALT-DISPLAY DECISION MUST TEST THE WAKE VISIBLE ON ITS OWN
+@@ -2584,7 +2589,7 @@ assign eu_unhalt = hlt_wake_int || unhalt_pend;
+ // is true only for `D <= H-1`.  The remaining case `D == H` is visible AT THAT
+ // SAME EDGE one stage further down: `int_p[1]`, the pin at `c-2`.  Both taps
+ // are `edge - 4`; what changed is the REFERENCE EDGE (F40's shape).
+-wire hlt_wake_disp = (st == S_HALTED) && !irq_nmi_lvl && int_p[1];
++wire hlt_wake_disp = (st == S_HALTED) && !s1w_irq_nmi_lvl && int_p[1];
+ 
+ // F54 (SM3 sitting 17) -- ...AND THE NMI HALF OF THE SAME SENTENCE.  MEASURED
+ // on the S16 display walk, 1,512 retained captures, `sw/sm3_haltsupp.py chip`:
+@@ -2626,7 +2631,7 @@ assign eu_unhalt_disp = hlt_wake_disp || unhalt_pend || hlt_wake_nmi_disp;
+ // rail is the row's enable; no history or interrupt-specific state is added.
+ wire citf_status_pre = (st == S_ROW) && (upc_page == 3'd7) &&
+                        ((upc_opc == 8'h10) || (upc_opc == 8'h18)) &&
+-                       (upc_loc == 4'd8) && opr_free_now;
++                       (upc_loc == 4'd8) && s1w_opr_free_now;
+ assign psw_ie  = psw[FIE] && !citf_status_pre;
+ assign md8080  = mode8080;
+ 
+@@ -3382,204 +3387,232 @@ endtask
+ // `else`, because a CE-low clock is now expressed by the COMMIT BLOCK not
+ // capturing rather than by this block not running.
+ //--------------------------------------------------------------------------
++//==========================================================================
++// THE CUT SET -- STAGE 1's WIRE CONE, GIVEN A NAME STAGE 2 CANNOT REACH
++//                                                     (WAVE 4, 2026-09-08)
++//==========================================================================
++// WAVE 2 put the loop-carried `_n` set in the shadow and MEASURED that the
++// binding path did not touch it: 103 arrival points, ZERO named it
++// (`phase_split_landing_results_2026-09-08.md` §11.6).  The reason is in the
++// source and not in the netlist -- `row` and its field decodes are
++// module-level WIRES, and the chain body reads them LIVE.  A register beside
++// a loop is not a cut of it.
++//
++// SO THE CROSSING SET IS *EVERY MODULE-LEVEL WIRE THE NEXT-STATE BLOCK
++// READS*, and it is derived from the source rather than chosen:
++// `sw/cutset_census.py` walks the module's continuous assignments, taints
++// from `r7_lint`'s own live set (the three asynchronous pins, the ONE
++// declared live-`READY` carrier `eu_rd_edge` with its data twin, and the TWO
++// declared UNRESOLVED carriers `eu_slot_busy_n` / `q_ripe_lead_n`), and
++// returns 80 names / 283 bits with **ZERO live-tainted**.
++// The union of module INPUTS their cones reach is seven -- `eu_access_active`,
++// `eu_opr_free`, `eu_rd_done_n`, `eu_slot_busy`, `eu_wr_done_n`, `eu_wr_eval`,
++// `q_byte` -- every one of them the BIU's own REGISTERED view (v30u_biu.sv's
++// "THE EU CONTRACT"), and none of them downstream of `t1_half2`, which has
++// zero consumers in the BIU's next-state logic.  So the whole cone is
++// PHASE-STABLE and the set is not a subset chosen for convenience.
++//
++// HOW STAGE 2 IS MADE UNABLE TO NAME THE PRE-CUT VALUE, WHICH IS THE WHOLE
++// POINT: each wire keeps its logic under the name `s1w_<x>` and the SHORT
++// name becomes one of these `reg`s.  STAGE 1 assigns `<x> = s1w_<x>` once,
++// at its head; the reg joins the pack and the unpack; and every reference
++// inside the block -- `v30u_eu_step.svh` included, which is NOT EDITED BY
++// THIS -- now binds to the shadowed reg.  A stage-2 read of the live value
++// would have to write `s1w_`, and `sw/cutset_lint.py` fails if it ever does.
++//
++// ⚠ THE MODULE'S COMBINATIONAL OUTPUTS STILL READ `s1w_*` LIVE, AND THAT IS
++// DELIBERATE.  The act decode (`q_pop`, `eu_post`, `eu_pair`, `eu_addr`, ...)
++// is consumed by the BIU on the clock that names it and must be decided from
++// the level DURING that clock; feeding it the shadow would be identical by
++// the phase-stability theorem and would put a `ce_half` flop in front of a
++// pin for no reason.  Those paths are `ce -> ce` and are NOT divided by this
++// cut; C-8 measures them.
++reg [28:0]     row;
++reg [4:0]      r_aluop;
++reg [1:0]      r_alutmp;
++reg [3:0]      r_cond;
++reg [3:0]      r_loc;
++reg [4:0]      r_farloc;
++reg [4:0]      e_s1;
++reg [4:0]      e_d1;
++reg [3:0]      e_s2;
++reg [1:0]      e_d2;
++reg            e_f;
++reg            e_w;
++reg            e_e;
++reg [1:0]      e_type;
++reg [3:0]      e_ictl;
++reg [2:0]      e_ectl;
++reg            e_farjmp;
++reg            e_nopmv;
++reg            e_is_rloop;
++reg            e_have1;
++reg            e_have2;
++reg            ext4s_early_e;
++reg            ext4s_early_wblock;
++reg            ext4s_early_post;
++reg            ext4s_arch_d1;
++reg            row_reads_opr;
++reg            nr_wait;
++reg            retire_ok_n;
++reg            opr_free_now;
++reg            poll_busy;
++reg            irq_pin_int;
++reg            irq_nmi_lvl;
++reg            irq_rep_1st;
++reg            irq_rep_chn;
++reg            row_q1;
++reg            row_q2;
++reg [1:0]      row_qn;
++reg            row_need_q;
++reg            row_is_wr;
++reg            row_is_wb;
++reg            row_is_inta;
++reg            row_bus;
++reg            ghost_read_stale_alu;
++reg [2:0]      acc_seg;
++reg            acc_byte;
++reg            acc_io;
++reg            pr_byte;
++reg            op8_eff;
++reg [4:0]      nxt_op;
++reg            al_width_byte;
++reg [15:0]     sig_flags;
++reg [15:0]     sig_mask;
++reg            sig_commits;
++reg [15:0]     acc_off_nog;
++reg            acc_split_wr;
++reg            row_blocked;
++reg            vector_first;
++reg            row_slot_wait;
++reg            retire_ok_e;
++reg            pend_after;
++reg            row_flush;
++reg            bnd_opc;
++reg            irq_take;
++reg            brk_seen;
++reg            brk_take;
++reg            bnd_take;
++reg            bnd_fire;
++reg            q_bnd_pop;
++reg            row_pre_wait;
++reg            inta_first;
++reg [15:0]     s1_val;
++reg            s1_byte;
++reg            s1_wbyte;
++reg [15:0]     s2_val;
++reg            s2_wbyte;
++reg [15:0]     it_val;
++reg [15:0]     it_tmpa;
++reg [15:0]     it_flags;
++reg [15:0]     it_fmask;
++reg            it_writes_tmpa;
++
+ always @* begin
+-    //-- preload: `_n` starts at the flop, so an arm that assigns nothing holds
+-    for (i = 0; i < 8; i = i + 1) gpr_n[i] = gpr[i];
+-    for (i = 0; i < 4; i = i + 1) sreg_n[i] = sreg[i];
+-    pc_n = pc;
+-    psw_n = psw;
+-    tmpa_n = tmpa;
+-    tmpa_byte_n = tmpa_byte;
+-    tmpb_byte_n = tmpb_byte;
+-    tmpc_byte_n = tmpc_byte;
+-    opr_byte_n = opr_byte;
+-    tmpb_n = tmpb;
+-    tmpc_n = tmpc;
+-    ea_residue_n = ea_residue;
+-    ea_pair_rhs_n = ea_pair_rhs;
+-    ea_pair_valid_n = ea_pair_valid;
+-    opr_n = opr;
+-    ind_n = ind;
+-    count_n = count;
+-    pfxcnt_n = pfxcnt;
+-    stat_n = stat;
+-    sign_neg_n = sign_neg;
+-    bit_n_n = bit_n;
+-    al_op_n = al_op;
+-    al_tmp_n = al_tmp;
+-    al_eaconst_n = al_eaconst;
+-    al_eaval_n = al_eaval;
+-    al_adjust_n = al_adjust;
+-    al_adjtmp_n = al_adjtmp;
+-    al_bitarm_n = al_bitarm;
+-    al_bitn_n = al_bitn;
+-    al_spent_n = al_spent;
+-    upc_page_n = upc_page;
+-    upc_opc_n = upc_opc;
+-    upc_loc_n = upc_loc;
+-    seg_override_n = seg_override;
+-    seg_ovr_n = seg_ovr;
+-    rep_kind_n = rep_kind;
+-    lock_pfx_n = lock_pfx;
+-    opc_reg_n = opc_reg;
+-    op8_n = op8;
+-    imm8_n = imm8;
+-    opc_base_n = opc_base;
+-    opc_from_modrm_n = opc_from_modrm;
+-    modrm_reg_n = modrm_reg;
+-    xop_n = xop;
+-    rep_test_n = rep_test;
+-    rep_pol_n = rep_pol;
+-    bus_word_n = bus_word;
+-    opc8080_n = opc8080;
+-    mode8080_n = mode8080;
+-    intr_pending_n = intr_pending;
+-    eu_halted_n = eu_halted;
+-    int_p_n = int_p;
+-    nmi_p_n = nmi_p;
+-    nmi_latch_n = nmi_latch;
+-    ie_p_n = ie_p;
+-    rep_chain_n = rep_chain;
+-    irq_shadow_n = irq_shadow;
+-    bnd_armed_n = bnd_armed;
+-    irq_sel_nmi_n = irq_sel_nmi;
+-    irq_sel_brk_n = irq_sel_brk;
+-    brk_p_n = brk_p;
+-    brk_arm_n = brk_arm;
+-    brk_smp_n = brk_smp;
+-    unhalt_pend_n = unhalt_pend;
+-    irq_fast_inta_n = irq_fast_inta;
+-    irq_halt_entry_n = irq_halt_entry;
+-    m_kind_n = m_kind;
+-    r_kind_n = r_kind;
+-    wb_kind_n = wb_kind;
+-    m_idx_n = m_idx;
+-    r_idx_n = r_idx;
+-    wb_idx_n = wb_idx;
+-    m_ea_n = m_ea;
+-    r_ea_n = r_ea;
+-    wb_ea_n = wb_ea;
+-    m_seg_n = m_seg;
+-    r_seg_n = r_seg;
+-    wb_seg_n = wb_seg;
+-    m_byte_n = m_byte;
+-    r_byte_n = r_byte;
+-    wb_byte_n = wb_byte;
+-    pend_active_n = pend_active;
+-    pend_off_n = pend_off;
+-    pend_seg_n = pend_seg;
+-    pend_byte_n = pend_byte;
+-    pend_io_n = pend_io;
+-    opr_fresh_n = opr_fresh;
+-    opr_loaded_n = opr_loaded;
+-    rdp0_byte_n = rdp0_byte;
+-    rdp1_byte_n = rdp1_byte;
+-    rdq0_byte_n = rdq0_byte;
+-    rdq1_byte_n = rdq1_byte;
+-    rdq0_n = rdq0;
+-    rdq1_n = rdq1;
+-    rdq_n_n = rdq_n;
+-    rd_pending_n = rd_pending;
+-    ghost_rd_discard_n = ghost_rd_discard;
+-    rd_done_cnt_n = rd_done_cnt;
+-    rd_age0_n = rd_age0;
+-    iend_owed_n = iend_owed;
+-    rst_ctr_n = rst_ctr;
+-    tsel_n = tsel;
+-    pe_opc_reg_n = pe_opc_reg;
+-    pe_opc8080_n = pe_opc8080;
+-    pe_op8_n = pe_op8;
+-    pe_pfxcnt_n = pe_pfxcnt;
+-    wr_out_n = wr_out;
+-    opc_valid_n = opc_valid;
+-    opc_byte_n = opc_byte;
+-    pop_is_first_n = pop_is_first;
+-    ld_b_n = ld_b;
+-    ld_pla_n = ld_pla;
+-    ld_ext_n = ld_ext;
+-    ld_page_n = ld_page;
+-    ld_hasrm_n = ld_hasrm;
+-    ld_rm_n = ld_rm;
+-    ld_disp_n = ld_disp;
+-    ld_dlo_n = ld_dlo;
+-    ld_grpd_n = ld_grpd;
+-    ld_byte_n = ld_byte;
+-    ld_preread_n = ld_preread;
+-    ld_ripe_prev_n = ld_ripe_prev;
+-    st_n = st;
+-    chg_n = chg;
+-    ending_n = ending;
+-    rowq_n = rowq;
+-    row_posted_n = row_posted;
+-    row_paired_n = row_paired;
+-    rloop_n_n = rloop_n;
+-    suppress_commit_n = suppress_commit;
+-    first_pop_seen_n = first_pop_seen;
+-    rowb0_n = rowb0;
+-    rowb1_n = rowb1;
+-    poste_n = poste;
+-    poll_pipe_n = poll_pipe;
+-
+-    //-- ...and the SCRATCH TEMPORARIES start at zero, for the same reason the
+-    //   `_n` mirrors start at the flop: an arm that assigns nothing must not
+-    //   LATCH.  These 24 are pure per-evaluation locals -- every one of them is
+-    //   written before it is read on every reachable path (the writes dominate
+-    //   the reads inside one arm: `stop` at the head of the chain, `ie_now` /
+-    //   `brk_now` at the head of block (a), `nloc`/`carry`/`taken`/`bubble` at
+-    //   the head of the row body, `pv`/`rm*`/`ea`/`rseg`/`bsw` at the head of
+-    //   their decode arm, `v1`/`v2` immediately above the `wd1` include, and
+-    //   `tk`/`ti`/`ts`/`te`/`tb` on the swap line that reads them) -- so a
+-    //   defined starting value is UNOBSERVABLE and only removes 24 Quartus
+-    //   10240 latch inferences.  NONE of them is referenced by
+-    //   `v30u_eu_ss_write.svh`, so the `ss_we` arm holding them was never read
+-    //   either; the only reads outside this block are the `ifndef SYNTHESIS`
+-    //   observer (guarded `!ss_we`, where every one of them IS assigned) and
+-    //   the `_unused_eu` sink.
+-    //
+-    //   ⚠ THIS IS NOT A PLACE TO PARK A DEFAULT THAT MATTERS.  It is placed
+-    //   OUTSIDE the `chain` unroll on purpose: a value written at chain
+-    //   position k must still be visible at k+1, and it is.  If a future edit
+-    //   ever wants one of these to CARRY between evaluations it must become a
+-    //   `_n`/register pair, not lose a line from here.
+-    stop = 1'b0;
+-    chain = 4'd0;
+-    v1 = 16'd0;
+-    v2 = 16'd0;
+-    bsw = 1'b0;
+-    wb1 = 1'b0;
+-    wb2 = 1'b0;
+-    rdh_byte = 1'b0;
+-    pv = 14'd0;
+-    nloc = 4'd0;
+-    carry = 1'b0;
+-    taken = 1'b0;
+-    bubble = 1'b0;
+-    retire_now = 1'b0;
+-    rep_chained = 1'b0;
+-    ie_now = 1'b0;
+-    brk_now = 1'b0;
+-    ea = 16'd0;
+-    rseg = 3'd0;
+-    rmmod = 2'd0;
+-    rmreg = 3'd0;
+-    rmrm = 3'd0;
+-    tk = 2'd0;
+-    ti = 3'd0;
+-    ts = 3'd0;
+-    te = 16'd0;
+-    tb = 1'b0;
+-
+-    if (ss_we) begin
+-        `include "v30u_eu_ss_write.svh"
+-    end else begin   // <- was `else if (srst)` then `else if (ce)`:
+-                     //    both selects are on the register bank now
++    `include "v30u_eu_preload.svh"
++
++    // ***  THE CUT SET  ***  -- STAGE 1's wire cone, captured ONCE, here.
++    // These are pure functions of `ce`-committed registers (see the block
++    // above), so reading them here is reading them anywhere in this block:
++    // nothing between this line and THE CUT can change one.  What it buys is
++    // that the NAME the chain body uses is a shadowed reg and not the wire.
++    row                    = s1w_row;
++    r_aluop                = s1w_r_aluop;
++    r_alutmp               = s1w_r_alutmp;
++    r_cond                 = s1w_r_cond;
++    r_loc                  = s1w_r_loc;
++    r_farloc               = s1w_r_farloc;
++    e_s1                   = s1w_e_s1;
++    e_d1                   = s1w_e_d1;
++    e_s2                   = s1w_e_s2;
++    e_d2                   = s1w_e_d2;
++    e_f                    = s1w_e_f;
++    e_w                    = s1w_e_w;
++    e_e                    = s1w_e_e;
++    e_type                 = s1w_e_type;
++    e_ictl                 = s1w_e_ictl;
++    e_ectl                 = s1w_e_ectl;
++    e_farjmp               = s1w_e_farjmp;
++    e_nopmv                = s1w_e_nopmv;
++    e_is_rloop             = s1w_e_is_rloop;
++    e_have1                = s1w_e_have1;
++    e_have2                = s1w_e_have2;
++    ext4s_early_e          = s1w_ext4s_early_e;
++    ext4s_early_wblock     = s1w_ext4s_early_wblock;
++    ext4s_early_post       = s1w_ext4s_early_post;
++    ext4s_arch_d1          = s1w_ext4s_arch_d1;
++    row_reads_opr          = s1w_row_reads_opr;
++    nr_wait                = s1w_nr_wait;
++    retire_ok_n            = s1w_retire_ok_n;
++    opr_free_now           = s1w_opr_free_now;
++    poll_busy              = s1w_poll_busy;
++    irq_pin_int            = s1w_irq_pin_int;
++    irq_nmi_lvl            = s1w_irq_nmi_lvl;
++    irq_rep_1st            = s1w_irq_rep_1st;
++    irq_rep_chn            = s1w_irq_rep_chn;
++    row_q1                 = s1w_row_q1;
++    row_q2                 = s1w_row_q2;
++    row_qn                 = s1w_row_qn;
++    row_need_q             = s1w_row_need_q;
++    row_is_wr              = s1w_row_is_wr;
++    row_is_wb              = s1w_row_is_wb;
++    row_is_inta            = s1w_row_is_inta;
++    row_bus                = s1w_row_bus;
++    ghost_read_stale_alu   = s1w_ghost_read_stale_alu;
++    acc_seg                = s1w_acc_seg;
++    acc_byte               = s1w_acc_byte;
++    acc_io                 = s1w_acc_io;
++    pr_byte                = s1w_pr_byte;
++    op8_eff                = s1w_op8_eff;
++    nxt_op                 = s1w_nxt_op;
++    al_width_byte          = s1w_al_width_byte;
++    sig_flags              = s1w_sig_flags;
++    sig_mask               = s1w_sig_mask;
++    sig_commits            = s1w_sig_commits;
++    acc_off_nog            = s1w_acc_off_nog;
++    acc_split_wr           = s1w_acc_split_wr;
++    row_blocked            = s1w_row_blocked;
++    vector_first           = s1w_vector_first;
++    row_slot_wait          = s1w_row_slot_wait;
++    retire_ok_e            = s1w_retire_ok_e;
++    pend_after             = s1w_pend_after;
++    row_flush              = s1w_row_flush;
++    bnd_opc                = s1w_bnd_opc;
++    irq_take               = s1w_irq_take;
++    brk_seen               = s1w_brk_seen;
++    brk_take               = s1w_brk_take;
++    bnd_take               = s1w_bnd_take;
++    bnd_fire               = s1w_bnd_fire;
++    q_bnd_pop              = s1w_q_bnd_pop;
++    row_pre_wait           = s1w_row_pre_wait;
++    inta_first             = s1w_inta_first;
++    s1_val                 = s1w_s1_val;
++    s1_byte                = s1w_s1_byte;
++    s1_wbyte               = s1w_s1_wbyte;
++    s2_val                 = s1w_s2_val;
++    s2_wbyte               = s1w_s2_wbyte;
++    it_val                 = s1w_it_val;
++    it_tmpa                = s1w_it_tmpa;
++    it_flags               = s1w_it_flags;
++    it_fmask               = s1w_it_fmask;
++    it_writes_tmpa         = s1w_it_writes_tmpa;
++
++    // ***  STAGE 1 RUNS UNCONDITIONALLY  ***  -- the ce/ce_half PHASE SPLIT.
++    // Blocks (a)-(f) used to sit in the `else` arm of `if (ss_we)`.  They do
++    // not any more, and the reason is THE SS RESUME: the phase-split shadow
++    // must be re-derived from the FULLY RESTORED register file before the
++    // first resumed `ce`, and the only edge on which that is possible is the
++    // resume-drain edge -- the clock the A2 contract already requires, where
++    // `ss_we_q` is still high and every stream word has landed.  Stage 1
++    // evaluated THERE is stage 1 of the restored machine.  The `ss_we` arm,
++    // which now opens AT THE CUT, re-runs the preload so that stage 1's `_n`
++    // writes do not survive into it.
+         //====================================================================
+         // (a) the BIU's completion pulses, sampled on the clock they ride
+         //====================================================================
+ `ifndef SYNTHESIS
+         trc_1bl_hit = 1'b0; trc_pe_hit = 1'b0; trc_1bld_hit = 1'b0;
+ `endif
+-        poll_pipe_n = {poll_pipe_n[1:0], pin_poll_n};
+         // ...and the IE the gate's own pipeline is about to take, frozen HERE
+         // because the chain below may write `psw` (see block (g)).
+         ie_now = psw_n[FIE];
+@@ -3787,6 +3820,115 @@ always @* begin
+         trc_tmpb = tmpb_n;
+         trc_tmpc = tmpc_n;
+ `endif
++        //====================================================================
++        // ***  THE CUT  ***  -- the ce/ce_half PHASE SPLIT.
++        //====================================================================
++        // Everything ABOVE is STAGE 1, evaluated in the `ce -> ce_half`
++        // window.  Everything BELOW is STAGE 2, evaluated in the
++        // `ce_half -> ce` window.  The boundary is the ENTRY TO THE CHAIN
++        // PASS: stage 2 is the chain, block (g) and the tail, and stage 1 is
++        // everything that feeds them.
++        //
++        // ⚠ 2026-09-09, WAVE 9 -- THE JUSTIFICATION THIS PARAGRAPH USED TO
++        // CARRY IS GONE AND IS NOT REPLACED BY A BETTER ONE.  It read: *"the
++        // boundary is WAVE 1's named cut -- `Decoder28#1`, the ENTRY TO THE
++        // UNROLLED CHAIN LOOP ... it is the one place in this cone where the
++        // RTL has a boundary the netlist also has: FOUR UNROLLED COPIES of ONE
++        // source line stand in series on the worst path and are 22.3 ns of its
++        // 48.2."*  **WAVE 7 DELETED THE UNROLL** (`2ceb8c3ba3`): there are no
++        // copies in series any more, the arc fell 43.5 -> 33.0 ns, and the
++        // whole `CHAIN` bucket is 9.4 ns.  The cut is at the SAME PLACE, and
++        // it is there now because it is the block's one structural seam --
++        // NOT because four copies of a decoder stand behind it.  Whether that
++        // seam BALANCES is a measurement, not an argument, and it is
++        // `docs/notes/phase_split_reland_results_2026-09-09.md` J-9's.
++        //
++        // THE MEMBERSHIP RULE, and it is mechanical: every `_n` or scratch
++        // name STAGE 1 ASSIGNS.  A `_n` stage 1 never touches still reads as
++        // its own flop in stage 2 and crosses nothing, so it is not here.
++        // `sw/phase_split_width.py` derives the set from the source.
++        //
++        // THE PACK AND THE UNPACK ARE ONE LIST, WRITTEN TWICE AND CHECKED.
++        s1_bus = {
++        al_adjtmp_n, al_adjust_n, al_bitarm_n, al_bitn_n, al_eaconst_n,
++        al_op_n, al_spent_n, al_tmp_n, brk_arm_n, brk_now, brk_smp_n, bsw,
++        count_n, ea_pair_valid_n, ea_residue_n, first_pop_seen_n,
++        ghost_rd_discard_n, gpr_n[0], gpr_n[1], gpr_n[2], gpr_n[3], gpr_n[4],
++        gpr_n[5], gpr_n[6], gpr_n[7], ie_now, iend_owed_n, ind_n,
++        intr_pending_n, irq_fast_inta_n, irq_halt_entry_n, m_idx_n, m_kind_n,
++        mode8080_n, modrm_reg_n, opc_base_n, opc_from_modrm_n, opr_byte_n,
++        opr_fresh_n, opr_loaded_n, opr_n, pc_n, poll_pipe_n, poste_n, psw_n,
++        r_idx_n, r_kind_n, rd_age0_n, rd_done_cnt_n, rd_pending_n, rdh_byte,
++        rdp0_byte_n, rdq0_byte_n, rdq0_n, rdq1_byte_n, rdq1_n, rdq_n_n,
++        sign_neg_n, sreg_n[0], sreg_n[1], sreg_n[2], sreg_n[3], stat_n,
++        tmpa_byte_n, tmpa_n, tmpb_byte_n, tmpb_n, tmpc_byte_n, tmpc_n,
++        unhalt_pend_n, v1, v2, wb1, wb2, wb_kind_n, wr_out_n,
++        // ...AND THE WIRE CONE (WAVE 4).  Same list, same order, both sides.
++        row, r_aluop, r_alutmp, r_cond, r_loc, r_farloc, e_s1, e_d1, e_s2,
++        e_d2, e_f, e_w, e_e, e_type, e_ictl, e_ectl, e_farjmp, e_nopmv,
++        e_is_rloop, e_have1, e_have2, ext4s_early_e, ext4s_early_wblock,
++        ext4s_early_post, ext4s_arch_d1, row_reads_opr, nr_wait,
++        retire_ok_n, opr_free_now, poll_busy, irq_pin_int, irq_nmi_lvl,
++        irq_rep_1st, irq_rep_chn, row_q1, row_q2, row_qn, row_need_q,
++        row_is_wr, row_is_wb, row_is_inta, row_bus, ghost_read_stale_alu,
++        acc_seg, acc_byte, acc_io, pr_byte, op8_eff, nxt_op, al_width_byte,
++        sig_flags, sig_mask, sig_commits, acc_off_nog, acc_split_wr,
++        row_blocked, vector_first, row_slot_wait, retire_ok_e, pend_after,
++        row_flush, bnd_opc, irq_take, brk_seen, brk_take, bnd_take,
++        bnd_fire, q_bnd_pop, row_pre_wait, inta_first, s1_val, s1_byte,
++        s1_wbyte, s2_val, s2_wbyte, it_val, it_tmpa, it_flags, it_fmask,
++        it_writes_tmpa
++        };
++
++        if (ss_we) begin
++            // ...and STAGE 1 IS UNDONE HERE.  An `ss_we` clock commits `_n`
++            // for EVERY register, so a `_n` the stream has not addressed yet
++            // must read as its own flop.  Re-running the block's own head is
++            // exactly that, and it makes this arm byte-identical to the
++            // pre-split one.  (`s1_bus` above is already packed, from stage 1
++            // evaluated on the register file as it stands -- which on the
++            // resume-drain edge is the FULLY RESTORED one.)
++            `include "v30u_eu_preload.svh"
++            `include "v30u_eu_ss_write.svh"
++        end else begin
++        //====================================================================
++        // STAGE 2 -- evaluated `ce_half -> ce`, committed on `ce`
++        //====================================================================
++        // The unpack.  CHARACTER-IDENTICAL to the pack above; that identity is
++        // the whole of the correctness argument and `sw/phase_split_lint.py`
++        // is its falsifier.
++        {
++        al_adjtmp_n, al_adjust_n, al_bitarm_n, al_bitn_n, al_eaconst_n,
++        al_op_n, al_spent_n, al_tmp_n, brk_arm_n, brk_now, brk_smp_n, bsw,
++        count_n, ea_pair_valid_n, ea_residue_n, first_pop_seen_n,
++        ghost_rd_discard_n, gpr_n[0], gpr_n[1], gpr_n[2], gpr_n[3], gpr_n[4],
++        gpr_n[5], gpr_n[6], gpr_n[7], ie_now, iend_owed_n, ind_n,
++        intr_pending_n, irq_fast_inta_n, irq_halt_entry_n, m_idx_n, m_kind_n,
++        mode8080_n, modrm_reg_n, opc_base_n, opc_from_modrm_n, opr_byte_n,
++        opr_fresh_n, opr_loaded_n, opr_n, pc_n, poll_pipe_n, poste_n, psw_n,
++        r_idx_n, r_kind_n, rd_age0_n, rd_done_cnt_n, rd_pending_n, rdh_byte,
++        rdp0_byte_n, rdq0_byte_n, rdq0_n, rdq1_byte_n, rdq1_n, rdq_n_n,
++        sign_neg_n, sreg_n[0], sreg_n[1], sreg_n[2], sreg_n[3], stat_n,
++        tmpa_byte_n, tmpa_n, tmpb_byte_n, tmpb_n, tmpc_byte_n, tmpc_n,
++        unhalt_pend_n, v1, v2, wb1, wb2, wb_kind_n, wr_out_n,
++        // ...AND THE WIRE CONE (WAVE 4).  Same list, same order, both sides.
++        row, r_aluop, r_alutmp, r_cond, r_loc, r_farloc, e_s1, e_d1, e_s2,
++        e_d2, e_f, e_w, e_e, e_type, e_ictl, e_ectl, e_farjmp, e_nopmv,
++        e_is_rloop, e_have1, e_have2, ext4s_early_e, ext4s_early_wblock,
++        ext4s_early_post, ext4s_arch_d1, row_reads_opr, nr_wait,
++        retire_ok_n, opr_free_now, poll_busy, irq_pin_int, irq_nmi_lvl,
++        irq_rep_1st, irq_rep_chn, row_q1, row_q2, row_qn, row_need_q,
++        row_is_wr, row_is_wb, row_is_inta, row_bus, ghost_read_stale_alu,
++        acc_seg, acc_byte, acc_io, pr_byte, op8_eff, nxt_op, al_width_byte,
++        sig_flags, sig_mask, sig_commits, acc_off_nog, acc_split_wr,
++        row_blocked, vector_first, row_slot_wait, retire_ok_e, pend_after,
++        row_flush, bnd_opc, irq_take, brk_seen, brk_take, bnd_take,
++        bnd_fire, q_bnd_pop, row_pre_wait, inta_first, s1_val, s1_byte,
++        s1_wbyte, s2_val, s2_wbyte, it_val, it_tmpa, it_flags, it_fmask,
++        it_writes_tmpa
++        } = s1q;
++
++
+         stop = 1'b0;
+ `ifndef SYNTHESIS
+         chain_used = 4'd0;
+@@ -3927,6 +4069,17 @@ always @* begin
+         // F11b's trap, third form.)
+         int_p_n = {int_p_n[2:0], pin_int};
+         nmi_p_n = {nmi_p_n[3:0], pin_nmi};
++        // ...AND THE POLL PIN'S PIPELINE, WHICH MOVED HERE FROM BLOCK (a) AT
++        // THE PHASE SPLIT AND BELONGED HERE ALL ALONG.  It is the third of the
++        // three pin pipelines and it was the only one advanced at the START of
++        // the edge instead of the END.  Nothing between the two positions
++        // reads `poll_pipe_n` -- the module's other readers read the FLOP
++        // `poll_pipe` -- so the move is a no-op by inspection, and it is a
++        // REQUIREMENT of the split by construction: `pin_poll_n` is a live
++        // asynchronous input and stage 1 may not contain one (P-11), which the
++        // phase-stability `$fatal` beside the shadow would otherwise report on
++        // the first clock the pin moved mid-cycle.
++        poll_pipe_n = {poll_pipe_n[1:0], pin_poll_n};
+         ie_p_n  = {ie_p_n[2:0], ie_now};
+         // §86 -- `psw[FBRK]` on the SAME pipeline, frozen at the same instant
+         // and shifted in the same place, because it answers the same kind of
+@@ -3973,6 +4126,90 @@ always @* begin
+     end
+ end
+ 
++
++//==========================================================================
++// THE PHASE SPLIT -- `ce_half` CAPTURES STAGE 1
++//   WAVE 2 2026-09-08 (reverted) -> WAVE 4's CUT SET 2026-09-08 (reverted)
++//   -> WAVE 9 2026-09-09, RE-DERIVED ON THE FLATTENED TREE.
++//==========================================================================
++// WAVE 1 (`docs/notes/phase_split_anatomy_2026-09-08.md`) measured that 96 %
++// of the binding `ce -> ce` cone is PHASE-STABLE -- pin-dependence enters only
++// in the last 1.5-5 ns of a 48-51 ns arc -- and named the cut: `Decoder28#1`,
++// the ENTRY to the unrolled chain loop.  This is that cut, at the same place.
++// ⚠ THE UNROLL IS GONE (WAVE 7, `2ceb8c3ba3`) AND THE ARC IS 33.0 ns, NOT
++// 48-51: what survives of WAVE 1 here is the PHASE-STABILITY measurement,
++// which is about pins and not about copies, and the seam's LOCATION.  The
++// BALANCE is re-measured, not inherited.
++//
++// THE THEOREM.  A node in the `ce -> ce` cone outside every input pin's
++// combinational fanout depends only on registers that commit on `ce`.  Its
++// value is therefore CONSTANT ACROSS THE WHOLE CPU CYCLE -- identical at
++// `ce_half(n)` and at `ce(n+1)`.  Capturing it on `ce_half` and consuming it
++// on `ce` is bit-exact BY CONSTRUCTION and moves no pin on any clock.  One
++// 2-period arc becomes two 1-period arcs, and `hdl/nec_test.sdc`'s CE
++// multicycle -- 2,100 registers of exception every downstream integrator has
++// to re-derive and copy -- is DELETED.
++//
++// THE PREMISE IS ASSERTED, NOT ARGUED.  `ifndef SYNTHESIS` below,
++// `s1q !== s1_bus` at every `ce` is a `$fatal`.  Every golden case, every
++// `ulockstep` scenario and all 4 x 400,000 `chain_lfsr` clocks run under it,
++// so "the pin identity held" is a MEASUREMENT and not an inference.  It is
++// what caught the one place the premise did NOT hold: `poll_pipe_n` used to
++// shift `pin_poll_n` in block (a), i.e. in stage 1, where a pin cannot go; it
++// now shifts in block (g) beside `int_p_n` and `nmi_p_n`, which is where the
++// other two pin pipelines have always been advanced and is the same clock.
++//
++// THE COMMIT CONDITION IS `(ss_we || srst || ce_half)` -- the register bank's
++// own condition with `ce_half` in place of `ce`, and for the bank's own three
++// reasons:
++//   * `ce_half` is the capture edge, which is the whole point;
++//   * `srst` is in it so the shadow tracks stage 1 THROUGHOUT RESET.  That is
++//     what answers "the first `CE` of a run may not have had a `CE_HALF`
++//     before it" (`v30_core.sv`'s `ce_half_since_ce` starts asserted, exactly
++//     so that first CE is legal): RESET is asserted at the head of every run,
++//     so the shadow is current at that CE whether or not a CE_HALF preceded
++//     it.  No `_r` mirror is needed and none is written -- stage 1 evaluated
++//     on the reset state IS the value wanted, where a mirror would be a second
++//     source of truth for it;
++//   * `ss_we` is in it so the RESUME-DRAIN edge re-derives it.  The A2 resume
++//     contract already requires a clock on which `ss_we_q` is high and every
++//     stream word has landed; stage 1 evaluated there is stage 1 of the
++//     restored machine, which is exactly what the first resumed `ce` needs.
++//     This is why stage 1 runs unconditionally and the `ss_we` arm re-runs the
++//     preload instead.
++//
++// IT IS DERIVED STATE AND IT IS NOT SAVE-STATE MAPPED.  `s1q` is a pure
++// function of registers that ARE SSA-mapped, recomputed from the same
++// expression, and the place that is CHECKABLE BY EYE is the one above: the
++// pack `s1_bus = { ... }` and the unpack `{ ... } = s1q` at THE CUT carry
++// character-identical concatenations, and `sw/phase_split_lint.py` fails if
++// they ever differ or if their summed declared widths stop equalling S1W.
++// `sw/ss_flop_whitelist_ucore.txt`, DERIVED class.
++localparam int S1W = 778;   // 495 loop-carried + 283 wire cone.  RE-DERIVED
++                           // on the flattened tree at WAVE 9 and IDENTICAL to
++                           // WAVE 4's 778 -- the wire cone is WAVE 4's 80 names
++                           // NAME FOR NAME.  STOP threshold was 900.
++reg [S1W-1:0] s1_bus;      // STAGE 1's output, packed AT THE CUT
++reg [S1W-1:0] s1q = '0;    // ...and the shadow that carries it to `ce`
++
++always @(posedge clk) begin
++    if (ss_we || srst || ce_half) s1q <= s1_bus;
++end
++
++`ifndef SYNTHESIS
++// THE FALSIFIER FOR THE THEOREM, ON EVERY CLOCK OF EVERY GATE LEG.  At a `ce`
++// the live stage 1 and the shadow must agree: that IS the phase-stability
++// premise, and if any pin or mid-cycle signal ever reaches stage 1 this fires
++// on the clock it does.  Excluded: `srst` and `ss_we`, where the register bank
++// is not taking stage 1's answer either.
++always @(posedge clk) begin
++    if (ce && !srst && !ss_we && (s1q !== s1_bus))
++        $fatal(1, "v30u_eu: PHASE-SPLIT PREMISE VIOLATED at %0t -- stage 1 is not constant across the CPU cycle.  The shadow captured at ce_half differs from stage 1 evaluated at this ce: s1q=%h s1_bus=%h.  Something in stage 1 depends on a pin or on a mid-cycle signal; move that term into stage 2 (block (g)), as `poll_pipe_n` was.  docs/notes/phase_split_landing_prereg_2026-09-08.md P-10.",
++               $time, s1q, s1_bus);
++end
++`endif
++
++
+ // L1 -- THE DECODE'S ADDRESS, AND IT IS THE COMMIT'S OWN SELECTION.
+ //
+ // Character for character the `upc_page`/`upc_opc`/`upc_loc` lines in THE
+@@ -3992,6 +4229,14 @@ assign dec_addr_next = (srst && !ss_we)
+ //--------------------------------------------------------------------------
+ // THE COMMIT -- the ONLY place an EU state register is written, and the only
+ // place `ce` appears.  This is the clock-enable port.
++//
++// ⚠ 2026-09-08, THE PHASE SPLIT: `ce_half` now gates ONE register of its own,
++// `s1q` (see THE PHASE SPLIT above).  That does NOT weaken this sentence --
++// `s1q` is DERIVED state, not EU state: it is not save-state mapped, it is on
++// `sw/ss_flop_whitelist_ucore.txt`'s DERIVED class, and every architectural
++// register is still written HERE and only here, on `ce`.  What DID change is
++// that this block's `_n` now come from a cone that starts at `s1q` rather than
++// at the flops directly.
+ //--------------------------------------------------------------------------
+ always @(posedge clk) begin
+     //-- ss_we > srst > ce, exactly the priority the one clocked block had
+@@ -4182,22 +4427,22 @@ always @(posedge clk) begin
+         // thing between this pass and a silent behavioural change if the F
+         // interlock's shape, or the `OPR -> FLAGS` row's own act set, ever
+         // moves.
+-        if (rd_edge_take_raw && row_blocked)
++        if (rd_edge_take_raw && s1w_row_blocked)
+             assert (!poste && !iend_owed)
+                 else $error("v30u_eu: R7' falsifier (A): data-edge PSW load with the chain stopped but poste=%0d iend_owed=%0d owed -- they read-modify-write psw_n between the old write site and the commit, so the D-pin form is NOT equivalent here (upc=%0d.%02X.%0d)",
+                             poste, iend_owed, upc_page, upc_opc, upc_loc);
+-        if (rd_edge_take_raw && !row_blocked)
+-            assert (row_acts_ok && e_have1)
++        if (rd_edge_take_raw && !s1w_row_blocked)
++            assert (row_acts_ok && s1w_e_have1)
+                 else $error("v30u_eu: R7' falsifier (B): data-edge PSW load with the chain RUNNING but the row not performing its own OPR->FLAGS (row_acts_ok=%0d e_have1=%0d) -- the deleted block-(a) write was NOT dead here (f_wait=%0d nr_wait=%0d rd_done_cnt=%0d rd_pending=%0d upc=%0d.%02X.%0d)",
+-                            row_acts_ok, e_have1, f_wait, nr_wait,
++                            row_acts_ok, s1w_e_have1, f_wait, s1w_nr_wait,
+                             rd_done_cnt, rd_pending,
+                             upc_page, upc_opc, upc_loc);
+         // v30u_eu_poste.svh's two shape assertions.  `poste` is not touched
+         // before the post-E block, so the flop IS the value that guarded them.
+-        if (poste && row_bus)
++        if (poste && s1w_row_bus)
+             $error("v30u_eu: a post-E row carries a bus cycle (upc %0d.%02X.%0d)",
+                    upc_page, upc_opc, upc_loc);
+-        if (poste && (row_q1 || row_q2))
++        if (poste && (s1w_row_q1 || s1w_row_q2))
+             $error("v30u_eu: a post-E row pops a queue byte");
+         if (brktrace && trc_pe_hit)
+             $display("PE  clk=%0d pre=%04x post=%04x upc=%03X",
+@@ -4220,14 +4465,14 @@ always @(posedge clk) begin
+                 $display("BRKR clk=%0d", ce_clk);
+             if (brk_smp)
+                 $display("BRKS clk=%0d seen=%0d psw_brk=%0d brk_p=%0d arm=%0d",
+-                         ce_clk, brk_seen, psw[FBRK], brk_p, brk_arm);
+-            if (bnd_fire)
++                         ce_clk, s1w_brk_seen, psw[FBRK], brk_p, brk_arm);
++            if (s1w_bnd_fire)
+                 $display("BRKT clk=%0d arm=%0d irq=%0d sel_brk=%0d",
+-                         ce_clk, brk_arm, irq_take, !irq_take);
++                         ce_clk, brk_arm, s1w_irq_take, !s1w_irq_take);
+         end
+         if (eutrace)
+             $display("EU st=%0d upc=%0d.%02X.%0d row=%07x q=%02x ripe=%0d slot=%0d post=%0d bs=%0d a=%05x pair=%0d wd=%04x rdd=%0d wrd=%0d oprf=%0d wr_out=%0d pc=%04x ind=%04x opr=%04x of=%0d pnd=%0d pe=%0d rdq=%0d rdc=%0d a=%04x b=%04x c=%04x sig=%04x pfx=%0d",
+-                     trc_st, trc_upc_page, trc_upc_opc, trc_upc_loc, row, q_byte, q_ripe,
++                     trc_st, trc_upc_page, trc_upc_opc, trc_upc_loc, s1w_row, q_byte, q_ripe,
+                      eu_slot_busy_n, eu_post, eu_bs, eu_addr, eu_pair,
+                      eu_wdata,
+                      eu_rd_done_n, eu_wr_done_n, eu_opr_free, trc_wr_out, trc_pc,
+diff --git a/hdl/rtl/ucore/v30u_eu_preload.svh b/hdl/rtl/ucore/v30u_eu_preload.svh
+new file mode 100644
+index 0000000000..9d85f87af4
+--- /dev/null
++++ b/hdl/rtl/ucore/v30u_eu_preload.svh
+@@ -0,0 +1,206 @@
++//============================================================================
++//  v30u_eu_preload.svh -- THE NEXT-STATE BLOCK'S HEAD, IN ONE PLACE BECAUSE
++//  IT IS NOW NEEDED IN TWO.
++//
++//  This is VERBATIM the text that stood at the head of `v30u_eu.sv`'s
++//  next-state `always @*` before the ce/ce_half PHASE SPLIT (WAVE 2,
++//  2026-09-08): every `_n` preloaded from its own flop, then the 24 scratch
++//  temporaries zeroed.  NOTHING IN IT CHANGED -- IT MOVED.
++//
++//  WHY IT IS INCLUDED TWICE.  The split runs STAGE 1 (blocks (a)-(f))
++//  UNCONDITIONALLY, so that the phase-split shadow is re-derived on the SS
++//  resume-drain edge from the FULLY RESTORED register file.  Stage 1 writes
++//  `_n`, and under `ss_we` those writes must not survive: an `ss_we` clock
++//  commits `_n` for EVERY register, so a `_n` the stream has not addressed yet
++//  must still read as its own flop or the restore corrupts it.  Re-running
++//  this head at the top of the `ss_we` arm UNDOES stage 1 exactly, and that
++//  arm is then byte-identical to what it always was.
++//
++//  FALSIFIER: `sw/phase_split_lint.py` -- exactly two `include` sites, and the
++//  `ss_we` arm's include must stand immediately before the ss_write include.
++//============================================================================
++    //-- preload: `_n` starts at the flop, so an arm that assigns nothing holds
++    for (i = 0; i < 8; i = i + 1) gpr_n[i] = gpr[i];
++    for (i = 0; i < 4; i = i + 1) sreg_n[i] = sreg[i];
++    pc_n = pc;
++    psw_n = psw;
++    tmpa_n = tmpa;
++    tmpa_byte_n = tmpa_byte;
++    tmpb_byte_n = tmpb_byte;
++    tmpc_byte_n = tmpc_byte;
++    opr_byte_n = opr_byte;
++    tmpb_n = tmpb;
++    tmpc_n = tmpc;
++    ea_residue_n = ea_residue;
++    ea_pair_rhs_n = ea_pair_rhs;
++    ea_pair_valid_n = ea_pair_valid;
++    opr_n = opr;
++    ind_n = ind;
++    count_n = count;
++    pfxcnt_n = pfxcnt;
++    stat_n = stat;
++    sign_neg_n = sign_neg;
++    bit_n_n = bit_n;
++    al_op_n = al_op;
++    al_tmp_n = al_tmp;
++    al_eaconst_n = al_eaconst;
++    al_eaval_n = al_eaval;
++    al_adjust_n = al_adjust;
++    al_adjtmp_n = al_adjtmp;
++    al_bitarm_n = al_bitarm;
++    al_bitn_n = al_bitn;
++    al_spent_n = al_spent;
++    upc_page_n = upc_page;
++    upc_opc_n = upc_opc;
++    upc_loc_n = upc_loc;
++    seg_override_n = seg_override;
++    seg_ovr_n = seg_ovr;
++    rep_kind_n = rep_kind;
++    lock_pfx_n = lock_pfx;
++    opc_reg_n = opc_reg;
++    op8_n = op8;
++    imm8_n = imm8;
++    opc_base_n = opc_base;
++    opc_from_modrm_n = opc_from_modrm;
++    modrm_reg_n = modrm_reg;
++    xop_n = xop;
++    rep_test_n = rep_test;
++    rep_pol_n = rep_pol;
++    bus_word_n = bus_word;
++    opc8080_n = opc8080;
++    mode8080_n = mode8080;
++    intr_pending_n = intr_pending;
++    eu_halted_n = eu_halted;
++    int_p_n = int_p;
++    nmi_p_n = nmi_p;
++    nmi_latch_n = nmi_latch;
++    ie_p_n = ie_p;
++    rep_chain_n = rep_chain;
++    irq_shadow_n = irq_shadow;
++    bnd_armed_n = bnd_armed;
++    irq_sel_nmi_n = irq_sel_nmi;
++    irq_sel_brk_n = irq_sel_brk;
++    brk_p_n = brk_p;
++    brk_arm_n = brk_arm;
++    brk_smp_n = brk_smp;
++    unhalt_pend_n = unhalt_pend;
++    irq_fast_inta_n = irq_fast_inta;
++    irq_halt_entry_n = irq_halt_entry;
++    m_kind_n = m_kind;
++    r_kind_n = r_kind;
++    wb_kind_n = wb_kind;
++    m_idx_n = m_idx;
++    r_idx_n = r_idx;
++    wb_idx_n = wb_idx;
++    m_ea_n = m_ea;
++    r_ea_n = r_ea;
++    wb_ea_n = wb_ea;
++    m_seg_n = m_seg;
++    r_seg_n = r_seg;
++    wb_seg_n = wb_seg;
++    m_byte_n = m_byte;
++    r_byte_n = r_byte;
++    wb_byte_n = wb_byte;
++    pend_active_n = pend_active;
++    pend_off_n = pend_off;
++    pend_seg_n = pend_seg;
++    pend_byte_n = pend_byte;
++    pend_io_n = pend_io;
++    opr_fresh_n = opr_fresh;
++    opr_loaded_n = opr_loaded;
++    rdp0_byte_n = rdp0_byte;
++    rdp1_byte_n = rdp1_byte;
++    rdq0_byte_n = rdq0_byte;
++    rdq1_byte_n = rdq1_byte;
++    rdq0_n = rdq0;
++    rdq1_n = rdq1;
++    rdq_n_n = rdq_n;
++    rd_pending_n = rd_pending;
++    ghost_rd_discard_n = ghost_rd_discard;
++    rd_done_cnt_n = rd_done_cnt;
++    rd_age0_n = rd_age0;
++    iend_owed_n = iend_owed;
++    rst_ctr_n = rst_ctr;
++    tsel_n = tsel;
++    pe_opc_reg_n = pe_opc_reg;
++    pe_opc8080_n = pe_opc8080;
++    pe_op8_n = pe_op8;
++    pe_pfxcnt_n = pe_pfxcnt;
++    wr_out_n = wr_out;
++    opc_valid_n = opc_valid;
++    opc_byte_n = opc_byte;
++    pop_is_first_n = pop_is_first;
++    ld_b_n = ld_b;
++    ld_pla_n = ld_pla;
++    ld_ext_n = ld_ext;
++    ld_page_n = ld_page;
++    ld_hasrm_n = ld_hasrm;
++    ld_rm_n = ld_rm;
++    ld_disp_n = ld_disp;
++    ld_dlo_n = ld_dlo;
++    ld_grpd_n = ld_grpd;
++    ld_byte_n = ld_byte;
++    ld_preread_n = ld_preread;
++    ld_ripe_prev_n = ld_ripe_prev;
++    st_n = st;
++    chg_n = chg;
++    ending_n = ending;
++    rowq_n = rowq;
++    row_posted_n = row_posted;
++    row_paired_n = row_paired;
++    rloop_n_n = rloop_n;
++    suppress_commit_n = suppress_commit;
++    first_pop_seen_n = first_pop_seen;
++    rowb0_n = rowb0;
++    rowb1_n = rowb1;
++    poste_n = poste;
++    poll_pipe_n = poll_pipe;
++
++    //-- ...and the SCRATCH TEMPORARIES start at zero, for the same reason the
++    //   `_n` mirrors start at the flop: an arm that assigns nothing must not
++    //   LATCH.  These 24 are pure per-evaluation locals -- every one of them is
++    //   written before it is read on every reachable path (the writes dominate
++    //   the reads inside one arm: `stop` at the head of the chain, `ie_now` /
++    //   `brk_now` at the head of block (a), `nloc`/`carry`/`taken`/`bubble` at
++    //   the head of the row body, `pv`/`rm*`/`ea`/`rseg`/`bsw` at the head of
++    //   their decode arm, `v1`/`v2` immediately above the `wd1` include, and
++    //   `tk`/`ti`/`ts`/`te`/`tb` on the swap line that reads them) -- so a
++    //   defined starting value is UNOBSERVABLE and only removes 24 Quartus
++    //   10240 latch inferences.  NONE of them is referenced by
++    //   `v30u_eu_ss_write.svh`, so the `ss_we` arm holding them was never read
++    //   either; the only reads outside this block are the `ifndef SYNTHESIS`
++    //   observer (guarded `!ss_we`, where every one of them IS assigned) and
++    //   the `_unused_eu` sink.
++    //
++    //   ⚠ THIS IS NOT A PLACE TO PARK A DEFAULT THAT MATTERS.  It is placed
++    //   OUTSIDE the `chain` unroll on purpose: a value written at chain
++    //   position k must still be visible at k+1, and it is.  If a future edit
++    //   ever wants one of these to CARRY between evaluations it must become a
++    //   `_n`/register pair, not lose a line from here.
++    stop = 1'b0;
++    chain = 4'd0;
++    v1 = 16'd0;
++    v2 = 16'd0;
++    bsw = 1'b0;
++    wb1 = 1'b0;
++    wb2 = 1'b0;
++    rdh_byte = 1'b0;
++    pv = 14'd0;
++    nloc = 4'd0;
++    carry = 1'b0;
++    taken = 1'b0;
++    bubble = 1'b0;
++    retire_now = 1'b0;
++    rep_chained = 1'b0;
++    ie_now = 1'b0;
++    brk_now = 1'b0;
++    ea = 16'd0;
++    rseg = 3'd0;
++    rmmod = 2'd0;
++    rmreg = 3'd0;
++    rmrm = 3'd0;
++    tk = 2'd0;
++    ti = 3'd0;
++    ts = 3'd0;
++    te = 16'd0;
++    tb = 1'b0;
+diff --git a/sw/cutset_lint.py b/sw/cutset_lint.py
+index 3a31eb7dcf..17e516b563 100644
+--- a/sw/cutset_lint.py
++++ b/sw/cutset_lint.py
+@@ -152,7 +152,7 @@ def main():
+     block_raw = "\n".join(lines[b0:b1 + 1])
+     block = nocomment(block_raw)
+     cut = block.index("s1_bus = {")
+-    INCLUDES = block_includes(block, UC) + ["v30u_eu_preload.svh"]
++    INCLUDES = block_includes(block, UC)
+     print("  includes closed : %d  %s" % (len(INCLUDES), sorted(INCLUDES)))
+ 
+     # --- the aliases -------------------------------------------------------
+diff --git a/sw/ss_flop_whitelist_ucore.txt b/sw/ss_flop_whitelist_ucore.txt
+index f85802ca4f..60a7f42b92 100644
+--- a/sw/ss_flop_whitelist_ucore.txt
++++ b/sw/ss_flop_whitelist_ucore.txt
+@@ -55,3 +55,4 @@ ending       # WRITE-ONLY: assigned at v30u_eu.sv:1529 and step.svh:398/641/682,
+ # commit block, in one place, and that the entry names that place.  Do NOT put
+ # a register here because it is inconvenient to map.
+ dec_q        # DERIVED: {dec_valid,dec_bank} = ucdecode[dec_addr_next], and `dec_addr_next` (v30u_eu.sv, immediately above THE COMMIT) is character for character the commit's own upc_page/upc_opc/upc_loc selection. L1, docs/notes/adcone_l1_prereg_2026-08-13.md §1.
++s1q          # DERIVED: the ce/ce_half PHASE SPLIT's shadow (WAVE 4, 2026-09-08 -- WAVE 2's, widened from 495 to 778 bits by the CUT SET (A-1)). It is STAGE 1 of the next-state cone -- a pure function of `ce`-committed registers, the EU's own and the seven REGISTERED BIU views the wire cone reads (eu_access_active / eu_opr_free / eu_rd_done_n / eu_slot_busy / eu_wr_done_n / eu_wr_eval / q_byte), ALL of which are SSA-mapped on their own side -- captured on `ce_half` and consumed by STAGE 2 on `ce`. The place it is CHECKABLE BY EYE is THE CUT in v30u_eu.sv: the pack `s1_bus = { ... }` and the unpack `{ ... } = s1q` carry CHARACTER-IDENTICAL concatenations, and `sw/phase_split_lint.py` FAILS if they ever differ or if their summed declared widths stop equalling S1W; `sw/cutset_lint.py` FAILS if stage 2 can name a pre-cut wire at all. RECONSTRUCTED ON THAT VERY EDGE, and the edge is named: its commit condition is `(ss_we || srst || ce_half)`, so a restore re-derives it on the A2 RESUME-DRAIN clock -- the clock the resume contract already requires, where `ss_we_q` is still high and every stream word has landed -- from the FULLY RESTORED register file. `srst` is in the condition for a second, separate reason: RESET is asserted at the head of every run, so the shadow is current at a run's FIRST `ce` whether or not a `CE_HALF` preceded it. AND THE DERIVATION IS ASSERTED, NOT ASSUMED: `ifndef SYNTHESIS`, `s1q !== s1_bus` at any `ce` is a `$fatal`, over every golden case and all 4 x 400,000 chain_lfsr clocks. docs/notes/phase_split_cutset_prereg_2026-09-08.md, RULING 2's option (i) -- NO RULE IS WIDENED.
