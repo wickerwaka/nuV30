@@ -630,6 +630,43 @@ correctly (rc 3)**.
 trusting `git apply`'s exit code**, which is the `artifact.require()` habit
 applied to a patch.
 
+### 10.4 ⚠⚠ **AND IT HAPPENED ONE MORE TIME, IN THE FINAL VERIFICATION SWEEP: A LOOP REPORTED `rc=2` FOR A GATE IT NEVER INVOKED**
+
+Closing out, a convenience loop re-ran the standing lints at HEAD and printed:
+
+```
+gen_ucore_qsf.py --check     rc=2
+```
+
+**The gate exits 0.**  The loop held its command in a variable,
+`g="sw/gen_ucore_qsf.py --check"`, and ran `python3 $g` — and **this session's
+shell is `zsh` 5.9, which does NOT word-split an unquoted parameter.**  Python
+was handed a single filename *"sw/gen_ucore_qsf.py --check"*, failed to open it,
+and exited 2.  Diagnosed **positively**, not assumed:
+
+```
+--- unquoted $g (what the loop did) ---
+rc=2 :: python3: can't open file '.../sw/gen_ucore_qsf.py --check': No such file
+--- word-split explicitly ---
+rc=0 :: gen_ucore_qsf: nec_test_ucore.qsf is up to date
+```
+
+`gen_ucore_qsf --check` is **PASS**, and it was also PASS when the driver ran it
+before the sweeps.
+
+> **THIS IS §C's META-FINDING IN MINIATURE, ARRIVING UNINVITED IN MY OWN
+> CLOSING CHECK: *a gate's REGISTERED ROW and its ABILITY TO RUN are two
+> different facts.*  WAVE 18 found gates that could not run while the ledger
+> carried green rows for them.  This is the mirror — a gate that runs fine,
+> reported RED by a harness that never invoked it.  A LOUD RED CAN BE AS FALSE
+> AS A SILENT GREEN, and the only thing that separated them here was reading the
+> error text instead of the exit code.**
+
+⚠ **The finding is about the closing loop, not about any scored leg.**  Every
+figure in this document comes from the ladder driver and `quartus_gate`, both of
+which invoke their tools as argument vectors, never through an unquoted
+variable.  **No bar was scored by the defective loop.**
+
 ---
 
 ## §11 DISCIPLINE, DECLARED AND KEPT
