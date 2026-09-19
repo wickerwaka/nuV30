@@ -18,36 +18,80 @@
 # composed-AD mask removed at U5) is 168,400/169,000, not 169,000 - the 600
 # HLT.INT/HLT.RES/HLT.NMI cases are 0/600 (F51, unfixed here). "Any non-full
 # suite total = regression" must be read against that, not against 169,000.
+#
+# ⚠⚠ 2026-09-19 — THIS SWEEP COULD NOT FAIL, AND DID NOT FOR OVER A YEAR OF
+# INVOCATIONS.  Every leg was `cmd 2>&1 | tail -1`: no `rc` captured, nothing
+# aggregated, and NO `exit` anywhere that depended on a leg's result.  `set -uo
+# pipefail` was present WITHOUT `-e`, so `pipefail` accomplished nothing —
+# nothing ever tested `$?`.  The script's status was `tail`'s, which always
+# succeeds, and it printed "DONE" unconditionally.  A leg that FAILED, or that
+# CRASHED OUTRIGHT (three do, as of this date), produced a line and the sweep
+# still exited 0.  Line 4's own "Any non-full suite total or failed gate =
+# regression" was an INTENT THE SCRIPT DID NOT IMPLEMENT — the
+# comment-is-not-a-gate pattern `sw/r7_lint.py` exists for.
+# Found by WAVE 18 (`docs/notes/*wave18*`), which hit the identical
+# `| tail -1; rc=$?` mistake in its own reporting and caught it with a control.
+#
+# ⚠ THE LIMIT OF THIS REPAIR, STATED RATHER THAN IMPLIED: it aggregates EXIT
+# CODES.  A leg that exits 0 while PRINTING a failing total is still not
+# caught.  Line 4's rule is about suite TOTALS; this is about exit status.
+# Booked, not taken.
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 echo "=== T30 full standing sweep  $(date -u +%Y-%m-%dT%H:%M:%SZ) ==="
 
+NLEG=0
+NFAIL=0
+FAILLIST=""
+
 step() { echo; echo "### $*"; }
 
+# leg <name> <cmd...> -- run it, print its verdict LINE, and keep its REAL exit
+# code.  The output is captured into a variable so `$?` is the TOOL's, never
+# `tail`'s.  That distinction is the whole point of this function.
+leg() {
+    local name="$1"; shift
+    local out rc
+    out="$("$@" 2>&1)"; rc=$?
+    printf '%s\n' "$out" | tail -1
+    NLEG=$((NLEG + 1))
+    if [ "$rc" -ne 0 ]; then
+        printf '  ^^ LEG FAILED: %s (exit %d)\n' "$name" "$rc"
+        NFAIL=$((NFAIL + 1))
+        FAILLIST="${FAILLIST}    - ${name} (exit ${rc})"$'\n'
+    fi
+}
+
 step "lints"
-python3 sw/ss_lint.py --core fsm 2>&1 | tail -1
-python3 sw/prefix_clear_lint.py  2>&1 | tail -1
-python3 sw/ea_step_lint.py       2>&1 | tail -1
-python3 sw/check_race_law.py     2>&1 | tail -1
-python3 sw/optable.py --selfcheck 2>&1 | tail -1
-python3 sw/fuzz_campaign.py lint --n 10000 --raw-n 100000 2>&1 | tail -1
+leg "ss_lint --core fsm" python3 sw/ss_lint.py --core fsm
+leg "prefix_clear_lint" python3 sw/prefix_clear_lint.py 
+leg "ea_step_lint" python3 sw/ea_step_lint.py      
+leg "check_race_law" python3 sw/check_race_law.py    
+leg "optable --selfcheck" python3 sw/optable.py --selfcheck
+leg "fuzz_campaign lint" python3 sw/fuzz_campaign.py lint --n 10000 --raw-n 100000
 
 step "standing gates"
-python3 sw/check_ff_t4.py        2>&1 | tail -1
-python3 sw/check_mod3_illegal.py 2>&1 | tail -1
+leg "check_ff_t4" python3 sw/check_ff_t4.py       
+leg "check_mod3_illegal" python3 sw/check_mod3_illegal.py
 
 step "v0.1 w0 (169k, all forms)"
-python3 sw/check_core.py --core fsm --suite-dir tests/v30/v0.1 --opcodes all --cases 0 --waits 0 2>&1 | tail -1
+leg "v0.1 w0" python3 sw/check_core.py --core fsm --suite-dir tests/v30/v0.1 --opcodes all --cases 0 --waits 0
 step "v0.1-w1"
-python3 sw/check_core.py --core fsm --suite-dir tests/v30/v0.1-w1 --opcodes all --cases 0 --waits 1 2>&1 | tail -1
+leg "v0.1-w1" python3 sw/check_core.py --core fsm --suite-dir tests/v30/v0.1-w1 --opcodes all --cases 0 --waits 1
 step "v0.1-w3"
-python3 sw/check_core.py --core fsm --suite-dir tests/v30/v0.1-w3 --opcodes all --cases 0 --waits 3 2>&1 | tail -1
+leg "v0.1-w3" python3 sw/check_core.py --core fsm --suite-dir tests/v30/v0.1-w3 --opcodes all --cases 0 --waits 3
 step "f0lock_tranche"
-python3 sw/check_core.py --core fsm --suite-dir tests/v30/f0lock_tranche --opcodes all --cases 0 --waits 0 2>&1 | tail -1
+leg "f0lock_tranche" python3 sw/check_core.py --core fsm --suite-dir tests/v30/f0lock_tranche --opcodes all --cases 0 --waits 0
 step "f4a_boundary"
-python3 sw/check_core.py --core fsm --suite-dir tests/v30/f4a_boundary --opcodes all --cases 0 --waits 0 2>&1 | tail -1
+leg "f4a_boundary" python3 sw/check_core.py --core fsm --suite-dir tests/v30/f4a_boundary --opcodes all --cases 0 --waits 0
 step "v0.3 w0 (3.7M, all forms)"
-python3 sw/check_core.py --core fsm --suite-dir tests/v30/v0.3 --opcodes all --cases 0 --waits 0 2>&1 | tail -1
+leg "v0.3 w0" python3 sw/check_core.py --core fsm --suite-dir tests/v30/v0.3 --opcodes all --cases 0 --waits 0
 
-echo; echo "=== T30 sweep DONE  $(date -u +%Y-%m-%dT%H:%M:%SZ) ==="
+echo
+if [ "$NFAIL" -ne 0 ]; then
+    echo "=== T30 sweep FAILED: $NFAIL of $NLEG legs did not exit 0  $(date -u +%Y-%m-%dT%H:%M:%SZ) ==="
+    printf '%s' "$FAILLIST"
+    exit 1
+fi
+echo "=== T30 sweep PASS: all $NLEG legs exit 0  $(date -u +%Y-%m-%dT%H:%M:%SZ) ==="
