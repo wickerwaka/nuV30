@@ -345,6 +345,18 @@ or `git reset --hard`; every `git add` by explicit path and no
 `~/.cache/ucsimt-tmp/wave18/`.  Every figure above was measured on this tree;
 nothing was carried from another.
 
+⚠ **ONE TRAP FOUND BY WALKING INTO IT, AND WORTH REGISTERING.**  Running
+`quartus_map … nec_test -c nec_test` **REWRITES `hdl/nec_test.qsf` AND
+`hdl/nec_test.qpf` IN PLACE** — the `.qsf` is expanded from its 126-line
+hand-maintained form to 307 lines of fully-enumerated assignments, and the
+`.qpf` swaps its two `PROJECT_REVISION` lines and re-stamps `DATE`.  Left there
+it would have made `hdl/nec_test_ucore.qsf` stop looking like a derivative of
+its parent.  **Both files were restored to `HEAD` by explicit path** (never
+`git checkout .`) and `python3 sw/gen_ucore_qsf.py --check` re-verified:
+*"nec_test_ucore.qsf is up to date"*.  Anyone running a Quartus stage on the
+**FSM** revision must check `git status hdl/nec_test.qsf hdl/nec_test.qpf`
+afterwards.
+
 ---
 
 Claude-Session: https://claude.ai/code/session_01AZih22iifLegfB9mxcLZA5
