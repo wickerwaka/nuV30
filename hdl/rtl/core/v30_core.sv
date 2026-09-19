@@ -23,6 +23,12 @@
 //      The defect predates the instrument change by every commit in the repo.
 //
 //  DO NOT quote this core's numbers without naming the comparator.
+//  AUTHORISED CHANGES SINCE THE ARCHIVE, and there are exactly TWO, both
+//  PORT-LIST-ONLY and both made because the two cores must stay drop-in
+//  alternatives: `AD_OE` (2026-08-04, archive record §6a) and the de-muxed
+//  bus ADDR_O/DATA_O/STATUS_O (2026-09-19, §6b -- tied to zero, DECLARED
+//  NOT IMPLEMENTED; see the block beside the tie-off at the end of this
+//  file).  No BIU, EU or save-state line has been touched either time.
 //  ARCHIVE RECORD: docs/notes/fsm_core_archive_2026-08-04.md
 //  DISPOSITION EVIDENCE: docs/notes/ucore_campaign_verdict_2026-08-04.md
 //============================================================================
@@ -73,6 +79,14 @@ module v30_core (
     input             POLL_N,
     inout      [19:0] AD,
     output     [19:0] AD_OE,     // the pads' own output enable (task #37)
+    // --- THE DE-MUXED BUS (2026-09-19, WAVE 18) -- DECLARED, NOT IMPLEMENTED.
+    // See the tie-off at the bottom of this file for the whole story.  These
+    // three exist so this core's PORT LIST equals hdl/rtl/ucore/v30_core.sv's,
+    // which is the invariant docs/notes/fsm_core_archive_2026-08-04.md §6a was
+    // written to protect.  They are TIED TO ZERO.  Do not read them.
+    output     [19:0] ADDR_O,
+    output     [15:0] DATA_O,
+    output      [3:0] STATUS_O,
     output      [1:0] QS,
     output      [2:0] BS,
     output            RD_N,
@@ -356,6 +370,44 @@ assign AD[19:16] = (ad_oe_addr | ad_oe_ps)   ? ad_o[19:16] : 4'hz;
 // and by nothing else, so both cores must carry the same port list.  Recorded
 // in docs/notes/fsm_core_archive_2026-08-04.md.
 assign AD_OE = {{4{ad_oe_addr | ad_oe_ps}}, {16{ad_oe_addr | ad_oe_data}}};
+
+// ---------------------------------------------------------------------------
+// THE DE-MUXED BUS ON THE ARCHIVED CORE -- DECLARED, NOT IMPLEMENTED, AND SAID
+// SO IN THE RTL SO NOBODY HAS TO GO AND READ A DOCUMENT TO FIND OUT.
+//
+// WHY THEY ARE HERE.  `b7083b45a5` (2026-08-14) gave the ucore ADDR_O/DATA_O/
+// STATUS_O and connected all three in hdl/tb/tb_v30_core.sv:255-257 and
+// hdl/rtl/system_large.sv:542-544 -- both of them files SHARED between the two
+// cores.  Verilator then REFUSED to elaborate this core
+// (%Error-PINNOTFOUND), and every offline gate that binds it died with it:
+// check_fuzz_bank, check_enter_nesting, check_ab_sim --core fsm, t30_sweep.sh
+// and `check_core --core fsm` itself.  NO GATE SAW IT FOR FIVE WEEKS.
+//
+// The invariant broken is this archive's own, verbatim from
+// docs/notes/fsm_core_archive_2026-08-04.md §6a, which authorised AD_OE for
+// exactly this reason: "the two cores are DROP-IN alternatives with the same
+// module name and the same port list ... A port list that differed between
+// them would make the A/B uncontrolled".  Restoring the port list is that
+// rule being obeyed, not a new decision.
+//
+// WHY THEY ARE ZERO.  This core publishes the MULTIPLEXED view and nothing
+// else; its `ad_o` is a nine-way mux and the three de-muxed operands are not
+// separable out of it without touching BIU logic, which the archive forbids.
+// So they are NOT re-derived and NOT approximated: they are tied off, which is
+// ZERO logic, ZERO flops and ZERO behaviour change -- the same scope §6a took.
+// EVERY instantiation of this core in the tree leaves all three UNCONNECTED
+// (the two sites named above), so nothing reads these zeros today.
+//
+// THE FALSIFIER, because a tie-off is a silent value and silent values are how
+// this project gets hurt: `python3 sw/core_portlist_lint.py` compares the two
+// cores' port lists port by port and exits non-zero naming any that differ.  If
+// a future consumer ever wants a REAL de-muxed bus out of the archived core,
+// deriving it is a landing with its own pre-registration -- not an edit here.
+// docs/notes/wave18_archived_gates_prereg_2026-09-19.md.
+// ---------------------------------------------------------------------------
+assign ADDR_O   = 20'd0;
+assign DATA_O   = 16'd0;
+assign STATUS_O =  4'd0;
 
 assign BUSLOCK_N = core_buslock_n;
 

@@ -315,6 +315,90 @@ it: **if the A/B is re-run, build and flash BOTH cores from ONE HEAD.**
 
 ---
 
+## 6b. ADDENDUM — THE SECOND AUTHORISED CHANGE, 2026-09-19 (WAVE 18)
+
+**Date**: 2026-09-19.  **Authority**: this addendum is taken under **§6a's own
+stated rule**, not as a new decision — §6a authorised `AD_OE` because *"the two
+cores are DROP-IN alternatives with the same module name and the same port list
+… A port list that differed between them would make the A/B uncontrolled"*.
+That rule was broken on 2026-08-14 and this restores it.
+**Pre-registration**: `docs/notes/wave18_archived_gates_prereg_2026-09-19.md`
+(committed before the first edit).  **Results**:
+`docs/notes/wave18_archived_gates_results_2026-09-19.md`.
+
+**WHAT BROKE IT.**  `b7083b45a5` — the de-muxed bus landing — gave the ucore
+`ADDR_O` / `DATA_O` / `STATUS_O` and connected all three in the two files the
+two cores SHARE: `hdl/tb/tb_v30_core.sv:255-257` and
+`hdl/rtl/system_large.sv:542-544`.  Verilator then refused to elaborate THIS
+core (`%Error-PINNOTFOUND`), and **every offline gate that binds it died for
+five weeks with no gate seeing it**: `check_fuzz_bank`, `check_enter_nesting`,
+`check_ab_sim --core fsm`, `t30_sweep.sh`, and `check_core --core fsm` itself.
+
+**SCOPE, and it is the whole scope**: THREE OUTPUT PORTS AND THREE TIE-OFFS.
+
+```
+    output     [19:0] ADDR_O,
+    output     [15:0] DATA_O,
+    output      [3:0] STATUS_O,
+...
+assign ADDR_O = 20'd0;  assign DATA_O = 16'd0;  assign STATUS_O = 4'd0;
+```
+
+**DECLARED, NOT IMPLEMENTED — and said so in the RTL beside the tie-off.**  This
+core publishes the MULTIPLEXED view only; its `ad_o` is a nine-way mux and the
+three de-muxed operands are not separable out of it without touching BIU logic,
+which this archive forbids.  They are therefore NOT re-derived and NOT
+approximated.  No logic changed, no behaviour changed, no flop was added.  Every
+instantiation of this core in the tree leaves all three UNCONNECTED, so nothing
+reads the zeros.  The three new ports have **no reader inside the core** — the
+only occurrences are the declarations and the three `assign`s.
+
+**WHAT IT DID NOT MOVE, measured on this tree after the edit:**
+
+| leg | expected | measured |
+|---|---|---|
+| `sw/check_ab_sim.py --core fsm` | MATCH over 187 rows | **MATCH over 187 rows** (artifact `5c2db0f1c06034ba…`) |
+| `sw/ss_lint.py --core fsm` | rc 0, 203 addresses, 181 flops, 0 UNMAPPED | **rc 0, 203 / 181 / 0** — an output port is not a flop |
+| Quartus A&E, `nec_test` (FSM) revision | 0 errors | **0 errors, 52 warnings**, and the three pins move from `Critical Warning: Named port was not declared by the instantiated entity` to `Info: Explicitly unconnected` |
+
+**⚠ AND ONE FIGURE IN THIS DOCUMENT IS STALE, FOUND BY THE SAME WAVE.**  §5's
+corrected-comparator table reads **168,400 / 169,000** and **16 / 283**.  Those
+were true of the comparator as it stood at U5.  `0254d9f23e` (2026-08-05, SM3
+sitting 20, F55 part 2) replaced `tb_v30_core.sv`'s protocol-inferred composer
+with an **`AD_OE`-keyed one carrying float retention**, and on a HALT display
+this core asserts no `ad_oe_ps`, so `eff_hi` takes the RETAINED nibble — which
+is the previous CS fetch's PS, i.e. the value the goldens carry.  **F51 is
+present and unfixed and is once again invisible on `tb_v30_core`.**  Measured on
+this tree, 2026-09-19, with the three ports restored:
+
+| leg | §5's registered figure | **measured 2026-09-19** |
+|---|---|---|
+| `check_core --core fsm --opcodes all --cases 0` | 168,400 / 169,000 | **169,000 / 169,000** |
+| the four HLT delay sweeps | 0/97, 4/95, 5/46, 7/45 = 16 / 283 | **87/97, 82/95, 30/46, 27/45 = 226 / 283** |
+
+That commit's message says *"it moves NOTHING"* and its receipt quotes
+`check_core --opcodes all` 169,000/169,000 — **which is the ucore leg; the FSM
+leg was never re-measured**, and nine days later it became unmeasurable.  The
+move is the COMPARATOR's, not the core's: nothing in `hdl/rtl/core/` changed
+between U5 and today except §6a's `AD_OE` and this addendum's three tie-offs,
+neither of which can reach `AD`.  **§5's figures are not retracted — they are
+that comparator's — but "the corrected comparator" now names a third
+instrument, and any FSM figure must name which.**
+
+**THE FALSIFIER FOR THIS ADDENDUM, because a tie-off is a silent value.**
+`python3 sw/core_portlist_lint.py` compares the two cores' port lists port by
+port, under `V30_MUXED_AD` with and without `V30_BACKDOOR`, and exits non-zero
+naming any port present in one and absent from the other.  Run against this
+file's pre-repair content it reports the three ports by name and exits 1; run
+against an unparseable file it exits **2 — CANNOT MEASURE** rather than PASS.
+⚠ **Quartus is not a substitute for it**: measured on this tree, Quartus 17.1
+accepted all three undeclared named connections with **0 errors** and buried
+them as Critical Warnings inside a report folder that no gate reads.
+
+---
+
+---
+
 ## 7. WHERE THE REST OF IT IS WRITTEN DOWN
 
 | | |
