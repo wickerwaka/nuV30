@@ -1,0 +1,34 @@
+=== CONTROL  WAVE 15 s1q  vs  WAVE 19 armb ===
+  distribution scalars: 30 IDENTICAL, 8 differing ['artifact_dir', 'completed', 'git', 'name', 'per_seed', 'stages', 'started', 'tree']
+  per-seed receipts compared: 5
+    fmax_mhz           identical on 5/5
+    worst_setup_ns     identical on 5/5
+    alms               identical on 5/5
+    verdict            identical on 5/5
+    configuration      identical on 5/5
+    core_fmax_mhz      identical on 5/5
+    seed               identical on 5/5
+    seed_echo          identical on 5/5
+    seed_honoured      identical on 5/5
+    tns_violations     identical on 5/5
+    truefmax           identical on 5/5
+    core_domain        identical on 5/5
+  ⭐ nec_test_ucore.rbf sha256 BYTE-IDENTICAL on 5/5 draws
+
+=== RETENTION  WAVE 15 s1q  vs  WAVE 19 armb ===
+  distribution scalars: 30 IDENTICAL, 8 differing ['artifact_dir', 'completed', 'git', 'name', 'per_seed', 'stages', 'started', 'tree']
+  per-seed receipts compared: 5
+    fmax_mhz           identical on 5/5
+    worst_setup_ns     identical on 5/5
+    alms               identical on 5/5
+    verdict            identical on 5/5
+    configuration      identical on 5/5
+    core_fmax_mhz      identical on 5/5
+    seed               identical on 5/5
+    seed_echo          identical on 5/5
+    seed_honoured      identical on 5/5
+    tns_violations     identical on 5/5
+    truefmax           identical on 5/5
+    core_domain        identical on 5/5
+  ⭐ nec_test_ucore.rbf sha256 BYTE-IDENTICAL on 5/5 draws
+

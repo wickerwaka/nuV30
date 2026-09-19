@@ -1,0 +1,19 @@
+=== CONTROL: WAVE 17 (ARM-A, landed) -> WAVE 19 (ARM-B).  SAME SDC, so comparable. ===
+  W17 numeric keys present: []
+  W19 numeric keys present: []
+
+=== RETENTION: WAVE 17 (ARM-A, landed) -> WAVE 19 (ARM-B).  SAME SDC, so comparable. ===
+  W17 numeric keys present: []
+  W19 numeric keys present: []
+
+=== V-4: THE COMPILER'S OWN PER-ENTITY COUNT, ALL 20 DRAWS, SAME SDC BOTH SIDES ===
+  control   W17 ARM-A  v30u_biu {434}  v30u_eu {1326}  map_registers [5687, 5687, 5687, 5687, 5687]
+                       ALMs ['8,275', '8,273', '8,224', '8,252', '8,245']  latches {0}  lpm_divide {0}  TNS-0-all-domains 5/5
+  control   W19 ARM-B  v30u_biu {434}  v30u_eu {1327}  map_registers [5688, 5688, 5688, 5688, 5688]
+                       ALMs ['8,434', '8,429', '8,436', '8,413', '8,432']  latches {0}  lpm_divide {0}  TNS-0-all-domains 5/5
+
+  retention W17 ARM-A  v30u_biu {434}  v30u_eu {1326}  map_registers [5708, 5708, 5708, 5708, 5708]
+                       ALMs ['8,250', '8,246', '8,206', '8,193', '8,221']  latches {0}  lpm_divide {0}  TNS-0-all-domains 5/5
+  retention W19 ARM-B  v30u_biu {434}  v30u_eu {1327}  map_registers [5709, 5709, 5709, 5709, 5709]
+                       ALMs ['8,443', '8,448', '8,460', '8,459', '8,461']  latches {0}  lpm_divide {0}  TNS-0-all-domains 5/5
+
