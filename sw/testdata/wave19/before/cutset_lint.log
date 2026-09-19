@@ -1,0 +1,12 @@
+  includes closed : 19  ['v30u_eu_1bl.svh', 'v30u_eu_arm_bind.svh', 'v30u_eu_arm_decode.svh', 'v30u_eu_arm_decode2.svh', 'v30u_eu_arm_ea_calc.svh', 'v30u_eu_arm_enter.svh', 'v30u_eu_arm_instr_end.svh', 'v30u_eu_arm_tail.svh', 'v30u_eu_arm_tail_pop.svh', 'v30u_eu_arm_take_opc.svh', 'v30u_eu_chain_pos.svh', 'v30u_eu_cond.svh', 'v30u_eu_iend_late.svh', 'v30u_eu_poste.svh', 'v30u_eu_preload.svh', 'v30u_eu_row.svh', 'v30u_eu_ss_write.svh', 'v30u_eu_step.svh', 'v30u_eu_wd1.svh']
+  cut-set members : 80
+  s1w_ in block   : 0 (must be 0 outside the alias lines)
+  module combinational values the block names : 1 (must be 0)
+  live-tainted members : none
+  VIOLATION X4: the next-state block reads module-level COMBINATIONAL VALUE(S) DIRECTLY -- a wire, or a `reg` driven by one of the module's other `always @*` blocks -- so they are NOT in the cut set and stage 2 bypasses the shadow exactly as WAVE 2 did: ['q_ripe_lead_n']
+
+=== cutset_lint: FAIL   (80 members / 1 violations)
+
+real	0m0.056s
+user	0m0.048s
+sys	0m0.008s

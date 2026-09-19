@@ -1,0 +1,12 @@
+  pack sites   : 1
+  unpack sites : 1
+  members      : 156
+  summed width : 778   S1W = 778
+  preload incl : 2
+  live-in-stage1: none
+
+=== phase_split_lint: PASS   (156 members / 778 bits / 0 violations)
+
+real	0m0.029s
+user	0m0.026s
+sys	0m0.003s

@@ -2231,8 +2231,15 @@ assign q_pop   = q_demand;
 // differs from the original predicate -- so the two consumer sites below
 // (`v30u_eu_step.svh`, `v30u_eu_arm_decode2.svh`) are BYTE-UNCHANGED and read
 // exactly what F7 promises them.
-wire q_ripe_lead_n = (q_pop && q_ripe && !q_flush) ? q_ripe_lead_n1
-                                                   : q_ripe_lead_n0;
+// WAVE 15 C2 -- ...AND THE SELECT RIDES THE PHASE SPLIT'S OWN SHADOW.
+// `q_pop`, `q_ripe` and `q_flush` are all constant across the CPU cycle
+// (`q_ripe` is a BIU REGISTER; the other two are stage-1 quantities), so this
+// one bit belongs in `s1_bus` like every other stage-1 output -- and the
+// split's OWN premise assertion `$fatal`s if it is not constant, which is this
+// arm's free falsifier.  With the select shadowed, stage 2 reads THREE
+// registers -- the two published levels and this bit -- and the `ce -> ce` cone
+// no longer contains any of stage 1's logic on this path.
+wire s1w_qripe_pop = q_pop && q_ripe && !q_flush;
 assign q_first = (st == S_OPC_POP) ? pop_is_first
                : (st == S_EPOP) || (st == S_TAIL_POP) || tailw_go ||
                  row_epop ? 1'b1
@@ -3506,6 +3513,8 @@ reg            vector_first;
 reg            row_slot_wait;
 reg            retire_ok_e;
 reg            pend_after;
+reg            qripe_pop;      // WAVE 15 C2: the shadowed 1BL-lead select
+reg            q_ripe_lead_n;  // ...and the level it selects, stage 2 only
 reg            row_flush;
 reg            bnd_opc;
 reg            irq_take;
@@ -3603,6 +3612,7 @@ always @* begin
     bnd_take               = s1w_bnd_take;
     bnd_fire               = s1w_bnd_fire;
     q_bnd_pop              = s1w_q_bnd_pop;
+    qripe_pop              = s1w_qripe_pop;
     row_pre_wait           = s1w_row_pre_wait;
     inta_first             = s1w_inta_first;
     s1_val                 = s1w_s1_val;
@@ -3896,7 +3906,7 @@ always @* begin
         row_flush, bnd_opc, irq_take, brk_seen, brk_take, bnd_take,
         bnd_fire, q_bnd_pop, row_pre_wait, inta_first, s1_val, s1_byte,
         s1_wbyte, s2_val, s2_wbyte, it_val, it_tmpa, it_flags, it_fmask,
-        it_writes_tmpa
+        it_writes_tmpa, qripe_pop
         };
 
         if (ss_we) begin
@@ -3909,6 +3919,10 @@ always @* begin
             // resume-drain edge is the FULLY RESTORED one.)
             `include "v30u_eu_preload.svh"
             `include "v30u_eu_ss_write.svh"
+            // WAVE 15 C2: `q_ripe_lead_n` is a stage-2 value and this arm never
+            // reads it, but an `always @*` reg must be written on every path or
+            // it infers a LATCH -- and G6 gates on 0 latches.
+            q_ripe_lead_n = q_ripe_lead_n0;
         end else begin
         //====================================================================
         // STAGE 2 -- evaluated `ce_half -> ce`, committed on `ce`
@@ -3944,9 +3958,13 @@ always @* begin
         row_flush, bnd_opc, irq_take, brk_seen, brk_take, bnd_take,
         bnd_fire, q_bnd_pop, row_pre_wait, inta_first, s1_val, s1_byte,
         s1_wbyte, s2_val, s2_wbyte, it_val, it_tmpa, it_flags, it_fmask,
-        it_writes_tmpa
+        it_writes_tmpa, qripe_pop
         } = s1q;
 
+        // WAVE 15 C2 -- THE SELECTION, OFF THE SHADOW.  Both inputs are BIU
+        // register cones and `qripe_pop` is a flop, so nothing in this
+        // expression launches in stage 1.
+        q_ripe_lead_n = qripe_pop ? q_ripe_lead_n1 : q_ripe_lead_n0;
 
         stop = 1'b0;
 `ifndef SYNTHESIS
@@ -4204,7 +4222,12 @@ end
 // character-identical concatenations, and `sw/phase_split_lint.py` fails if
 // they ever differ or if their summed declared widths stop equalling S1W.
 // `sw/ss_flop_whitelist_ucore.txt`, DERIVED class.
-localparam int S1W = 778;   // 495 loop-carried + 283 wire cone.  RE-DERIVED
+localparam int S1W = 779;   // WAVE 15 C2: 778 + `qripe_pop`, THE ONE FLOP
+                           // THIS ARM ADDS AND THE ONLY ONE.  `s1q` is
+                           // DERIVED state and is deliberately NOT
+                           // save-state mapped, so `SS_COUNT` does not
+                           // move -- see THE PHASE SPLIT below.
+                            // 495 loop-carried + 283 wire cone.  RE-DERIVED
                            // on the flattened tree at WAVE 9 and IDENTICAL to
                            // WAVE 4's 778 -- the wire cone is WAVE 4's 80 names
                            // NAME FOR NAME.  STOP threshold was 900.

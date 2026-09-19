@@ -1,0 +1,8 @@
+core_portlist_lint: V30_MUXED_AD: fsm 24 ports, ucore 24 ports, MATCH
+core_portlist_lint: V30_MUXED_AD+V30_BACKDOOR: fsm 34 ports, ucore 34 ports, MATCH
+
+core_portlist_lint: PASS | the two v30_core port lists agree in 2 configuration(s)
+
+real	0m0.058s
+user	0m0.053s
+sys	0m0.005s

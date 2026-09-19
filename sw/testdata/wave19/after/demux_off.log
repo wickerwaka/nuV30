@@ -1,0 +1,30 @@
+=== LEG 1/3  RUN -- the de-muxed core, define OFF
+CLOCKS 200000
+BS_HIST b0=4 b1=86 b2=55 b3=4 b4=3201 b5=2754 b6=1873 b7=0
+BS_KINDS 7
+QPOPS 5548 FPOPS 2742
+WRITES 1390
+ADDR_MOVES 7729
+PS_SEEN 00ff
+RESULT OK
+- /home/wickerwaka/src/nec_test/hdl/tb/tb_demux_min.sv:318: Verilog $finish
+- S i m u l a t i o n   R e p o r t: Verilator 5.032 2025-01-01
+- Verilator: $finish at 2ms; walltime 0.251 s; speed 7.987 ms/s
+- Verilator: cpu 0.250 s on 1 threads; alloced 58 MB
+  FPOPS           2742  >= 1    MET
+  BS_KINDS           7  >= 4    MET
+  WRITES          1390  >= 1    MET
+  ADDR_MOVES      7729  >= 1    MET
+
+=== LEG 2/3  GONE -- AD / AD_OE are not ports
+  .AD       spliced in -> exit 1: REFUSED, pin named
+  .AD_OE    spliced in -> exit 1: REFUSED, pin named
+
+=== LEG 3/3  ON -- the control: the define really selects
+  tb_demux_min built WITH -DV30_MUXED_AD -> exit 1, DATA_I named
+
+=== demux_off_gate: PASS -- the de-muxed core builds and runs, the two muxed ports are GONE, and the define is what removes them
+
+real	0m22.480s
+user	0m20.803s
+sys	0m1.600s

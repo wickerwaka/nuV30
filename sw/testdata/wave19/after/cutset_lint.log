@@ -1,0 +1,11 @@
+  includes closed : 19  ['v30u_eu_1bl.svh', 'v30u_eu_arm_bind.svh', 'v30u_eu_arm_decode.svh', 'v30u_eu_arm_decode2.svh', 'v30u_eu_arm_ea_calc.svh', 'v30u_eu_arm_enter.svh', 'v30u_eu_arm_instr_end.svh', 'v30u_eu_arm_tail.svh', 'v30u_eu_arm_tail_pop.svh', 'v30u_eu_arm_take_opc.svh', 'v30u_eu_chain_pos.svh', 'v30u_eu_cond.svh', 'v30u_eu_iend_late.svh', 'v30u_eu_poste.svh', 'v30u_eu_preload.svh', 'v30u_eu_row.svh', 'v30u_eu_ss_write.svh', 'v30u_eu_step.svh', 'v30u_eu_wd1.svh']
+  cut-set members : 81
+  s1w_ in block   : 0 (must be 0 outside the alias lines)
+  module combinational values the block names : 0 (must be 0)
+  live-tainted members : none
+
+=== cutset_lint: PASS   (81 members / 0 violations)
+
+real	0m0.074s
+user	0m0.066s
+sys	0m0.008s

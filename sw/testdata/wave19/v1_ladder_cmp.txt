@@ -1,0 +1,95 @@
+  r7_lint              IDENTICAL (1 scored line(s))  === r7_lint: PASS   (0 undeclared carrier(s), 0 undeclared unresolved, 0 `st
+  core_portlist_lint   IDENTICAL (3 scored line(s))  core_portlist_lint: V30_MUXED_AD: fsm 24 ports, ucore 24 ports, MATCH
+  ss_lint              *** DIFFERS ***
+      base: EU (v30u_eu.sv +20 includes): 138 architectural flops -> 134 SSA-mapped, 4 whitelisted, 0 UNMAPPED; 3 sim-only exempt (430 comb/next-state regs skipped)
+      arm : EU (v30u_eu.sv +20 includes): 138 architectural flops -> 134 SSA-mapped, 4 whitelisted, 0 UNMAPPED; 3 sim-only exempt (432 comb/next-state regs skipped)
+  phase_split_lint     *** DIFFERS ***
+      base: === phase_split_lint: PASS   (156 members / 778 bits / 0 violations)
+      arm : === phase_split_lint: PASS   (157 members / 779 bits / 0 violations)
+  cutset_lint          *** DIFFERS ***
+      base: === cutset_lint: FAIL   (80 members / 1 violations)
+      arm : === cutset_lint: PASS   (81 members / 0 violations)
+  chainflat_reloc      IDENTICAL (1 scored line(s))  chainflat_relocation_check: PASS -- 9 arms, one copy each, byte-identical to
+  cc_all               *** DIFFERS ***
+      base: TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+      arm : TOTAL: 168999/168999 full (cycles 168999, arch 168999)
+  cc_FA                IDENTICAL (2 scored line(s))  FA: 500/500 full  (cycles 500, arch 500)
+  cc_FB                IDENTICAL (2 scored line(s))  FB: 500/500 full  (cycles 500, arch 500)
+  cc_INTFB             IDENTICAL (2 scored line(s))  INT.FB: 200/200 full  (cycles 200, arch 200)
+  cc_8f0               IDENTICAL (1 scored line(s))  TOTAL: 500/500 full (cycles 500, arch 500)
+  hlt_w0               IDENTICAL (1 scored line(s))  TOTAL: 97/97 full (cycles 97, arch 97)
+  hlt_w1               IDENTICAL (1 scored line(s))  TOTAL: 93/95 full (cycles 93, arch 95)
+  hlt_w2               IDENTICAL (1 scored line(s))  TOTAL: 45/46 full (cycles 45, arch 46)
+  hlt_w3               IDENTICAL (1 scored line(s))  TOTAL: 44/45 full (cycles 44, arch 45)
+  v01_w1               IDENTICAL (1 scored line(s))  TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+  v01_w3               IDENTICAL (1 scored line(s))  TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+  v01_w1_EB            IDENTICAL (1 scored line(s))  TOTAL: 200/200 full (cycles 200, arch 200)
+  evt_w0               IDENTICAL (1 scored line(s))  TOTAL: 200/200 full (cycles 200, arch 200)
+  evt_w1               IDENTICAL (1 scored line(s))  TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+  evt_w2               IDENTICAL (1 scored line(s))  TOTAL: 200/200 full (cycles 200, arch 200)
+  evt_w3               IDENTICAL (1 scored line(s))  TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+  evt_biased           IDENTICAL (1 scored line(s))  TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+  cc_all_div2          IDENTICAL (1 scored line(s))  TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+  cc_all_div3          IDENTICAL (1 scored line(s))  TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+  cc_all_div8          IDENTICAL (1 scored line(s))  TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+  cc_div1_refused      IDENTICAL (1 scored line(s))  check_core: --ce-div 1 is OUTSIDE THE ce/ce_half CONTRACT and is REFUSED.
+  ulockstep            IDENTICAL (349 scored line(s))    00: 50/50 LOCKSTEP
+  ghost_launch         IDENTICAL (1 scored line(s))  == ALL THREE POPULATIONS: 200/200 = 100.0 %
+  check_boot           IDENTICAL (1 scored line(s))  BOOT REPLAY MATCHES over 220 rows from RESET release
+  check_boot400        IDENTICAL (1 scored line(s))  BOOT REPLAY MATCHES over 400 rows from RESET release
+  check_ab_sim         IDENTICAL (1 scored line(s))  AB SIM MATCHES CHIP BOOT over 187 rows from RESET release
+  s16                  IDENTICAL (2 scored line(s))  S16 TOTAL (ucore): 1320/1371
+  demux_off            IDENTICAL (1 scored line(s))  === demux_off_gate: PASS -- the de-muxed core builds and runs, the two muxed
+  test_artifact        IDENTICAL (1 scored line(s))  === test_artifact: 45/45 checks pass
+  test_quartus_gate    IDENTICAL (2 scored line(s))  287 / 287 checks pass
+  ucrom_mif            IDENTICAL (1 scored line(s))  ucrom_mif_check: PASS -- every emitted microcode table matches its .hex word
+  chain_lfsr           IDENTICAL (14 scored line(s))  chain_lfsr_gate: CHAIN_MAX = 7 (read from v30u_eu.sv), 4 seeds x 400000 fabr
+
+=== 38 legs: 34 IDENTICAL, 4 DIFFERING, 0 VACUOUS ===
+SELFTEST: perturbing one scored line of cc_all was DETECTED -- the comparator can say DIFFERENT   (all differing legs: ['ss_lint', 'phase_split_lint', 'cutset_lint', 'cc_all'])
+  r7_lint              IDENTICAL (1 scored line(s))  === r7_lint: PASS   (0 undeclared carrier(s), 0 undeclared unresolved, 0 `st
+  core_portlist_lint   IDENTICAL (3 scored line(s))  core_portlist_lint: V30_MUXED_AD: fsm 24 ports, ucore 24 ports, MATCH
+  ss_lint              *** DIFFERS ***
+      base: EU (v30u_eu.sv +20 includes): 138 architectural flops -> 134 SSA-mapped, 4 whitelisted, 0 UNMAPPED; 3 sim-only exempt (430 comb/next-state regs skipped)
+      arm : EU (v30u_eu.sv +20 includes): 138 architectural flops -> 134 SSA-mapped, 4 whitelisted, 0 UNMAPPED; 3 sim-only exempt (432 comb/next-state regs skipped)
+  phase_split_lint     *** DIFFERS ***
+      base: === phase_split_lint: PASS   (156 members / 778 bits / 0 violations)
+      arm : === phase_split_lint: PASS   (157 members / 779 bits / 0 violations)
+  cutset_lint          *** DIFFERS ***
+      base: === cutset_lint: FAIL   (80 members / 1 violations)
+      arm : === cutset_lint: PASS   (81 members / 0 violations)
+  chainflat_reloc      IDENTICAL (1 scored line(s))  chainflat_relocation_check: PASS -- 9 arms, one copy each, byte-identical to
+  cc_all               IDENTICAL (1 scored line(s))  TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+  cc_FA                IDENTICAL (2 scored line(s))  FA: 500/500 full  (cycles 500, arch 500)
+  cc_FB                IDENTICAL (2 scored line(s))  FB: 500/500 full  (cycles 500, arch 500)
+  cc_INTFB             IDENTICAL (2 scored line(s))  INT.FB: 200/200 full  (cycles 200, arch 200)
+  cc_8f0               IDENTICAL (1 scored line(s))  TOTAL: 500/500 full (cycles 500, arch 500)
+  hlt_w0               IDENTICAL (1 scored line(s))  TOTAL: 97/97 full (cycles 97, arch 97)
+  hlt_w1               IDENTICAL (1 scored line(s))  TOTAL: 93/95 full (cycles 93, arch 95)
+  hlt_w2               IDENTICAL (1 scored line(s))  TOTAL: 45/46 full (cycles 45, arch 46)
+  hlt_w3               IDENTICAL (1 scored line(s))  TOTAL: 44/45 full (cycles 44, arch 45)
+  v01_w1               IDENTICAL (1 scored line(s))  TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+  v01_w3               IDENTICAL (1 scored line(s))  TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+  v01_w1_EB            IDENTICAL (1 scored line(s))  TOTAL: 200/200 full (cycles 200, arch 200)
+  evt_w0               IDENTICAL (1 scored line(s))  TOTAL: 200/200 full (cycles 200, arch 200)
+  evt_w1               IDENTICAL (1 scored line(s))  TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+  evt_w2               IDENTICAL (1 scored line(s))  TOTAL: 200/200 full (cycles 200, arch 200)
+  evt_w3               IDENTICAL (1 scored line(s))  TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+  evt_biased           IDENTICAL (1 scored line(s))  TOTAL: 1200/1200 full (cycles 1200, arch 1200)
+  cc_all_div2          IDENTICAL (1 scored line(s))  TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+  cc_all_div3          IDENTICAL (1 scored line(s))  TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+  cc_all_div8          IDENTICAL (1 scored line(s))  TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+  cc_div1_refused      IDENTICAL (1 scored line(s))  check_core: --ce-div 1 is OUTSIDE THE ce/ce_half CONTRACT and is REFUSED.
+  ulockstep            IDENTICAL (349 scored line(s))    00: 50/50 LOCKSTEP
+  ghost_launch         IDENTICAL (1 scored line(s))  == ALL THREE POPULATIONS: 200/200 = 100.0 %
+  check_boot           IDENTICAL (1 scored line(s))  BOOT REPLAY MATCHES over 220 rows from RESET release
+  check_boot400        IDENTICAL (1 scored line(s))  BOOT REPLAY MATCHES over 400 rows from RESET release
+  check_ab_sim         IDENTICAL (1 scored line(s))  AB SIM MATCHES CHIP BOOT over 187 rows from RESET release
+  s16                  IDENTICAL (2 scored line(s))  S16 TOTAL (ucore): 1320/1371
+  demux_off            IDENTICAL (1 scored line(s))  === demux_off_gate: PASS -- the de-muxed core builds and runs, the two muxed
+  test_artifact        IDENTICAL (1 scored line(s))  === test_artifact: 45/45 checks pass
+  test_quartus_gate    IDENTICAL (2 scored line(s))  287 / 287 checks pass
+  ucrom_mif            IDENTICAL (1 scored line(s))  ucrom_mif_check: PASS -- every emitted microcode table matches its .hex word
+  chain_lfsr           IDENTICAL (14 scored line(s))  chain_lfsr_gate: CHAIN_MAX = 7 (read from v30u_eu.sv), 4 seeds x 400000 fabr
+
+=== 38 legs: 35 IDENTICAL, 3 DIFFERING, 0 VACUOUS ===
