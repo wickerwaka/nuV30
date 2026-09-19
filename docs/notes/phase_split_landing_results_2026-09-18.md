@@ -599,6 +599,26 @@ because absence must not read as data.
   prediction of mine that was wrong, and §6 records a control nobody registered
   that turned out to be the wave's second result.
 
+### 9.1 TWO EXACT FACTS ABOUT THE WORKING TREE, MEASURED AT THE END
+
+* **`git status --porcelain` shows 21 modified tracked files, and that is 20 + 1,
+  not 21 of the user's.**  The **20** are the pre-existing uncommitted work and
+  are byte-untouched, `sw/testdata/receipts/quartus_bitstream.jsonl` and
+  `quartus_distribution.jsonl` among them.  The **21st** is
+  `sw/testdata/receipts/verilator_binary.jsonl`, which was CLEAN at wave start
+  (WAVE 16 committed it) and which **this wave dirtied** by rebuilding Verilator
+  binaries.  **All three ledgers are left uncommitted on purpose** (§9), so this
+  wave's rows stay in the working tree and nobody else's rows are swept into a
+  commit of mine.  *`git add` by explicit path is necessary and not sufficient:
+  an append-only ledger the wave writes to may already be dirty.*
+* **`~/.cache/ucsimt-tmp/wave17/ref_arm` IS RETAINED DELIBERATELY** — a detached
+  worktree at `850ef46559` with `sw/testdata/wave15/arm_presel.diff` applied to
+  `hdl/` and `sw/r7_lint.py`.  **It is the independent reference §3.4 and §6 are
+  scored against**, and it is kept so a later wave (ARM-B, §8 item 2) does not
+  have to rebuild it to re-check a composition.  `~/.cache/ucsimt-tmp/wave17/dry`,
+  the pre-registration's dry-run tree, is removed.  WAVE 16's two R-3 worktrees
+  are untouched.
+
 ---
 
 ## §10 THE CAMPAIGN'S SCOREBOARD, CLOSED
