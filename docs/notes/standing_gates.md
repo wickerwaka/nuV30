@@ -2981,6 +2981,82 @@ Every one is FSM-structural — it reads or mutates `hdl/rtl/core/*.sv`, or it
 binds to the FSM `obj_dir` through `sw/check_seq.py`'s `BIN` constant — and has
 no ucore counterpart.
 
+### ⚠⚠⚠ **2026-09-19, WAVE 18 — MOST OF THIS SECTION COULD NOT RUN, AND THE LEDGER CARRIED GREEN ROWS FOR IT.**
+
+`docs/notes/*wave18*`; landing `9ccc6d0177`, new gate + archive §6b.
+
+**THESE GATES BIND TWO *SHARED* FILES, NOT ONE.** Besides
+`sw/check_seq.py`'s `BIN`, they elaborate `hdl/tb/tb_v30_core.sv` **and**
+`hdl/rtl/system_large.sv` — and **a port added to EITHER kills all of them at
+once, with nothing watching.** The de-muxed bus landing `b7083b45a5`
+(2026-08-14) added `ADDR_O` / `DATA_O` / `STATUS_O` to both; the archived core
+had none of them, and every affected gate died at
+`%Error-PINNOTFOUND` inside `artifact.ensure()` — **before its first seed,
+without printing a verdict.** It stayed that way for five weeks. It was found
+only because FLASH #22 **copied this section's `check_fuzz_bank` row across
+trees** instead of measuring it.
+
+**⚠ THE ROW WAS UNEARNED, AND THE FIGURE WAS RIGHT ANYWAY.** FLASH #22's
+`PASS 621` could not have been measured. Re-measured for real at `9ccc6d0177`
+(coordinator re-ran it independently, no pipe, **REAL_EXIT=0**):
+`PASS | 621 banked seeds | stable 621 improved 0 worse 0 | gen_drift 0
+regen_err 0 | float-floor 0 | new-sig TIMING 0`. **The row is earned now and
+was not then.**
+
+**THE INVENTORY, measured 2026-09-19 — 6 of 10 run:**
+
+| gate | status | why |
+|---|---|---|
+| `check_race_law` · `prefix_clear_lint` · `ea_step_lint` · `ss_lint --core fsm` | **RUN** | no binary, or `--core fsm` only |
+| `check_fuzz_bank` | **RUNS AGAIN** | was demux-dead; repaired |
+| `check_enter_nesting` | **RUNS, AND IS RED** | see below |
+| `check_ff_t4` | **DOWN** | `V1AnchorStop` — already registered |
+| **`check_mod3_illegal`** · **`check_lc6_gate`** | **DOWN** | `ComposeError [0500..) not in [8000,c000)` — the fuzz-v2 code region. ⚠ **UNREGISTERED ANYWHERE UNTIL NOW.** |
+
+**⚠ `check_enter_nesting`'s RED IS ENGINE-INDEPENDENT AND IS NOT AN FSM
+REGRESSION.** The identical instrument and goldens with `check_seq.CORE="ucore"`
+fail the **same 512**. It composes a v2-anchored image, compares it against v1
+goldens, and prints 100 % divergence — a **fourth** v1-anchor casualty, and the
+only one that does not raise. **A LOUD RED CAN BE AS FALSE AS A SILENT GREEN.**
+
+**⚠ TWO GATES OUTSIDE THIS LIST WERE IN THE SAME STATE**, including
+**`check_core.py --core fsm` — the archive's own §6 re-activation command.** The
+archived core was unreachable by its own documented procedure.
+
+**⚠ THE PROMOTION PATH WOULD HAVE SHIPPED IT.** Quartus 17.1 elaborated the FSM
+revision **pre-repair at 0 errors**, recording the three undeclared pins only as
+`Critical Warning: Named port was not declared` **in a report folder no gate
+reads**; `quartus_gate.py` would have PASSED a bitstream carrying it. After
+repair they read `Info: Explicitly unconnected`. **Verilator REFUSES where
+Quartus ACCEPTS AND IGNORES, and *"the bitstream built"* is not evidence a port
+list is intact.**
+
+**NEW STANDING GATE — `python3 sw/core_portlist_lint.py`.** ⚠ **It is in the
+STANDING set, not in §C**, because it protects the ucore's shared files too. It
+exits **2 CANNOT MEASURE** — never PASS — on an unparseable file. Non-vacuous
+three ways.
+
+**⚠ TWO LATENT STALE-BINARY HAZARDS, BOOKED NOT REPAIRED:**
+`sw/check_ff_t4.py:34` and `sw/causal_wrand.py:715` use the raw
+`check_seq.BIN` path **with no artifact assertion** — a **stale** binary would
+score; only a **missing** one is caught. Neither could be repaired
+non-vacuously while its gate is down for another reason.
+
+**⚠ `sw/t30_sweep.sh` COULD NOT FAIL, AND WAS FIXED 2026-09-19 (`becaf81e89`).**
+All 14 legs were `cmd 2>&1 | tail -1` — no `rc` captured, nothing aggregated,
+no `exit` depending on any leg, and `set -uo pipefail` **without `-e`** so
+`pipefail` did nothing because nothing tested `$?`. Its status was `tail`'s.
+**Demonstrated on the real aggregation code with stub legs: the OLD script
+exits 0 with ALL FOURTEEN LEGS FAILING**; the fixed one exits 1 and names them.
+⚠ The repair aggregates **exit codes** — a leg that exits 0 while *printing* a
+failing total is still not caught. ⚠ **Running the sweep now correctly reports
+FAILED** while the three gates above remain down.
+
+**⭐ THE META-FINDING, FOR THE VACUOUS-INSTRUMENT LIST.** The earlier entries
+were **green while blind**. This one **could not run at all and the ledger still
+carried a green row.** **A gate's REGISTERED ROW and its ABILITY TO RUN are two
+different facts, and only one of them is ever checked.**
+
 | Gate | Command | Proves | binds to FSM via |
 |---|---|---|---|
 | check_race_law | `python3 sw/check_race_law.py` | the POP-PSW/INT race law is bit-exact | `rtl/core/race_law.svh`, `int9d_race.hex` — no ucore equivalent exists |
@@ -2998,10 +3074,23 @@ no ucore counterpart.
 load-bearing control for the U5 comparator change (3,242 banked seeds replayed
 and re-classified, **worse 0** — `ucore_provenance.md` §57.2). Cite it for that.
 
-**READ BEFORE QUOTING ANY FSM NUMBER.** On the corrected comparator (the TB's
-composed-AD mask removed at U5) the archived core is **168,400 / 169,000** on
-v0.1 and **16 / 283** on the HLT sweeps. `t30_sweep.sh`'s "any non-full suite
-total = regression" rule must be read against 168,400, not 169,000.
+**READ BEFORE QUOTING ANY FSM NUMBER.** ⚠ **THESE FIGURES WENT STALE ON
+2026-08-10 AND THE STALENESS WAS ONLY FOUND ON 2026-09-19 (WAVE 18).**  The
+archived core now measures **169,000 / 169,000** on v0.1 and **226 / 283** on
+the HLT sweeps (87 · 82 · 30 · 27).  **Nothing about the archived core changed:
+the COMPARATOR moved.**  `0254d9f23e` (F55 part 2) made the composer
+`AD_OE`-keyed with float retention, and the archived core drives no `ad_oe_ps`
+on a HALT display, so `eff_hi` takes the retained nibble — which is the
+goldens' value.  **F51 is present and unfixed; it is invisible again.**
+⚠ **That commit's own message says *"it moves NOTHING"* — and quotes the
+`ucore` leg.  The FSM leg was never re-measured, and nine days later the demux
+landing made it unmeasurable.**  So `t30_sweep.sh`'s *"any non-full suite total
+= regression"* rule must now be read against **169,000 and 226/283**.
+
+*The superseded text follows, because a ratchet is only readable against its own
+history:* on the corrected comparator (the TB's composed-AD mask removed at U5)
+the archived core was **168,400 / 169,000** on v0.1 and **16 / 283** on the HLT
+sweeps, and the rule was to be read against 168,400.
 
 ---
 
