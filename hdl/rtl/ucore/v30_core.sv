@@ -143,7 +143,7 @@ logic   [1:0] scr_qop = '0;
 // BIU <-> EU
 //----------------------------------------------------------------------------
 wire  [7:0] q_byte;
-wire        q_ripe, q_ripe_lead_n;
+wire        q_ripe, q_ripe_lead_n0, q_ripe_lead_n1;   // WAVE 15 C1
 wire  [3:0] q_cnt;
 wire        eu_ghost_full, eu_ghost_idle, eu_ghost_stack_first;
 // the launch-law's publications (the 8F ghost read's two drivers)
@@ -357,7 +357,8 @@ v30u_biu u_biu (
     .md8080     (md8080),
     .q_byte     (q_byte),
     .q_ripe     (q_ripe),
-    .q_ripe_lead_n(q_ripe_lead_n),
+    .q_ripe_lead_n0(q_ripe_lead_n0),
+    .q_ripe_lead_n1(q_ripe_lead_n1),
     .q_cnt_o    (q_cnt),
     .q_pop      (q_pop),
     .q_first    (q_first),
@@ -431,7 +432,8 @@ v30u_eu u_eu (
     .srst       (RESET),
     .q_byte     (q_byte),
     .q_ripe     (q_ripe),
-    .q_ripe_lead_n(q_ripe_lead_n),
+    .q_ripe_lead_n0(q_ripe_lead_n0),
+    .q_ripe_lead_n1(q_ripe_lead_n1),
     .q_cnt      (q_cnt),
     .q_pop      (eu_pop),
     .q_first    (eu_first),

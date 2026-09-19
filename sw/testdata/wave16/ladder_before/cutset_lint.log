@@ -1,0 +1,9 @@
+  the phase split is NOT IN THIS TREE -- no `s1_bus = {...}`, no
+  `{...} = s1q`.  This lint has nothing to check and says so rather
+  than passing: **exit 2, COULD NOT RUN**, never exit 0.
+
+=== cutset_lint: COULD NOT RUN (the split is absent)
+
+real	0m0.027s
+user	0m0.022s
+sys	0m0.004s

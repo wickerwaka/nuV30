@@ -180,7 +180,11 @@ module v30u_biu (
     // --- queue port (the consumer side) ---
     output      [7:0] q_byte,      // the front byte
     output            q_ripe,      // ...and it may be popped THIS clock (M3)
-    output            q_ripe_lead_n, // ...or will be on the NEXT one (1BL lead)
+    // WAVE 15 C1 -- THE 1BL LEAD IS PUBLISHED AS TWO LEVELS, ONE FOR EACH
+    // THING THE EU CAN DO TO THE QUEUE THIS CLOCK.  Neither depends on `q_pop`;
+    // the EU selects with its own act.  See THE EU CONTRACT below.
+    output            q_ripe_lead_n0, // ...will be ripe NEXT clock if NO pop
+    output            q_ripe_lead_n1, // ...and if the EU DOES pop this clock
     output      [3:0] q_cnt_o,
     input             q_pop,       // consumer takes it (qualify with q_ripe)
     input             q_first,     // this pop is an F (instruction first byte)
@@ -335,6 +339,7 @@ reg [15:0] last_ad_lo;
 reg  [7:0] q_mem [0:5];
 reg  [2:0] q_head;
 reg  [3:0] q_cnt;
+reg  [3:0] q_cnt_np;      // WAVE 15 C1: ...before the EU's own pop this clock
 reg  [1:0] grn_n;         // newest bytes not yet POPPABLE
 reg  [1:0] grn_ttl;       // ...for this many more clocks (ready at e+3)
 reg [15:0] fetch_ptr;
@@ -919,9 +924,58 @@ assign eu_rd_done_n   = rd_done_nxt;
 // The 1BL retire lead (`wait_retire_lead`): the front byte is poppable NOW or
 // will be on the next clock -- the green window has one clock left to run.
 // Consumed by the clocked step alone, so it exists in the `_n` view only.
-wire [3:0] poppable_n = (grn_ttl != 2'd0) ? (q_cnt - {2'b0, grn_n}) : q_cnt;
-assign q_ripe_lead_n  = (poppable_n != 4'd0) ||
-                        ((grn_ttl == 2'd1) && (q_cnt != 4'd0));
+//
+// WAVE 15 C1 -- AND IT IS PUBLISHED AS TWO LEVELS, BECAUSE THE ANSWER DEPENDS
+// ON WHETHER THE EU POPS AND THE EU IS THE ONE WHO KNOWS.
+//
+// Walking every write to the three operands of this predicate, the dependence
+// on the EU is exactly TWO BITS: `q_pop` (the decrement, ONE place) and
+// `q_flush` (the zeroing).  A flush OVERWRITES the count, so on a flush the pop
+// is irrelevant and there are THREE levels, not four -- and `q_flush` is not on
+// the binding arc, so only the pop is split here.
+//
+// `q_cnt_np` is the count WITHOUT the pop, so both levels below are pure
+// functions of the BIU's own registers (and `q_flush`).  It is the SAME
+// function against two thresholds: "at least one" and "at least two".  The EU
+// selects with `q_pop && q_ripe && !q_flush` -- two of its own outputs and a
+// BIU REGISTER port it already has -- so its pop never leaves the EU, and the
+// EU -> BIU -> EU combinational excursion this predicate used to make is gone.
+//
+// F7 IS UNCHANGED AND IS THE REASON THIS IS SHAPED SO: the step must see the
+// queue AS IT WILL BE, pop included.  Severing that costs 181 goldens
+// (`FA` 74 + `FB` 68 + `INT.FB` 39, all ONE_BYTE_LOGIC forms, which is
+// `wait_retire_lead`'s only caller).  Nothing here severs it; it re-associates
+// which side of the module boundary the selection happens on.
+wire [3:0] q_cnt_np1  = q_cnt_np - 4'd1;
+wire [3:0] poppable_n0 = (grn_ttl != 2'd0) ? (q_cnt_np  - {2'b0, grn_n}) : q_cnt_np;
+wire [3:0] poppable_n1 = (grn_ttl != 2'd0) ? (q_cnt_np1 - {2'b0, grn_n}) : q_cnt_np1;
+assign q_ripe_lead_n0 = (poppable_n0 != 4'd0) ||
+                        ((grn_ttl == 2'd1) && (q_cnt_np  != 4'd0));
+assign q_ripe_lead_n1 = (poppable_n1 != 4'd0) ||
+                        ((grn_ttl == 2'd1) && (q_cnt_np1 != 4'd0));
+
+`ifndef SYNTHESIS
+//--------------------------------------------------------------------------
+// THE FALSIFIER.  The ORIGINAL expression is kept VERBATIM as a reference and
+// compared every clock the EU samples -- the `V30_MUXED_AD` precedent, where
+// the historical nine-way mux is kept as a sim-only reference compared every
+// fabric clock.  Clause (1) is the identity itself; clause (2) is what makes
+// the EU's local select formula sound, because the EU cannot see `pop_eff`.
+//--------------------------------------------------------------------------
+wire [3:0] poppable_n_ref = (grn_ttl != 2'd0) ? (q_cnt - {2'b0, grn_n}) : q_cnt;
+wire q_ripe_lead_n_ref = (poppable_n_ref != 4'd0) ||
+                         ((grn_ttl == 2'd1) && (q_cnt != 4'd0));
+wire q_ripe_lead_n_comp = pop_eff ? q_ripe_lead_n1 : q_ripe_lead_n0;
+always @(posedge clk) if (ce && !srst && !ss_we) begin
+    if (q_ripe_lead_n_comp !== q_ripe_lead_n_ref)
+        $fatal(1, "v30u_biu: WAVE 15 C1 IDENTITY VIOLATED at %0t -- composed=%b reference=%b  (pop_eff=%b q_cnt=%0d q_cnt_np=%0d grn_n=%0d grn_ttl=%0d)",
+               $time, q_ripe_lead_n_comp, q_ripe_lead_n_ref,
+               pop_eff, q_cnt, q_cnt_np, grn_n, grn_ttl);
+    if (pop_eff !== (q_pop && q_ripe && !q_flush))
+        $fatal(1, "v30u_biu: WAVE 15 C1 SELECT VIOLATED at %0t -- pop_eff=%b but q_pop=%b q_ripe=%b q_flush=%b.  The EU composes the select from those three, so they must agree.",
+               $time, pop_eff, q_pop, q_ripe, q_flush);
+end
+`endif
 
 assign ss_bus_quiet = !r_run && !r_cmt_valid && (r_rq_n == 2'd0) && !r_halt_pending;
 
@@ -1346,6 +1400,7 @@ reg [15:0] lfa_p;
 reg [19:0] lfa_a;
 // step (a) captures -- clock-c values the later steps must not re-read
 reg        ne_now, kill_l, evi_l, hfree_l, pop_l, qse_l;
+reg        pop_eff;    // WAVE 15 C1: `pop_l` AND the flush did not wipe it
 reg  [1:0] sev_now;
 reg        infl_now;
 reg  [1:0] infl_n_now;
@@ -1731,6 +1786,7 @@ always_comb begin
     // the per-edge working temporaries (no latches in always_comb)
     ne_now = 1'b0; kill_l = 1'b0; evi_l = 1'b0;
     hfree_l = 1'b0; pop_l = 1'b0; qse_l = 1'b0; sev_now = 2'd0;
+    pop_eff = 1'b0; q_cnt_np = 4'd0;
     infl_now = 1'b0; infl_n_now = 2'd0; set_oprfree = 1'b0;
     ev_here = 1'b0; ev_latch = 1'b0; did_grant = 1'b0;
     rmw_yield = 1'b0;
@@ -1916,7 +1972,16 @@ always_comb begin
         // the queue POP: a POINT SAMPLE riding this clock
         if (pop_l) begin
             q_head = (q_head == 3'd5) ? 3'd0 : q_head + 3'd1;
-            q_cnt  = q_cnt - 4'd1;
+            // WAVE 15 C1 -- THE DECREMENT IS APPLIED AT THE END OF THIS BLOCK,
+            // NOT HERE.  `q_cnt`'s cone is then POP-FREE all the way to the
+            // publish, which is what lets THE EU CONTRACT below hand the EU two
+            // pure-register levels instead of one level that depends on the
+            // EU's own act.  The four places that READ `q_cnt` between here and
+            // the end are compensated with `pop_eff`, and they are the whole
+            // list (`occ` twice, `qi`, and the publish).  VALUE-IDENTICAL: the
+            // block's own falsifier below `$fatal`s on the first clock it is
+            // not.
+            pop_eff = 1'b1;
         end
         if (qse_l) e_pend = 1'b0;
 
@@ -2062,6 +2127,11 @@ always_comb begin
         // `fetch_ptr`, so the withdrawal (`kill_l`, above) precedes the load.
         if (q_flush) begin
             q_cnt = 4'd0; q_head = 3'd0; grn_n = 2'd0; grn_ttl = 2'd0;
+            pop_eff = 1'b0;   // WAVE 15 C1: the flush OVERWRITES the
+                              // count, so the pop's decrement is gone
+                              // with it.  This is the one interaction
+                              // between the two EU acts and it is
+                              // `q_flush` wins.
             cs_r      = flush_cs;
             fetch_ptr = flush_ip;
             suspended = 1'b0;
@@ -2139,7 +2209,7 @@ always_comb begin
             // is SAMPLED at a fixed cycle index (2 = T3) and LATCHED; the
             // completion eval only APPLIES what that clock decided.
             if (ts == TS_T3) begin
-                occ = {1'b0, q_cnt}
+                occ = {1'b0, q_cnt} - {4'b0, pop_eff}   // WAVE 15 C1
                     + (cur_fetch ? {3'b0, cur_pn} : 5'd0)
                     + ((cmt_valid && cmt_fetch) ? {3'b0, cmt_pn} : 5'd0)
                     + (infl_now ? {3'b0, infl_n_now} : 5'd0);
@@ -2170,7 +2240,7 @@ always_comb begin
                 //--------------------------------------------------------
                 land_ttl = (sev_now >= 2'd2) ? 2'd0 : (2'd2 - sev_now);
                 if (cur_fetch && (cur_pn != 2'd0)) begin
-                    qi = {1'b0, q_head} + q_cnt;
+                    qi = {1'b0, q_head} + q_cnt - {3'b0, pop_eff};  // WAVE 15 C1
                     if (qi >= 4'd6) qi = qi - 4'd6;
                     if (cur_pn == 2'd2) begin
                         q_mem[qi[2:0]] = cur_data[7:0];
@@ -2302,7 +2372,7 @@ always_comb begin
         if (ev_here && !cmt_valid) begin
             flush_eval = 1'b0;    // F3's point is spent by any commit
             gr_ok = 1'b0;
-            occ = {1'b0, q_cnt}
+            occ = {1'b0, q_cnt} - {4'b0, pop_eff}   // WAVE 15 C1
                 + ((run && cur_fetch) ? {3'b0, cur_pn} : 5'd0)
                 + (infl_now ? {3'b0, infl_n_now} : 5'd0);
             // H3: the ordinary short RMW read has one real collision class.
@@ -2579,6 +2649,20 @@ always_comb begin
         if (run && evald && (sev != 2'd3) && !evi_l) sev = sev + 2'd1;
 
     end
+
+    //======================================================================
+    // WAVE 15 C1 -- THE POP, APPLIED LAST.
+    //======================================================================
+    // `q_cnt_np` is the queue count this edge would take IF THE EU DID NOT POP
+    // -- flush and landing included, pop excluded.  It is the basis THE EU
+    // CONTRACT publishes both levels from, and it depends on NO EU act except
+    // `q_flush`.  `q_cnt` itself keeps its exact former value, so the register
+    // commit, `+utrace` and every other consumer below are unchanged.
+    //
+    // `pop_eff` is 0 on an `ss_we` clock by initialisation, so this arm is
+    // vacuous there, exactly as the in-place decrement was.
+    q_cnt_np = q_cnt;
+    if (pop_eff) q_cnt = q_cnt - 4'd1;
 end
 
 //============================================================================

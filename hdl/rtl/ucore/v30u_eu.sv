@@ -68,7 +68,8 @@ module v30u_eu (
     // queue port
     input       [7:0] q_byte,
     input             q_ripe,
-    input             q_ripe_lead_n, // ...and it will be ripe NEXT clock
+    input             q_ripe_lead_n0, // ...ripe NEXT clock if NO pop
+    input             q_ripe_lead_n1, // ...and if this clock's own pop happens
     input       [3:0] q_cnt,
     output            q_pop,
     output            q_first,
@@ -2209,6 +2210,24 @@ wire q_demand = ((st == S_OPC_POP) && !bnd_fire) ||
                  retire_ok_n && !bnd_fire);
 
 assign q_pop   = q_demand;
+
+// WAVE 15 C1 -- THE SELECTION HAPPENS HERE, NOT IN THE BIU.
+//
+// The BIU publishes the 1BL retire lead for each of the two things this module
+// can do to the queue on this clock, both off ITS OWN REGISTERS.  The EU's pop
+// is a one-bit fact this module already owns, and `q_ripe` is a BIU REGISTER
+// port, so the select costs one AND and one MUX HERE and the value the clocked
+// step reads no longer makes a combinational excursion into the BIU and back.
+//
+// `!q_flush` is a term because the flush OVERWRITES the queue count after the
+// pop has decremented it, so on a flush clock the published no-pop level is the
+// right one.  The BIU `$fatal`s (`ifndef SYNTHESIS`) if this expression ever
+// disagrees with its own `pop_eff`, and again if the composed value ever
+// differs from the original predicate -- so the two consumer sites below
+// (`v30u_eu_step.svh`, `v30u_eu_arm_decode2.svh`) are BYTE-UNCHANGED and read
+// exactly what F7 promises them.
+wire q_ripe_lead_n = (q_pop && q_ripe && !q_flush) ? q_ripe_lead_n1
+                                                   : q_ripe_lead_n0;
 assign q_first = (st == S_OPC_POP) ? pop_is_first
                : (st == S_EPOP) || (st == S_TAIL_POP) || tailw_go ||
                  row_epop ? 1'b1

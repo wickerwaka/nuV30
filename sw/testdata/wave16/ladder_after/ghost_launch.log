@@ -1,0 +1,32 @@
+
+== DERIVATION -- the set the map was READ OFF; NOT evidence
+   112/112 = 100.0 %
+     dGR 0    law=SP    {'SP': 12}
+     dGR 1    law=AND   {'AND': 44}
+     dGR 2    law=BARE  {'BARE': 38}
+     dGR 3    law=BARE  {'BARE': 16}
+     dGR 5    law=BARE  {'BARE': 2}
+
+== VALIDATION -- DISJOINT, and it selected nothing
+   (the four `v_*` legs of the frozen-key registration)
+   56/56 = 100.0 %
+     dGR 0    law=SP    {'SP': 8}
+     dGR 1    law=AND   {'AND': 24}
+     dGR 2    law=BARE  {'BARE': 18}
+     dGR 3    law=BARE  {'BARE': 6}
+
+== MULTIPLY -- the one class every counting key FAILED
+   (used to select nothing; see the module docstring)
+   32/32 = 100.0 %
+     dGR 1    law=AND   {'AND': 4}
+     dGR 2    law=BARE  {'BARE': 4}
+     dGR 3    law=BARE  {'BARE': 4}
+     dGR 4    law=BARE  {'BARE': 8}
+     dGR 5    law=BARE  {'BARE': 8}
+     dGR 6    law=BARE  {'BARE': 4}
+
+== ALL THREE POPULATIONS: 200/200 = 100.0 %
+
+real	0m0.131s
+user	0m0.113s
+sys	0m0.018s

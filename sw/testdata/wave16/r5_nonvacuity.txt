@@ -1,0 +1,22 @@
+PRISTINE v30u_biu.sv sha256 8e54248ef1bd5567c2af6a1b5ef8feee88d8c695b1c9d675ac25e40df2e5c463
+  kept at /home/wickerwaka/.cache/ucsimt-tmp/w16nv-ab_n15_z/v30u_biu.sv
+
+--- nv1  clause (1): one term of `q_ripe_lead_n1`, grn_ttl == 1 -> == 2
+    build rc=0  artifact: PROMOTED hdl/tb/obj_dir_ucore/Vtb_v30_core  receipt 0af95b11729258f4…  (29.1s)
+    FATAL: [4685000] %Fatal: v30u_biu.sv:971: Assertion failed in tb_v30_core.dut.u_biu: v30u_biu: WAVE 15 C1 IDENTITY VIOLATED at 4685000 -- composed=0 reference=1  (pop_eff=1 q_cnt=2 q_cnt_np=3 grn_n=2 grn_ttl
+    rc=0  falsifier FIRED=True  TOTAL: 0/0 full (cycles 0, arch 0)
+
+--- nv2  clause (2): the flush no longer cancels the pop
+    build rc=0  artifact: PROMOTED hdl/tb/obj_dir_ucore/Vtb_v30_core  receipt 388cf217cb85e8d1…  (31.0s)
+    rc=0  falsifier FIRED=False  TOTAL: 500/500 full (cycles 500, arch 500)
+    ⚠ DID NOT FIRE -- recorded as measured, not restated.
+
+--- nv3  clause (2): `pop_eff` armed from `q_pop` alone
+    build rc=0  artifact: PROMOTED hdl/tb/obj_dir_ucore/Vtb_v30_core  receipt a6a0cc06f6dbb132…  (32.3s)
+    FATAL: [85000] %Fatal: v30u_biu.sv:975: Assertion failed in tb_v30_core.dut.u_biu: v30u_biu: WAVE 15 C1 SELECT VIOLATED at 85000 -- pop_eff=1 but q_pop=1 q_ripe=0 q_flush=0.  The EU composes the select from 
+    rc=0  falsifier FIRED=True  TOTAL: 0/0 full (cycles 0, arch 0)
+
+RESTORED v30u_biu.sv sha256 8e54248ef1bd5567c2af6a1b5ef8feee88d8c695b1c9d675ac25e40df2e5c463  == pristine
+REBUILT clean ARM-A: artifact: PROMOTED hdl/tb/obj_dir_ucore/Vtb_v30_core  receipt 1b572c1931852b2a…  (28.5s)
+
+=== R-5: 2 of 3 perturbations FIRED ===

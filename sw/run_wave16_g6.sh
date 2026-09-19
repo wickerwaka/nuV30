@@ -1,0 +1,71 @@
+#!/bin/bash
+# WAVE 16 -- THE ONE DRIVER FOR EVERY SWEEP OF THIS LANDING.  It is
+# `sw/run_wave15_g6.sh` with the scratch-worktree REFUSAL relaxed to "the main
+# tree OR a scratch worktree under ~/.cache/ucsimt-tmp/wave16/", because THIS
+# WAVE IS A LANDING and R-2's with-exception pair is drawn on the landed tree
+# itself; R-3's no-exception pair is drawn in scratch worktrees, because the SDC
+# edit it needs MUST NOT LAND.
+#
+#   $1 = the sweep's TREE ROOT
+#   $2 = the sweep's tag, e.g. `w16-presel-withexc` / `w16-base-noexc`
+#   $3 = half selector: both (default) / control / retention
+#
+# ⚠ EVERY SWEEP OF THIS WAVE IS DRAWN BY THIS SCRIPT AND ONLY BY THIS SCRIPT,
+# at the SAME seed set {1,2,3,4,5}, BOTH configurations.  A difference in
+# driver, flags or seed set between arms is exactly the contamination class
+# WAVE 11 found and WAVE 12 removed.
+#
+# ⚠ `set -u`, NEVER `set -e`: `quartus_gate.py` EXITS NON-ZERO ON A RED VERDICT
+# and R-3's arms are REGISTERED to draw RED.  WAVE 13 lost half a sweep to
+# `set -e`.
+#
+# THE SINGLE-WRITER GUARD IS BY EXACT BINARY NAME, ONE PATTERN PER `pgrep -x`
+# CALL -- `pgrep -x a b` is an ERROR whose failure branch reads as "idle".
+# ⚠ `pgrep -f <script>` SELF-MATCHES the waiting shell and is never used here.
+#
+# `hdl/nec_test_ucore.qsf` is restored with `git checkout -- <that exact path>`
+# around every Quartus run (the declared §70.7 exemption; `quartus_map`
+# rewrites it).  NEVER a bare `git checkout`, NEVER `git checkout .`: 21
+# pre-existing modified files in this working tree are the USER'S OWN
+# UNCOMMITTED WORK.
+set -u
+MAIN="$(cd "$(dirname "$0")/.." && pwd)"
+ARM="$1"; TAG="$2"; HALF="${3:-both}"
+OUT="$ARM/sw/testdata/wave16/$TAG"
+mkdir -p "$OUT"
+cd "$ARM" || exit 2
+
+case "$ARM" in
+  "$MAIN") : ;;
+  "$HOME/.cache/ucsimt-tmp/wave16/"*) : ;;
+  *) echo "REFUSING: $ARM is neither the main tree nor a scratch worktree under ~/.cache/ucsimt-tmp/wave16/"; exit 2 ;;
+esac
+
+guard () {
+    for b in quartus_map quartus_fit quartus_sta quartus_asm quartus_sh; do
+        while pgrep -x "$b" >/dev/null 2>&1; do sleep 30; done
+    done
+}
+
+sweep () {   # $1 = cfg, $2 = extra flag
+    local cfg="$1" extra="$2"
+    guard
+    git checkout -- hdl/nec_test_ucore.qsf
+    # shellcheck disable=SC2086
+    python3 sw/quartus_gate.py --seeds 5 $extra --label "$TAG-$cfg-n5" \
+        --log "$OUT/g6_${cfg}_n5.log" \
+        || echo "quartus_gate $cfg rc=$? (RED is a result, not an error)"
+    git checkout -- hdl/nec_test_ucore.qsf
+}
+
+echo "=== WAVE 16 $TAG   root=$ARM   half=$HALF   $(date -u +%FT%TZ) ==="
+git -C "$ARM" rev-parse HEAD
+echo "--- tracked hdl/ modifications in this tree (R-3's SDC edit shows here by design) ---"
+git -C "$ARM" status --porcelain hdl/ | grep -v '^??'
+echo "--- uncommented timing exceptions in this tree's SDC ---"
+grep -cE '^[[:space:]]*set_(multicycle_path|false_path)' "$ARM/hdl/nec_test.sdc"
+
+if [ "$HALF" = both ] || [ "$HALF" = control ];   then sweep control   ""            ; fi
+if [ "$HALF" = both ] || [ "$HALF" = retention ]; then sweep retention "--retention" ; fi
+
+echo "WAVE 16 SWEEP $TAG: DONE  $(date -u +%FT%TZ)"

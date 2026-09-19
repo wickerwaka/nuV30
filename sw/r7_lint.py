@@ -101,6 +101,25 @@ DECLARED_UNRESOLVED = {
         "§73's own list of REGISTER-ONLY EU inputs.  Driven from `poppable_n` "
         "off the queue's procedural next-state (`q_cnt`, `grn_ttl`, `grn_n`), "
         "which is the queue's own bookkeeping and not the READY sample.",
+    # ⚠ WAVE 15 C1 SPLIT THE NET ABOVE IN TWO, AND THE TWO ENTRIES BELOW ARE
+    # PART OF THE MECHANISM'S DECLARED COST -- not a silent widening.  The
+    # ARGUMENT IS UNCHANGED, character for character: both are driven from the
+    # queue's procedural next-state (`q_cnt_np`, `grn_ttl`, `grn_n`) and neither
+    # is the READY sample.  What changed is that the predicate is now published
+    # once per value of the EU's own pop, so that the EU's act does not have to
+    # travel into this module and back to be answered.  The entry the two
+    # replace is kept above so that a reader can see the list did not grow by
+    # forgetting anything.
+    "q_ripe_lead_n0":
+        "§73's own list of REGISTER-ONLY EU inputs, WAVE 15 C1's no-pop half.  "
+        "Driven from `poppable_n0` off the queue's procedural next-state "
+        "(`q_cnt_np`, `grn_ttl`, `grn_n`), which is the queue's own bookkeeping "
+        "and not the READY sample.",
+    "q_ripe_lead_n1":
+        "§73's own list of REGISTER-ONLY EU inputs, WAVE 15 C1's pop half.  "
+        "Driven from `poppable_n1` off the same procedural next-state minus the "
+        "EU's own pop, which is the queue's own bookkeeping and not the READY "
+        "sample.",
 }
 
 # --------------------------------------------------------------------------- #
