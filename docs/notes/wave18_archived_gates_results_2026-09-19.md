@@ -254,11 +254,35 @@ tested to a conclusion in this wave:
 * **the archived core's own drift** — archive §3.2's undiagnosed 104-seed
   regression is in this family of *"a reference that can silently regress"*.
 
-**THE DISCRIMINATOR IS ONE RUN AND IT IS REGISTERED HERE, NOT GUESSED**: run the
-identical instrument and the identical goldens with `check_seq.CORE = "ucore"`.
-If the ucore fails the same 512, the RED is the era and not the core.  Whoever
-takes it must report it as a first measurement, not as a regression against the
-archive's 2026-08-04 sentence.
+**THE DISCRIMINATOR WAS REGISTERED AND THEN RUN, AND IT ANSWERS**: the identical
+instrument with the identical goldens, `check_seq.CORE` monkey-patched to
+`"ucore"` and nothing else changed —
+
+```
+=== ENGINE ucore ===
+  MASK (w0, nesting 0..255 x2): FAIL | 512 goldens | max stack pushes 256 (nest=255=>256) | walk-mismatches 512
+```
+
+**THE ucore FAILS THE SAME 512.**  The RED is **ENGINE-INDEPENDENT**, so it is
+the instrument/era and NOT the archived core: `check_enter_nesting` is a
+**fourth casualty of the fuzz-v2 code-region relocation**, alongside
+`check_ff_t4`, `check_mod3_illegal` and `check_lc6_gate` — and the only one of
+the four that does not RAISE.  The other three announce the era mismatch and
+refuse; this one composes an image the goldens were never captured from and
+compares it, so it prints a 100 % divergence that reads like a core regression.
+
+⚠ **THAT IS THE DANGEROUS MEMBER OF THE FAMILY** and it is worth its own line in
+the vacuous-gate meta-finding: **a loud RED can be as false as a silent GREEN**,
+and the thing that separates them is whether the instrument checks its own era.
+`gen_seq._v1_anchor_stop` is exactly that check, and `testimage.compose` (which
+this gate uses instead) only raises when the ADDRESS is out of region, which for
+the ENTER tranche it is not — the stack walk at `[2000,3FFF)` is composable at
+either anchor.
+
+**NOTHING IS CONCLUDED ABOUT THE ARCHIVED CORE FROM THIS RED**, and the archive's
+2026-08-04 *"they still pass"* is neither confirmed nor refuted by it.  Deciding
+whether to re-anchor the tranche or re-capture it is board work and a USER
+DECISION, exactly as `gen_seq._v1_anchor_stop` says of its own four.
 
 ---
 
@@ -282,8 +306,14 @@ archive's 2026-08-04 sentence.
    unrunnable since 2026-08-14.  The figure is right; the row was unearned when
    it was written and is earned now.
 4. **§C's `check_enter_nesting` row**: **RED as of 2026-09-19** — MASK 512/512
-   walk-mismatch, WAITED 154/154 — first measurement since 2026-08-14,
-   undiagnosed, discriminator registered in §6 above.
+   walk-mismatch, WAITED 154/154 — first measurement since 2026-08-14.  **The
+   engine control was run and the RED is ENGINE-INDEPENDENT** (the ucore fails
+   the identical 512), so it is a **fourth v1-anchor/code-region casualty**, not
+   an FSM regression, and it belongs beside `check_ff_t4`,
+   `check_mod3_illegal` and `check_lc6_gate` rather than in the archive's
+   defect list.  ⚠ It is the only one of the four that does **not** raise: it
+   composes a v2-anchored image, compares it to v1-anchored goldens and prints
+   100 % divergence.  **A loud RED can be as false as a silent GREEN.**
 5. **§C's `check_ff_t4`, `check_mod3_illegal`, `check_lc6_gate` rows**: all
    three **DOWN for the fuzz-v2 code-region / v1-anchor reason**, independently
    of the demux break.  `check_ff_t4` is already covered by `CLAUDE.md`'s
