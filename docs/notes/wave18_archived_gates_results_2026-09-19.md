@@ -132,8 +132,8 @@ listed set does not cover:
 | `prefix_clear_lint` | PASS |
 | `ea_step_lint` | PASS |
 | `check_race_law` | PASS |
-| `optable --selfcheck` | PASS — 0 errors |
-| `fuzz_campaign lint` | not scored in this wave (long; started and not waited on) |
+| `optable --selfcheck` | **PASS — rc 0**, 0 errors, 255 one-byte ops / 26 `F0_WHITELIST` forms |
+| `fuzz_campaign lint` | **PASS — rc 0**.  `LINT PASS: soup hits=0 compose_err=0; raw hits=0 compose_err=0; wvec hits=0; bias hits=0; handler hits=0` — raw 100,000 seeds in 1,456.8 s, wvec 200 × 2 × 5 in 36.6 s, and **its own four planted controls A/B/C/D all FIRE** |
 | `check_ff_t4` | **DOWN** — V1 anchor |
 | `check_mod3_illegal` | **DOWN** — code region |
 | the six `check_core --core fsm` suite legs | **all six blocked BEFORE; all six build AFTER.**  `v0.1` measured (§3); the other five not run in this wave, `v0.3` (3.7 M cases) deliberately not run |
@@ -322,10 +322,15 @@ DECISION, exactly as `gen_seq._v1_anchor_stop` says of its own four.
    *"read against 168,400, not 169,000"* rule is **stale**.  On the current
    comparator the archived core is **169,000/169,000** and **226/283**.  §4
    above has the mechanism and `fsm_core_archive_2026-08-04.md` §6b carries it.
-7. **§C's two latent stale-binary hazards** (§2b): `check_ff_t4.py:34` and
+7. **`sw/t30_sweep.sh` DISCARDS EVERY LEG'S EXIT CODE** — each leg is
+   `… 2>&1 | tail -1`, so the sweep prints verdict lines and aggregates
+   nothing.  A failing leg does not fail the sweep, and the reader is the only
+   check.  (Found because this document's first draft made the same mistake
+   when scoring two of those legs; corrected before anything was quoted.)
+8. **§C's two latent stale-binary hazards** (§2b): `check_ff_t4.py:34` and
    `causal_wrand.py:715` both use the raw `check_seq.BIN` path with no
    artifact-layer assertion.  A stale binary would score.
-8. **A meta-finding for the vacuous-gate list** — this one is the mirror image
+9. **A meta-finding for the vacuous-gate list** — this one is the mirror image
    of the five already there.  **Those five were GREEN while blind.  This one
    could not run at all, and the ledger still carried its green row**, because
    the row was copied rather than measured.  *A gate's registered row and the
@@ -344,6 +349,18 @@ or `git reset --hard`; every `git add` by explicit path and no
 `sw/testdata/receipts/*.jsonl` staged.  Temporaries under
 `~/.cache/ucsimt-tmp/wave18/`.  Every figure above was measured on this tree;
 nothing was carried from another.
+
+⚠ **A SECOND TRAP, AND THIS ONE CAUGHT THIS DOCUMENT'S OWN FIRST DRAFT.**  The
+two `t30_sweep.sh` lint legs above were first run as `cmd 2>&1 | tail -1; rc=$?`
+— which captures **`tail`'s** exit code, not the tool's, and prints `rc=0`
+whatever the tool did.  `t30_sweep.sh` itself is written in exactly that shape
+(`… 2>&1 | tail -1` on every leg), so **the sweep's own legs report their
+verdict LINE and discard their EXIT CODE**; it has `set -uo pipefail` but no
+aggregation, so a failing leg does not fail the sweep.  Both legs were
+re-measured with the real exit code captured (`REAL_EXIT=0` on each) before
+anything was scored here.  *An instrument that cannot fail is not measuring* —
+this is the eleven-instruments rule landing on the reporter rather than on the
+subject.
 
 ⚠ **ONE TRAP FOUND BY WALKING INTO IT, AND WORTH REGISTERING.**  Running
 `quartus_map … nec_test -c nec_test` **REWRITES `hdl/nec_test.qsf` AND
