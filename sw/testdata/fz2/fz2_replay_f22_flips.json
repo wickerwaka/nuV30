@@ -1,0 +1,80 @@
+{
+ "tool": "sw/fz2_replay.py",
+ "ts": "2026-09-19T14:39:41Z",
+ "ledger": "sw/testdata/fz2/fz2_failure_ledger_f22_2026-09-19.json",
+ "leg": "ret",
+ "tb_sys_receipt": "fbb3e15ea1fb5f9f464bd44affa3d7625cb57423f34443b1e47a6451b7749709",
+ "tb_sys_tree": "a00bfa461ae2c58359a7aef22e17005060ebcec3728dfd3e8d9a7b15d54cccb1",
+ "git": {
+  "head": "d5f5fca53901c99abd72c5e8446f9e2ad3c0a8eb",
+  "describe": "d5f5fca539-dirty",
+  "dirty_tracked": true
+ },
+ "era_report": [
+  "bitstream   1ab9a37149e6e90f\u2026  flashed 2026-09-19T14:23:40Z  git d5f5fca539-dirty",
+  "receipt     a43b7a487bb63bbd\u2026  FLASH#22 RETENTION draw@seed1-seed1",
+  "its inputs  99/99 hash IDENTICAL in the tree at HEAD"
+ ],
+ "era_ok": true,
+ "tables": [
+  {
+   "name": "tb_sys REPLAY (both directives + overlay + the seed's own wait source)",
+   "n": 2,
+   "agree": 2,
+   "cells": {
+    "False_False": 1,
+    "True_True": 1
+   },
+   "first_bad_same": 1,
+   "first_bad_both_fail": 1,
+   "disagreements": {
+    "fabric_pass_replay_fail": [],
+    "fabric_fail_replay_pass": []
+   }
+  }
+ ],
+ "rows": [
+  {
+   "seed": "fz2c/407000",
+   "cid": "fz2c",
+   "k": 407000,
+   "tier": "raw",
+   "fabric_bad": 0,
+   "fabric_first": null,
+   "win": 4000,
+   "wait_mode": "wrand",
+   "has_evt": false,
+   "sys": {
+    "n": 4000,
+    "nrows": 4063,
+    "bad": 0,
+    "flick": 0,
+    "first": null,
+    "fired": 4,
+    "vecused": 1
+   },
+   "family": "(fabric PASS)"
+  },
+  {
+   "seed": "fz2e/516077",
+   "cid": "fz2e",
+   "k": 516077,
+   "tier": "soup",
+   "fabric_bad": 10,
+   "fabric_first": 1214,
+   "win": 4000,
+   "wait_mode": "wrand",
+   "has_evt": true,
+   "sys": {
+    "n": 4000,
+    "nrows": 4063,
+    "bad": 10,
+    "flick": 0,
+    "first": 1214,
+    "fired": 5,
+    "vecused": 0
+   },
+   "family": "NEW/UNCLASSIFIED"
+  }
+ ]
+}

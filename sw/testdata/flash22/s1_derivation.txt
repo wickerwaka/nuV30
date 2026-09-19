@@ -1,0 +1,23 @@
+== FLASH #22 -- S-1 / C-a FOR THE RIG'S ENABLE TRAIN (nec_bus.sv divider, system_large.sv wiring)
+   CE = tick_rise, CE_HALF = tick_fall, both off ONE counter.
+
+   D  |   CE   CE_HALF | coincident(C-a) | S-1 viol | gap min/max
+  ----+----------------+-----------------+----------+------------
+    0 |    64      64 |              64 |        0 | 1/1   <<< VIOLATES
+    1 |  4096       0 |               0 |     4095 | 0/0   <<< VIOLATES
+    2 |  2048    2048 |               0 |        0 | 1/1
+    3 |  1365    1366 |               0 |        0 | 1/1
+    4 |  1024    1024 |               0 |        0 | 1/1
+    8 |   512     512 |               0 |        0 | 1/1
+   16 |   256     256 |               0 |        0 | 1/1
+   32 |   128     128 |               0 |        0 | 1/1
+   63 |    65      65 |               0 |        0 | 1/1
+
+  ALL D in [2, 63]: violations = []   -> NONE
+  THE DIVIDER OF RECORD, D = 8: CE 512 / CE_HALF 512 / coincident 0 / S-1 viol 0 / exactly 1-1 CE_HALF between consecutive CEs
+
+  --- NON-VACUITY (the null: these MUST fail) ---
+    D = 0: coincident 64, S-1 viol 0  -> FAILS as required  (C-a: CE and CE_HALF coincide)
+    D = 1: coincident 0, S-1 viol 4095  -> FAILS as required  (S-1: CEs with no CE_HALF between them)
+
+  S-1 DERIVATION: PASS   (legal range clean: True; nulls fail: True)

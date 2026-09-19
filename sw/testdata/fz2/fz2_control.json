@@ -2,8 +2,58 @@
  "stage": "fz2 C-6 control legs",
  "host": "root@mister-nec",
  "prereg": "\u00a76 C-6 (a)(b)(c); the legs are \u00a724",
- "gen_git": "325b2092d7",
+ "gen_git": "d5f5fca539",
  "tree_dirty": [
+  {
+   "status": " M",
+   "path": "docs/notes/class5_8086_reopen.md",
+   "sha256": "abf906d3773c13f06339e65e3c9eec51dcd3c4aad8bc8ac742cf314c3146f284"
+  },
+  {
+   "status": " M",
+   "path": "docs/notes/class5_bandage_findings.md",
+   "sha256": "b0b94b524f1b34900ef314cc2dde369acee067208830de72a9013d6771ae539e"
+  },
+  {
+   "status": " M",
+   "path": "docs/notes/class5_path_unification_plan.md",
+   "sha256": "407d92773c1131bfe3242695ad603e031067b8f2d4c4be4bef293d85fed42651"
+  },
+  {
+   "status": " M",
+   "path": "docs/notes/class5_phase_s_plan.md",
+   "sha256": "1870a92436edc96448ace7a3b6fd6e3c95a8258ef317b470686f112427c95e8e"
+  },
+  {
+   "status": " M",
+   "path": "sw/_s14_ret_draw.sh",
+   "sha256": "264aa36b332d7e0eb2eea2dceb26133c5261e47b958b7c6efaa0550378636659"
+  },
+  {
+   "status": " M",
+   "path": "sw/char_divergence.py",
+   "sha256": "864bde121aeb1fb2e3f400ddf9a5ebbd65e4e7ca19de9969fb6d36830b1787f9"
+  },
+  {
+   "status": " M",
+   "path": "sw/fz2_a10_replay.py",
+   "sha256": "bf7e369aa20447e219d6372b902ebe79b18ca343b1fc97ec9de7fc9a3a643230"
+  },
+  {
+   "status": " M",
+   "path": "sw/fz2_a1_replay.py",
+   "sha256": "31b02f940975902cef0f231fff4c0588b5da7076cc3213c7a4504273e31633c7"
+  },
+  {
+   "status": " M",
+   "path": "sw/t7_sim_ab.py",
+   "sha256": "14f933a002aaa81e0132f273702107aee670ac09e4894d11d8845d061a4f8c04"
+  },
+  {
+   "status": " M",
+   "path": "sw/t7_sim_proof.py",
+   "sha256": "456eea880db74a52b24856c93c57b8e667ee7af478d695dbf8c5bae3c77f790b"
+  },
   {
    "status": " D",
    "path": "sw/testdata/campaigns/fz2c/coverage.json",
@@ -12,7 +62,7 @@
   {
    "status": " M",
    "path": "sw/testdata/campaigns/fz2c/manifest.json",
-   "sha256": "70cf58e4ab866cd3d296d72a9a4b502901b78f8ede060ea115db66d559b645e4"
+   "sha256": "8bf1b4d6a2703bc138f25e59a2e939fbed6b1f2a3c8958d8540869e4b1e52f27"
   },
   {
    "status": " D",
@@ -27,7 +77,7 @@
   {
    "status": " M",
    "path": "sw/testdata/campaigns/fz2e/manifest.json",
-   "sha256": "0523f79b9460233f8b5ce34034673981da8e039066c8de8746b6bd45713dec67"
+   "sha256": "d26798d5ae0db3708e2d5648d3d23afd2fa8353f2a0179adb59d772635dd1f71"
   },
   {
    "status": " D",
@@ -37,90 +87,135 @@
   {
    "status": " M",
    "path": "sw/testdata/flash_log.jsonl",
-   "sha256": "7eae7942a1d45691f5c36780ead69ed99ece7af440db92494dfaea42701911fe"
+   "sha256": "b3c9fb8f42d8799f07d1e04ce92909c95ef7ca3bbaed9ed3412be344fa72e241"
   },
   {
    "status": " M",
    "path": "sw/testdata/receipts/quartus_bitstream.jsonl",
-   "sha256": "ad4c564b32445fb5a6c6812dc63f0fc02e94d5edf0e0a39d422679b002e944a3"
+   "sha256": "c59f3b4df845f234df08e21baf94b20a0068aebc1af4cc411d26d5519491030d"
   },
   {
    "status": " M",
    "path": "sw/testdata/receipts/quartus_distribution.jsonl",
-   "sha256": "b857cb370de283261be9870f562247f577a6304e5f786a38a301d7cfdfee92f3"
+   "sha256": "646ac34339467ba4690e1f7736ed5a532cf8777426ea3fe195bb2581f14b2ee4"
+  },
+  {
+   "status": " M",
+   "path": "sw/testdata/receipts/verilator_binary.jsonl",
+   "sha256": "a2d22e814814764e4b470bed759b7e8c0ea0cb0e446765dab76245aca14a2d94"
+  },
+  {
+   "status": " M",
+   "path": "sw/testdata/rep_cl0/modeldrive.py",
+   "sha256": "27a63167ca46ec2fe91a06b56d0a55d8eb805a747a7b8781d26204f67e6a9f9b"
+  },
+  {
+   "status": " M",
+   "path": "sw/testdata/rep_cl0/rep_cl0_repro.py",
+   "sha256": "c61ef30d3d32d5b1841bf02866b5789c872509adb373fbd3cfcb618021bb3bbd"
+  },
+  {
+   "status": " M",
+   "path": "sw/testdata/rep_cl0/repdrive.py",
+   "sha256": "9ae4c5720bc3e75f12b34214e0689eb04358952b1b77ce94cfae4c7d0a6b5dd3"
+  },
+  {
+   "status": " M",
+   "path": "tests/v30/rep_cl0/DIAGNOSTIC-UNREGISTERED/align_probe.py",
+   "sha256": "ce2bf14bf0edb5cd75929e98000332fab7d978ae477c637ddf6b57259ef3d043"
+  },
+  {
+   "status": " M",
+   "path": "tests/v30/rep_cl0/DIAGNOSTIC-UNREGISTERED/diag2.py",
+   "sha256": "de34842c2cc6df399d819174e5f35514480eb16ac4fc47246aab9dd9c55fa206"
+  },
+  {
+   "status": " M",
+   "path": "tests/v30/rep_cl0/DIAGNOSTIC-UNREGISTERED/diag3.py",
+   "sha256": "a564226db7bdcb4e77d1e4294e9bdaa74b9f9ffedda7e00919a80a10a5390a74"
+  },
+  {
+   "status": " M",
+   "path": "tests/v30/v0.1/README.md",
+   "sha256": "472825dc906098e7159b88a9dfcff2499a0c2bb137bed9cc3eb14f0f8a8e9e4f"
+  },
+  {
+   "status": " M",
+   "path": "tests/v30/v0.3/README.md",
+   "sha256": "ef8dc831ae4286a4f2dcd1c7e61082bc4536807480d739ec4107d158c739353c"
   }
  ],
- "started": "2026-08-14T04:05:12Z",
+ "started": "2026-09-19T14:24:27Z",
  "div_guards": [
   {
    "tag": "control-start",
    "readback": "div=8 (4 MHz), commanded by this connection",
    "state": "PINNED",
    "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
-   "ts": "2026-08-14T04:05:13Z"
+   "ts": "2026-09-19T14:24:28Z"
   },
   {
    "tag": "control-P1",
    "readback": "div=8 (4 MHz), commanded by this connection",
    "state": "PINNED",
    "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
-   "ts": "2026-08-14T04:05:13Z"
+   "ts": "2026-09-19T14:24:28Z"
   },
   {
    "tag": "control-P2",
    "readback": "div=8 (4 MHz), commanded by this connection",
    "state": "PINNED",
    "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
-   "ts": "2026-08-14T04:05:13Z"
+   "ts": "2026-09-19T14:24:28Z"
   },
   {
    "tag": "control-P3",
    "readback": "div=8 (4 MHz), commanded by this connection",
    "state": "PINNED",
    "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
-   "ts": "2026-08-14T04:05:13Z"
+   "ts": "2026-09-19T14:24:28Z"
   },
   {
    "tag": "control-P4",
    "readback": "div=8 (4 MHz), commanded by this connection",
    "state": "PINNED",
    "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
-   "ts": "2026-08-14T04:05:14Z"
+   "ts": "2026-09-19T14:24:28Z"
   },
   {
    "tag": "control-P5",
    "readback": "div=8 (4 MHz), commanded by this connection",
    "state": "PINNED",
    "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
-   "ts": "2026-08-14T04:05:14Z"
+   "ts": "2026-09-19T14:24:29Z"
   },
   {
    "tag": "control-V1",
    "readback": "div=8 (4 MHz), commanded by this connection",
    "state": "PINNED",
    "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
-   "ts": "2026-08-14T04:05:14Z"
+   "ts": "2026-09-19T14:24:29Z"
   },
   {
    "tag": "control-V2",
    "readback": "div=8 (4 MHz), commanded by this connection",
    "state": "PINNED",
    "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
-   "ts": "2026-08-14T04:05:14Z"
+   "ts": "2026-09-19T14:24:29Z"
   },
   {
    "tag": "control-N1",
    "readback": "div=8 (4 MHz), commanded by this connection",
    "state": "PINNED",
    "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
-   "ts": "2026-08-14T04:05:14Z"
+   "ts": "2026-09-19T14:24:29Z"
   },
   {
    "tag": "control-end",
    "readback": "div=8 (4 MHz), commanded by this connection",
    "state": "PINNED",
    "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
-   "ts": "2026-08-14T04:05:15Z"
+   "ts": "2026-09-19T14:24:29Z"
   }
  ],
  "legs": [
@@ -204,7 +299,7 @@
    "fired": 1,
    "rows_file": "sw/testdata/campaigns/fz2ctl/captures/P1.json.gz",
    "n_rows": 4063,
-   "sha256": "d9daeaf84bb2e6d83e4790f250bfd35169c445c25b63a522c348b05059db1542"
+   "sha256": "3f854e6e7bbf4e269a8a2b2eff343dff5d6e7befa12087d0812a37473940c9b9"
   },
   {
    "leg": "P2",
@@ -264,7 +359,7 @@
    "fired": 1,
    "rows_file": "sw/testdata/campaigns/fz2ctl/captures/P2.json.gz",
    "n_rows": 4063,
-   "sha256": "ae3e385181bde1720fbd3b9f81c0b69c26e9de560581da476657bbb94d492eb0"
+   "sha256": "83d973d243bd6a6c286bbc99427624d9da986b1f6c5836d94283f39a6cdf0f7c"
   },
   {
    "leg": "P3",
@@ -324,7 +419,7 @@
    "fired": 1,
    "rows_file": "sw/testdata/campaigns/fz2ctl/captures/P3.json.gz",
    "n_rows": 4063,
-   "sha256": "01ce50f25530aafa59648598b304837fde62a533e4aa8f2b62d8e90ae2eb1d34"
+   "sha256": "1e5b674b2ca91346d6814e8abc549f231ff3e9751734bb06b296e3558d00c2a1"
   },
   {
    "leg": "P4",
@@ -384,7 +479,7 @@
    "fired": 1,
    "rows_file": "sw/testdata/campaigns/fz2ctl/captures/P4.json.gz",
    "n_rows": 4063,
-   "sha256": "60da9594be3aaeb49712d7cc45e531d503e719218ae869e8da28913981c960bf"
+   "sha256": "8fdd48c4726802ef2567030b9f10bc9ab1715a3ae12f4ffae41ed66f91704a4a"
   },
   {
    "leg": "P5",
@@ -444,7 +539,7 @@
    "fired": 1,
    "rows_file": "sw/testdata/campaigns/fz2ctl/captures/P5.json.gz",
    "n_rows": 4063,
-   "sha256": "74f0de455dca1062a37ae01e041d8d6f93ddbf36b14a11e69f1f1f2e572f9699"
+   "sha256": "6a933fadb2feb8d7077c6e58c6d608cdc460db821c93476ece84905aa36e3978"
   },
   {
    "leg": "V1",
@@ -508,7 +603,7 @@
    "fired": 4,
    "rows_file": "sw/testdata/campaigns/fz2ctl/captures/V1.json.gz",
    "n_rows": 4063,
-   "sha256": "db671082be9bc6fa1c78947f46c5e0b93c2c816db18e135e4ab5b5b13b08b0b6"
+   "sha256": "a327ec7680265653bd3972371251329c9b82ad46f8d0e909c9f0470633b85975"
   },
   {
    "leg": "V2",
@@ -572,7 +667,7 @@
    "fired": 4,
    "rows_file": "sw/testdata/campaigns/fz2ctl/captures/V2.json.gz",
    "n_rows": 4063,
-   "sha256": "2272c4efe466aa841cd033bf879492587f0424ee311b7cba50bfeb9b22d92876"
+   "sha256": "c31e3e5377aa3914626d24e938cfe1ba021fb3e8824f6748cff812af36f99ed1"
   },
   {
    "leg": "N1",
@@ -624,49 +719,49 @@
    "fired": 4,
    "rows_file": "sw/testdata/campaigns/fz2ctl/captures/N1.json.gz",
    "n_rows": 4063,
-   "sha256": "ad0559ae0e9b480fade42e6326acc18b039023cfc3631c2b2d36f5588db64f22"
+   "sha256": "c074f41972f109eeaf75b6fa89ac4ab24915bf3fea73fc8226b259ea44363818"
   }
  ],
  "retained": {
   "P1": {
    "rows_file": "sw/testdata/campaigns/fz2ctl/captures/P1.json.gz",
    "n_rows": 4063,
-   "sha256": "d9daeaf84bb2e6d83e4790f250bfd35169c445c25b63a522c348b05059db1542"
+   "sha256": "3f854e6e7bbf4e269a8a2b2eff343dff5d6e7befa12087d0812a37473940c9b9"
   },
   "P2": {
    "rows_file": "sw/testdata/campaigns/fz2ctl/captures/P2.json.gz",
    "n_rows": 4063,
-   "sha256": "ae3e385181bde1720fbd3b9f81c0b69c26e9de560581da476657bbb94d492eb0"
+   "sha256": "83d973d243bd6a6c286bbc99427624d9da986b1f6c5836d94283f39a6cdf0f7c"
   },
   "P3": {
    "rows_file": "sw/testdata/campaigns/fz2ctl/captures/P3.json.gz",
    "n_rows": 4063,
-   "sha256": "01ce50f25530aafa59648598b304837fde62a533e4aa8f2b62d8e90ae2eb1d34"
+   "sha256": "1e5b674b2ca91346d6814e8abc549f231ff3e9751734bb06b296e3558d00c2a1"
   },
   "P4": {
    "rows_file": "sw/testdata/campaigns/fz2ctl/captures/P4.json.gz",
    "n_rows": 4063,
-   "sha256": "60da9594be3aaeb49712d7cc45e531d503e719218ae869e8da28913981c960bf"
+   "sha256": "8fdd48c4726802ef2567030b9f10bc9ab1715a3ae12f4ffae41ed66f91704a4a"
   },
   "P5": {
    "rows_file": "sw/testdata/campaigns/fz2ctl/captures/P5.json.gz",
    "n_rows": 4063,
-   "sha256": "74f0de455dca1062a37ae01e041d8d6f93ddbf36b14a11e69f1f1f2e572f9699"
+   "sha256": "6a933fadb2feb8d7077c6e58c6d608cdc460db821c93476ece84905aa36e3978"
   },
   "V1": {
    "rows_file": "sw/testdata/campaigns/fz2ctl/captures/V1.json.gz",
    "n_rows": 4063,
-   "sha256": "db671082be9bc6fa1c78947f46c5e0b93c2c816db18e135e4ab5b5b13b08b0b6"
+   "sha256": "a327ec7680265653bd3972371251329c9b82ad46f8d0e909c9f0470633b85975"
   },
   "V2": {
    "rows_file": "sw/testdata/campaigns/fz2ctl/captures/V2.json.gz",
    "n_rows": 4063,
-   "sha256": "2272c4efe466aa841cd033bf879492587f0424ee311b7cba50bfeb9b22d92876"
+   "sha256": "c31e3e5377aa3914626d24e938cfe1ba021fb3e8824f6748cff812af36f99ed1"
   },
   "N1": {
    "rows_file": "sw/testdata/campaigns/fz2ctl/captures/N1.json.gz",
    "n_rows": 4063,
-   "sha256": "ad0559ae0e9b480fade42e6326acc18b039023cfc3631c2b2d36f5588db64f22"
+   "sha256": "c074f41972f109eeaf75b6fa89ac4ab24915bf3fea73fc8226b259ea44363818"
   }
  },
  "stimulus": {
@@ -700,5 +795,5 @@
  "failing_legs": [],
  "div_guards_unpinned": [],
  "verdict": "MET",
- "finished": "2026-08-14T04:05:15Z"
+ "finished": "2026-09-19T14:24:29Z"
 }
