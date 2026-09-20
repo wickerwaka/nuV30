@@ -102,6 +102,69 @@ them).
 
 ## Gate quick reference
 
+### ⚠⚠⚠⚠ READ FIRST — **THE C++ MODEL IS GONE SINCE 2026-09-19 (WAVE 20).  EVERY `--core sim` FIGURE BELOW IS HISTORY, NOT A LIVE GATE.**
+
+**USER DIRECTIVE 2026-09-19: *"The old C model has not been maintained, remove
+it."*  `sim/` is `git rm`'d — 39 files, 491,759 bytes, 10,089 lines of C++.
+**NOTHING WAS DESTROYED**: `git checkout be4eb2c32f -- sim/` restores it, and
+`sim/README.md` + `sim/coverage_report.txt` (912/1028 micro-rows) are archived
+by rename in `docs/notes/`.  The register is
+`docs/notes/invalidation_ledger.md` **RET-1** — a FIFTH register, whose
+load-bearing field is **the enumeration of every gate that died** — and the
+audit is `docs/notes/staleness_audit_2026-09-19.md`.**
+
+* **THE EVIDENCE, IN ONE COMMIT**: `c59d205479` (2026-08-20, *"Fix REP
+  termination before interrupt withdrawal"*) landed in `hdl/rtl/ucore/` and in
+  **no `sim/` file**.  The RTL has been ahead of the "spec" for a month, and
+  `ulockstep`'s header still read *"the model is the SPEC"* on the day it went
+  — six weeks after `CLAUDE.md` replaced that with SILICON MATCH.
+* **IT WAS GREEN WHEN IT WENT, AND THAT IS NOT A DEFENCE.** Measured in the
+  same session: `timed_gate --suite tests/v30/v0.1 --forms all` =
+  **169,000/169,000, row-diffs 0**; `ulockstep --golden all --cases 50` =
+  **17,350/17,350 ALL LOCKSTEP**.
+* **RETIRED, with their last registered figures in RET-1**: `simbin --disasm`
+  (1,285 rows) · **`ulockstep` 17,350** · `timed_gate` (every per-suite cycle
+  row below) · `ucsim_check` (**7,341,126 cases**) · `ucsim_fuzz` ·
+  `check_boot --timed 220` · `qdepth_probe` · `timed_scenario` 18/0/9 · and
+  the **`--core sim`** legs of `timed_fuzz` (1,339 / 799 / 2,138),
+  `sm3_s16_score` (1,305/1,371) and `sm3_tf_floor_cell` (121,890 rows).
+  Each now exits non-zero **naming RET-1**; none raises `FileNotFoundError`.
+* ⚠ **THE LARGEST LOSS: `v0.2` 347,000 + `v0.3` 3,699,998 + `v20suite`
+  3,125,000 = 7.17 M ARCHITECTURAL CASES NOW HAVE NO SCORER AT ALL.**
+  `check_core --suite-dir` reaches the same goldens against the RTL, but
+  `v0.2` raises `KeyError: 'opcodes'` and three of the four have never been run
+  against the ucore (`ucore_gaps_2026-08-04.md`).
+* **GATE G0 IS PRESERVED.**  `check_ucore_tables` diffs against a **FROZEN
+  SNAPSHOT** of `v30sim dump-tables` (`sw/testdata/g0-tables/`, sha256
+  `23d0025bc72eff93…`) and still reports **9,988 entries identical on both
+  legs**.  The independence survives because it was never in the model being
+  *runnable* but in its being a **SECOND IMPLEMENTATION**.  **The gate exits 2
+  CANNOT MEASURE — never PASS — if `docs/V20BITS.TXT` or `docs/pla3_outputs.txt`
+  moves by one byte**, with five positive controls recorded.
+* **`sw/simbin.py` SURVIVES AS THE REFUSAL**, because 134 modules reach it by
+  import and four of them (`check_fuzz_bank`, `fz2_replay`, `fz2_w1`,
+  `ghost_launch_law`) are live gates that never ran the model.
+* ⚠ **SIX LIVE GATES WERE ONE COMMIT FROM DYING FOR THE MODEL'S SAKE** —
+  `check_boot 220`/`400`, `timed_fuzz --core ucore`, `sm3_tf_floor_cell --core
+  ucore` (an **IMPORT-TIME** `ensure()`), `s15_census --core ucore`,
+  `wrfuzz_w7_gap_guard --core ucore` and the whole `s13_board` board CLI — each
+  had an UNCONDITIONAL `simbin.ensure()` on a path that never runs the model.
+  Repaired in the same wave.  **An eager precondition is a coupling.**
+* ⚠ **FIVE FILES ARE THE USER'S OWN UNCOMMITTED WORK AND WERE NOT TOUCHED**:
+  `sw/t7_sim_ab.py`, `sw/t7_sim_proof.py` and the three
+  `sw/testdata/rep_cl0/*.py`.  They resolve `sim/build/v30sim` by bare path and
+  **will raise `FileNotFoundError`**; the fix is one `simbin.retired("…")` line
+  each and it belongs to whoever owns those edits.
+* ⚠ **TWO ERRATA THE AUDIT MEASURED AGAINST THIS FILE.**  (a) The
+  `fuzz-v2-on-relanding` banner's *"FOUR RATCHETS … CANNOT RUN HERE AT ALL"* is
+  **false for two of the four**: `timed_scenario` ran and PASSED 18/0/9, and
+  `timed_ins_replay` dies on **`sw/case31_all_exts.txt`, a file never committed
+  to this repo** — not on the anchor.  (b) The `ss_lint` row below still
+  presents **0x8D / 226 / 0x8DE2 / 214 flops** as current; the tree measures
+  **232 / 229 flops / 4 whitelist / 0 UNMAPPED / 0x8F / 0x8FE8**, and the WAVE 7
+  banner's *"232 / 228 flops"* is one short of it.  `standing_gates.md` §B is
+  already correct; this file is not.
+
 ### ⚠⚠⚠ READ FIRST — **THE EU'S CHAIN IS FLAT SINCE 2026-09-09 (WAVE 7, `2ceb8c3ba3`).  THE SEVEN-COPY UNROLL IS GONE AND THE FUNCTION IS BYTE-IDENTICAL.**
 
 `docs/notes/chainflat_landing_prereg_2026-09-09.md` (committed **before the

@@ -222,6 +222,7 @@ def run_arch(image, fill, tf, max_ev, max_ins=20000):
     rec = {"i": 0, "fill": fill, "hex": bytes(image).hex(),
            "max_ev": max_ev, "max_ins": max_ins, "tf": 1 if tf else 0,
            "ilog": 1, "code": 1}
+    simbin.ensure("sm3_tf_law")      # WAVE 20: the model is RETIRED -- RET-1
     p = subprocess.run([str(SIM), "image", str(ROM)],
                        input=json.dumps(rec, separators=(",", ":")).encode(),
                        stdout=subprocess.PIPE)

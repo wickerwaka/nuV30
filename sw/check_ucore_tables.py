@@ -5,15 +5,29 @@
 
 Three legs, all of which must pass:
 
+  THE REFERENCE IS A FROZEN SNAPSHOT SINCE 2026-09-19 (WAVE 20), NOT A LIVE
+  MODEL.  The C++ model was RETIRED (`docs/notes/invalidation_ledger.md`
+  **RET-1**) and `sw/testdata/g0-tables/v30sim_dump_tables.txt` -- the exact
+  bytes of `sim/build/v30sim dump-tables docs/V20BITS.TXT`, taken on the last
+  tree that carried the model and hashed in `manifest.json` beside it -- stands
+  in its place.  **G0's INDEPENDENCE IS UNCHANGED AND THE REASON IS ONE
+  SENTENCE**: the independence was never in the model being RUNNABLE, it was in
+  the model being a SECOND IMPLEMENTATION -- 10,089 lines of C++ transliterated
+  from docs/V20UCDIS.PAS -- and freezing its output preserves exactly that, for
+  exactly the ROM it was taken from.  What is lost is the ability to re-derive
+  the reference for a DIFFERENT ROM, and that is why this gate now REFUSES
+  (exit 2, CANNOT MEASURE -- never PASS) if `docs/V20BITS.TXT` or
+  `docs/pla3_outputs.txt` moves by one byte.  See `snapshot_dump()`.
+
   LEG A (independent re-parse).  This file contains its OWN parser of
   docs/V20BITS.TXT and docs/pla3_outputs.txt, written from docs/V20UCDIS.PAS
   (procedure ReadBits, lines 103-160) and from the bit-numbering note at the
   head of sim/pla3_table.h -- NOT importing sw/ucore_tables.py.  Leg A diffs
-  that parse against `sim/v30sim dump-tables`, so a bug shared between the
-  generator and its helper module cannot pass by being consistent with itself.
+  that parse against the snapshot, so a bug shared between the generator and
+  its helper module cannot pass by being consistent with itself.
 
   LEG B (the artifacts).  hdl/rtl/ucore/ucrom.hex, ucdecode.hex and
-  pla3_tables.svh are read back as data and diffed against the SAME sim dump:
+  pla3_tables.svh are read back as data and diffed against the SAME snapshot:
       1028 microcode rows x 29b
       8192 micro-address decode entries (native resolution)
        768 PLA entries (3 x 256 x 14b)
@@ -22,20 +36,22 @@ Three legs, all of which must pass:
   LEG C (staleness).  `sw/gen_ucore_tables.py --check` -- the artifacts on disk
   are what the generator produces today.
 
-Exit 0 = G0 green.
+Exit 0 = G0 green.  Exit 1 = a table differs.  Exit 2 = CANNOT MEASURE.
 """
+import hashlib
+import json
 import re
 import subprocess
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-import simbin                                          # noqa: E402
 
-# U1: the C++ model THROUGH THE ARTIFACT/RECEIPT LAYER.  `simbin.SIM` is
-# `sim/build/v30sim`, the binary `simbin.recipe()` declares; nothing here
-# resolves the model by bare path any more.  See sw/simbin.py.
-SIM = simbin.SIM
+# WAVE 20.  The reference is these bytes, and `manifest.json` says what tree,
+# what binary receipt and what ROM they were taken from.
+SNAPDIR = ROOT / "sw/testdata/g0-tables"
+SNAP = SNAPDIR / "v30sim_dump_tables.txt"
+SNAPMAN = SNAPDIR / "manifest.json"
 V20BITS = ROOT / "docs/V20BITS.TXT"
 PLA3 = ROOT / "docs/pla3_outputs.txt"
 OUT = ROOT / "hdl/rtl/ucore"
@@ -126,13 +142,60 @@ def parse_pla():
 # --------------------------------------------------------------------------
 # the sim's own dump
 # --------------------------------------------------------------------------
-def sim_dump():
-    # `SIM.exists()` was the whole freshness test here, and existence is not
-    # identity: it is content-equal to `make`'s mtime rule and G0 compared the
-    # ucore's tables against whatever binary happened to be on disk.
-    simbin.ensure(why="check_ucore_tables G0")
-    out = subprocess.run([str(SIM), "dump-tables", str(V20BITS)],
-                         capture_output=True, text=True, check=True).stdout
+class CannotMeasure(RuntimeError):
+    """Exit 2.  Never PASS, never FAIL -- the reference does not describe this
+    tree, so this gate has no opinion about it."""
+
+
+def _sha(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def snapshot_dump():
+    """The reference, from frozen bytes, with a refusal in front of it.
+
+    THE PRECONDITION IS THE WHOLE POINT.  A snapshot of a derived table is a
+    true statement about ONE ROM.  If `docs/V20BITS.TXT` or
+    `docs/pla3_outputs.txt` moves, the snapshot becomes a statement about a
+    ROM this tree no longer has, and the model that could re-derive it is
+    retired -- so the only honest verdict is CANNOT MEASURE.  Reporting PASS
+    there would be this document's own vacuous-gate pattern; reporting FAIL
+    would accuse the artifacts of a fault that is not theirs.
+    """
+    for p in (SNAP, SNAPMAN):
+        if not p.exists():
+            raise CannotMeasure(f"{p} is missing -- G0's reference is gone.\n"
+                                "  recover it, or re-derive it from the model "
+                                "(invalidation_ledger.md RET-1 names the "
+                                "commit).")
+    man = json.loads(SNAPMAN.read_text())
+    got = _sha(SNAP)
+    if got != man["snapshot"]["sha256"]:
+        raise CannotMeasure(
+            "the G0 snapshot does not match its own manifest.\n"
+            f"  snapshot : {got}\n"
+            f"  manifest : {man['snapshot']['sha256']}\n"
+            "  the reference has been edited.  This gate does not score "
+            "against an unpinned reference.")
+    for rel, want in man["the_snapshot_describes_these_and_only_these"].items():
+        have = _sha(ROOT / rel)
+        if have != want:
+            raise CannotMeasure(
+                f"{rel} MOVED since the G0 reference was taken.\n"
+                f"  on disk  : {have}\n"
+                f"  snapshot : {want}\n"
+                "  The snapshot is `v30sim dump-tables` for the OLD bytes and "
+                "the C++ model that\n"
+                "  could re-derive it is RETIRED (invalidation_ledger.md "
+                "RET-1).  To move this ROM\n"
+                "  you must first restore the model from history and re-take "
+                "the snapshot:\n"
+                "    git checkout " + man["produced_by"]
+                ["model_last_source_commit"].split()[0] + " -- sim/\n"
+                "    python3 sw/simbin.py --build\n"
+                "    sim/build/v30sim dump-tables docs/V20BITS.TXT > "
+                + str(SNAP.relative_to(ROOT)))
+    out = SNAP.read_text()
     rows, native, emu = [], [], []
     pla = {"native": [0] * 256, "mode8080": [0] * 256, "ext": [0] * 256}
     for line in out.splitlines():
@@ -145,8 +208,8 @@ def sim_dump():
         elif f[0] == "pla" and len(f) == 4:
             pla[f[1]][int(f[2], 16)] = int(f[3], 16)
     if len(rows) != N_ROWS or len(native) != N_ADDRS:
-        raise SystemExit(f"sim dump malformed: {len(rows)} rows, "
-                         f"{len(native)} addrs")
+        raise CannotMeasure(f"G0 snapshot malformed: {len(rows)} rows, "
+                            f"{len(native)} addrs")
     return rows, native, emu, pla
 
 
@@ -199,16 +262,23 @@ def diff(label, got, want, fmt="%X", limit=5):
 
 
 def main():
-    # U1 / P-2.  EAGERLY, before any loop: `ArtifactError` is a
-    # `RuntimeError`, and a per-case `except Exception` would turn one
-    # sentence naming a stale binary into N unreadable case failures.
-    simbin.ensure(why=__name__)
     errs = 0
-    s_rows, s_native, s_emu, s_pla = sim_dump()
-    print(f"sim dump: {len(s_rows)} rows, {len(s_native)} micro-addresses, "
+    try:
+        s_rows, s_native, s_emu, s_pla = snapshot_dump()
+    except CannotMeasure as e:
+        print("check_ucore_tables: CANNOT MEASURE -- G0 NOT SCORED")
+        print(f"  {e}")
+        return 2
+    man = json.loads(SNAPMAN.read_text())
+    print(f"G0 reference: FROZEN SNAPSHOT {SNAP.relative_to(ROOT)}  "
+          f"sha256 {man['snapshot']['sha256'][:16]}...")
+    print(f"  taken from `v30sim dump-tables` at receipt "
+          f"{man['produced_by']['simbin_receipt_id'][:16]}... "
+          f"(the model is RETIRED -- invalidation_ledger.md RET-1)")
+    print(f"snapshot: {len(s_rows)} rows, {len(s_native)} micro-addresses, "
           f"768 PLA entries")
 
-    print("\nLEG A -- independent re-parse of the dumps vs the sim")
+    print("\nLEG A -- independent re-parse of the dumps vs the reference")
     a_rows, a_pats = parse_v20bits()
     a_native, a_emu, a_amb = resolve_banks(a_pats)
     a_pla = parse_pla()
@@ -220,7 +290,7 @@ def main():
     print(f"  ambiguous micro-addresses: {len(a_amb)} "
           f"({', '.join('%04X' % a for a in a_amb) or 'none'})")
 
-    print("\nLEG B -- the emitted RTL artifacts vs the sim")
+    print("\nLEG B -- the emitted RTL artifacts vs the reference")
     b_rows = read_hexfile(OUT / "ucrom.hex", N_ROWS, 8)
     dec = read_hexfile(OUT / "ucdecode.hex", N_ADDRS, 3)
     b_native = [-1 if (w & 0x200) == 0 else (w & 0x1FF) for w in dec]
@@ -244,7 +314,8 @@ def main():
         return 1
     print(f"check_ucore_tables: PASS -- G0 GREEN "
           f"({N_ROWS} rows + {N_ADDRS} micro-addresses + 768 PLA entries "
-          f"= {total} entries byte-identical to sim/, on both legs)")
+          f"= {total} entries byte-identical to the frozen "
+          f"`v30sim dump-tables` reference, on both legs)")
     return 0
 
 

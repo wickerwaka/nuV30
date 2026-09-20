@@ -64,7 +64,10 @@ ROOT = SW.parent
 sys.path.insert(0, str(SW))
 
 import simbin                                           # noqa: E402
-simbin.ensure("w33 take cell")
+# WAVE 20: the model is RETIRED (invalidation_ledger.md RET-1).  This was
+# an IMPORT-TIME `simbin.ensure("w33 take cell")`, which killed this tool's
+# `--core ucore` leg -- which never runs the model -- at `import`.  The
+# refusal now sits on the SIM LEG, where it belongs.
 import sm3_tf_floor_cell as fcell                       # noqa: E402
 import fuzz_classify as fc                              # noqa: E402
 
@@ -137,6 +140,7 @@ def _tb():
 
 
 def sim_takes(image, waits, clocks):
+    simbin.ensure("w33 take cell")          # WAVE 20: refuses -- RET-1
     td = tempfile.mkdtemp(prefix="w33s_")
     try:
         img = Path(td) / "img.bin"

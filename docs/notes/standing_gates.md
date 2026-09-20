@@ -68,11 +68,63 @@ pattern one level down).
 
 ## A. THE STANDING SET — core-neutral
 
+### ⚠⚠⚠ **2026-09-19, WAVE 20 — THE C++ MODEL IS REMOVED FROM THE TREE, AND THE GATES THAT RAN ON IT ARE FORMALLY RETIRED.**
+
+**USER DIRECTIVE 2026-09-19: *"The old C model has not been maintained, remove
+it."*  Register entry: `docs/notes/invalidation_ledger.md` **RET-1** — a FIFTH
+register, opened for this, whose load-bearing field is **the enumeration of
+every gate that died**.  Audit: `docs/notes/staleness_audit_2026-09-19.md`.**
+
+**NOTHING WAS DESTROYED.**  `git rm` keeps history; recovery is
+`git checkout be4eb2c32f -- sim/`.  `sim/README.md` and `sim/coverage_report.txt`
+(912/1028 micro-rows) are **archived by rename** into `docs/notes/`.
+
+* **RETIRED from this section**: the **ROM disasm ⧉** row (`simbin --disasm`,
+  1,285 rows).  It now exits **2**, naming RET-1.  **Nothing replaces it.**
+* **RETIRED from §B / the `timed_*` family**: `ulockstep` (**17,350/17,350 ALL
+  LOCKSTEP — measured GREEN on the day it went**), `timed_gate` (`v0.1`
+  **169,000/169,000, row-diffs 0**, likewise measured green), `ucsim_check`
+  (the **7,341,126-case** architectural ladder), `ucsim_fuzz`,
+  `check_boot --timed`, `qdepth_probe`, and the `--core sim` legs of
+  `timed_fuzz`, `sm3_s16_score` and `sm3_tf_floor_cell`.  RET-1 carries each
+  one's last registered figure.
+* ⚠ **THE LARGEST LOSS IS NOT A ROW IN THIS TABLE**: `v0.2` (347,000), `v0.3`
+  (3,699,998) and `v20suite` (3,125,000) — **7.17 M architectural cases — now
+  have no scorer at all.**  `check_core --suite-dir` can reach them against the
+  RTL; `v0.2` raises `KeyError: 'opcodes'` and three of the four have never
+  been run against the ucore.
+* **G0 IS PRESERVED, NOT RETIRED.**  `check_ucore_tables` now diffs against a
+  **FROZEN SNAPSHOT** of `v30sim dump-tables` — `sw/testdata/g0-tables/`,
+  sha256 `23d0025bc72eff93…`, 9,992 lines — and still reports the same
+  **9,988** entries identical on both legs.  **The independence survives**
+  because it was never in the model being runnable but in its being a SECOND
+  IMPLEMENTATION; freezing its output preserves that for the ROM it describes.
+  **The gate now exits 2 CANNOT MEASURE — never PASS — if `docs/V20BITS.TXT`
+  or `docs/pla3_outputs.txt` moves by one byte.**  Five positive controls,
+  all fired; RET-1 §D lists them.
+* **THE LADDER IS ZERO-DELTA**, measured before and after on the same driver:
+  `check_core --opcodes all --cases 0` **169,000** at `--ce-div` 2/3/4/8 with
+  div 1 refused · `FA`/`FB`/`INT.FB` 1,200/1,200 · HLT sweeps at
+  `--waits 0/1/2/3` **279/283** · `check_boot` 220 and 400 · `check_ab_sim`
+  187 · `ss_lint` 232/229/4 · `r7_lint` · `cutset_lint` 81/0 ·
+  `phase_split_lint` 157/779/0 · `core_portlist_lint` ·
+  `chainflat_relocation_check` 9/9 · `ucrom_mif_check` · `demux_off_gate` ·
+  `chain_lfsr_gate` with its **four signatures byte-identical** ·
+  `test_artifact` 45/45 · `test_quartus_gate` 287/287 ·
+  `check_fuzz_bank` **PASS 621** · `gen_ucore_qsf --check` · `pla3_check`.
+* ⚠ **SIX LIVE GATES WERE ONE COMMIT FROM DYING FOR THE MODEL'S SAKE** and
+  were repaired in the same wave: `check_boot 220`/`400`, `timed_fuzz --core
+  ucore`, `sm3_tf_floor_cell --core ucore` (an **IMPORT-TIME** `ensure()`),
+  `s15_census --core ucore`, `wrfuzz_w7_gap_guard --core ucore`, and
+  `s13_board`'s whole board CLI — each had an UNCONDITIONAL
+  `simbin.ensure()` on a path that never runs the model.  **An eager
+  precondition is a coupling, and this is what it costs.**
+
 | Gate | Command | Proves |
 |---|---|---|
-| ROM disasm ⧉ | `python3 sw/simbin.py --disasm` | the disassembly is byte-exact vs `V20UC.TXT`, **1,285 rows**, on the RECEIPTED binary, printing its receipt id.  (`make -C sim test` is the same diff on an unreceipted `sim/v30sim` built by mtime; kept as a developer convenience, not quoted as this gate) |
+| ~~ROM disasm ⧉~~ **RETIRED 2026-09-19, RET-1** | `python3 sw/simbin.py --disasm` — **exits 2, naming the register.**  *The retired row's text follows, because a ratchet is only readable against its own history:* | the disassembly is byte-exact vs `V20UC.TXT`, **1,285 rows**, on the RECEIPTED binary, printing its receipt id.  (`make -C sim test` is the same diff on an unreceipted `sim/v30sim` built by mtime; kept as a developer convenience, not quoted as this gate) |
 | PLA | `python3 sw/pla3_check.py` | 21 PLA checks |
-| check_ucore_tables (G0) | `python3 sw/check_ucore_tables.py` | the generated `hdl/rtl/ucore/` tables byte-match `sim/`: 1028 ROM rows + 8192 micro-addresses + 768 PLA entries = **9,988**, on an INDEPENDENT re-parse and on the emitted artifacts (`ucore_provenance.md` §4) |
+| check_ucore_tables (G0) | `python3 sw/check_ucore_tables.py` | ⚠ **THE REFERENCE IS A FROZEN SNAPSHOT SINCE 2026-09-19 (RET-1)** — `sw/testdata/g0-tables/v30sim_dump_tables.txt`, sha256 `23d0025bc72eff93…`, the exact bytes of `v30sim dump-tables` at receipt `54cb8188bf7bff16…`, pinned to the ROM it describes; the gate exits **2 CANNOT MEASURE** if `docs/V20BITS.TXT` or `docs/pla3_outputs.txt` moves.  Unchanged otherwise: the generated `hdl/rtl/ucore/` tables byte-match the reference: 1028 ROM rows + 8192 micro-addresses + 768 PLA entries = **9,988**, on an INDEPENDENT re-parse and on the emitted artifacts (`ucore_provenance.md` §4) |
 | optable selfcheck | `python3 sw/optable.py --selfcheck` | the opcode table agrees with fuzz_cov + instructions.json |
 | fuzz_campaign lint | `python3 sw/fuzz_campaign.py lint --report-every 5000` | the soup/raw generators never emit a chip-wedging image.  **GREEN, SM3 s12: `LINT PASS: soup hits=0 compose_err=0; raw hits=0 compose_err=0` over 10,000 soup + 100,000 raw seeds.**  §72.7a's NOT-RUN debt is DISCHARGED and the "hang" is EXPLAINED, not fixed: `--report-every` defaults to **0**, so the tool prints NOTHING until each phase ends, and the raw phase is 100,000 seeds at ~69/s ≈ **25 minutes**.  The `do_wait` / 0 % CPU process s11 observed was the WRAPPER SHELL; the worker sits at 99.8 % CPU throughout.  **Pass `--report-every` or it will look hung again** (`ucore_provenance.md` §73.10) |
 | test_fuzz_classify / test_fuzz_accept | `python3 sw/test_fuzz_{classify,accept}.py` | the verdict tree + acceptance rules (offline) |

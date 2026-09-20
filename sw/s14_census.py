@@ -30,6 +30,13 @@ ROOT = SW.parent
 sys.path.insert(0, str(SW))
 
 from timed_gate import run_form, row_check                 # noqa: E402
+import simbin                                              # noqa: E402
+
+# WAVE 20: `run_form` IS the C++ model, and the model is RETIRED
+# (invalidation_ledger.md RET-1).  Without this line the tool launches a
+# binary that is not there and dies with a bare FileNotFoundError from inside
+# `subprocess`.  It refuses by name instead.
+simbin.retired("s14_census: every column is `timed_gate.run_form`")
 
 SUITES = [("tests/v30/s10-hltsweep-w0", 0),
           ("tests/v30/s10-hltsweep-w1", 1),

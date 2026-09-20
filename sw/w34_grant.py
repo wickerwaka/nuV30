@@ -54,7 +54,10 @@ ROOT = SW.parent
 sys.path.insert(0, str(SW))
 
 import simbin                                            # noqa: E402
-simbin.ensure("w34 grant law")
+# WAVE 20: the model is RETIRED (invalidation_ledger.md RET-1).  This was
+# an IMPORT-TIME `simbin.ensure("w34 grant law")`, which killed this tool's
+# `--core ucore` leg -- which never runs the model -- at `import`.  The
+# refusal now sits on the SIM LEG, where it belongs.
 import fuzz_classify as fc                               # noqa: E402
 import sm3_tf_floor_cell as fcell                        # noqa: E402
 
@@ -191,6 +194,7 @@ def ucore_run(image, clocks, wargs):
 
 
 def sim_run(image, clocks, wargs):
+    simbin.ensure("w34 grant law")          # WAVE 20: refuses -- RET-1
     td = tempfile.mkdtemp(prefix="w34s_")
     try:
         img = Path(td) / "img.bin"

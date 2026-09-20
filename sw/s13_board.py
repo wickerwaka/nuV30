@@ -332,6 +332,7 @@ def c2_image(flush_period, sled, nblocks=12):
 
 
 def sim_rows_image(image, wv, nrows):
+    simbin.ensure(why="s13_board sim_rows_image")   # WAVE 20 -- RET-1
     with tempfile.TemporaryDirectory() as td:
         img = Path(td) / "img.bin"
         img.write_bytes(bytes(image))
@@ -482,10 +483,12 @@ def cmd_idle(args):
 
 
 def main():
-    # U1 / P-2.  EAGERLY, before any loop: `ArtifactError` is a
-    # `RuntimeError`, and a per-case `except Exception` would turn one
-    # sentence naming a stale binary into N unreadable case failures.
-    simbin.ensure(why=__name__)
+    # WAVE 20: the eager `simbin.ensure(why=__name__)` that stood here was
+    # UNCONDITIONAL, and the C++ model is retired (invalidation_ledger.md
+    # RET-1).  This is a BOARD tool: exactly ONE of its functions
+    # (`sim_rows_image`) ran the model, and the rig-integrity finding of SM2
+    # is that nothing notices an s10/s13 probe is broken until a board sitting
+    # needs it.  The refusal is therefore on that ONE function.
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
 

@@ -101,7 +101,10 @@ sys.path.insert(0, str(SW))
 
 import simbin                                           # noqa: E402
 
-simbin.ensure("sm3 s24 TF-floor cell")
+# WAVE 20: the model is RETIRED (invalidation_ledger.md RET-1).  This was
+# an IMPORT-TIME `simbin.ensure("sm3 s24 TF-floor cell")`, and this file is
+# a STANDING GATE whose `--core ucore` leg (121,890 rows, 0 row-diffs at
+# depth 4) never runs the model.  The refusal is now on the SIM LEG only.
 import sm3_ackgeom as ag                                # noqa: E402
 
 OUT = ROOT / "sw" / "testdata" / "sm3-s24tfcell"
@@ -348,6 +351,7 @@ def phases(rows, variant):
 # the engine leg -- the SAME stimulus at every candidate floor
 # --------------------------------------------------------------------------- #
 def run_sim(image, waits, floor, clocks=4200):
+    simbin.ensure("sm3 s24 TF-floor cell")   # WAVE 20: refuses -- RET-1
     td = tempfile.mkdtemp(prefix="s24_")
     try:
         img = Path(td) / "img.bin"
@@ -430,6 +434,7 @@ def brk_walk(image, waits):
     trace.  This is the CLOCK RULER of the whole cell, and it is the engine's;
     it is credible exactly as far as the engine's bus timing on the same sled
     matches the chip's per clock, which `score` checks and reports."""
+    simbin.ensure("sm3 s24 TF-floor cell: brk_walk")  # WAVE 20 -- RET-1
     td = tempfile.mkdtemp(prefix="s24w_")
     try:
         img = Path(td) / "img.bin"

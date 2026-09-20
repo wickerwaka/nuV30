@@ -116,8 +116,13 @@ def main():
     args = ap.parse_args()
     if not args.seeddir.is_dir():
         raise SystemExit(f"seeddir absent: {args.seeddir}")
-    simbin.ensure(why=__name__)
+    # WAVE 20: and ONLY on the MODEL leg.  This call was UNCONDITIONAL,
+    # so with the C++ model retired (invalidation_ledger.md RET-1) it
+    # would have killed this tool's RTL leg -- which never runs the
+    # model -- for the model's sake.
     cores = ("sim", "ucore") if args.core == "both" else (args.core,)
+    if "sim" in cores:
+        simbin.ensure(why=__name__)
     ok = True
     for core in cores:
         passed = 0

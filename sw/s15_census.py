@@ -623,10 +623,6 @@ def cmd_rmw(a):
 
 
 def main():
-    # U1 / P-2.  EAGERLY, before any loop: `ArtifactError` is a
-    # `RuntimeError`, and a per-case `except Exception` would turn one
-    # sentence naming a stale binary into N unreadable case failures.
-    simbin.ensure(why=__name__)
     ap = argparse.ArgumentParser()
     ap.add_argument("--report", required=True)
     # R4.  The engine, with `choices=` -- a typo must not silently become a
@@ -651,6 +647,15 @@ def main():
                          "banked seed (LC3 / C6 / C7's own population)")
     ap.add_argument("--seeddir", default="")
     a = ap.parse_args()
+    # U1 / P-2.  EAGERLY, before any loop: `ArtifactError` is a
+    # `RuntimeError`, and a per-case `except Exception` would turn one
+    # sentence naming a stale binary into N unreadable case failures.
+    # WAVE 20: and ONLY on the MODEL leg.  This call was UNCONDITIONAL,
+    # so with the C++ model retired (invalidation_ledger.md RET-1) it
+    # would have killed this tool's RTL leg -- which never runs the
+    # model -- for the model's sake.
+    if a.core == "sim":
+        simbin.ensure(why=__name__)
     if a.rmw:
         return cmd_rmw(a)
 

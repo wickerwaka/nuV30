@@ -1,0 +1,26 @@
+{
+  "what": "a frozen snapshot of `sim/build/v30sim dump-tables docs/V20BITS.TXT`",
+  "why": "GATE G0's INDEPENDENT REFERENCE for the microcode ROM, the micro-address decode and the pla_3 tables, preserved as bytes when the C++ model was retired (invalidation_ledger.md RET-1).",
+  "produced_by": {
+    "binary": "sim/build/v30sim",
+    "argv": [
+      "dump-tables",
+      "docs/V20BITS.TXT"
+    ],
+    "simbin_receipt_id": "54cb8188bf7bff1609eb62a103db73ea43852d1eb6ba05c863d59c887704cd2f",
+    "model_last_source_commit": "be4eb2c32f930e12575da5a6359b4fead3c28f96 2026-08-17",
+    "tree_at_capture": "975ecd01877b7c6f938092701fc5c73beb68b415",
+    "captured": "2026-09-19"
+  },
+  "snapshot": {
+    "path": "sw/testdata/g0-tables/v30sim_dump_tables.txt",
+    "sha256": "23d0025bc72eff938a77e0b8623426fd576798e132fef7337a2f8384cd6badf9",
+    "lines": 9992
+  },
+  "the_snapshot_describes_these_and_only_these": {
+    "docs/V20BITS.TXT": "ecd09bf03a8868400dd7e75fe38a59a3f27699638362cbc5a4bee102237bcf4b",
+    "docs/pla3_outputs.txt": "d4eab9e854fb59c676f38d66cbd447100e66d1d8cf69719d251ec0ae2a9ba753"
+  },
+  "refusal": "check_ucore_tables exits 2 CANNOT MEASURE -- never PASS -- if any sha256 above no longer matches the tree.  A moved ROM makes this snapshot a statement about a different ROM, and the model that could re-derive it is retired.",
+  "recover_the_producer": "git show be4eb2c32f930e12575da5a6359b4fead3c28f96:sim/  (the whole C++ model is in history; `git checkout <commit> -- sim/` restores it)"
+}

@@ -132,13 +132,19 @@ def run_timed(n):
 
 
 def main():
-    # U1 / P-2.  EAGERLY, before any loop: `ArtifactError` is a
-    # `RuntimeError`, and a per-case `except Exception` would turn one
-    # sentence naming a stale binary into N unreadable case failures.
-    simbin.ensure(why=__name__)
     global CORE
     argv = [a for a in sys.argv[1:] if not a.startswith("-")]
     timed = "--timed" in sys.argv
+    # U1 / P-2.  EAGERLY, before any loop: `ArtifactError` is a
+    # `RuntimeError`, and a per-case `except Exception` would turn one
+    # sentence naming a stale binary into N unreadable case failures.
+    #
+    # WAVE 20: and ONLY on `--timed`.  This call was UNCONDITIONAL, so with the
+    # C++ model retired (invalidation_ledger.md RET-1) it would have killed
+    # `check_boot 220` / `400` -- the RTL boot-replay legs of the STANDING
+    # LADDER, which have never run the model -- for the model's sake.
+    if timed:
+        simbin.ensure(why=__name__)
     for a in sys.argv[1:]:
         if a.startswith("--core="):
             CORE = a.split("=", 1)[1]

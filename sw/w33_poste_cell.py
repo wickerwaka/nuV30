@@ -96,7 +96,10 @@ sys.path.insert(0, str(SW))
 import check_seq                                        # noqa: E402
 import simbin                                           # noqa: E402
 
-simbin.ensure("w33 post-E collision cell")
+# WAVE 20: the model is RETIRED (invalidation_ledger.md RET-1).  This was
+# an IMPORT-TIME `simbin.ensure("w33 post-E collision cell")`, which killed this tool's
+# `--core ucore` leg -- which never runs the model -- at `import`.  The
+# refusal now sits on the SIM LEG, where it belongs.
 import sm3_ackgeom as ag                                # noqa: E402
 from gen_seq import Prog, PC0, SP0, DATA_LO, DATA_HI    # noqa: E402
 
@@ -317,6 +320,7 @@ def observe(rows, variant):
 # the engine legs -- the SAME stimulus, both engines, no board
 # --------------------------------------------------------------------------- #
 def run_sim(image, waits, clocks=4200, brktrace=False):
+    simbin.ensure("w33 post-E collision cell")   # WAVE 20: refuses -- RET-1
     td = tempfile.mkdtemp(prefix="w33_")
     try:
         img = Path(td) / "img.bin"

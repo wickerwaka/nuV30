@@ -683,10 +683,6 @@ def stratify(paths, n, seed=20260802, keys=None):
 
 
 def main():
-    # U1 / P-2.  EAGERLY, before any loop: `ArtifactError` is a
-    # `RuntimeError`, and a per-case `except Exception` would turn one
-    # sentence naming a stale binary into N unreadable case failures.
-    simbin.ensure(why=__name__)
     ap = argparse.ArgumentParser()
     ap.add_argument("--bank", default=",".join(BANKS))
     # RETIREMENT IS NOT DELETION.  The four v1 banks named in `--bank`'s default
@@ -742,6 +738,15 @@ def main():
                          "at 0/300 plus mc1/2468 at 0/3); historical default "
                          "remains unchanged")
     args = ap.parse_args()
+    # U1 / P-2.  EAGERLY, before any loop: `ArtifactError` is a
+    # `RuntimeError`, and a per-case `except Exception` would turn one
+    # sentence naming a stale binary into N unreadable case failures.
+    # WAVE 20: and ONLY on the MODEL leg.  This call was UNCONDITIONAL,
+    # so with the C++ model retired (invalidation_ledger.md RET-1) it
+    # would have killed this tool's RTL leg -- which never runs the
+    # model -- for the model's sake.
+    if args.core == "sim":
+        simbin.ensure(why=__name__)
     if args.core != "sim" and not tb_bin(args.core).exists():
         sys.exit(f"timed_fuzz: no TB binary at {tb_bin(args.core)}")
     if args.core != "sim":

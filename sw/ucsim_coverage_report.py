@@ -38,6 +38,12 @@ import simbin                                          # noqa: E402
 # `sim/build/v30sim`, the binary `simbin.recipe()` declares; nothing here
 # resolves the model by bare path any more.  See sw/simbin.py.
 SIM = simbin.SIM
+
+# WAVE 20: the C++ model is RETIRED (invalidation_ledger.md RET-1), and this
+# whole file is `v30sim disasm` plus arithmetic.  The refusal goes FIRST --
+# ahead of the module-level `sys.argv` reads below, which otherwise turn a
+# retirement into an IndexError.
+simbin.retired("ucsim_coverage_report: the row order IS `v30sim disasm`")
 ROM = ROOT / "docs" / "V20BITS.TXT"
 
 if len(sys.argv) != 3:

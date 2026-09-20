@@ -30,8 +30,11 @@ the DEFAULT population by a `status` key in its own manifest rather than
 discarded from every gate set. Do not read a `SUP-n` entry as evidence of a
 defect, and do not file a defect as a `SUP-n`.
 
-**It carries a THIRD register, § EXCLUDED SEEDS (`EXC-n`), and — opened
-2026-08-11 — a FOURTH, § ERRATA AGAINST DERIVED COLUMNS (`ERR-n`).** The first
+**It carries a THIRD register, § EXCLUDED SEEDS (`EXC-n`), a FOURTH — opened
+2026-08-11 — § ERRATA AGAINST DERIVED COLUMNS (`ERR-n`), and a FIFTH, opened
+2026-09-19: § RETIRED INSTRUMENTS (`RET-n`). The first four are about DATA;
+`RET-n` is the only one about an INSTRUMENT this repo deleted, and its
+load-bearing field is the enumeration of every gate that died with it.** The first
 three are all about **CAPTURES**. `ERR-n` is the only one about a **DERIVED
 COLUMN** — something this tree *computed* from a capture and stored beside it,
 which can be wrong while every capture behind it is true. Its **WHICH RIG
@@ -1106,6 +1109,275 @@ four lines of Python over 621 files.
 excusing a seed, or narrowing the population. This entry's green came from
 arithmetic; anything that comes from a list is a different thing wearing its
 name.
+
+---
+
+---
+
+# RETIRED INSTRUMENTS — **NOT** INVALIDATIONS, **NOT** SUPERSESSIONS, **NOT** EXCLUSIONS, **NOT** ERRATA
+
+**Opened 2026-09-19 (WAVE 20).** The first four registers are about **DATA** —
+a capture that is false (`INV-n`), a population that is true and no longer used
+(`SUP-n`), a seed dropped from a rate (`EXC-n`), a derived column this tree
+computed wrongly (`ERR-n`). **`RET-n` is the only one about an INSTRUMENT**: a
+piece of this repo that MEASURES, deleted from the tree, taking its gates with
+it.
+
+Filing an instrument retirement as a supersession would say the population
+moved, which it did not. Filing it as an invalidation would say the instrument
+was wrong, which — on the day it went — it was not. So it gets its own heading,
+and it carries a field none of the others has:
+
+| field | meaning |
+|---|---|
+| **WHAT WENT** | the artifact, by path, with its size, measured |
+| **WHY** | why it stopped earning its maintenance — as a property of the tree |
+| **WHICH RIG DEFECT** | **NONE** must be the answer, or this is an `INV-n` |
+| **EVERY GATE THAT DIED** | ⚠ **the load-bearing field.** Each gate by command, with its LAST REGISTERED FIGURE and whether that figure was GREEN when the instrument went. A retirement that does not enumerate its casualties is a silent gate death, which is this repo's oldest failure mode |
+| **WHAT REPLACED IT** | per gate: a substitute, or **nothing** — and "nothing" must be written |
+| **HOW TO RECOVER IT** | the exact commands. `git rm` keeps history; **nothing is destroyed** and the entry must say so |
+| **THE FALSIFIER** | as everywhere else |
+
+---
+
+## RET-1 — THE C++ REFERENCE MODEL `sim/`
+
+**Retired 2026-09-19, branch `master`, WAVE 20. No rig defect. Nothing was
+destroyed — `git rm` keeps every byte in history, and the recovery command is
+in this entry.**
+
+### THE AUTHORITY
+
+**USER DIRECTIVE, 2026-09-19, verbatim:**
+
+> *"A lot of stale data and systems have accumulated over all these campaigns.
+> Do an audit and determine what is no longer relevant and should be removed.
+> **The old C model has not been maintained, remove it.**"*
+
+### WHAT WENT — measured, not estimated
+
+| | |
+|---|---|
+| the artifact | `sim/` — the C++20 microcode-driven V30 model (`ucsim`, closed 2026-08-01; `ucsim-t` timed mode, closed 2026-08-02) |
+| tracked payload | **39 files, 491,759 bytes, 10,089 lines of C++ in 36 sources** (`git ls-files sim/`). The "1.7 MB" on disk was 33 gitignored `.o`/`.d` files plus the built binary |
+| the binary every scorer ran | `sim/build/v30sim`, receipt `54cb8188bf7bff16…` (`sw/simbin.py --id`, taken before the removal) |
+| reachable consumers in `sw/` | **134 modules — 37 that name the model directly, 97 that reach it by import.** Method and its limits in `docs/notes/staleness_audit_2026-09-19.md` §1 |
+| **NOT retired with it** | `docs/V20BITS.TXT`, `docs/V20UC.TXT`, `docs/V20UCDIS.PAS`, `docs/pla3_outputs.txt` and every other normative source. They are the **ROM**, not the model, and `hdl/rtl/ucore/`'s whole table generator reads them |
+| **ARCHIVED BY RENAME**, not deleted | `sim/README.md` → `docs/notes/ucsim_model_README_archived_2026-09-19.md`; `sim/coverage_report.txt` → `docs/notes/ucsim_coverage_report_archived_2026-09-19.txt` (**912 / 1028 micro-rows executed**, the only surviving statement of the ROM's coverage) |
+
+### WHY — and the evidence is one commit
+
+The model was the project's SPEC until 2026-08-04, when the correctness target
+became **SILICON MATCH** and `CLAUDE.md` recorded *"matching the model is no
+longer acceptable."* From that day the model was an instrument, not a
+reference. What ended its usefulness is measurable and it is not an opinion:
+
+1. **THE LAST SOURCE CHANGE IS `be4eb2c32f`, 2026-08-17** — 33 days before this
+   entry. There were **75 commits to `sim/*.cpp` / `sim/*.h` in August 2026 and
+   none since.**
+2. **THE ucore TOOK A FUNCTIONAL FIX THE MODEL NEVER GOT.** `c59d205479`
+   (2026-08-20, *"Fix REP termination before interrupt withdrawal"*) touches
+   `hdl/rtl/ucore/v30u_eu_cond.svh` and **no file under `sim/`**. From that
+   commit the two engines disagree on silicon-referenced behaviour, with the
+   RTL right. **That commit is the measured end of `ulockstep`'s stated
+   governance** — *"the model is the SPEC. A divergence reported here is a bug
+   in the RTL"* — which was already formally superseded on 2026-08-04 and was
+   still printed at the head of the file on the day it went.
+3. **IT WAS NOT BROKEN, AND THAT IS NOT THE SAME THING.** Measured in this
+   session, on the tree that carried it: `timed_gate --suite tests/v30/v0.1
+   --forms all` = **169,000 / 169,000, row-diffs 0**; `ulockstep --golden all
+   --cases 50` = **17,350 / 17,350 ALL LOCKSTEP**. **The model was GREEN on the
+   day it was retired.** It is retired for being unmaintained and superseded as
+   a reference, not for being wrong, and nothing in this entry says otherwise.
+
+### WHICH RIG DEFECT
+
+# **NONE.**
+
+No rig defect is alleged, none is diagnosed, and none is fixed by this entry.
+No capture is false. Every figure ever scored against the model stays true *of
+the model*, and the receipt that identifies the bytes that produced it
+(`54cb8188bf7bff16…`) is recorded here so those figures keep their artifact id.
+
+### EVERY GATE THAT DIED — enumerated, with its last registered figure
+
+⚠ **This is the field that makes the retirement honest.** Every row below was
+run after the removal and its behaviour recorded (`§Y-2 DEMONSTRATED`).
+**STATUS** is the gate's state at the moment it went, not its state today.
+
+**A. STANDING-SET LEGS — gone, with nothing replacing them**
+
+| gate | last registered figure | status when it went | replaced by |
+|---|---|---|---|
+| `python3 sw/simbin.py --disasm` (§A row 1, ⧉) | disasm byte-exact vs `V20UC.TXT`, **1,285 rows** | GREEN (run this session) | **NOTHING.** The ROM's disassembly has no second implementation in this tree |
+| `python3 sw/ulockstep.py --golden all --cases 50` | **17,350 / 17,350 ALL LOCKSTEP** | **GREEN — measured this session at `975ecd0187` before the removal** | **NOTHING.** It was the only model-vs-RTL clock-for-clock comparator, and its governing premise had been superseded for six weeks |
+| `python3 sw/timed_gate.py --suite … --forms all` | `v0.1` **169,000/169,000** · `-w1`/`-w3` 1,200 each · `EB` 200 · the four `evt` cells 200/1,200/200/1,200 · `w1evt-biased` 1,200 · the four HLT sweeps **283/283** | **GREEN on `v0.1` — measured this session, row-diffs 0** | **NOTHING for the model.** The same goldens are scored against the RTL by `check_core`, which is unmoved at 169,000 and 279/283 |
+| `python3 sw/ucsim_check.py --suite …` | the architectural ladder, **7,341,126 cases** (v0.1 169,000 + v0.2 347,000 + v0.3 3,699,998 + v20suite 3,125,000 + mod3_illegal 128) | not re-measured this session | **NOTHING — and this is the single largest loss in this entry.** `check_core --suite-dir` can reach the same suites against the RTL, but `v0.2` raises `KeyError: 'opcodes'` and **three of the four suites have never been run against the ucore** (`ucore_gaps_2026-08-04.md`). **The 7.17 M cases outside `v0.1` are now scored by nothing.** |
+| `python3 sw/ucsim_fuzz.py --bank …` | the S3 sequence gauntlet, **2,125 / 2,125** architectural dumps | not re-measured | **NOTHING** |
+| `python3 sw/check_boot.py --timed 220` | **220 / 220** rows from RESET release | not re-measured | the RTL legs `check_boot 220` and `400`, **which are PRESERVED and measured unmoved** — they had been killed by an unconditional `simbin.ensure()` and this wave made it conditional |
+| `python3 sw/qdepth_probe.py` | `rdq_ ≤ 2`, `rd_done_q_ ≤ 1` — the regime in which `timed_fuzz`'s `BOUND WARNINGS` is a theorem | not re-measured | **NOTHING.** The bound is still asserted as a hard failure inside `check_core`, where it is a theorem; what is gone is the instrument that PROVED the regime |
+| `python3 sw/timed_fuzz.py --core sim --evt-replay` | REGISTERED **1,339/1,702** · EVT **799/1,008** · COMBINED **2,138/2,710** · `--seeddir …/b2-tranche` **161/188** | not re-measured | **NOTHING for the model leg.** ⚠ **The `--core ucore` leg is PRESERVED** (REGISTERED 1,559/1,702 · EVT 934/1,008 · COMBINED 2,493/2,710 · b2 181/188) — it too was about to die to an unconditional `ensure()`, and this wave gated it |
+| `python3 sw/sm3_s16_score.py --core sim` | **1,305 / 1,371** | not re-measured | **NOTHING for the model leg**; the `--core ucore` leg (**1,320/1,371**) was already conditional and is unmoved |
+| `python3 sw/sm3_tf_floor_cell.py score --core sim` | **121,890 rows, 0 row-diffs at floor 3** | not re-measured | **NOTHING for the model leg.** ⚠ **The `--core ucore` leg is PRESERVED and MEASURED: 121,890 rows, 0 row-diffs, EXACT, surviving floors `[4]` over 22 cells** — it was dying to an **IMPORT-TIME** `simbin.ensure()`, which this wave moved onto the sim leg |
+| `python3 sw/timed_lawcards.py` | **8 GREEN / 0 RED / 3 UNRESOLVED** (C6, C7, C11) | **ALREADY DOWN** — `V1AnchorStop`, measured this session | nothing; it was already unrunnable |
+
+**B. GATES THAT WERE ALREADY DOWN AND NOW HAVE A SECOND CAUSE.** Each of these
+is a v1-anchor casualty (`staleness_audit_2026-09-19.md` §4) *and* a model
+consumer. Retiring the model does not make them worse and does not close them.
+
+| gate | last registered figure | it was already down because |
+|---|---|---|
+| `sw/timed_wvec_gate.py` | **88/88, +0.0 %** | `V1AnchorStop` (confirmed this session) |
+| `sw/timed_enter_replay.py` | **154/154 ×5** | its own v1-anchor refusal (confirmed) |
+| `sw/timed_ins_replay.py --raw` | rails **1,312/1,312**, vs-chip **2,624/2,624** | ⚠ **NOT the anchor** — `FileNotFoundError: sw/case31_all_exts.txt`, a file that **has never been committed to this repository** (`git log -- ` it: empty). Measured this session |
+| `sw/timed_scenario.py` | **18 PASS / 0 FAIL / 9 SKIP** | ⚠ **IT WAS NOT DOWN.** `CLAUDE.md` says it dies in `gen_seq._v1_anchor_stop`; **measured this session on `master` it RAN AND PASSED at exactly its registered figure.** It is a genuine casualty of this entry, and the `CLAUDE.md` claim is an erratum recorded in the audit |
+
+**C. MEASUREMENT TOOLS — never gates, and `CLAUDE.md` says so.** All die:
+`sw/s14_census.py`, `sw/s14_dstar.py`, `sw/uscope.py`, `sw/ucsim_smoke.py`,
+`sw/ucsim_coverage_report.py`, `sw/sm3_famb_survey.py`, `sw/sm3_tf_law.py`,
+`sw/qcensus.py` / `q1census.py` / `q1diff.py` / `repcensus.py` / `wchain.py`
+(model legs), `sw/wrfuzz_smoke.py`, and the `--core sim` legs of
+`sw/s15_census.py` (its **`--core ucore`** leg is PRESERVED, gated by this
+wave), `sw/wrfuzz_w7_gap_guard.py`, `sw/w33_take_cell.py`,
+`sw/w33_poste_cell.py` and `sw/w34_grant.py` (their **`--core ucore`** legs are
+PRESERVED, all three gated by this wave off an IMPORT-TIME `ensure()`).
+`sw/s13_board.py`'s model leg goes; **the board CLI itself is PRESERVED** — it
+was about to die whole, and SM2's rig-integrity finding is that nothing notices
+an s10/s13 probe is broken until a board sitting needs it.
+
+**D. THE ONE THAT WAS LOAD-BEARING, AND IT IS PRESERVED — GATE G0.**
+
+`sw/check_ucore_tables.py` diffed `hdl/rtl/ucore/ucrom.hex`, `ucdecode.hex` and
+`pla3_tables.svh` against **`sim/v30sim dump-tables`**. That is the microcode
+ROM — the ucore's entire architecture — and the model was its INDEPENDENT
+reference.
+
+**IT IS PRESERVED BY SNAPSHOT, AND THE INDEPENDENCE SURVIVES INTACT**, because
+the independence was never in the model being *runnable*: it was in the model
+being a **SECOND IMPLEMENTATION**, 10,089 lines of C++ transliterated from
+`docs/V20UCDIS.PAS`. Freezing its output preserves exactly that, for exactly
+the ROM it was taken from.
+
+* the reference: **`sw/testdata/g0-tables/v30sim_dump_tables.txt`**, 9,992
+  lines, sha256 **`23d0025bc72eff93…`**, produced by receipt
+  `54cb8188bf7bff16…` at tree `975ecd0187`, with `manifest.json` beside it.
+* **the gate REFUSES rather than scoring if the ROM moves.** The manifest pins
+  `docs/V20BITS.TXT` (`ecd09bf03a886840…`) and `docs/pla3_outputs.txt`
+  (`d4eab9e854fb59c6…`); either moving makes the snapshot a statement about a
+  ROM this tree no longer has, and the engine that could re-derive it is gone.
+  `check_ucore_tables` then exits **2, CANNOT MEASURE — never PASS, never
+  FAIL**, and prints the commands to restore the model and re-take the
+  snapshot.
+* **G0 still reports the same 9,988 entries identical on BOTH legs** — Leg A's
+  own independent parser and Leg B's emitted artifacts — measured before and
+  after the removal.
+* **FIVE POSITIVE CONTROLS, all fired** (the classifier does not get to be
+  trusted): a one-nibble edit to the snapshot with the manifest NOT re-hashed →
+  **exit 2**, *"does not match its own manifest"*; the same edit WITH the
+  manifest re-hashed → **exit 1**, *"ucrom rows: 1 MISMATCH of 1028"* and
+  *"ucrom.hex: 1 MISMATCH of 1028"* (the comparison is live, not a
+  tautology); one byte appended to `docs/V20BITS.TXT` → **exit 2** naming it;
+  one byte appended to `docs/pla3_outputs.txt` → **exit 2** naming it; one bit
+  flipped in `hdl/rtl/ucore/ucrom.hex` → **exit 1**, LEG B and LEG C both
+  failing. All five files restored and verified byte-identical afterwards, two
+  independent ways (sha256 against a pre-image copy, and `git status` clean).
+
+### WHAT ELSE IS PRESERVED, AND HOW — the mechanism, stated once
+
+**`sw/simbin.py` IS NOT DELETED. IT IS THE RETIREMENT DECLARATION.** It was the
+SINGLE DECLARATION of what the model was a function of, and **134 modules reach
+it by import** — four of them (`check_fuzz_bank`, `fz2_replay`, `fz2_w1`,
+`ghost_launch_law`) are LIVE STANDING GATES that never touch the model and
+would have died at `import` for a reason unrelated to what they measure.
+
+So the declaration outlives the artifact and now declares its retirement. Every
+verb — `ensure()`, `require_bin()`, `recipe()`, `receipt_id()`, `disasm_gate()`
+— raises **`ModelRetired`**, one banner naming the directive, this entry, and
+the recovery command. `simbin.SIM` stays a path constant, because six modules
+bind it at import time and a module-level `__getattr__` that raised would kill
+`ghost_launch_law`. `simbin.retired()` exists for the handful of tools that
+resolved the binary by bare path.
+
+**THE RULE: NO GATE DIES SILENTLY AND NONE DIES WITH A `FileNotFoundError`.**
+Verified by running every module in `sw/` (376 of them) under `import`: **0
+model consumers raise a file error.** The three that do
+(`fit_class5`, `t33_scattertest`, `t33_traj`) fail on `/tmp/class5_data.json`
+and `testdata/campaigns/mc1/results.jsonl` — relative-path bugs that predate
+this entry and have nothing to do with the model.
+
+⚠ **FIVE FILES WERE DELIBERATELY NOT REPAIRED, AND THEY WILL RAISE
+`FileNotFoundError`**: `sw/t7_sim_ab.py`, `sw/t7_sim_proof.py`,
+`sw/testdata/rep_cl0/modeldrive.py`, `sw/testdata/rep_cl0/rep_cl0_repro.py`,
+`sw/testdata/rep_cl0/repdrive.py`. **All five are the USER'S OWN UNCOMMITTED
+WORK** in this working tree, and this wave's standing instruction forbids
+touching it (`git stash` swept it once already, WAVE 12). They resolve
+`sim/build/v30sim` by bare path; none is a gate; all five are closed-campaign
+one-shots. **The fix is one line each — `simbin.retired("…")` before the first
+`subprocess.run`** — and it belongs to whoever owns those edits.
+
+### HOW TO RECOVER IT — nothing was destroyed
+
+```sh
+git checkout be4eb2c32f930e12575da5a6359b4fead3c28f96 -- sim/
+git checkout <the commit before this entry> -- sw/simbin.py
+python3 sw/simbin.py --build
+```
+
+`be4eb2c32f` (2026-08-17) is the model's last source commit. The `git rm` in
+this wave removes the files from the WORKING TREE only; every byte, every
+revision and every one of the 75 August commits remains in history. The
+pre-retirement `sw/simbin.py` — the receipt-layer declaration with its §A-§C
+reasoning — is in that same history and should be read there rather than
+reconstructed.
+
+⚠ **One thing recovery does NOT restore**: `sw/gen_ucore_tables.py` and
+`sw/ucore_tables.py` describe themselves as *"a line-for-line transliteration
+of `sim/ucrom.cpp`"* and cite `sim/pla3_table.h`, `sim/ucrom.h`,
+`sim/state.h` and `sim/exec_impl.h:796` by path. **Those citations now point
+into history.** They were left standing deliberately: they are the ucore's
+provenance and deleting them would delete the provenance, not the dangle. Read
+them against `be4eb2c32f`.
+
+### GATE STATUS — what moved, and what did not
+
+| | before | after |
+|---|---|---|
+| `check_core --opcodes all --cases 0`, `--ce-div` 2 / 3 / 4 / 8 | 169,000 ×4 | **169,000 ×4 — UNMOVED** |
+| `--ce-div 1` | REFUSED, exit 2 | **REFUSED, exit 2 — UNMOVED** |
+| `FA` / `FB` / `INT.FB` (the exact 181's population) | 1,200/1,200 | **1,200/1,200 — UNMOVED** |
+| the four HLT sweeps at `--waits 0/1/2/3` | 97 · 93 · 45 · 44 = **279/283** | **279/283 — UNMOVED** |
+| `check_boot` 220 / 400 (RTL) | MATCH / MATCH | **MATCH / MATCH — UNMOVED** (⚠ they would have DIED; see above) |
+| `check_ab_sim` | 187 rows MATCH | **187 rows MATCH — UNMOVED** |
+| `ss_lint` | 232 / 229 flops / 4 whitelist / 0 UNMAPPED | **UNMOVED** |
+| `r7_lint` · `cutset_lint` (81/0) · `phase_split_lint` (157/779/0) · `core_portlist_lint` · `chainflat_relocation_check` (9/9) · `ucrom_mif_check` · `demux_off_gate` | PASS | **PASS — UNMOVED** |
+| `chain_lfsr_gate` | 4 signatures `1d01c9b269ffaa94` · `b39b040a98b28e5d` · `0997b773cd99c030` · `d05b6c3c3d9fbe78` | **BYTE-IDENTICAL — UNMOVED** |
+| `test_artifact` · `test_quartus_gate` | 45/45 · 287/287 | **UNMOVED** |
+| `check_fuzz_bank` | PASS 621 | **PASS 621 — UNMOVED** (it imports `timed_fuzz`, which imports `simbin`) |
+| `gen_ucore_qsf --check` · `pla3_check` | PASS · 21 checks | **UNMOVED** |
+| `check_ucore_tables` (G0) | PASS, 9,988 entries | **PASS, 9,988 entries — on the frozen reference** |
+| `ghost_launch_law score` | 200/200 = 100.0 % | **200/200 — UNMOVED** |
+| `sm3_tf_floor_cell score --floors 4 --core ucore` | 121,890 rows, 0 row-diffs, EXACT | **UNMOVED** |
+| `simbin --disasm` | PASS, 1,285 rows | **RETIRED — exit 2, naming this entry** |
+| every gate in §A / §B / §C above | see the table | **RETIRED, exit non-zero, naming this entry** |
+
+### THE FALSIFIER, registered with the entry
+
+The claim is **"no gate died silently, and G0's independence survives"**, and
+it has three falsifiers, each cheap:
+
+1. **FALSIFIED IF** any module under `sw/` that consumed the model raises
+   `FileNotFoundError`, `ImportError` or `ModuleNotFoundError` instead of
+   `ModelRetired`, on the five declared exceptions above excepted. The test is
+   the import sweep in `staleness_audit_2026-09-19.md` §B and it is four lines
+   of Python.
+2. **FALSIFIED IF** `check_ucore_tables` ever reports **PASS** on a tree whose
+   `docs/V20BITS.TXT` or `docs/pla3_outputs.txt` differs from the manifest's
+   sha256. That is the whole content of the snapshot's honesty, and the five
+   positive controls above are its standing demonstration.
+3. **FALSIFIED IF** a future sitting restores a retired gate to green by
+   pointing it at the RTL and keeping the model's registered figure. Those
+   figures are the MODEL's; an RTL leg that inherits them is a different
+   measurement wearing their name. Re-register, never re-label.
 
 ---
 
