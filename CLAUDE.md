@@ -1060,9 +1060,21 @@ Values are monotone: never re-scored downward without a loud, itemized entry.)
 - **U4 additions**: `sw/check_ab_sim.py --core {fsm,ucore}` — the core inside
   the REAL integration (system_large) vs the chip's own boot capture; both legs
   **MATCH over 187 rows**. (It had been unbuildable since 2026-07-13; three
-  files had drifted out of its RTL list.) `sw/gen_ucore_qsf.py --check` gates
-  that `hdl/nec_test_ucore.qsf` is a faithful derivative of `nec_test.qsf`, i.e.
-  that the two A/B bitstreams differ by the CORE and nothing else.
+  files had drifted out of its RTL list.)  ⚠ **ITS `--core fsm` LEG IS GONE
+  (RET-2) — the live leg is `--core ucore`, 187 rows.**
+  ⚠ **THE NEXT SENTENCE IS HISTORY AND WAS A LIVE CLAIM UNTIL 2026-09-19.**
+  *`sw/gen_ucore_qsf.py --check` gates that `hdl/nec_test_ucore.qsf` is a
+  faithful derivative of `nec_test.qsf`, i.e. that the two A/B bitstreams differ
+  by the CORE and nothing else.*  **THAT TOOL IS RETIRED (exit 2) AND ITS CLAIM
+  HAS NO REFERENT**: there is one core, one revision, and `nec_test.qsf` is
+  deleted.  **E1 is now `qsf_lint --check`** (canonical form of the ONE
+  revision); **the A/B guarantee is retired with NOTHING replacing it.**  See
+  line 63 and `invalidation_ledger.md` RET-2.
+  ⚠ **AND THIS LINE IS WAVE 21's OWN METHOD FINDING PROVED ON ITSELF**: it is a
+  SECOND unmarked live-recipe form naming the retired tool, one screen below the
+  one that wave fixed, found by the coordinator's review afterwards.  **The
+  doc-discrepancy count is a FLOOR, not a total** — the token enumeration is
+  mechanical and complete; the DISPOSITION of each hit is manual and ungated.
 - **THE RE-LANDING CAMPAIGN IS CLOSED AT 17 OF 19 (2026-08-09).** `5403671558`
   was a 19-mechanism landing that took G6 to **19.42 MHz**; it was re-landed
   mechanism by mechanism, each with its own pre-registration, gates and control
