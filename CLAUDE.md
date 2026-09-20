@@ -61,9 +61,22 @@ them).
   commit before first board contact, retain full per-clock rows + sha256
   (never digests alone), run board_idle and verify after every session.
 - **RTL promotion needs a Quartus receipt**: `python3 sw/quartus_gate.py` (G6:
-  `gen_ucore_qsf --check`, one clean CONTROL build, Fmax ≥ 32 MHz, worst setup
-  > 0, setup AND hold TNS 0.000) must PASS and its receipt exist before any RTL
-  landing is accepted or any bitstream flashed. The fast ladder does not wait
+  **E1 = `qsf_lint --check`** — the ONE revision `.qsf` is in CANONICAL FORM —
+  plus one clean CONTROL build, Fmax ≥ 32 MHz, worst setup > 0, setup AND hold
+  TNS 0.000) must PASS and its receipt exist before any RTL landing is accepted
+  or any bitstream flashed.
+  ⚠ **E1 USED TO READ `gen_ucore_qsf --check` AND THAT TOOL IS RETIRED**
+  (2026-09-19, WAVE 21, `invalidation_ledger.md` **RET-2**).  Its bar was
+  *"`hdl/nec_test_ucore.qsf` is a faithful derivative of `hdl/nec_test.qsf`"* —
+  the ARCHIVED FSM revision — and **the A/B half of that claim is retired with
+  NOTHING replacing it**: one core, one revision.  Receipt key is
+  **`E1_qsf_canonical`**; the falsifier is `test_quartus_gate` **Q18**.
+  ⚠ **THIS SENTENCE IS THE DEFINITION OF THE PROMOTION GATE AND IT NAMED A
+  RETIRED TOOL FOR THE LENGTH OF ONE WAVE.**  Found by re-reading this file
+  after the wave that retired it — the wave's own enumeration listed `CLAUDE.md`
+  under the `gen_ucore_qsf` token and only the *Gate quick reference* copies
+  were fixed.  **A token appearing in an enumeration is not a token that was
+  dispositioned.** The fast ladder does not wait
   on it; the promotion does. **One green build is not closure** — the same tree
   has drawn 19.42 and 45.91 MHz (`standing_gates.md` §A, `ucore_provenance.md`
   §74.4).
@@ -85,7 +98,11 @@ them).
   never score, which is what let the sixth incarnation hide for six days — but
   the invariant as written did not hold.  Know which of the two you are calling.
   `python3 sw/test_artifact.py` (**45/45**) is
-  the layer's own falsifier and must stay green. **U1 IS CLOSED (SM3 sitting
+  the layer's own falsifier and must stay green.  ⚠ **THE REST OF THIS BULLET IS
+  ABOUT THE RETIRED C++ MODEL AND IS HISTORY** — `sim/` was removed 2026-09-19
+  (`invalidation_ledger.md` **RET-1**) and **`python3 sw/simbin.py --build`
+  raises `ModelRetired`**; it is not a recipe, it is a record of what the recipe
+  was.  **U1 IS CLOSED (SM3 sitting
   15, §76.A)**: the C++ model is `sim/build/v30sim`, declared by
   `sw/simbin.py` and rebuilt with `python3 sw/simbin.py --build`. **`sim/v30sim`
   is no longer on any scorer's path** — the binary moved because `build()`
@@ -240,15 +257,20 @@ audit is `docs/notes/staleness_audit_2026-09-19.md`.**
   `sw/testdata/rep_cl0/*.py`.  They resolve `sim/build/v30sim` by bare path and
   **will raise `FileNotFoundError`**; the fix is one `simbin.retired("…")` line
   each and it belongs to whoever owns those edits.
-* ⚠ **TWO ERRATA THE AUDIT MEASURED AGAINST THIS FILE.**  (a) The
-  `fuzz-v2-on-relanding` banner's *"FOUR RATCHETS … CANNOT RUN HERE AT ALL"* is
-  **false for two of the four**: `timed_scenario` ran and PASSED 18/0/9, and
-  `timed_ins_replay` dies on **`sw/case31_all_exts.txt`, a file never committed
-  to this repo** — not on the anchor.  (b) The `ss_lint` row below still
-  presents **0x8D / 226 / 0x8DE2 / 214 flops** as current; the tree measures
-  **232 / 229 flops / 4 whitelist / 0 UNMAPPED / 0x8F / 0x8FE8**, and the WAVE 7
-  banner's *"232 / 228 flops"* is one short of it.  `standing_gates.md` §B is
-  already correct; this file is not.
+* ✅ **TWO ERRATA THE AUDIT MEASURED AGAINST THIS FILE — BOTH DISCHARGED BY
+  WAVE 21 (2026-09-19).  The finding is kept; the "this file is not" is no
+  longer true of this file.**  (a) The `fuzz-v2-on-relanding` banner's
+  *"FOUR RATCHETS … CANNOT RUN HERE AT ALL"* was **false for two of the four**:
+  `timed_scenario` ran and PASSED 18/0/9, and `timed_ins_replay` died on
+  **`sw/case31_all_exts.txt`, a file never committed to this repo** — not on the
+  anchor.  ⚠ **AND MEASURED AGAIN 2026-09-20, ALL FOUR NOW RAISE
+  `simbin.ModelRetired` FIRST** — they are RET-1 casualties before they are
+  anything else, so the banner's *reason* was wrong in a third way by the time
+  it was fixed.  **The banner now says all of that.**  (b) The `ss_lint` row
+  presented **0x8D / 226 / 0x8DE2 / 214 flops** as current and the WAVE 7
+  banner read *"228 flops"*; the tree measures **232 / 229 flops / 4 whitelist /
+  0 UNMAPPED / 0x8F / 0x8FE8**.  **Both are corrected in place, with the stale
+  pair kept beside them as superseded history.**
 
 ### ⚠⚠⚠ READ FIRST — **THE EU'S CHAIN IS FLAT SINCE 2026-09-09 (WAVE 7, `2ceb8c3ba3`).  THE SEVEN-COPY UNROLL IS GONE AND THE FUNCTION IS BYTE-IDENTICAL.**
 
@@ -436,8 +458,10 @@ the module that prevents that."*
   `t1_half2`'s only enable and `t1_half2` is the T1 address→data turnaround).
   **Every instantiation of the core inherits it, downstream integrators
   included.**  Non-vacuity demonstrated on both clauses.
-  ⚠ **`check_core --core fsm` therefore runs with NO enable enforcement** — the
-  ARCHIVED core was not touched.
+  ⚠ **`check_core --core fsm` therefore ran with NO enable enforcement** — the
+  ARCHIVED core was not touched.  **MOOT SINCE 2026-09-19**: that core is gone
+  and `--core fsm` is refused by name (RET-2), so **every core this tree can
+  build inherits the assert.**
 * **`ce → ce >= 2` HOLDS CONTRACT-FREE** (C-a + S-1), and that is the whole of
   the new arithmetic.
 * **`check_core` REFUSES `--ce-div 1` AND NOTHING ELSE.**  **2, 3 and odd
@@ -617,11 +641,12 @@ deleted; `--core fsm` still builds and runs. What changed:
 (The ratchets below are current as of ucsim-t §26 plus the ucore campaign U5.
 Values are monotone: never re-scored downward without a loud, itemized entry.)
 
-- **ROM/PLA**: `python3 sw/simbin.py --disasm` (disasm byte-exact, **1,285
-  rows**, on the RECEIPTED binary and printing its receipt id — this replaces
-  `make -C sim test`, which built an unreceipted `sim/v30sim` by mtime and is
-  kept only as a developer convenience),
-  `python3 sw/pla3_check.py` (21 checks).
+- **ROM/PLA**: ⚠ **`python3 sw/simbin.py --disasm` IS RETIRED (RET-1) and
+  raises `ModelRetired`** — last figure disasm byte-exact, **1,285 rows**.  The
+  ROM's disassembly has **no second implementation in this tree**; what survives
+  as an independent reference is **G0's frozen snapshot**
+  (`check_ucore_tables`, 9,988 entries).  `make -C sim test` is gone with it.
+  **THE LIVE HALF OF THIS ROW IS `python3 sw/pla3_check.py` (21 checks).**
 - **Functional**: `python3 sw/ucsim_check.py --suite tests/v30/<suite>`
   (mod3_illegal needs `--residue stale-ea`; v20suite needs `--no-mirror`);
   full set = v0.1 169,000 + v0.2 347,000 + v0.3 3,699,998 + v20suite
@@ -996,9 +1021,11 @@ Values are monotone: never re-scored downward without a loud, itemized entry.)
   pass 3: the enable-form refactor made 22 of the 24 whitelisted per-edge
   temporaries combinational BY DECLARATION, which is exactly the fix U3 booked
   and could not take while the RTL was frozen — the MAP did not move). It is now
-  the DEFAULT leg (`sw/ss_lint.py`, no flag). The `--core fsm` leg is unchanged,
-  still exits 0 (203 addresses, 181 flops, 0 UNMAPPED), and is now an on-demand
-  archived gate. The two maps are NOT stream-compatible.
+  the DEFAULT leg (`sw/ss_lint.py`, no flag). ⚠ **THE `--core fsm` LEG IS GONE
+  SINCE 2026-09-19 (RET-2)**; the sentence that stood here — *"unchanged, still
+  exits 0 (203 addresses, 181 flops, 0 UNMAPPED), and is now an on-demand
+  archived gate"* — is its LAST REGISTERED FIGURE, re-measured on the day of the
+  removal and unmoved. The two maps were NOT stream-compatible.
 - **THE COMPARATOR CHANGED AT U5, AND IT MOVED THE FROZEN FSM CORE'S NUMBERS
   DOWN.  Read this before quoting any FSM RTL figure.**  `tb_v30_core.sv`'s
   composed-AD mask used to substitute the retained nibble for A19-16 across a

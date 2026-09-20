@@ -29,10 +29,12 @@ touched.
    retired.
 4. **Z-4 — THE BITSTREAM FALSIFIER — WAS SCORED AS TWO BUILDS** so a moved
    `.rbf` would name its own cause.  See §Z-4.
-5. **FOURTEEN DOCUMENTATION CLAIMS WERE MEASURED FALSE AND FIXED**, including
+5. **SEVENTEEN DOCUMENTATION CLAIMS WERE MEASURED FALSE AND FIXED**, including
    one that made `emit_suite` build the ucore and then run the archived core's
    binary, one that documented an environment variable that exists in exactly
-   one comment, and one green ledger row for a gate that could not run.
+   one comment, one green ledger row for a gate that could not run — and
+   **`CLAUDE.md`'s DEFINITION OF THE PROMOTION GATE ITSELF**, which named the
+   retired tool as E1 for the length of this wave (§D-15).
 
 ---
 
@@ -421,8 +423,8 @@ by-necessity because it never left.
 
 ## §D THE DOCUMENTATION DISCREPANCIES — a first-class deliverable
 
-**FOURTEEN CLAIMS WERE CHECKED AGAINST THE ARTIFACT AND FOUND FALSE.  ALL
-FOURTEEN ARE FIXED IN THIS WAVE.**  Under the user ruling, documentation is
+**SEVENTEEN CLAIMS WERE CHECKED AGAINST THE ARTIFACT AND FOUND FALSE.  ALL
+SEVENTEEN ARE FIXED IN THIS WAVE.**  Under the user ruling, documentation is
 hearsay until proved in the artifact, and where a doc and the code disagreed the
 code won.
 
@@ -443,13 +445,35 @@ code won.
 | **D-13** | `sw/receipt_diff.py:5-13` | *"`gen_ucore_qsf.py --check` already proves one A/B claim"*, and lists **"FSM vs ucore bitstream"** as a legitimate pair | no two-core comparison can be made on this tree | **FIXED** — the row is retired by name and kept as history so pre-2026-09-19 receipts stay readable |
 | **D-14** | `docs/notes/artifact_receipt_layer.md:111` | the receipt schema's specimen environment variable is `{"V30_CORE": "ucore"}` | see D-1 — it perpetuated the fiction in the schema document | **FIXED** — the specimen is now `X1_AD_RETENTION`, which is real |
 
+| **D-15** | `CLAUDE.md:64` — **the RTL-promotion rule, i.e. THE DEFINITION OF THE PROMOTION GATE** | *"G6: `gen_ucore_qsf --check`, one clean CONTROL build, Fmax ≥ 32 MHz, …"* | that tool is RETIRED BY THIS WAVE.  ⚠ **AND THIS WAVE MISSED IT FOR ITS WHOLE LENGTH.**  §Z-1's token grep DID list `CLAUDE.md` under the `gen_ucore_qsf` token; only the *Gate quick reference* copies were dispositioned, and the one sentence that tells a future agent **what G6 IS** was left naming a tool that exits 2.  **A token appearing in an enumeration is not a token that was dispositioned** — the enumeration found it and the fix pass did not consume it | **FIXED** — E1 is now `qsf_lint --check` with the A/B retirement stated inline |
+| **D-16** | `CLAUDE.md`, the ratchet list's **LEAD** bullet | *"**ROM/PLA**: `python3 sw/simbin.py --disasm` (disasm byte-exact, 1,285 rows …)"*, with `make -C sim test` beside it | both are RET-1 casualties and `--disasm` raises `ModelRetired`.  WAVE 20's banner lists them as retired 500 lines above; the bullet itself carried no marker, and it is the FIRST ratchet a reader meets | **FIXED** — marked retired with its last figure, G0's frozen snapshot named as the surviving independent reference, and the row's live half (`pla3_check`, 21 checks) called out |
+| **D-17** | `CLAUDE.md`, the ce/ce_half contract banner | *"⚠ `check_core --core fsm` therefore runs with NO enable enforcement — the ARCHIVED core was not touched"* | moot: that core is gone, so **every core this tree can build inherits the assert** | **FIXED** |
+
 **AND FIVE MORE, SMALLER, FIXED IN PASSING**: `sw/check_ab_sim.py:59`
 (*"must stay a subset of hdl/files.qip's"*), `standing_gates.md` §D (it repeats
 D-2's "no consumers" claim), `sw/quartus_gate.py`'s SIGNALTAP comment (it
 justified the placement BY THE A/B), `sw/timed_fuzz.py`'s `tb_bin` docstring
 (*"the FSM core is `obj_dir`"*), and the five tools whose comments said
 `check_seq.CORE` **is** pinned to the archived core (`fuzz_campaign`,
-`wrfuzz_smoke`, `emit_suite`, `fz2_undoc_probe`, and `check_seq` itself).
+`wrfuzz_smoke`, `emit_suite`, `fz2_undoc_probe`, and `check_seq` itself); plus
+WAVE 20's own two-part errata bullet in `CLAUDE.md`, whose *"this file is not
+[correct]"* is **now discharged** and says so; the `ss_lint` history block's
+*"the `--core fsm` leg is unchanged"*; and the receipt-layer bullet's
+`python3 sw/simbin.py --build`, which is a record of a recipe rather than one.
+
+### ⚠ THE METHOD FINDING THIS SECTION OWES ITSELF
+
+**D-15 WAS FOUND AFTER THE WAVE BELIEVED ITSELF FINISHED**, by re-reading
+`CLAUDE.md` end to end rather than by any instrument.  §Z-1's grep had already
+named the file; what failed was the step between *enumerated* and
+*dispositioned*, and nothing in this wave measured that step.  **The honest
+statement is that the doc-discrepancy count is a FLOOR, not a total** — the
+enumeration is mechanical and complete, the disposition of each hit was manual
+and is not gated.  A future wave that wants the total should gate it: a check
+that no live-recipe form (`python3 sw/<retired tool>`) appears in `CLAUDE.md`
+or `standing_gates.md` outside a marked-history block.  **BOOKED, not built** —
+building it in the sitting that needed it would make its first green
+unfalsifiable.
 
 ### ⚠ THE BACKLOG — booked with evidence, NOT fixed here
 
