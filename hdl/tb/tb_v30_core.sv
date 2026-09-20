@@ -849,176 +849,34 @@ integer bootn;
 integer      ev_boot_tmp;
 logic [31:0] ev_addr_tmp;
 
-// +eudbg: per-cycle EU/BIU state dump alongside the r rows ("d <state>
-// <q_pop> <q_avl> <q_cnt>") for phase-fit debugging (bootimg mode only)
-logic eudbg_en;
-initial eudbg_en = $test$plusargs("eudbg");
+// ⚠ `+eudbg` IS GONE (WAVE 21, 2026-09-19).  It was a per-cycle EU/BIU state
+// dump ("d <state> <q_pop> <q_avl> <q_cnt>") read by hierarchical reference
+// out of the ARCHIVED FSM core, and it went with the probe block below.  The
+// flag is now accepted-and-ignored by argument parsers that still pass it --
+// `sw/causal_wrand.py`'s `run_tb_internal` is the only one, and it REFUSES BY
+// NAME before it gets here (invalidation_ledger.md RET-2).
 
 //----------------------------------------------------------------------------
-// ENGINE-SPECIFIC PROBES.  Everything below the `ifdef reaches INSIDE the DUT
-// by hierarchical reference (dut.u_eu.* / dut.u_biu.*) and is therefore bound
-// to the FSM core's internal signal names.  The TB itself is ENGINE-NEUTRAL --
-// it drives and samples chip pins plus the V30_BACKDOOR group only -- so the
-// probes are compiled only when the RTL file list is the FSM core's
-// (sw/check_core.py --core fsm passes -DV30_FSM_PROBES).  The ucore file list
-// omits the define; its own probe set arrives with the ucore EU in U2.
-// Nothing in the FSM build changes: the define is on by default for it.
-//----------------------------------------------------------------------------
-`ifdef V30_FSM_PROBES
-//----------------------------------------------------------------------------
-// Phase 2k RESERVATION-ONSET instrumentation (measurement only, TB-side; no
-// functional RTL change). Latch, on every eu_req RISING edge, the EU state
-// generating the reservation (onset_state = the reservation's OWN source, e.g.
-// S_EA1/S_EA2/S_DISP8/S_RMWX/S_PUSH_CALC/S_DEC/...), the absolute CPU-cycle
-// clock (onset_clock -> exact onset age), and the opcode/kind/dir identity of
-// the pending access. This resolves the 12/24 collision at the eval_ext row
-// where the coarse eu_req_p1==0 bit conflates ~10 different reservation states.
-// The record is carried until eu_started / withdrawal (eu_req falls) / flush.
+// ⚠ THE ENGINE-SPECIFIC PROBE BLOCK WAS DELETED ON 2026-09-19 (WAVE 21).
 //
-// The dumped fields are computed COMBINATIONALLY on the onset cycle itself
-// (eu_req rises ON this cycle => onset_state = current state, age = 0) so a
-// withdrawal/reassert cannot alias the age-0 case to a stale prior onset.
+// ~180 lines here were `ifdef V30_FSM_PROBES` and reached INSIDE the DUT by
+// hierarchical reference (dut.u_eu.state, dut.u_biu.cov_*, dut.u_eu.div_cnt,
+// ...), which bound them to the ARCHIVED trace-fitted core's internal signal
+// names.  `hdl/rtl/core/` was REMOVED from the tree under the user instruction
+// "Remove the FSM core, fix whatever dependencies exist" and the ruling that
+// "ucore is the only valid implementation in this code base"
+// (docs/notes/invalidation_ledger.md RET-2), and `sw/check_core.py`'s
+// CORE_DEFS lost `-DV30_FSM_PROBES` with it -- so NOTHING IN THE TREE DEFINES
+// THE MACRO and every one of those lines was unreachable, naming signals that
+// no longer exist.
+//
+// THIS TB IS ENGINE-NEUTRAL AND NOW HAS NOTHING LEFT TO BE NEUTRAL BETWEEN:
+// it drives and samples chip pins plus the V30_BACKDOOR group only.  The
+// `eudbg` / `p` / `cov` dumps the block emitted were FSM instruments; the
+// ucore's own probe set is `ce_probe` below and the SS map.
+//
+// The deleted text is in history at fb9365c01c.
 //----------------------------------------------------------------------------
-logic [31:0] cpu_clk     = 0;    // free-running CPU-cycle counter (ce-gated)
-logic        eu_req_prev = 0;    // eu_req at the previous CPU cycle
-logic  [6:0] onset_state = 0;    // EU state at the reservation onset
-logic [31:0] onset_clock = 0;    // cpu_clk at the reservation onset
-logic  [7:0] onset_opc   = 0;    // opcode at the reservation onset
-logic  [1:0] onset_kind  = 0;    // eu_kind at onset (0=MEM 1=IO)
-logic        onset_wr    = 0;    // eu_wr   at onset (0=read 1=write)
-
-wire        eu_req_now   = dut.u_eu.eu_req;
-wire        eu_req_rise  = eu_req_now && !eu_req_prev;
-wire  [6:0] onset_state_eff = eu_req_rise ? dut.u_eu.state   : onset_state;
-wire  [7:0] onset_opc_eff   = eu_req_rise ? dut.u_eu.opc     : onset_opc;
-wire  [1:0] onset_kind_eff  = eu_req_rise ? dut.u_eu.eu_kind : onset_kind;
-wire        onset_wr_eff    = eu_req_rise ? dut.u_biu.eu_wr  : onset_wr;
-wire [31:0] onset_age       = eu_req_rise ? 32'd0 : (cpu_clk - onset_clock);
-
-always @(posedge clk) begin
-    if (reset) begin
-        cpu_clk     <= 0;
-        eu_req_prev <= 0;
-        onset_state <= 0;
-        onset_clock <= 0;
-        onset_opc   <= 0;
-        onset_kind  <= 0;
-        onset_wr    <= 0;
-    end else if (ce) begin
-        cpu_clk <= cpu_clk + 32'd1;
-        if (eu_req_rise) begin
-            onset_state <= dut.u_eu.state;
-            onset_clock <= cpu_clk;
-            onset_opc   <= dut.u_eu.opc;
-            onset_kind  <= dut.u_eu.eu_kind;
-            onset_wr    <= dut.u_biu.eu_wr;
-        end
-        eu_req_prev <= eu_req_now;
-    end
-end
-
-always @(posedge clk) begin
-    if (!reset && ce && recording && eudbg_en && fo != 0)
-        // d[49]=eu_hold, d[50]=cpu_clk appended (Phase-1/2 flush+trajectory
-        // attribution). APPEND-ONLY observability: both are existing signals,
-        // the DUT is untouched and remains bit-identical to HEAD 1f6004c.
-        // d[62..65]: ARBITER COMMIT-SLOT observability (Arc-2 arbiter-surface
-        // probe). want_eu = the ready-EU claim; slot_fire/slot_id = the Phase-R
-        // canonical arbiter's fired slot this cycle; eu_kind = the EU access kind
-        // (0=mem 1=io 2=inta 3=halt). All existing DUT signals - APPEND-ONLY
-        // observability, the DUT is untouched and remains bit-identical to HEAD.
-        $fdisplay(fo, "d %0d %0d %0d %0d %0d %0d %05x %0d %02x %02x %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %02x %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %02x %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d",
-                  dut.u_eu.state, dut.u_eu.q_pop,
-                  dut.u_biu.q_avl, dut.u_biu.q_cnt,
-                  dut.u_eu.eu_wrap, dut.u_biu.cur_wrap,
-                  dut.u_eu.eu_addr, dut.u_eu.eu_seg,
-                  dut.u_eu.opc, dut.u_eu.q_byte,
-                  dut.u_biu.bus_phase, dut.u_biu.bus_ts, dut.u_biu.q_fresh,
-                  dut.u_biu.eu_started, dut.u_eu.eu_req, dut.u_eu.eu_ready,
-                  dut.u_biu.q_flush, dut.u_biu.eval_ext, dut.u_biu.evald,
-                  dut.u_biu.flush_fast,
-                  dut.u_biu.occupied, dut.u_biu.q_aged, dut.u_biu.infl,
-                  dut.u_biu.eu_req_p1, dut.u_biu.pf_late_rsv, dut.u_biu.pf_starved,
-                  dut.u_biu.prefetch_ext, dut.u_biu.prefetch_ok,
-                  dut.u_biu.eu_wr, dut.u_biu.eu_mem_acc,
-                  onset_state_eff, onset_age, onset_opc_eff,
-                  onset_kind_eff, onset_wr_eff,
-                  dut.u_biu.owns_slot, dut.u_biu.eu_rsv_dhi,
-                  dut.u_biu.eu_rsv_push_calc,
-                  // pf_drain DELETED from the RTL; emit a constant 0 so d[39]
-                  // keeps its slot and every later index stays valid.
-                  1'b0, dut.u_biu.pop_cnt, dut.u_biu.eu_consuming,
-                  dut.u_biu.grid_phase, dut.u_biu.pf_lim,
-                  dut.u_biu.push_pend, dut.u_biu.push_now, dut.u_biu.pop_now,
-                  dut.u_biu.cnt_next, dut.u_biu.pop_sr,
-                  dut.u_biu.eu_hold, cpu_clk,
-                  // d[51..54]: EU-SIDE SCHEDULE state (the model-EU forecast
-                  // test). pop_want is the EU's byte DEMAND, a function of EU
-                  // microcode state alone - q_pop = pop_want && q_avail, so the
-                  // bus only ever shows demand AND availability. pop_want &&
-                  // !q_avail is EU starvation. dly is the micro-op countdown
-                  // (cycles remaining). eu_rsv_lead is the existing
-                  // silicon-confirmed EU->BIU schedule signal (v30_eu.sv:1453).
-                  // Append-only observability; DUT bit-identical to HEAD.
-                  dut.u_eu.pop_want, dut.u_eu.q_avail, dut.u_eu.dly,
-                  dut.u_eu.eu_rsv_lead,
-                  // d[55..61]: class-5 UNIFIED LAW (direct-path, active) +
-                  // lowband. Names updated with the RTL in the same commit
-                  // (names are part of the chain). d[55]=law_arm, d[56]=law_sel,
-                  // d[57]=law_due, d[58]=law_dcnt, d[59]=law_dtw, d[60]=law_window,
-                  // d[61]=lowband_pause.
-                  dut.u_biu.law_arm, dut.u_biu.law_sel,
-                  dut.u_biu.law_due, dut.u_biu.law_dcnt, dut.u_biu.law_dtw,
-                  dut.u_biu.law_window, dut.u_biu.lowband_pause,
-                  // d[62]=want_eu, d[63]=slot_fire, d[64]=slot_id (enum ordinal),
-                  // d[65]=eu_kind. Arbiter-surface commit-slot fields.
-                  dut.u_biu.want_eu, dut.u_biu.slot_fire, dut.u_biu.slot_id,
-                  dut.u_biu.eu_kind,
-                  // d[66]=recent_evx, d[67]=store_pf_boost. MEMW->CODE store-resume
-                  // turnaround fix shadow (log-only until wired into prefetch_ok).
-                  dut.u_biu.recent_evx, dut.u_biu.store_pf_boost,
-                  // d[68..74]: ext_ok qualification subterms (H-EXT CODE->MEM probe).
-                  // Which clause of ext_ok denies the eval_ext DIRECT EU commit. All
-                  // existing DUT signals - APPEND-ONLY observability, DUT bit-identical.
-                  dut.u_biu.eu_ready_p1, dut.u_biu.eu_ready_p2, dut.u_biu.eu_req_p2,
-                  dut.u_biu.ext_flushed, dut.u_biu.ext_ok, dut.u_biu.ext_ok_wr,
-                  dut.u_biu.eu_defer_wr, dut.u_biu.tw_par);
-end
-
-// +racedbg: RR2 E1/P-I1a race-consumer trace. APPEND-ONLY observability of the
-// POP-PSW/IRET boundary-race consumer inputs (v30_eu.sv:5221-5235,
-// S_TRAP_IVT2W). All existing DUT signals via XMR - the DUT is untouched and
-// remains bit-identical. One "g" row per recorded cycle:
-//   g <cpu_clk> <state> <is_ivt2w> <eu_done> <pop_pend> <psw_old> <psw>
-//     <race_B> <r9d_pre> <r9d_pop>
-// Consumer FIRES iff is_ivt2w && eu_done && pop_pend && psw_old[9] && race_B.
-logic racedbg_en;
-initial racedbg_en = $test$plusargs("racedbg");
-always @(posedge clk) begin
-    if (!reset && ce && recording && racedbg_en && fo != 0)
-        $fdisplay(fo, "g %0d %0d %0d %0d %0d %04x %04x %0d %02x %02x",
-                  cpu_clk, dut.u_eu.state,
-                  (dut.u_eu.state == dut.u_eu.S_TRAP_IVT2W),
-                  dut.u_eu.eu_done, dut.u_eu.pop_pend,
-                  dut.u_eu.psw_old, dut.u_eu.psw, dut.u_eu.race_B,
-                  dut.u_eu.r9d_pre, dut.u_eu.r9d_pop);
-end
-
-// +pfxdbg: RR4 segment-override leak probe. APPEND-ONLY observability of the
-// one-shot prefix latch state per recorded cycle (all existing DUT signals via
-// XMR; DUT bit-identical). One "p" row per cycle:
-//   p <cpu_clk> <state> <opc> <seg_ovr_en> <seg_ovr> <eu_seg> <eu_addr> <eu_req>
-logic pfxdbg_en;
-initial pfxdbg_en = $test$plusargs("pfxdbg");
-always @(posedge clk) begin
-    if (!reset && ce && recording && pfxdbg_en && fo != 0)
-        $fdisplay(fo, "p %0d %0d %02x %0d %0d %0d %05x %0d",
-                  cpu_clk, dut.u_eu.state, dut.u_eu.opc,
-                  dut.u_eu.seg_ovr_en, dut.u_eu.seg_ovr,
-                  dut.u_eu.eu_seg, dut.u_eu.eu_addr, dut.u_eu.eu_req);
-end
-
-`endif  // V30_FSM_PROBES
 
 //----------------------------------------------------------------------------
 // SCRIPTED-CONSUMER MODE (+scr=<file>).  ENGINE-NEUTRAL: it drives scr_en /
@@ -1193,23 +1051,6 @@ initial begin
         repeat (bootn * ce_div) @(posedge clk);   // bootn is CPU cycles
         recording = 0;
         $fdisplay(fo, ".");
-`ifndef SYNTHESIS
-`ifdef V30_FSM_PROBES
-`ifdef VERILATOR
-        // Family-5/7 hardening coverage (task #24 coda leg b): boot-replay path
-        // -- the fuzz corpus runs here, so the strio-gadget gate hits show up.
-        $fdisplay(fo, "cov %0d %0d %0d %0d %0d",
-                  dut.u_biu.cov_f7a_idle_arm, dut.u_biu.cov_f7a_eval_ext,
-                  dut.u_biu.cov_f5a_t3_veto,
-                  dut.u_biu.cov_ff_t4, dut.u_biu.cov_ff_ti);
-        $display("COV f7a_idle_arm=%0d f7a_eval_ext=%0d f5a_t3_veto=%0d",
-                 dut.u_biu.cov_f7a_idle_arm, dut.u_biu.cov_f7a_eval_ext,
-                 dut.u_biu.cov_f5a_t3_veto);
-        $display("COV ff_t4=%0d ff_ti=%0d",
-                 dut.u_biu.cov_ff_t4, dut.u_biu.cov_ff_ti);
-`endif
-`endif
-`endif
         $fclose(fo);
         $display("BOOT DONE");
         $finish;
@@ -1330,22 +1171,6 @@ initial begin
         @(posedge clk);
     end
 
-`ifndef SYNTHESIS
-`ifdef V30_FSM_PROBES
-`ifdef VERILATOR
-    // Family-5/7 hardening coverage readout (task #24 coda). Batch-cumulative
-    // hit counts for the three new strio gates; leg (b) requires all three
-    // NONZERO under the wrand strio-gadget fuzz. Emitted to the out file (a
-    // "cov" line parse_out ignores) and to stdout for the A/B flow.
-    $fdisplay(fo, "cov %0d %0d %0d",
-              dut.u_biu.cov_f7a_idle_arm, dut.u_biu.cov_f7a_eval_ext,
-              dut.u_biu.cov_f5a_t3_veto);
-    $display("COV f7a_idle_arm=%0d f7a_eval_ext=%0d f5a_t3_veto=%0d",
-             dut.u_biu.cov_f7a_idle_arm, dut.u_biu.cov_f7a_eval_ext,
-             dut.u_biu.cov_f5a_t3_veto);
-`endif
-`endif
-`endif
     $fclose(fo);
     $fclose(fi);
     $display("DONE %0d cases", ncases);
@@ -1370,31 +1195,27 @@ end
 //----------------------------------------------------------------------------
 logic        ce_hold_check;
 initial      ce_hold_check = $test$plusargs("ce_hold_check");
-// The watched state is engine-specific; the CHECK is not.  One concatenation
-// per engine keeps the rule ("the core must not advance on a CE-low clock")
-// identical for both.
-// The probe word is 64 bits and zero-extended for BOTH engines, so an engine's
-// watched set can be widened without the declaration becoming an engine fact.
-`ifdef V30_FSM_PROBES
-wire [63:0]  ce_probe = {dut.u_eu.state, dut.u_biu.state,
-                         dut.u_biu.q_cnt, dut.u_eu.div_cnt};
-`else
-// ucore: `r_*` IS the state (the unprefixed names are the always_comb's
-// next-state view, which tracks the pins and so moves on CE-low clocks by
-// design -- F7).  Watching the next-state view would make this gate report the
-// contract instead of a violation.
+// The watched state is the ucore's.  (This used to be an `ifdef
+// V30_FSM_PROBES` / `else` pair -- one concatenation per engine -- and the FSM
+// arm read `dut.u_eu.state, dut.u_biu.state, dut.u_biu.q_cnt,
+// dut.u_eu.div_cnt`.  That core is gone; WAVE 21, RET-2.)
+// The probe word is 64 bits and zero-extended, so the watched set can be
+// widened without the declaration becoming an engine fact.
+//
+// `r_*` IS the state (the unprefixed names are the always_comb's next-state
+// view, which tracks the pins and so moves on CE-low clocks by design -- F7).
+// Watching the next-state view would make this gate report the contract
+// instead of a violation.
 //
 // R5 / F50 item 3 (2026-08-04): the EU is IN the probe now.  It watched the
 // BIU only, so a clean `+ce_div` cell was BIU-state evidence and the EU side
 // rested on the golden row match -- the enumerate-the-known blind spot this
 // project has hit five times.  The ucore EU's spine is its micro-PC
-// (`upc_page` / `upc_opc` / `upc_loc`, the three SSA_E_UPC_* addresses),
-// which is what `u_eu.state` was for the archived core.
+// (`upc_page` / `upc_opc` / `upc_loc`, the three SSA_E_UPC_* addresses).
 wire [63:0]  ce_probe = {dut.u_biu.r_ts, dut.u_biu.r_q_cnt,
                          dut.u_biu.r_fetch_ptr[7:0],
                          dut.u_eu.upc_page, dut.u_eu.upc_opc,
                          dut.u_eu.upc_loc};
-`endif
 logic [63:0] ce_probe_p = '0;
 logic        ce_p = 1'b1, reset_p = 1'b1;
 integer      ce_hold_viol = 0;
