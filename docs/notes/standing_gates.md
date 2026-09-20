@@ -93,6 +93,48 @@ suite's opcode map comes from its own `metadata.json` when that file has one,
 and from `v0.1`'s otherwise*), falsifier `python3 sw/suitemeta.py --selfcheck`
 (**PASS, 17 checks, 3 dialects reached**, non-vacuity fires).
 
+### ⚠⚠ **WAVE 23 ADDENDUM, 2026-09-20 — `mod3_illegal`'s `0 / 128` IS A TESTBENCH STIMULUS DEFECT.  THE ucore IS RIGHT, AND THE METADATA'S "WEDGE" IS THE DELETED FSM CORE'S.**
+
+`docs/notes/lea_mod3_prereg_2026-09-20.md` / `..._results_2026-09-20.md`.
+**THE `mod3_illegal` ROW ABOVE DOES NOT MOVE — it is still `cycles 128/128 ·
+ARCH 0/128` and it is re-measured on this tree.**  What changes is what it
+MEANS:
+
+* **THE ucore HAS THE LAST-EA LATCH AND ALREADY MATCHES SILICON.**
+  `ea_residue` (`v30u_eu.sv:251`, SS `0x177`, pair rail `0x178`-`0x179`) and
+  the six-line `8D`/`mod==3` arm (`v30u_eu_arm_bind.svh:81-84`) have been in
+  the tree since the wrfuzz campaign.  Driven **from RESET through `+bootimg`
+  with no backdoor injection at all**, the ucore reproduces **BOTH** `match:
+  true` rows of the suite's own `stale_ea_probe` — **`0x1234` and `0xBEEF`,
+  EXACTLY** — and produces the goldens' `0x0500` as `PC + PS`, the value the
+  capture harness's own terminal `BR PS:PC` leaves on the two rails.
+* **THE `0/128` IS `tb_v30_core.sv:1120`**: fourteen architectural registers
+  are injected and nothing else, so `ea_residue` enters at `16'd0`.  **A
+  GOLDEN WHOSE OUTCOME DEPENDS ON PRE-WINDOW MICROARCHITECTURAL STATE IS
+  UNSCOREABLE BY AN INJECTED ENGINE BY CONSTRUCTION** — §W22(b) above called
+  the confinement gate "booked, not taken"; **injecting the value is likewise
+  a registered STOP (S-4), because it chooses an initial condition after
+  seeing the answer.**
+* ⚠ **ERRATUM AGAINST `tests/v30/mod3_illegal/metadata.json`**: its `finding`
+  says *"The core **WEDGES** at S_HALT on this - the bug"*.  **FALSE OF THE
+  ucore** (cycle rows 128/128; `v30u_eu.sv:832-845` excludes `8D` from
+  `opr_starved` by name).  It describes the ARCHIVED FSM core, deleted
+  2026-09-19 (RET-2).  **THE FILE WAS NOT EDITED** — it is a frozen capture
+  artifact under this section's own sha256 manifest `67161a0c409c7fc6…`.
+* ⚠⚠ **A REAL SILICON DIVERGENCE, FOUND AND BOOKED, NOT FIXED.**  On a
+  **ModR/M** memory predecessor the retained EA lane holds the EA on silicon
+  and **the loader's PC** in the ucore.  The metadata's two `match: false`
+  rows decompose exactly — `0x4121 = 0x3010 + 0x1111` and
+  `0xD4E5 = 0x4455 + 0x9090` — **and the scratch term agrees between the two
+  engines, so the attribution is clean.**  `89 06 34 12` and `89 06 78 56`
+  give the ucore the SAME `0x9211`: EA-INDEPENDENT.  ⚠ `v30u_eu.sv:247-250`'s
+  own comment predicts `0x1111` and **does not describe the tree.**  **NOT
+  FIXED — two rows, byte encodings INFERRED FROM A PROSE FIELD, and the
+  directed socket capture that would settle it was forbidden by the wave's
+  own `X-4`.**  Falsifier: results §4.1.
+
+| **THE mod=3 LEA STALE-EA LAW** **NEW, 2026-09-20** | `python3 sw/lea_mod3_gate.py` | that the undocumented `8D`/`mod==3` law still matches SILICON on the path where the stimulus is COMPLETE — the whole-program replay from RESET, **no backdoor injection**.  ~7 s, offline, 71 replays.  **L1 SILICON 2/2** (expected values read OUT of `metadata.json`, never hard-coded) · **L2 ROUTING 64/64** (8 `reg` fields x 8 `rm`; the named register takes it and **no other GPR moves**) · **L3 NON-VACUITY 3/3** · **L4 KNOWN-RED 2 of 2** (the ModR/M rows above — REPORTED, NOT A BAR).  ⚠⚠ **ITS COVERAGE BOUNDARY IS MEASURED**: five RTL perturbations were BUILT AND RUN in an isolated worktree against an unperturbed control, and **only P5 (`r_idx_n = rmreg ^ 1`) is CAUGHT**; P1, P2, P4, P6 are NOT, because on the only predecessor with a silicon reference `ea_residue == tmpa`.  **It falsifies the observable law, not the retained-rail plumbing, and its docstring says so.** |
+
 ---
 
 ## THE RECEIPT REQUIREMENT (SM3 sitting 14, 2026-08-05)

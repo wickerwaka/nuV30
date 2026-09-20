@@ -119,6 +119,86 @@ them).
 
 ## Gate quick reference
 
+### ⚠⚠⚠ READ FIRST — **`mod3_illegal`'s `0 / 128` IS A TESTBENCH STIMULUS DEFECT, NOT AN RTL DEFECT.  THE ucore ALREADY REPRODUCES SILICON'S STALE-EA WITNESSES.  WAVE 23 (2026-09-20) CHANGED NO `hdl/` BYTE — AND FOUND A DIFFERENT, REAL SILICON DIVERGENCE.**
+
+`docs/notes/lea_mod3_prereg_2026-09-20.md` (committed before the first `hdl/`
+edit, of which there were none) and `..._results_2026-09-20.md`.  **THE FREEZE
+ON `hdl/rtl/ucore/` WAS LIFTED FOR THIS MECHANISM AND THE LIFT WAS DECLINED AS
+UNNEEDED: 107 of 107 synthesis inputs are sha256-identical before and after, so
+the bitstream does not move and FLASH #23 STILL COVERS THIS TREE.**
+
+* **THE LAW IS ONE SENTENCE AND IT IS ALREADY THE TREE'S**: *at `mod == 3` the
+  `8D` decode issues no EA calculation, so the row-1 `SIGMA -> R` transfer
+  writes the register the ModR/M `reg` field names with whatever the address
+  adder's two rails still hold — the retained EA lane and the ordinary scratch
+  lane — and the instruction falls through.*  Four lines of
+  `v30u_eu_arm_bind.svh:81-84`; `ea_residue` is `v30u_eu.sv:251`, SS-mapped at
+  `0x177` (`SS_VERSION` 0x88 -> 0x89) with the pair rail at `0x178`-`0x179`
+  (0x89 -> 0x8A).
+* ⚠ **THE METADATA'S *"The core WEDGES at S_HALT on this - the bug"* IS THE
+  ARCHIVED FSM CORE'S AND IS FALSE OF THE ucore** — cycle rows **128 / 128**,
+  and `v30u_eu.sv:832-845` says `opr_starved` fires on `62`/`C4`/`C5`/`FE`/`FF
+  /3`/`/5` at `mod == 3` **and NOT on `8D`**.  The file is a frozen capture
+  artifact under WAVE 22's sha256 manifest and was **NOT EDITED**.
+* **PROVED ON THE WHOLE-PROGRAM PATH, FROM RESET, WITH NO BACKDOOR INJECTION
+  AT ALL** (`+bootimg`, TB receipt `5332bc26a38de4b2…`): the ucore reproduces
+  **BOTH** `match: true` rows of the suite's own `stale_ea_probe` — `0x1234`
+  and `0xBEEF` — **EXACTLY**.  And the `0x0500` all 128 goldens expect is
+  `PC + PS` left by the capture harness's own terminal `BR PS:PC`
+  (`testimage.load_routine`, byte-identical at the capture commit and today);
+  the ucore produces `PC + PS` on a three-point sweep, with
+  `0x1234 + 0x0800 = 0x1A34` discriminating the SUM from a single latch.
+* **WHY THE SCORER STILL READS `0/128`**: `tb_v30_core.sv:1120` injects the
+  FOURTEEN ARCHITECTURAL REGISTERS and nothing else, so `ea_residue` enters
+  every golden at `16'd0` where the chip entered carrying `0x0500`.  **A GOLDEN
+  WHOSE OUTCOME DEPENDS ON PRE-WINDOW MICROARCHITECTURAL STATE IS UNSCOREABLE
+  BY AN INJECTED ENGINE BY CONSTRUCTION**, and the golden carries no field for
+  it.  WAVE 22 §5 said so; this proves it.  **Injecting the value is a
+  registered STOP (S-4), not a fix** — it chooses an initial condition after
+  seeing the answer and is right only because these 128 all sit at `PS = 0`.
+* ⚠⚠ **THE WAVE FOUND A REAL SILICON DIVERGENCE IT WAS NOT LOOKING FOR, AND
+  BOOKED IT**: on a **ModR/M** memory predecessor the retained EA lane holds
+  the EA on silicon and **the loader's PC** in the ucore.  Both of the
+  metadata's `match: false` rows decompose exactly — `0x4121 = 0x3010 + 0x1111`
+  and `0xD4E5 = 0x4455 + 0x9090` — **and the scratch term agrees between the
+  two engines, so the attribution is clean**.  The ucore's result on
+  `89 06 34 12` and `89 06 78 56` is the SAME `0x9211`: **EA-INDEPENDENT**.
+  ⚠ `v30u_eu.sv:247-250`'s own comment (*"leaves the pre-displacement base"*)
+  predicts `0x1111` and **does not describe the tree**.  **NOT FIXED**: two
+  rows, byte encodings INFERRED FROM A PROSE FIELD, and the capture that would
+  settle it needs the board, which `X-4` forbade.  Falsifier registered in the
+  results §4.1.
+* **NEW STANDING GATE: `python3 sw/lea_mod3_gate.py`** (~7 s, offline, 71
+  whole-program replays) — **L1 SILICON 2/2** (values read OUT of
+  `metadata.json`, never hard-coded) · **L2 ROUTING 64/64** (8 `reg` fields x 8
+  `rm`, confinement checked) · **L3 NON-VACUITY 3/3** · **L4 KNOWN-RED 2 of 2**
+  (the ModR/M rows, REPORTED, NOT A BAR).
+  ⚠⚠ **ITS COVERAGE BOUNDARY IS MEASURED, NOT CLAIMED**: five RTL perturbations
+  were BUILT AND RUN in an isolated worktree, and **only P5 (`r_idx_n = rmreg ^
+  1`) is CAUGHT** — P1, P2, P4 and P6 are **NOT**, because on the only
+  predecessor with a silicon reference `ea_residue == tmpa` and the arm's
+  assignment is a no-op.  **It falsifies the observable law, not the
+  retained-rail plumbing, and the docstring says so.**
+* **THE LADDER IS ZERO-DELTA BY CONSTRUCTION** — `sha256sum` over the 107
+  tracked files Quartus reads is IDENTICAL before and after, **0 moved**
+  (`sw/testdata/wave23/synth-manifest-{before,after}.txt`), so the Verilated TB
+  is the same binary on both sides.  `ss_lint` **232 / 229 flops / 4 whitelist
+  / 0 UNMAPPED — NOT ONE FLOP ADDED**.
+* **G6: A MET** (anchored SDC grep **0**; the unanchored 2 are the commented
+  DO-NOT-RESTORE lines 237-238) · **D MET** (`cutset_lint` **81 / 0**,
+  `phase_split_lint` **157 / 779 / 0**; no stage-2 wire was asked for and the
+  cut set was NOT widened).  ⚠ **B AND C ARE NOT OWED AND WERE NOT RUN** —
+  no synthesis input moved, so a compile would be handed identical bytes and
+  WAVE 21 already measured that identical bytes give a byte-identical `.rbf`.
+  **NOTHING HERE IS AN Fmax FIGURE; the live band is still WAVE 19's
+  `worst-of-5` CONTROL 34.48 / RETENTION 34.41.**
+* ⚠ **X-2 MISSED AND WAS REGISTERED AS A MISS IN ADVANCE.**  The briefing
+  asked for `0/128 -> 128/128` as a POINT prediction; the measurement is
+  **`0/128 full (cycles 128, arch 0)`, unchanged**, and the pre-registration
+  says so.  **Reported as registered, never restated.**
+* **NOTHING WAS FLASHED, NO BOARD WAS TOUCHED, AND NOTHING NEW IS OWED TO
+  FABRIC.**
+
 ### ⚠⚠⚠⚠ READ FIRST — **THERE IS ONE CORE SINCE 2026-09-19 (WAVE 21).  `hdl/rtl/core/` IS GONE, `--core fsm` IS REFUSED BY NAME, AND E1 — THE PROMOTION GATE'S A/B BAR — IS RETIRED WITH NOTHING REPLACING ITS CLAIM.**
 
 **USER INSTRUCTION 2026-09-19: *"Remove the FSM core, fix whatever dependencies
