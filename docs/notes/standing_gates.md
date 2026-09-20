@@ -137,6 +137,86 @@ MEANS:
 
 ---
 
+### ⚠⚠ **WAVE 24 ADDENDUM, 2026-09-20 — THE REMAINING SUITE DIVERGENCES.  THREE OF THEM ARE INSTRUMENTS, ONE IS A NEW SILICON LAW, AND THE ONE REPAIR THAT WAS AUTHORISED IS BLOCKED BY A FOURTH INSTRUMENT.**
+
+`docs/notes/suite_divergence_prereg_2026-09-20.md` /
+`..._results_2026-09-20.md`.  **NO ROW IN §W22 MOVES.**  `hdl/` untouched,
+nothing flashed, FLASH #23 intact.
+
+* **EVERY SUITE DOCUMENT PREDATES THE ENGINE, NOT MERELY THE ARCHIVE.**
+  `hdl/rtl/ucore/` first appears at **`0bfea2bfd0`, 2026-08-03**;
+  `v02_suspected_divergences.md` is **2026-07-18**, `v03_divergence_ledger.md`
+  **2026-07-19…23**, `known_divergences.json` **2026-07-25**,
+  `mod3_illegal/metadata.json` **2026-07-27**.  Both in-repo documents are now
+  **MARKED IN PLACE, NEITHER DELETED**, each carrying its own re-measurement.
+* **THE SEVEN `v0.2` "genuine chip-vs-RTL" CASES ALL PASS** — `INT.90` ·
+  `INT.9D` · `INT.FB` = **1000/1000 each, 3000/3000**.  They were a
+  `final.flags` store-stub CAPTURE CONVENTION and the document's own last
+  section said so.
+* **THE `v0.3` LEDGER'S 62 ARE CLOSED EXCEPT THE TWO THAT WERE NEVER THE
+  ENGINE'S** — 17 forms, exemptions OFF, **169,998 / 170,000**, the only
+  failures being the `F4bc` `VOID` pair.  `FF.3/7685`, the *"DEFINITIVE
+  segment-offset-wrap"*, **PASSES**; the ~44,935-case Family-5/7 string-I/O
+  prefetch-ordering intake is **80,000 / 80,000**.
+* ⚠⚠ **THE `v20suite` EIGHT: WAVE 22's PREFETCH-DEPTH HYPOTHESIS IS REFUTED.**
+  The mechanism is `hdl/tb/tb_v30_core.sv`'s own **ghost-load re-latch**:
+  `:477` latches `fin_regs` at the closing F pop, and `:483-491` then
+  RE-LATCHES the whole register file **except `ip`** up to 16 CPU cycles later,
+  on the comment's own assumption that *"the following NOPs keep retiring"*.
+  The V20 captures place non-`0x90` bytes immediately after the instruction;
+  this repo's own emitter cannot (`_operand_abuts_code`, margin 8).  **DIRECTED
+  CONTROL, form `03`, 20 passing cases: `FF CC` (= `DEC SP`) at the retirement
+  point → 0/20, every one with `sp == exp − 1`; at `+2` → 0/20; at `+4`, `+6`
+  … `+16` and at `+64` → 20/20.**  And the fingerprint: all 20 move `sp` and
+  `flags` and **not `ip`** — and **not one of the eight real failures moves
+  `ip` either.  8 of 8.**  One predicate (*the continuation point has a
+  recorded non-`0x90` byte within 4*) selects **2,284 of 3,125,000 and contains
+  all eight**.  **DISPOSITION PROPOSED, NOT TAKEN — `3,124,992 / 3,125,000
+  ARCH` stays the quotable figure.**
+* ⚠⚠ **THE TWO `VOID` GOLDENS CANNOT BE REPLACED, AND THE REASON IS A GATE
+  NOBODY HAS: THE EMITTER AND THE BATCH SCORER ARE IN DIFFERENT IMAGE ERAS.**
+  The collision was re-derived **byte for byte from the banked case with no
+  engine** (`sw/testdata/wave24/b1_collision_proof.py`) and both cases were
+  re-captured from the socket — and **both replacements are unreplayable**, as
+  are **5 of 7 ARBITRARY `v0.3` indices captured today**, while **18 of 18
+  BANKED cases replay `flat`**.  `testimage.CODE_FILL` is **`0xCC`**;
+  `tb_v30_core.sv:1072` fills with **`8'h90`**, unconditionally, and the
+  `+batch` path has no `fill` token.  **THE SUITE WAS RESTORED BYTE-IDENTICAL
+  AND BOTH EXEMPTIONS STAY**; `v0.3` is unchanged at **3,699,998 / 3,699,998
+  [2 excluded]**, and WAVE 24's registered 3,700,000 / 3,700,000 is a
+  **REGISTERED MISS**.  `invalidation_ledger.md` **§E**.
+  ⚠ **`tests/v30/v0.3` AND `tests/v30/v0.2` CANNOT BE EXTENDED OR RE-EMITTED
+  UNTIL THE TWO ERAS AGREE.**
+* ⚠⚠ **THE ModR/M RETAINED-EA LANE — CAPTURED FROM SILICON WITH CONSTRUCTED
+  BYTES, AND THE WAVE 23 ADDENDUM ABOVE IS CORRECTED BY ITS OWN FALSIFIER.**
+  Thirteen probes, `<predecessor> 8D F7`, socket, every predecessor stated AS
+  BYTES (`sw/b2_ea_lane.py`), scored against the ucore by whole-program replay
+  from RESET (`sw/b2_ea_lane_ucore.py`).  **The controls reproduce the
+  2026-07-27 rows EXACTLY — `C1 = 0x1234`, `C2 = 0xBEEF`, and
+  `R1 (88 26 10 30) = 0x4121`, the frozen `si_loaded` to the bit — so WAVE 23's
+  INFERRED encodings were right.**  ⚠ **But the law above, *"the retained EA
+  lane holds the EA on silicon"*, is TRUE ONLY OF DISPLACEMENT-ONLY FORMS,
+  which is what both of its witnesses were.**  Measured:
+
+  > **THE LANE HOLDS THE ADDRESS ADDER'S *SECOND ADDEND* ON THE LAST EA
+  > CALCULATION — the index register for a two-register form, the displacement
+  > for a displacement form, and ZERO when there is nothing to add.**
+
+  `89 00/01/02/03` → `8888 · 9999 · 8888 · 9999` (= `IX`/`IY` + `AW`), **and
+  the ucore MATCHES all four**; `89 04/05/07` → `1111` (= `0 + AW`) and
+  `89 06 34 12` → `2345`, where **the ucore gives `9211` — `0x8100 + AW`, the
+  loader's stale `PC`**.  `8B 0E 55 44` → `1121 = 0x4455 + 0xCCCC`, the same
+  law with today's `0xCC` fill where the 2026-07-27 row had `0x9090`.
+  **MATCH 7 / 13, DIVERGE 6 / 13, the scratch term agreeing on every row.**
+  **THE DEFECT IS ONE QUALIFIER — `ea_residue` is written under
+  `ea_pair_valid`; silicon writes it on every EA calculation.**  **BOOKED, NOT
+  FIXED.**  *Falsifier for the landing wave*: re-run `sw/b2_ea_lane_ucore.py`
+  — all thirteen MATCH, **the four that already MATCH must not move**, and
+  `lea_mod3_gate` stays PASS with `mod3_illegal` unmoved at `0/128`.
+  ⚠ `mod=01`/`mod=10` (base+index **and** displacement) was **NOT PROBED**.
+
+---
+
 ## THE RECEIPT REQUIREMENT (SM3 sitting 14, 2026-08-05)
 
 **Every gate marked ⧉ below refuses to run against a Verilator binary that does

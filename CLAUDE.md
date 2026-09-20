@@ -119,6 +119,66 @@ them).
 
 ## Gate quick reference
 
+### ⚠⚠⚠⚠ READ FIRST — **THE SUITE "KNOWN DIVERGENCES" ARE MOSTLY INSTRUMENTS (WAVE 24, 2026-09-20).  AND `tests/v30/v0.3` AND `v0.2` CAN NO LONGER BE RE-EMITTED AT ALL.**
+
+`docs/notes/suite_divergence_prereg_2026-09-20.md` /
+`..._results_2026-09-20.md`.  **NO `hdl/` BYTE MOVED, NOTHING WAS FLASHED,
+FLASH #23 IS INTACT** (`flash_log.jsonl` **26 entries** before and after).
+`standing_gates.md`'s WAVE 24 ADDENDUM carries the authoritative rows.
+
+* **EVERY SUITE DOCUMENT PREDATES THE ENGINE.**  `hdl/rtl/ucore/` first appears
+  at **`0bfea2bfd0`, 2026-08-03**.  `v02_suspected_divergences.md` is
+  **2026-07-18**, `v03_divergence_ledger.md` **2026-07-19…23**,
+  `known_divergences.json` **2026-07-25**, `mod3_illegal/metadata.json`
+  **2026-07-27**.  Not merely pre-ARCHIVE — **pre-ENGINE**.  Both in-repo
+  documents are now MARKED IN PLACE; neither is deleted.
+* **THE SEVEN `v0.2` CASES ALL PASS** (`INT.90` · `INT.9D` · `INT.FB` =
+  **3000/3000**) and **THE `v0.3` LEDGER'S 62 ARE CLOSED EXCEPT THE TWO THAT
+  WERE NEVER THE ENGINE'S** — 17 forms, exemptions OFF, **169,998/170,000**;
+  `FF.3/7685` (*"DEFINITIVE segment-offset-wrap"*) PASSES and the ~44,935-case
+  string-I/O prefetch-ordering intake is **80,000/80,000**.
+* ⚠⚠ **THE `v20suite` EIGHT ARE THE TESTBENCH, AND WAVE 22's PREFETCH-DEPTH
+  READING IS REFUTED.**  `tb_v30_core.sv:477` latches `fin_regs` at the closing
+  F pop and `:483-491` **RE-LATCHES the whole register file EXCEPT `ip`** up to
+  16 CPU cycles later, on the comment's own *"the following NOPs keep
+  retiring"*.  Directed control, form `03`, 20 passing cases: `FF CC`
+  (= `DEC SP`) at the retirement point → **0/20, every one `sp == exp − 1`**;
+  at `+2` → 0/20; at `+4 … +16` and `+64` → **20/20**.  All 20 move `sp` and
+  `flags` and **not `ip`** — and **not one of the eight real failures moves
+  `ip`.  8 of 8.**  **Disposition PROPOSED, NOT TAKEN: `3,124,992 / 3,125,000
+  ARCH` stays the quotable figure.**
+* ⚠⚠⚠ **THE EMITTER AND THE BATCH SCORER ARE IN DIFFERENT IMAGE ERAS, AND NO
+  GATE SEES IT.**  `testimage.CODE_FILL` is **`0xCC`**;
+  `hdl/tb/tb_v30_core.sv:1072` fills memory with **`8'h90`**, unconditionally,
+  and the `+batch` path has no `fill` token.  **5 of 7 ARBITRARY `v0.3` indices
+  re-captured from silicon today are UNREPLAYABLE; 18 of 18 banked ones replay
+  `flat`.**  So the authorised repair of the two `VOID` goldens was taken and
+  then **REFUSED**: the suite was **RESTORED BYTE-IDENTICAL**, both exemptions
+  stay, `v0.3` is unchanged at **3,699,998 / 3,699,998 [2 excluded]**, and the
+  registered 3,700,000 / 3,700,000 is a **REGISTERED MISS**.
+  `invalidation_ledger.md` **§E**.  ⚠ **`tests/v30/v0.3` (3.7 M) AND
+  `tests/v30/v0.2` (347 K) CANNOT BE EXTENDED, REPAIRED OR RE-EMITTED UNTIL THE
+  TWO ERAS AGREE.**  (The `VOID` collision itself is now re-derived **byte for
+  byte from the banked case with no engine** — `sw/testdata/wave24/b1_collision_proof.py`.)
+* ⚠⚠ **A REAL SILICON LAW, MEASURED WITH CONSTRUCTED BYTES — AND IT CORRECTS
+  WAVE 23's.**  Thirteen socket probes, `<predecessor> 8D F7`
+  (`sw/b2_ea_lane.py`), scored against the ucore from RESET
+  (`sw/b2_ea_lane_ucore.py`).  Controls reproduce the 2026-07-27 rows EXACTLY
+  (`0x1234`, `0xBEEF`, and `88 26 10 30` → **`0x4121`**), so WAVE 23's inferred
+  encodings were right — **but *"the retained EA lane holds the EA"* is true
+  only of displacement-only forms, which is what both its witnesses were.**
+
+  > **THE LANE HOLDS THE ADDRESS ADDER'S *SECOND ADDEND* — the index register
+  > for a two-register form, the displacement for a displacement form, and
+  > ZERO when there is nothing to add.**
+
+  **MATCH 7 / 13, DIVERGE 6 / 13**, scratch agreeing on every row: the ucore is
+  **right on all four two-register forms** and keeps a stale `0x8100` (the
+  loader's `PC`) on every single-addend one.  **THE DEFECT IS ONE QUALIFIER** —
+  `ea_residue` is written under `ea_pair_valid`; silicon writes it on every EA
+  calculation.  **BOOKED, NOT FIXED**; falsifier in the results §6.3.
+  ⚠ `mod=01`/`mod=10` was **NOT PROBED**.
+
 ### ⚠⚠⚠ READ FIRST — **`mod3_illegal`'s `0 / 128` IS A TESTBENCH STIMULUS DEFECT, NOT AN RTL DEFECT.  THE ucore ALREADY REPRODUCES SILICON'S STALE-EA WITNESSES.  WAVE 23 (2026-09-20) CHANGED NO `hdl/` BYTE — AND FOUND A DIFFERENT, REAL SILICON DIVERGENCE.**
 
 `docs/notes/lea_mod3_prereg_2026-09-20.md` (committed before the first `hdl/`
