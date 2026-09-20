@@ -91,6 +91,11 @@ def core_rtl(core):
     is the 2026-07-13 drift recorded above), and both times nothing saw it,
     because a gate that cannot build reports no failures.  The falsifier is the
     gate itself: run it."""
+    if core not in _CORE_DIR:
+        import fsmcore                                       # noqa: PLC0415
+        fsmcore.retired(f"check_ab_sim --core {core} -- the only core in this "
+                        f"tree is ucore (its last figure was MATCH over 187 "
+                        f"rows; invalidation_ledger.md RET-2)")
     d = _CORE_DIR[core]
     pkg, rest = _CORE_RTL[core][0], _CORE_RTL[core][1:]
     return [d / pkg] + _PLATFORM + [d / f for f in rest]
