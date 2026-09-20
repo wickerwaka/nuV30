@@ -257,11 +257,15 @@ FABRIC.**  A narrowing, not a proof; falsifier registered.
   under `V30_MUXED_AD`, because a de-muxed build has none and `demux_off_gate`
   breaks otherwise.  **This is an INTERFACE CHANGE.**  It had been built and
   reverted three times before it landed.
-* **`cutset_lint` IS RED IN THE TREE BY DESIGN** — X4 naming `q_ripe_lead_n` and
-  nothing else, measured at WAVE 15 and **registered in advance at WAVE 16**
+* ⚠ **SUPERSEDED 2026-09-19 BY ARM-B (`ce39ed61bf`): `cutset_lint` NOW PASSES,
+  81 members / 0 violations**, coordinator re-measured (`REAL_EXIT=0`).  **The
+  lint is BYTE-UNTOUCHED — the invariant simply became true.**
+  `phase_split_lint` PASS 157 / 779 / 0.  *The superseded text follows:*
+  **`cutset_lint` WAS RED IN THE TREE BY DESIGN** — X4 naming `q_ripe_lead_n`
+  and nothing else, measured at WAVE 15 and **registered in advance at WAVE 16**
   because ARM-A **RELOCATES** a bypass that was always there through the BIU
-  port, where the lint could not see it.  **A DECISION, NOT A DEFECT — do not
-  "fix" it on sight.**  `phase_split_lint` PASS 156 / 778 / 0.
+  port, where the lint could not see it.  **It was A DECISION, NOT A DEFECT**,
+  and ARM-B retired it rather than anyone "fixing" it on sight.
 * **`S-1` IS NOW LOAD-BEARING FOR THE EU**, not just for `t1_half2`: violating
   it makes the EU consume a stale stage-1 shadow.  `v30_core.sv`'s `$fatal` is
   `ifndef SYNTHESIS`, so **FABRIC HAS NO ASSERTION**.  Proved safe structurally
@@ -269,6 +273,25 @@ FABRIC.**  A narrowing, not a proof; falsifier registered.
   `tick_rise` at `D-1` off one counter, so for every `D >= 2` the fall fires
   exactly once, strictly earlier: **D ∈ [2,63], 0 coincident / 0 S-1
   violations**, non-vacuous at D=0 (C-a) and D=1 (S-1, 6-bit underflow).
+
+**🏁 IN SILICON TWICE — FLASH #22 (2026-09-19, `f89f4e6978`) AND FLASH #23
+(2026-09-19, `c821f3f2ad`).**  #22 carried WAVES 7/12/16/17 and its attribution
+could only be a NARROWING; **#23 carries ARM-B ALONE and the attribution is
+PROVED BY HASH**: `files_ucore.qip` declares no `rtl/core/` file, and the
+manifest against #22's own receipt is **99 → 99 files, MOVED = 1,
+`hdl/rtl/ucore/v30u_eu.sv`** — corroborated independently by `fz2_replay`'s era
+guard.  **#23's NULL IS EXACT**: registered 102/3,838, measured **102 · 0
+entered · 0 left · digest identical · 102/102 seats exact · 0 `first_bad`
+earlier · Σ rows unmoved with 0 unexplained**; a 19-field comparison of all 102
+entries differs **only in `capture_sha256`**.  Flashed bitstream **RETENTION
+34.99 MHz / +2.670 ns / 8,443 ALMs**, `.sof` `0f4fcfa5cd55bc32…`, `.rbf`
+`3d4a2e86190d10d7…`, `flash_log.jsonl` 25 → 26, first light **MATCH 800 ×3**.
+⚠ **ONE REGISTERED MISS, REPORTED AS ONE**: `fz2_w1 bars` **10/11, C-6 NOT
+MET** — one off-row, `fz2e/516044`, which is also one of the era's three
+`_ps3_8080` discards and the same event as the denominator moving 3,838 →
+3,837; the **ninth** consecutive re-roll of a SOCKET-leg predicate no RTL change
+can reach.  **Missed, not re-scored.**  ⚠ **NO FABRIC FIGURE FROM AN EARLIER
+FLASH MAY BE QUOTED AGAINST THIS TREE.**
 
 **NEW BAR `E11` (WAVE 12, `04efdc8d47`)** — `quartus_gate` **REFUSES** (exit 2,
 reason named) if `hdl/build_id.v` reappears or a `%y%m%d` stamp re-enters the
