@@ -1758,6 +1758,53 @@ REGISTERED figure.  Recorded here so the figure is not quoted as current again.
 ⚠ It refuses via a **traceback** rather than `fsmcore.refuse()`'s banner; noted,
 not changed.
 
+## D.1 — THE `EDGE` ENTRY IS REMOVED, 2026-09-20, USER-AUTHORISED
+
+§D measured the file and deliberately did not edit it.  **The USER then ruled:
+*"Remove the stale EDGE entry"*.**  Done, and the measurement that authorises it
+was re-taken by the coordinator first rather than inherited from §D.
+
+**WHAT WENT**: `646F` → `8988`, *"EDGE: known pre-existing 1/10000 cycle edge,
+repnc OUTSW cx=13 (REP OUTS loop timing, rows 28-32) … arch-CLEAN
+(cycle-only)"*.  **The `EDGE` CLASS IS NOW EMPTY**; the two `VOID` entries
+(`0F1B`/3917, `83.5`/8683) are untouched and still fail on their merits.
+
+**WHY**: the entry excused a case that PASSES.  Measured 2026-09-20, both legs,
+on form `646F` (10,000 cases):
+
+| leg | result |
+|---|---|
+| exemptions **OFF** (`--no-known-divergences`) | **10,000 / 10,000 full** |
+| exemptions **ON**, entry present | 9,999 / 9,999 `[1 documented pre-existing excluded]` |
+| exemptions **ON**, entry REMOVED | **10,000 / 10,000 full**, no exclusion note |
+
+**The first two lines are each other's POSITIVE CONTROL** — they prove
+`--no-known-divergences` is live and not accepted-and-ignored, which is the
+check this campaign has had to add fifteen times.  The third is the edit's own
+effect.
+
+**PROVENANCE, AND IT IS THE REASON THIS CLASS WAS SUSPECT**: the file's `_doc`
+cites `8fd94df` / `4508e08`, and **`git ls-tree 4508e08 hdl/rtl/` lists `core`
+and NO `ucore`** — every classification in it was established against the
+**ARCHIVED FSM CORE** (removed 2026-09-19, **RET-2**), not against the ucore and
+not against the C++ model.  Under the USER's 2026-09-19 ruling (*"treat the
+documentation as hearsay until proven otherwise"*) an exemption inherited from a
+deleted implementation is exactly the artifact to re-ask, and re-asking it
+retired one of the three.
+
+**NOTHING IS DESTROYED**: the file is TRACKED, so `git show HEAD~1 --
+tests/v30/v0.3/known_divergences.json` restores the entry verbatim, and its text
+is quoted above.  The suspect provenance note is RETAINED in `_doc` as history
+rather than rewritten.
+
+⚠ **THE SUITE'S REGISTERED FIGURE MOVES, AND IT MOVES UP BY ONE CASE IN BOTH
+TERMS**: `v0.3` list-on was **3,699,997 / 3,699,997**; the denominator gains the
+un-exempted case and the numerator gains it too, so the figure is
+**3,699,998 / 3,699,998**.  ⚠ **That was REGISTERED AS A PREDICTION BEFORE the
+confirming full-suite run and is derived from §D's own list-off measurement
+(3,699,998 / 3,700,000, the two VOIDs the only failures)** — quote it only with
+the confirming run's artifact id beside it.
+
 ## D — `tests/v30/v0.3/known_divergences.json` — MEASURED, NOT EDITED
 
 Its three entries were established against **`8fd94df` / `4508e08`** (2026-07-25);

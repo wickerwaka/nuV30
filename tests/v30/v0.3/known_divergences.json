@@ -1,12 +1,9 @@
 {
-  "_doc": "Cases excluded from check_core pass/total (RR4 sweep classification, 2026-07-25). ALL verified PRE-EXISTING: byte-identical divergence on the pre-fix RTL (8fd94df) and the fixed RTL (4508e08) -- the RR4 prefix-clear fix introduced ZERO new flips. Each entry documents the reason; VOID = contamination artifact (bad golden capture), EDGE = genuine but known pre-existing cycle edge.",
+  "_doc": "Cases excluded from check_core pass/total (RR4 sweep classification, 2026-07-25). ALL verified PRE-EXISTING: byte-identical divergence on the pre-fix RTL (8fd94df) and the fixed RTL (4508e08) -- the RR4 prefix-clear fix introduced ZERO new flips. Each entry documents the reason; VOID = contamination artifact (bad golden capture), EDGE = genuine but known pre-existing cycle edge. ** ERRATUM 2026-09-20, USER-AUTHORISED: THE `EDGE` CLASS IS NOW EMPTY. ** Its sole member, 646F/8988 (repnc OUTSW cx=13, REP OUTS loop timing, cycle-only), NO LONGER DIVERGES: form 646F scores 10000/10000 against the ucore with exemptions OFF, against 9999/9999 [1 excluded] with them ON -- both legs measured 2026-09-20, the pair being the positive control that --no-known-divergences is live and not accepted-and-ignored. The entry was excusing a PASSING case and is removed; git retains it (this file is tracked). The provenance note above is itself suspect and is retained as history: `git ls-tree 4508e08 hdl/rtl/` lists `core` and NO `ucore`, so these classifications were established against the ARCHIVED FSM CORE (removed 2026-09-19, ledger RET-2), not against the ucore and not against the C++ model. The two VOID entries below were re-measured against the ucore and STILL FAIL, and their stated cause independently re-derives (expected data is literally 0x63C0, the preload bytes). See invalidation_ledger.md section D and suite_scorer_results_2026-09-19.md.",
   "0F1B": {
     "3917": "VOID: instrument-failure #3 (ram-vs-instruction physical collision; phys 0xdc30 want 0x89 got 0xC0). docs/notes/v03_divergence_ledger.md (F4bc). arch+cycle."
   },
   "83.5": {
     "8683": "VOID: instrument-failure #3 (ram-vs-instruction physical collision; phys 0x9799 want 0xA7 got 0x63). docs/notes/v03_divergence_ledger.md (F4bc). arch+cycle."
-  },
-  "646F": {
-    "8988": "EDGE: known pre-existing 1/10000 cycle edge, repnc OUTSW cx=13 (REP OUTS loop timing, rows 28-32). docs/notes/v03_divergence_ledger.md:159. arch-CLEAN (cycle-only)."
   }
 }
