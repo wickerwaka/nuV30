@@ -12,11 +12,13 @@ touched.
 
 ## §0 THE HEADLINE, IN FIVE SENTENCES
 
-1. **THE CORE IS OUT AND NOT ONE GATE DIED SILENTLY.**  Sixteen tools refuse
-   with a banner naming the directive, the ledger and the recovery command;
-   `check_seq`'s engine pin refuses rather than being re-pointed; **378 modules
-   import and ZERO raise a NEW `FileNotFoundError` / `ImportError` /
-   `ModuleNotFoundError`.**
+1. **THE CORE IS OUT AND NOT ONE GATE DIED SILENTLY.**  **Eighteen files refuse
+   by name** — sixteen tools carrying an explicit `sw/fsmcore.py` guard, plus
+   `sw/t30_sweep.sh` and `sw/gen_ucore_qsf.py` — each with a banner naming the
+   directive, the ledger and the recovery command; and `check_seq`'s engine pin
+   refuses rather than being silently re-pointed, which is what carries the
+   refusal to everything downstream of it.  **378 modules import and ZERO raise
+   a NEW `FileNotFoundError` / `ImportError` / `ModuleNotFoundError`.**
 2. **THE BRIEF'S OWN BLOCKER WAS NOT ONE.**  `gen_ucore_qsf --check` never
    opened `hdl/files.qip` and never read `hdl/rtl/core/`; it ran **GREEN with
    the entire FSM core deleted**.  E1 was retired because the USER RULING voids
@@ -130,13 +132,25 @@ Registered in `fsm_removal_prereg_2026-09-19.md` §2 / §2b, committed at
   `files_ucore.qip` (sourced, not derived).  **(d) NOT** that the settings are
   CORRECT — a wrong `set_global_assignment` is a green `qsf_lint`.  **(e) NOT**
   anything about what Quartus DOES with the settings; E2–E11 are that.
-* **NON-VACUITY — three positive controls, MEASURED:**
+* **NON-VACUITY — SIX POSITIVE CONTROLS, MEASURED, AND THEY ARE A STANDING
+  FALSIFIER RATHER THAN A ONE-OFF.**  They live in `sw/test_quartus_gate.py` as
+  **Q18**, so the new bar cannot quietly stop firing:
 
   | control | expected | measured |
   |---|---|---|
-  | one `set_location_assignment` spliced in | exit 1, naming the line | **CONTROL-1 RESULT** |
-  | `source files_ucore.qip` deleted | exit 1, "expected exactly one" | **CONTROL-2 RESULT** |
-  | the file absent | exit **2** CANNOT MEASURE, never PASS | **CONTROL-3 RESULT** |
+  | the real tree (the POSITIVE CONTROL, reported first) | exit 0, "CANONICAL" | **PASS** |
+  | one `set_location_assignment` spliced in | exit 1, the line NAMED | **exit 1, `PIN_AA1` and `MATERIALISED` both printed, plus the `git checkout --` restore command** |
+  | `source files_ucore.qip` deleted | exit 1, "expected exactly one" | **exit 1, "found 0"** |
+  | a second `PROJECT_OUTPUT_DIRECTORY` | exit 1 | **exit 1** |
+  | the file absent | exit **2** CANNOT MEASURE, never PASS | **exit 2, "CANNOT MEASURE"** |
+  | the file EMPTY | exit **2** | **exit 2** |
+  | ⚠ a COMMENTED-OUT `set_location_assignment` | **exit 0** — a lint that fired on every build is a lint nobody reads | **exit 0** |
+
+  Q18 also asserts the GATE IS WIRED, not just that the lint works:
+  `quartus_gate.py` calls `sw/qsf_lint.py`, the receipt key is
+  `E1_qsf_canonical`, and `gen_ucore_qsf.py` is **no longer invoked**.
+  **`test_quartus_gate` 287 → 302 / 302**, a rise of 15, pre-registered as a
+  possible move and itemised here.
 
 * **WHAT IS DELIBERATELY NOT RENAMED, and why.**  The revision stays
   `nec_test_ucore` and the output directory stays `output_files_ucore`.  Every
@@ -212,9 +226,67 @@ split exists because the pre-registration's own erratum established that the
 re-basing is a DELIBERATE ACT under the ruling and not a consequence of the
 deletion, so a difference must be attributable.
 
-**Z-4 RESULTS TABLE**
+**Z-4 RESULTS — BOTH LEGS MET.  THE `.rbf` IS BYTE-IDENTICAL, TWICE.**
 
-**Z-4: PENDING**
+| | FLASH #23 CONTROL | **Z-4a** — FSM RTL + `files.qip` removed, `.qsf`/`.qpf` untouched | **Z-4b** — the `.qsf` re-basing on top |
+|---|---|---|---|
+| verdict | PASS | **PASS** | **PASS** |
+| **`.rbf` sha256** | `e91a67badeef2c17…` | **`e91a67badeef2c17…` — IDENTICAL** | **`e91a67badeef2c17…` — IDENTICAL** |
+| `.sta.summary` sha256 | `3d951d451a4d51f7…` | **IDENTICAL** | **IDENTICAL** |
+| Fmax (`divclk`) | 34.68 MHz | **34.68** | **34.68** |
+| worst setup | +2.419 ns | **+2.419** | **+2.419** |
+| ALMs | — | 8,434 / 41,910 (20 %) | 8,434 / 41,910 (20 %) |
+| TNS setup+hold, every domain | 0.000 | **0.000** | **0.000** |
+| errors / latches / `lpm_divide` | 0 / 0 / 0 | **0 / 0 / 0** | **0 / 0 / 0** |
+| `input_manifest` | `ee6a4eff46e483d3…`, **99** files | `ee6a4eff46e483d3…`, **99 — IDENTICAL** | `5fedcfccf841f604…`, **98** |
+| E1 | `E1_gen_ucore_qsf` PASS | `E1_gen_ucore_qsf` **PASS** | **`E1_qsf_canonical` PASS** |
+| receipt | `sw/testdata/flash23/…` | **`cf468aa4fc361a6a…`** | **`3dbde6847d004851…`** |
+
+Both receipts are committed at `sw/testdata/wave21/z4{a,b}_quartus_gate.json`.
+
+**WHAT Z-4a PROVES, and it is the strong one.**  Deleting `hdl/rtl/core/` (6
+files, 467,184 bytes) and `hdl/files.qip` left the CONTROL bitstream
+**byte-identical** AND the 99-file input manifest **hash-identical**.  The FSM
+core was not reaching the ucore revision by any route — not through the file
+list, not through the search path, not through a stale `db/`.  **The removal is
+bitstream-neutral, measured rather than argued.**
+
+**WHAT Z-4b PROVES.**  Deleting `hdl/nec_test.qsf`, dropping the `nec_test`
+revision from the `.qpf`, authoring the revision file's header and rewriting
+`files_ucore.qip`'s comments **also** left the `.rbf` byte-identical.  The
+manifest moved exactly as registered: **99 → 98**, the one file removed is
+`hdl/nec_test.qsf`, and the two whose content moved are `hdl/files_ucore.qip`
+and `hdl/nec_test_ucore.qsf` — **comment-only edits in both, which is why the
+compiler's output does not move.**  Nothing else in the 98 changed.
+
+⚠ **TWO THINGS MEASURED HERE THAT NOBODY ASKED FOR, RECORDED BECAUSE THEY ARE
+TRUE.**
+
+1. **THE `.sof` DIFFERS ON EVERY BUILD AND THE `.rbf` DOES NOT.**  Three builds
+   of the identical configuration give three `.sof` hashes (`d6d3a6d3c2c85159…`,
+   `130dbabfa706e70b…`, `8316d0b62fa47d1d…`) and ONE `.rbf` hash.  **The `.sof`
+   is not a byte-identity instrument and must not be used as one**; the `.rbf`
+   is.  `sw/quartus_gate.py` hashes both and this wave is the first to notice
+   they disagree about reproducibility.
+2. ⚠ **QUARTUS DID NOT REWRITE THE REVISION `.qsf` ON THIS FLOW.**  The new
+   post-build restore reported `{"restored": false, "why": "unchanged by the
+   build"}`, and **E7 reported `n_moved: 0` with `moved_exempt: []` on BOTH
+   builds** — so the `INPUT_FLIP_EXEMPT` entry that exists for §70.7's rewrite
+   was VACUOUS on these runs.  The rewrite is real for other invocations (it is
+   why the exemption and the post-build regeneration were built at all) and
+   `quartus_sh --flow compile` with the gate's own stage flags did not trigger
+   it here.  **RECORDED, NOT EXPLAINED.**  `qsf_lint`'s bar is unaffected: it
+   checks canonical form whether or not anything rewrote the file.
+
+**Z-4: MET on both legs.  The wave did not stop.**
+
+**THEREFORE, AND CONDITIONALLY: THIS REMOVAL INCURS NO NEW FABRIC DEBT.**  The
+CONTROL bitstream this tree builds is byte-identical to the one FLASH #23's
+campaign built, so the board's contents are unaffected by construction.  **That
+statement is CONDITIONAL ON Z-4 and on nothing else** — it would be withdrawn
+the moment a `.rbf` moved.  **NOTHING WAS FLASHED.  FLASH #23 STANDS.**  The
+FLASH #21 (v)/(vi) debt and every other pre-existing fabric debt are unchanged.
+
 
 ---
 
@@ -226,13 +298,56 @@ deletion, so a difference must be attributable.
 
 ## §Z-6 `hdl/rtl/ucore/` AND `hdl/nec_test.sdc` — UNTOUCHED
 
-**Z-6 RESULT**
+**MEASURED, and it is a two-line check anyone can repeat:**
+
+```
+$ git diff --stat fb9365c01c..HEAD -- hdl/rtl/ucore hdl/nec_test.sdc
+$ git log --oneline fb9365c01c..HEAD -- hdl/rtl/ucore hdl/nec_test.sdc | wc -l
+0
+```
+
+**EMPTY DIFF, ZERO COMMITS.**  Not one byte of `hdl/rtl/ucore/` or
+`hdl/nec_test.sdc` was edited by this wave.  The requirement they carry is met
+and in silicon at FLASH #23, and the removal never needed to touch either.
+
+⚠ **THE ucore's OWN COMMENTS STILL CITE `hdl/rtl/core/` BY PATH** —
+`v30_core.sv:5`, `v30u_biu.sv:100`, `v30u_ss_pkg.sv:7` — and they are **LEFT
+STANDING DELIBERATELY, under Z-6 and on RET-1's precedent for
+`gen_ucore_tables.py`**: they are the ucore's provenance, and deleting them
+would delete the provenance rather than the dangle.  They now point into
+history at `fb9365c01c`.
+
+⚠ `hdl/tb/tb_v30_core.sv` and `hdl/rtl/system_large.sv` are NOT under Z-6's
+protection and `tb_v30_core.sv` WAS edited — the `V30_FSM_PROBES` block, see
+§D.  `system_large.sv` was not touched.
+
+**Z-6: MET.**
 
 ---
 
 ## §Z-7 THE USER'S UNCOMMITTED WORK
 
-**Z-7 RESULT**
+**MEASURED.**  The 21 files the brief names were found `M`-unstaged and were
+left `M`-unstaged.  **No `git stash`, no `git checkout .`, no `git reset
+--hard`** was run in this wave (`git stash list` is empty); every `git add` in
+every commit named explicit paths.
+
+| | |
+|---|---|
+| the 18 non-receipt files | **18 of 18 still `" M "` unstaged, none staged, none edited** |
+| `sw/testdata/receipts/*.jsonl` (3) | **still `" M "` unstaged, and NOT staged in any commit of this wave** |
+
+⚠ **ONE THING THIS WAVE DID TO THEM, AND IT IS THE GATE'S OWN BEHAVIOUR, NOT AN
+EDIT.**  `sw/testdata/receipts/quartus_bitstream.jsonl` and
+`quartus_distribution.jsonl` are the gate's APPEND-ONLY receipt history, and the
+two Z-4 builds appended to them exactly as every G6 build does.  That is not a
+modification of the user's work — it is the instrument recording itself — and
+the lines are **left UNSTAGED** so the owner of those edits decides.  The wave's
+own copies of both receipts are committed separately at
+`sw/testdata/wave21/z4{a,b}_quartus_gate.json`, so nothing in the results
+document depends on those files being committed.
+
+**Z-7: MET.**
 
 ---
 
@@ -252,7 +367,46 @@ by-necessity because it never left.
 
 ## §D THE DOCUMENTATION DISCREPANCIES — a first-class deliverable
 
-**D RESULTS TABLE**
+**FOURTEEN CLAIMS WERE CHECKED AGAINST THE ARTIFACT AND FOUND FALSE.  ALL
+FOURTEEN ARE FIXED IN THIS WAVE.**  Under the user ruling, documentation is
+hearsay until proved in the artifact, and where a doc and the code disagreed the
+code won.
+
+| # | where | what it asserted | what the artifact says | disposition |
+|---|---|---|---|---|
+| **D-1** | `hdl/files_ucore.qip:10-11` | the file list is *"Selected by the `V30_CORE` environment variable, read in nec_test.qsf"*, with `V30_CORE=ucore quartus_sh --flow compile nec_test` as the build command | **`V30_CORE` occurred EXACTLY ONCE IN THE WHOLE TREE — in that comment.**  Nothing read it and nothing could: the `.qsf` is read by a restricted settings parser with no `if` (Error 125048), which is why two revisions existed at all.  **Following the documented command built the FSM core and reported success** — accepted-and-ignored, class E-6, inside a build instruction | **FIXED** — the erratum is now that file's header |
+| **D-2** | `sw/check_core.py:180` | `BIN` and `RTL` have *"NO consumers anywhere in the tree (checked 2026-08-04)"* | **SEVEN.**  `emit_suite.py:2258`, `f4a_boundary_battery.py:73`, `char_divergence.py:26`, `validate_strio_sim.py:158`, `class5_hext.py:58` take `CC.BIN`; `pi1a_trace.py:29`, `repro_segleak.py:33` take `CC.OBJ`.  ⚠ **`emit_suite` calls `CC.build()` — which builds the DEFAULT ucore into `obj_dir_ucore` — and then executed `CC.BIN`, the ARCHIVED core's binary.**  The trap the comment warned about was already sprung | **FIXED** — re-pointed at the ucore, and the engine change DECLARED in RET-2 |
+| **D-3** | `sw/ss_lint.py:28` | *"`--core fsm` (default) is the standing gate"* | the default has been `ucore` since 2026-08-04 (`:175`) | **FIXED** |
+| **D-4** | this wave's brief; `staleness_audit_2026-09-19.md` §2 | `gen_ucore_qsf --check` *"DERIVES THE ucore REVISION FROM THE FSM ONE"*, and deleting `hdl/rtl/core/` *"breaks the A/B derivation"* — **named as THE BLOCKER** | `derive()` is text substitution on ONE settings file.  It never opens `files.qip`, never reads `hdl/rtl/core/`, and **ran GREEN with the whole FSM core deleted** (§Z-4a) | **FIXED** — the audit records it |
+| **D-5** | `CLAUDE.md` quick reference; `invalidation_ledger.md` **RET-1**'s own GATE STATUS table | *"Timed, whole-program: `sw/check_boot.py --timed 220`"*, and RET-1: the RTL legs *"had been killed by an unconditional `simbin.ensure()` and this wave made it conditional"*, status **"MATCH / MATCH — UNMOVED"** | the condition WAVE 20 landed is `if timed:` — **and `--timed` IS THE MODEL LEG** (`run_timed()` runs `$SIM timed-boot`; `run_sim()` is the Verilator TB).  It protected the leg it meant to retire and retired the leg it meant to protect.  **Measured: `--timed 220`/`400` raise `ModelRetired`; `check_boot.py 220`/`400` MATCH** | **FIXED in the code and in both documents** |
+| **D-6** | `CLAUDE.md`, the `fuzz-v2-on-relanding` banner (WAVE 20 item W-1) | *"FOUR RATCHETS … CANNOT RUN HERE AT ALL — `timed_scenario`, `timed_ins_replay`, `timed_wvec_gate`, `timed_enter_replay`.  They die in `image_of(seed)` on `gen_seq._v1_anchor_stop`"* | WAVE 20 measured it false for two of the four.  **Measured again 2026-09-20: all four now raise `simbin.ModelRetired` FIRST** — they are RET-1 casualties before they are anything else | **FIXED** |
+| **D-7** | `CLAUDE.md`, the `ss_lint` row (WAVE 20 item W-2) | **`SS_VERSION` 0x8D / `SS_COUNT` 226 / `SS_TAG` 0x8DE2 / 214 flops**, in bold, labelled **"CURRENT"** | **0x8F / 232 / 0x8FE8 / 229 flops / 4 whitelist / 0 UNMAPPED.**  Five map bumps stale, while `standing_gates.md` §B was already right | **FIXED** |
+| **D-8** | `CLAUDE.md`, the WAVE 7 banner (WAVE 20 item W-3) | `ss_lint` **"232 / 228 flops"** | **229** — ARM-B's one declared flop.  One digit, in the banner a reader trusts most | **FIXED** |
+| **D-9** | `CLAUDE.md` | *"the FSM core … `--core fsm` still builds and runs"*; the *"ARCHIVED — on demand"* pointer; and a paragraph instructing the reader to **quote 168,400 / 169,000 and 16 / 283** | the core is gone and `--core fsm` refuses.  **There are THREE comparators in this repo's history and they disagree**; measured on the day of the removal the same commands give **169,000 / 169,000** and **226 / 283** | **FIXED** — all three instruments now named |
+| **D-10** | `fsm_core_archive_2026-08-04.md` §5, §6, §6a/§6b | the corrected-comparator figures, a re-activation procedure, and *"`gen_ucore_qsf.py --check` still gates that the two bitstreams differ by the core and nothing else"* | none of it describes this tree | **FIXED** — the document is banner-marked HISTORY, with §2 and §3 explicitly **not** retracted |
+| **D-11** | `standing_gates.md` §C | ten gates presented as ON-DEMAND runnable | all ten are retired; four of them could not run before the removal either | **FIXED** — §C is now an empty section that says so |
+| **D-12** | `sw/core_portlist_lint.py`'s `_strip_comments` | (implicitly) that it strips comments | ⚠ **IT RAN THE BLOCK-COMMENT REGEX OVER THE RAW TEXT.**  `tb_v30_core.sv:40` is a LINE comment containing `hdl/rtl/core/*.sv`, so it matched from there to line 254's `*/` and **deleted 200 lines including the `v30_core dut (` instantiation**.  Never showed because WAVE 18 only ever fed it the two `v30_core.sv` files.  **It presented as exit 2 CANNOT MEASURE — the only reason it was not a silent wrong answer** | **FIXED** — replaced by a scanner |
+| **D-13** | `sw/receipt_diff.py:5-13` | *"`gen_ucore_qsf.py --check` already proves one A/B claim"*, and lists **"FSM vs ucore bitstream"** as a legitimate pair | no two-core comparison can be made on this tree | **FIXED** — the row is retired by name and kept as history so pre-2026-09-19 receipts stay readable |
+| **D-14** | `docs/notes/artifact_receipt_layer.md:111` | the receipt schema's specimen environment variable is `{"V30_CORE": "ucore"}` | see D-1 — it perpetuated the fiction in the schema document | **FIXED** — the specimen is now `X1_AD_RETENTION`, which is real |
+
+**AND FIVE MORE, SMALLER, FIXED IN PASSING**: `sw/check_ab_sim.py:59`
+(*"must stay a subset of hdl/files.qip's"*), `standing_gates.md` §D (it repeats
+D-2's "no consumers" claim), `sw/quartus_gate.py`'s SIGNALTAP comment (it
+justified the placement BY THE A/B), `sw/timed_fuzz.py`'s `tb_bin` docstring
+(*"the FSM core is `obj_dir`"*), and the five tools whose comments said
+`check_seq.CORE` **is** pinned to the archived core (`fuzz_campaign`,
+`wrfuzz_smoke`, `emit_suite`, `fz2_undoc_probe`, and `check_seq` itself).
+
+### ⚠ THE BACKLOG — booked with evidence, NOT fixed here
+
+| item | evidence | why not here |
+|---|---|---|
+| **~40 `--core` choice lists still offer `sim`** | the RET-1 model is gone; `--core sim` raises `ModelRetired` by name, which is RET-1's own chosen mechanism and its falsifier #1 | **The `fsm` half IS removed here** (18 files).  Removing the `sim` half means changing ~15 measurement tools' DEFAULTS from `sim` to `ucore`, which silently changes WHAT A BARE INVOCATION MEASURES in a wave that cannot re-measure them.  The one `sim` coupling that was a LIVE STANDING GATE — `check_boot --timed` — **is fixed here** (D-5) |
+| `sw/run_chainflat_synth.py`, `sw/frontend_proto.py` headers | both say *"`hdl/nec_test.qsf`, `hdl/nec_test_ucore.qsf` and `hdl/nec_test.sdc` are never opened"* | the SENTENCE IS STILL TRUE (a file that does not exist is certainly never opened) and both are closed-wave drivers.  One-word items |
+| `sw/t30_sweep.sh`'s body below its refusal | still carries the *"168,400/169,000"* rule and the fourteen legs | unreachable — the refusal `exec`s before it.  Kept as the record of what the sweep was |
+| `sw/case31_all_exts.txt` was never committed | WAVE 20 §4 erratum 2; breaks four tools including a standing ratchet | not this wave's subject; unchanged, and `timed_ins_replay` now hits `ModelRetired` first anyway |
+| the v1-anchor casualty family | `staleness_audit_2026-09-19.md` §4 | **a board decision** — re-basing needs a RE-CAPTURE, and a green produced without one would be a fabricated green |
+| `check_fuzz_bank` re-pointed at the ucore | RET-2, and the `ERR-1`/`cfb_rederive` pattern | the banked `replay_verdict` column was computed on the FSM TB; re-pointing without re-deriving it measures the engine swap and nothing else |
 
 ---
 
