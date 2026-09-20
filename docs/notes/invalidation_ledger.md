@@ -1800,10 +1800,23 @@ rather than rewritten.
 ⚠ **THE SUITE'S REGISTERED FIGURE MOVES, AND IT MOVES UP BY ONE CASE IN BOTH
 TERMS**: `v0.3` list-on was **3,699,997 / 3,699,997**; the denominator gains the
 un-exempted case and the numerator gains it too, so the figure is
-**3,699,998 / 3,699,998**.  ⚠ **That was REGISTERED AS A PREDICTION BEFORE the
-confirming full-suite run and is derived from §D's own list-off measurement
-(3,699,998 / 3,700,000, the two VOIDs the only failures)** — quote it only with
-the confirming run's artifact id beside it.
+**3,699,998 / 3,699,998**.  **REGISTERED AS A PREDICTION BEFORE the confirming
+full-suite run** (commit `d639509ad6`, which deliberately declined to quote it as
+measured), derived from §D's own list-off measurement (3,699,998 / 3,700,000, the
+two VOIDs the only failures).
+
+✅ **CONFIRMED 2026-09-20 — THE PREDICTION HELD TO THE CASE.**  Full-suite run,
+**355 forms, 0 errors**:
+
+```
+TOTAL: 3699998/3699998 full (cycles 3699998, arch 3699998)  [2 documented pre-existing excluded]
+```
+
+The bracket reads **2**, not 3 — the two `VOID` entries and nothing else, which
+is the removal's own falsifier: had the `EDGE` entry survived the edit it would
+read 3, and had the un-exempted case regressed the numerator would be 3,699,997.
+Log retained at `sw/testdata/edge-removal/v03_confirm.log`, sha256 `644a11c5e09f38ed…`.
+**This figure is now MEASURED and quotable with that artifact.**
 
 ## D — `tests/v30/v0.3/known_divergences.json` — MEASURED, NOT EDITED
 
