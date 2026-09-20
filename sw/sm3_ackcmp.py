@@ -30,6 +30,7 @@ from pathlib import Path
 SW = Path(__file__).resolve().parent
 ROOT = SW.parent
 sys.path.insert(0, str(SW))
+import simbin                                          # noqa: E402
 
 import fuzz_classify as fc                              # noqa: E402
 import ucsim_fuzz as uf                                 # noqa: E402
@@ -94,7 +95,7 @@ def one(args):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--core", default="sim", choices=("sim", "ucore"))
+    ap.add_argument("--core", default="sim", type=simbin.core_choice)
     ap.add_argument("--jobs", type=int, default=os.cpu_count() or 4)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--report", default="")

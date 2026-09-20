@@ -228,7 +228,7 @@ def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("geom")
-    p.add_argument("--core", default="ucore", choices=("ucore", "sim"))
+    p.add_argument("--core", default="ucore", type=simbin.core_choice)
     p.add_argument("--variants", default=None)
     p.add_argument("--waits", default="0,3")
     p.set_defaults(fn=cmd_geom)

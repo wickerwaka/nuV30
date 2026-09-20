@@ -87,6 +87,7 @@ from pathlib import Path
 SW = Path(__file__).resolve().parent
 ROOT = SW.parent
 import simbin                                          # noqa: E402
+import suitemeta                                      # noqa: E402
 
 # U1: the C++ model THROUGH THE ARTIFACT/RECEIPT LAYER.  `simbin.SIM` is
 # `sim/build/v30sim`, the binary `simbin.recipe()` declares; nothing here
@@ -103,22 +104,28 @@ SS_I, SP_I = REGS.index("ss"), REGS.index("sp")
 # --------------------------------------------------------------------------- #
 # metadata policy
 # --------------------------------------------------------------------------- #
+# ⚠⚠ WAVE 22, 2026-09-19 -- THE DIALECT RULE USED TO LIVE HERE AND THAT WAS THE
+# PRECEDENCE INVERSION THE USER'S 2026-09-19 RULING NAMES.  `load_meta` was the
+# ONLY place in the tree that implemented the WHOLE rule (fall back to v0.1 both
+# when the manifest is ABSENT and when it carries no `opcodes` map);
+# `sw/check_core.py` implemented only the first half, which is the
+# `KeyError: 'opcodes'` that left `tests/v30/v0.2` (347,000 cases) and
+# `tests/v30/mod3_illegal` (128) unscorable by anything.  So THE DEAD MODEL'S
+# SCORER WAS THE LIVE TREE'S DIALECT AUTHORITY, and `sw/timed_gate.py`,
+# `sw/timed_probe.py` and `sw/uarch.py` all imported it to get there.
+#
+# The rule now lives in `sw/suitemeta.py` with its own falsifier
+# (`--selfcheck`), and these two names are THIN FORWARDERS kept so that no
+# caller's line had to change.  Semantics are byte-for-byte the ones they had.
+# `docs/notes/suite_scorer_prereg_2026-09-19.md` §0.7 / §1.
 def load_meta(suite: Path):
-    """Suite metadata, falling back to v0.1's (wait-state and derived tranches
-    carry none of their own) -- same rule as sw/check_core.py."""
-    fn = suite / "metadata.json"
-    if not fn.exists() or "opcodes" not in json.load(open(fn)):
-        fn = V01 / "metadata.json"
-    return json.load(open(fn))
+    """Forwarder to `suitemeta.load`.  Returns a `SuiteMeta`, not a dict."""
+    return suitemeta.load(suite)
 
 
 def flags_mask_of(op, meta):
-    """sw/emit_suite.py::_flags_mask_of, verbatim semantics."""
-    base = op.split(".")[0]
-    entry = meta["opcodes"].get(op) or meta["opcodes"].get(base, {}) or {}
-    if "." in op and "reg" in entry:
-        return entry["reg"].get(op.split(".", 1)[1], {}).get("flags-mask", 0xFFFF)
-    return entry.get("flags-mask", 0xFFFF)
+    """Forwarder.  `meta` is a `suitemeta.SuiteMeta`."""
+    return meta.flags_mask(op)
 
 
 _WHEN_RE = re.compile(r"^bytes\[(\d+)\]\s*==\s*(0x[0-9A-Fa-f]+|\d+)"
@@ -127,9 +134,14 @@ _WHEN_RE = re.compile(r"^bytes\[(\d+)\]\s*==\s*(0x[0-9A-Fa-f]+|\d+)"
 
 
 def dont_care_spec(op, meta):
-    """The metadata `dont_care` entry for a form, with its `when` predicate
-    compiled (a tiny fixed grammar -- never eval()).  Returns (spec, pred) or
-    (None, None)."""
+    """Forwarder to `suitemeta.SuiteMeta.dont_care` (WAVE 22)."""
+    return meta.dont_care(op)
+
+
+def _dont_care_spec_HISTORY(op, meta):
+    """The pre-WAVE-22 body, kept unreachable so the forwarder above is readable
+    against what it replaced.  `suitemeta.SuiteMeta.dont_care` is this, verbatim
+    in semantics, with `_WHEN_RE` moved beside it."""
     entry = meta["opcodes"].get(op) or {}
     dc = entry.get("dont_care")
     if not dc:
@@ -647,7 +659,13 @@ def main():
     meta = load_meta(suite)
     # The uPD70108 (V20) has an 8-BIT bus: a word port read is two byte
     # cycles.  It changes only how the replayed port value is folded.
-    bus8 = str(meta.get("cpu", "")).upper().startswith("V20")
+    # WAVE 22: `.raw` is the suite's OWN manifest.  Pre-WAVE-22 `load_meta`
+    # returned the DELEGATION TARGET's whole dict for a delegating suite, so
+    # this read v0.1's `cpu` ("V30") there; `.raw` is {} for dialect `absent`
+    # and the suite's own for `emitter`, and BOTH give the same answer on every
+    # suite in the tree (v0.2 "V30 (uPD70116)", v0.3 absent -> False;
+    # v20suite has its own map and reads "V20" -> True).  Verified, not assumed.
+    bus8 = str(meta.raw.get("cpu", "")).upper().startswith("V20")
 
     # known_divergences policy.  The file classifies each documented case:
     #   VOID  a contaminated CAPTURE (ram-vs-instruction physical collision) --

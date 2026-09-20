@@ -48,6 +48,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import simbin                                          # noqa: E402
 
 SW = Path(__file__).resolve().parent
 ROOT = SW.parent
@@ -99,8 +100,12 @@ def score(core, base, now):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seeddir", default=str(DEFAULT_SEEDDIR))
-    ap.add_argument("--core", default="both",
-                    choices=("both", "sim", "ucore"))
+    ap.add_argument("--core", default="ucore", type=simbin.core_choice,
+                    help="⚠ WAVE 22: `both` MEANT sim+ucore and there is no "
+                         "second engine -- the C++ model is RETIRED (RET-1).  "
+                         "`both` and `sim` are now refused BY NAME rather than "
+                         "quietly meaning `ucore`, which would file a NEW "
+                         "measurement under an OLD registration.")
     ap.add_argument("--jobs", type=int, default=12)
     ap.add_argument("--dumpdir", default="",
                     help="keep the per-leg w32_launch dumps here")
@@ -110,7 +115,8 @@ def main():
     if not seeddir.is_dir():
         raise SystemExit(f"seeddir {seeddir} absent -- rebuild it with "
                          f"`python3 sw/wrfuzz_w2.py seeds`")
-    cores = ("sim", "ucore") if a.core == "both" else (a.core,)
+    # WAVE 22: was `("sim", "ucore") if a.core == "both"`.  One engine, one leg.
+    cores = (a.core,)
     print("== wrfuzz wr1 OFFLINE GUARD (IMPLEMENTATION guard -- attribution "
           "figures on a divergent-by-construction subset;")
     print("   NOT a silicon-match rate, NOT a new sample, NOT a ranking, and "

@@ -145,7 +145,12 @@ def main():
     if a.n > 20:
         sys.exit("wrfuzz_smoke: the smoke population is capped at 20 seeds -- "
                  "it is a plumbing proof, not a measurement")
-    simbin.ensure(why="wrfuzz_smoke")
+    # ⚠⚠ WAVE 22 -- `simbin.ensure(why="wrfuzz_smoke")` DELETED, NOT MOVED.
+    # This tool declares `--core default="ucore" choices=("ucore",)`: the model
+    # is not among its engines and cannot be selected.  It was nevertheless
+    # refused for the model's sake (RET-1).  The receipt postcondition two
+    # lines below (`art.require(tf.tb_bin(a.core))`) is the check that was
+    # actually wanted, and it was already here.
     import artifact as art                                 # noqa: PLC0415
     binp = tf.tb_bin(a.core)
     art.require(binp, why=f"wrfuzz_smoke --core {a.core}")

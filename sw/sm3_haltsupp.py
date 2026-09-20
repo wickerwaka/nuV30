@@ -41,6 +41,7 @@ from pathlib import Path
 SW = Path(__file__).resolve().parent
 ROOT = SW.parent
 sys.path.insert(0, str(SW))
+import simbin                                          # noqa: E402
 
 import sm3_s16_cell as s16                                   # noqa: E402
 
@@ -202,8 +203,7 @@ def main():
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("chip").set_defaults(fn=cmd_chip)
     e = sub.add_parser("engine")
-    e.add_argument("--core", default="ucore",
-                   choices=("ucore", "sim"))
+    e.add_argument("--core", default="ucore", type=simbin.core_choice)
     e.set_defaults(fn=cmd_engine)
     a = ap.parse_args()
     sys.exit(a.fn(a))

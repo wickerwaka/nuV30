@@ -35,6 +35,10 @@ from pathlib import Path
 SW = Path(__file__).resolve().parent
 ROOT = SW.parent
 sys.path.insert(0, str(SW))
+import simbin                                          # noqa: E402
+# WAVE 22: PROMOTED from a function-local `import simbin`.  A local import
+# makes the NAME local for the whole function, so `type=simbin.core_choice`
+# in the same function raised UnboundLocalError.  Measured, not assumed.
 
 import check_core as cc                                     # noqa: E402
 from sm3_s16_cell import FORMS, PROGRAMS, WAITS, suite_dir   # noqa: E402
@@ -152,7 +156,7 @@ def run_one(args):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--core", default="ucore", choices=("ucore", "sim"))
+    ap.add_argument("--core", default="ucore", type=simbin.core_choice)
     ap.add_argument("--jobs", type=int, default=4)
     ap.add_argument("--details", type=int, default=8)
     ap.add_argument("--save", help="write the per-cell PASS map here")
@@ -162,7 +166,6 @@ def main():
         # the model has no `check_core.py --core sim` leg; its headline figure
         # is derived from the SAME per-cell map the RTL legs' `--save` writes
         # (`not mm and arch_ok`), which is what `N/M full` counts.
-        import simbin
         simbin.ensure(why="sm3_s16_score")
     else:
         cc.require_bin(a.core, "sm3_s16_score")

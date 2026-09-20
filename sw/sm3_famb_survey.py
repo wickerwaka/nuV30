@@ -47,6 +47,10 @@ from pathlib import Path
 SW = Path(__file__).resolve().parent
 ROOT = SW.parent
 sys.path.insert(0, str(SW))
+import simbin                                          # noqa: E402
+# WAVE 22: PROMOTED from a function-local `import simbin`.  A local import
+# makes the NAME local for the whole function, so `type=simbin.core_choice`
+# in the same function raised UnboundLocalError.  Measured, not assumed.
 
 import check_core as cc                                      # noqa: E402
 from sm3_s16_cell import FORMS, PROGRAMS, WAITS, suite_dir    # noqa: E402
@@ -174,14 +178,13 @@ def survey_fuzz(path):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--core", default="sim", choices=("sim", "ucore"))
+    ap.add_argument("--core", default="sim", type=simbin.core_choice)
     ap.add_argument("--fuzz", help="a timed_fuzz --report json")
     ap.add_argument("--save")
     a = ap.parse_args()
 
     binp = None
     if a.core == "sim":
-        import simbin
         simbin.ensure(why="sm3_famb_survey")
     else:
         cc.require_bin(a.core, "sm3_famb_survey")

@@ -82,6 +82,7 @@ from pathlib import Path
 SW = Path(__file__).resolve().parent
 ROOT = SW.parent
 sys.path.insert(0, str(SW))
+import simbin                                          # noqa: E402
 
 import check_seq                                        # noqa: E402
 import fuzz_classify as fc                              # noqa: E402
@@ -673,7 +674,7 @@ def main():
     rp = sub.add_parser("report")
     rp.add_argument("--out", default="")
     s = sub.add_parser("score")
-    s.add_argument("--core", default="sim", choices=("sim", "ucore"))
+    s.add_argument("--core", default="sim", type=simbin.core_choice)
     s.add_argument("--out", default="")
     w = sub.add_parser("wrun")
     w.add_argument("--waits", default="0,1,2,3")
@@ -685,7 +686,7 @@ def main():
     wr = sub.add_parser("wreport")
     wr.add_argument("--out", default="sm3-h3wvec")
     ws = sub.add_parser("wscore")
-    ws.add_argument("--core", default="sim", choices=("sim", "ucore"))
+    ws.add_argument("--core", default="sim", type=simbin.core_choice)
     ws.add_argument("--out", default="sm3-h3wvec")
     idl = sub.add_parser("idle")
     idl.add_argument("--out", default="")

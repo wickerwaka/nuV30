@@ -719,9 +719,12 @@ def main():
                          "unchanged)")
     # U3.  The ENGINE, and nothing else.  `sim` is the default so every
     # standing invocation of this harness scores exactly what it scored before.
-    ap.add_argument("--core", default="sim", choices=("sim", "ucore"),
-                    help="replay engine: the C++ timed model (sim) or an RTL "
-                         "core in the Verilator TB (ucore / fsm)")
+    ap.add_argument("--core", default="sim", type=simbin.core_choice,
+                    help="replay engine.  ⚠ WAVE 22: THERE IS ONE, `ucore` -- "
+                         "the RTL core in the Verilator TB.  `sim` (the C++ "
+                         "timed model) was the DEFAULT and is RETIRED (RET-1); "
+                         "`fsm` was removed by WAVE 21 (RET-2).  Both refuse by "
+                         "name, and so does omitting the flag.")
     # U3.  The pin-hold the seed record stores is what the HOST asked for;
     # the rig's register was 8 bits wide (see `rig_hold`), 12 since 2026-08-04.
     # `banked` is the default so every standing number of this harness is

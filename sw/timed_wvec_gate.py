@@ -205,18 +205,34 @@ def main():
     # U1 / P-2.  EAGERLY, before any loop: `ArtifactError` is a
     # `RuntimeError`, and a per-case `except Exception` would turn one
     # sentence naming a stale binary into N unreadable case failures.
-    simbin.ensure(why=__name__)
+    #
+    # ⚠⚠ WAVE 22, 2026-09-19 -- THIS `simbin.ensure(why=__name__)` WAS
+    # UNCONDITIONAL **AND SAT BEFORE `parse_args()`**, so with the C++ model
+    # retired (invalidation_ledger.md RET-1) it killed this tool's `--core
+    # ucore` leg -- which never runs the model -- FOR THE MODEL'S SAKE, and it
+    # did so before the flag that selects the engine had even been read.
+    # WAVE 20 found and repaired SIX of these and wrote *"An eager precondition
+    # is a coupling."*  This was a SEVENTH class it missed, because the six it
+    # fixed all had their `ensure` AFTER `parse_args()` where a `--core` test
+    # could be written.  The repair is to move the call BELOW the parse and
+    # behind the engine test; the RTL leg's own postcondition is
+    # `artifact.require`, not `simbin.ensure`.
     ap = argparse.ArgumentParser()
     ap.add_argument("--seeds", default="")
     ap.add_argument("--wvecs", default="")
     ap.add_argument("-v", "--verbose", action="store_true")
-    ap.add_argument("--core", choices=("sim", "ucore"), default="sim",
+    ap.add_argument("--core", type=simbin.core_choice, default="sim",
                     help="which engine produces the per-bus-cycle stream "
-                         "(digest/baseline/scoring are identical for all)")
+                         "(digest/baseline/scoring are identical for all).  "
+                         "⚠ WAVE 22: THERE IS ONE, `ucore`; `sim` was the "
+                         "DEFAULT and is RETIRED (RET-1).")
     ap.add_argument("--tb", action="store_true",
                     help="score against the OLD TBR baseline instead of the "
                          "T2b silicon freeze (11.9: half of it is vacuous)")
     args = ap.parse_args()
+    # WAVE 22: the model's precondition, ON THE MODEL LEG ONLY (RET-1).
+    if getattr(args, "core", None) == "sim":
+        simbin.ensure(why=__name__)
 
     base = json.loads((BASE if args.tb else CHIP).read_text())
     seeds = ([int(x) for x in args.seeds.split(",") if x]

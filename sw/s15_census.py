@@ -627,10 +627,11 @@ def main():
     ap.add_argument("--report", required=True)
     # R4.  The engine, with `choices=` -- a typo must not silently become a
     # different measurement, which is the trap this tool WAS.
-    ap.add_argument("--core", default="sim", choices=("sim", "ucore"),
-                    help="replay engine, exactly as timed_fuzz --core: the C++ "
-                         "timed model (sim, the default and every historical "
-                         "run of this tool) or an RTL core in the Verilator TB "
+    ap.add_argument("--core", default="sim", type=simbin.core_choice,
+                    help="replay engine, exactly as timed_fuzz --core.  ⚠ WAVE "
+                         "22: THERE IS ONE, `ucore`.  The C++ timed model "
+                         "(`sim`) was the DEFAULT here and every historical run "
+                         "of this tool) or an RTL core in the Verilator TB "
                          "(ucore / fsm).  MATCH IT TO THE REPORT's core.")
     ap.add_argument("--rig-hold", default="banked",
                     choices=("banked", "reg8", "applied"),

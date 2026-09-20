@@ -54,7 +54,13 @@ ROOT = SW.parent
 sys.path.insert(0, str(SW))
 
 import check_core                      # noqa: E402
-from ucsim_check import flags_mask_of, load_meta   # noqa: E402
+# WAVE 22: the dialect rule moved OUT of the model's scorer into
+# `sw/suitemeta.py`.  This import used to reach `sw/ucsim_check.py`, whose
+# CLI has refused since WAVE 20 (RET-1) -- a live tool taking its metadata
+# policy from a retired one.  `load_meta`/`flags_mask_of` are unchanged in
+# semantics; `load_meta` now returns a `suitemeta.SuiteMeta`.
+import suitemeta                                   # noqa: E402
+load_meta, flags_mask_of = suitemeta.load, (lambda op, m: m.flags_mask(op))
 
 import simbin                                          # noqa: E402
 

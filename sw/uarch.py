@@ -22,7 +22,7 @@ SW = Path(__file__).resolve().parent
 ROOT = SW.parent
 sys.path.insert(0, str(SW))
 import check_core                                     # noqa: E402
-from ucsim_check import flags_mask_of, load_meta      # noqa: E402
+import suitemeta                                      # noqa: E402
 
 
 def main():
@@ -36,7 +36,9 @@ def main():
     a = ap.parse_args()
 
     suite = Path(a.suite)
-    meta = json.load(open(suite / "metadata.json"))
+    meta = suitemeta.load(suite)          # the dialect adapter (WAVE 22)
+    if meta.delegated:
+        print(meta.note())
     binp = check_core.core_bin(a.core)
     forms = (sorted(p.name[:-8] for p in suite.glob("*.json.gz"))
              if a.forms == "all" else a.forms.split(","))
@@ -45,12 +47,7 @@ def main():
         if not fn.exists():
             continue
         cases = json.load(gzip.open(fn))[:a.cases]
-        base = form.split(".")[0]
-        entry = meta["opcodes"].get(form) or meta["opcodes"].get(base, {})
-        if "." in form and "reg" in entry:
-            fm = entry["reg"].get(form.split(".", 1)[1], {}).get("flags-mask", 0xFFFF)
-        else:
-            fm = entry.get("flags-mask", 0xFFFF)
+        fm = meta.flags_mask(form)
         with tempfile.TemporaryDirectory() as td:
             b, o = Path(td) / "b", Path(td) / "o"
             check_core.compose_batch(cases, b)

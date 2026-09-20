@@ -48,6 +48,7 @@ from pathlib import Path
 SW = Path(__file__).resolve().parent
 ROOT = SW.parent
 sys.path.insert(0, str(SW))
+import simbin                                          # noqa: E402
 
 import testimage                                        # noqa: E402
 import check_seq                                        # noqa: E402
@@ -955,7 +956,7 @@ def main():
     p.add_argument("--out", default="")
     p.set_defaults(fn=lambda a: (report(), 0)[1])
     p = sub.add_parser("score")
-    p.add_argument("--core", default="sim", choices=("sim", "ucore"))
+    p.add_argument("--core", default="sim", type=simbin.core_choice)
     p.add_argument("--hold", type=int, default=16)
     p.add_argument("--out", default="")
     p.set_defaults(fn=cmd_score)
@@ -971,7 +972,7 @@ def main():
     p.set_defaults(fn=lambda a: s13_report(wait=a.wait))
     p = sub.add_parser("s13-engine")
     p.add_argument("--out", default="sm3-s13cell")
-    p.add_argument("--core", default="ucore", choices=("sim", "ucore"))
+    p.add_argument("--core", default="ucore", type=simbin.core_choice)
     p.add_argument("--wait", type=int, default=0)
     p.add_argument("--hold", type=int, default=300)
     p.set_defaults(fn=s13_engine)

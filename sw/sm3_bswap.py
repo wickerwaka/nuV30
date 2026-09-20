@@ -24,6 +24,7 @@ from pathlib import Path
 
 SW = Path(__file__).resolve().parent
 sys.path.insert(0, str(SW))
+import simbin                                          # noqa: E402
 import fuzz_classify as fc                              # noqa: E402
 import timed_fuzz as tf                                 # noqa: E402
 import ucsim_fuzz as uf                                 # noqa: E402
@@ -41,7 +42,7 @@ def rowstr(r):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--seed", required=True)
-    ap.add_argument("--core", default="ucore", choices=["sim", "ucore"])
+    ap.add_argument("--core", default="ucore", type=simbin.core_choice)
     ap.add_argument("--ctx", type=int, default=10)
     a = ap.parse_args()
 

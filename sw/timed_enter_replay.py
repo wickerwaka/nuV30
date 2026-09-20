@@ -116,14 +116,32 @@ def main():
     # U1 / P-2.  EAGERLY, before any loop: `ArtifactError` is a
     # `RuntimeError`, and a per-case `except Exception` would turn one
     # sentence naming a stale binary into N unreadable case failures.
-    simbin.ensure(why=__name__)
+    #
+    # ⚠⚠ WAVE 22, 2026-09-19 -- THIS `simbin.ensure(why=__name__)` WAS
+    # UNCONDITIONAL **AND SAT BEFORE `parse_args()`**, so with the C++ model
+    # retired (invalidation_ledger.md RET-1) it killed this tool's `--core
+    # ucore` leg -- which never runs the model -- FOR THE MODEL'S SAKE, and it
+    # did so before the flag that selects the engine had even been read.
+    # WAVE 20 found and repaired SIX of these and wrote *"An eager precondition
+    # is a coupling."*  This was a SEVENTH class it missed, because the six it
+    # fixed all had their `ensure` AFTER `parse_args()` where a `--core` test
+    # could be written.  The repair is to move the call BELOW the parse and
+    # behind the engine test; the RTL leg's own postcondition is
+    # `artifact.require`, not `simbin.ensure`.
     ap = argparse.ArgumentParser()
     ap.add_argument("--verbose", action="store_true")
     ap.add_argument("--waits", default="")
-    ap.add_argument("--core", default="sim", choices=("sim", "ucore"),
-                    help="replay engine: the C++ timed sim (default) or a "
-                         "verilated RTL core through the TB's +bootimg mode")
+    ap.add_argument("--core", default="sim", type=simbin.core_choice,
+                    help="replay engine.  ⚠ WAVE 22: THERE IS ONE -- a "
+                         "verilated RTL core through the TB's +bootimg mode, "
+                         "`--core ucore`.  The C++ timed sim was the DEFAULT "
+                         "here and is RETIRED (invalidation_ledger.md RET-1), "
+                         "so omitting --core now refuses BY NAME rather than "
+                         "quietly scoring a different engine.")
     args = ap.parse_args()
+    # WAVE 22: the model's precondition, ON THE MODEL LEG ONLY (RET-1).
+    if getattr(args, "core", None) == "sim":
+        simbin.ensure(why=__name__)
 
     only = ({int(x) for x in args.waits.split(",") if x}
             if args.waits else None)

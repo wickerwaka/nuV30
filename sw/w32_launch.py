@@ -41,6 +41,7 @@ from pathlib import Path
 SW = Path(__file__).resolve().parent
 ROOT = SW.parent
 sys.path.insert(0, str(SW))
+import simbin                                          # noqa: E402
 
 import fuzz_classify as fc                                  # noqa: E402
 import timed_fuzz as tf                                     # noqa: E402
@@ -212,7 +213,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seeddir",
                     default=str(Path.home() / ".cache/ucsimt-tmp/wrfuzz_w2/seeds"))
-    ap.add_argument("--core", default="ucore", choices=("sim", "ucore"))
+    ap.add_argument("--core", default="ucore", type=simbin.core_choice)
     ap.add_argument("--jobs", type=int, default=12)
     ap.add_argument("--out", default="")
     ap.add_argument("--only", default="", help="comma-separated k values")

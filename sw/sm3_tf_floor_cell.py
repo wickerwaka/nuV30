@@ -747,7 +747,7 @@ def main():
     p = sub.add_parser("predict")
     p.add_argument("--floors", default="1,2,3,4,5,6,7")
     p.add_argument("--waits", default="0,3")
-    p.add_argument("--core", default="sim", choices=("sim", "ucore"))
+    p.add_argument("--core", default="sim", type=simbin.core_choice)
     p.set_defaults(fn=cmd_predict)
     p = sub.add_parser("run")
     p.add_argument("--waits", default="0,3")
@@ -757,10 +757,12 @@ def main():
     p.set_defaults(fn=cmd_run)
     p = sub.add_parser("score")
     p.add_argument("--floors", default="1,2,3,4,5,6,7")
-    p.add_argument("--core", default="sim", choices=("sim", "ucore"),
-                   help="the ENGINE scored against the retained chip rows: "
-                        "the C++ timed model (sim) or the ucore RTL in the "
-                        "Verilator TB")
+    p.add_argument("--core", default="sim", type=simbin.core_choice,
+                   help="the ENGINE scored against the retained chip rows.  "
+                        "⚠ THERE IS ONE: the ucore RTL in the Verilator TB.  "
+                        "The C++ timed model (`sim`) was the DEFAULT here and "
+                        "is RETIRED (RET-1), so this flag now refuses by name "
+                        "on omission as well as on `--core sim`")
     p.set_defaults(fn=cmd_score)
     p = sub.add_parser("idle")
     p.set_defaults(fn=cmd_idle)

@@ -2276,13 +2276,10 @@ def _flat_mirror_check(t, flags_mask):
 
 
 def _flags_mask_of(op, meta):
-    """Resolve a form's flags-mask from metadata (grouped forms XX.N live under
-    opcodes[XX]['reg'][N]; base entry otherwise). Mirrors check_core."""
-    base = op.split(".")[0]
-    entry = meta["opcodes"].get(op) or meta["opcodes"].get(base, {})
-    if "." in op and "reg" in entry:
-        return entry["reg"].get(op.split(".", 1)[1], {}).get("flags-mask", 0xFFFF)
-    return entry.get("flags-mask", 0xFFFF)
+    """Resolve a form's flags-mask.  THE POLICY LIVES IN `sw/suitemeta.py` since
+    WAVE 22 -- this is a thin forwarder kept so the emitter's own call site reads
+    unchanged.  `meta` is a `suitemeta.SuiteMeta`."""
+    return meta.flags_mask(op)
 
 
 def _emit_one_index(spec, is_evt, op, idx, host, seed_base, preload_n, waits,
@@ -2355,10 +2352,14 @@ def cmd_reemit(host, index_map, out_dir, seed_base, preload_n=-1, waits=0,
     out_dir = Path(out_dir)
     meta = None
     if validate:
-        meta_fn = out_dir / "metadata.json"
-        if not meta_fn.exists():
-            meta_fn = DEFAULT_OUT / "metadata.json"
-        meta = json.load(open(meta_fn))
+        # THE DIALECT ADAPTER (sw/suitemeta.py, WAVE 22).  It replaces a
+        # file-absent-only fallback that would have raised KeyError on an
+        # emitter-dialect manifest -- `out_dir` is where v0.2's own manifest
+        # lives, so the emitter could have hit it here too.
+        import suitemeta
+        meta = suitemeta.load(out_dir, delegate_to=DEFAULT_OUT)
+        if meta.delegated:
+            print(meta.note())
     relog = open(out_dir / "reemit.log", "a") if validate else None
     kept = []
     for op, idxs in index_map.items():

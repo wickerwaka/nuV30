@@ -125,6 +125,93 @@ def disasm_gate():
     _retired("`simbin --disasm` -- the ROM disasm gate ran IN the model.")
 
 
+# --------------------------------------------------------------------------- #
+# WAVE 22, 2026-09-19 -- THE `--core sim` HALF OF THE PRECEDENCE CLEANUP.
+#
+# WAVE 21 finished the `fsm` half and booked the rest.  Measured on this tree
+# before the edit: **45 `add_argument("--core"…)` declarations in `sw/`, of which
+# 24 still offered `"sim"`** in `choices` or `default`, 13 of them DEFAULTING to
+# it.  Every one of them already REFUSED when `sim` was selected -- the RET-1
+# banner above, reached three frames down through `tf.run_sim` -- so the defect
+# was never a crash.  The defect was that `--help` and `choices` ADVERTISED a
+# dead engine, and that thirteen tools named it as their default.
+#
+# USER RULING 2026-09-19: *"Ucore is the only valid implementation in this code
+# base, if it has dependencies on any other implementations those need to be
+# removed. Documentation that gives those other implementations precedence is
+# suspect."*  A `choices` list and a help string are documentation.
+#
+# THE MECHANISM IS ONE ARGPARSE `type=`, APPLIED AT EVERY SITE -- not 24 special
+# cases.  And a declaration whose default WAS `"sim"` becomes `default=None` and
+# refuses, rather than silently becoming `ucore`: re-pointing a registered model
+# invocation at a different engine would produce a number under the old command
+# line, which is *"re-label, never re-register"* -- the thing `sw/fsmcore.py`'s
+# own banner forbids.  Precedent: WAVE 21's `sw/fuzz_campaign.py`.
+# --------------------------------------------------------------------------- #
+
+#: The tree's engines.  There is one.
+CORES = ("ucore",)
+
+
+def refuse(who, code=2):
+    """Print the RET-1 banner and exit `code` (default 2 = CANNOT MEASURE).
+
+    For a `main()` that should say NO rather than stack-trace.  Mirrors
+    `sw/fsmcore.refuse`, deliberately: the two retirements should read the same
+    way at a terminal."""
+    print(_MSG.format(why=why_line(who), rec=RECOVER), file=sys.stderr)
+    raise SystemExit(code)
+
+
+def why_line(who):
+    return f"{who}\n             -- the C++ model is gone; there is no `sim` engine."
+
+
+def core_choice_optional(v):
+    """`core_choice`, but an EMPTY string also passes.
+
+    One user: `sw/sm3_nmigeom.py`, whose `--core ""` means *"report the chip's
+    own axis and run NO engine leg"*.  That is a real third state, not a third
+    engine, so it keeps its spelling."""
+    return "" if v == "" else core_choice(v)
+
+
+def core_choice(v):
+    """argparse `type=` for every `--core` flag in the tree.
+
+    `'ucore'` passes.  `'sim'` is refused BY NAME, citing RET-1, because a bare
+    *"invalid choice: 'sim'"* would say the option was mistyped rather than that
+    the engine was retired.  Anything else is refused as unknown."""
+    if v in CORES:
+        return v
+    if v == "sim":
+        raise argparse.ArgumentTypeError(
+            "'sim' is the RETIRED C++ model -- removed 2026-09-19 (WAVE 20), "
+            "USER DIRECTIVE \"The old C model has not been maintained, remove "
+            "it.\"  Register: docs/notes/invalidation_ledger.md RET-1, which "
+            "names every gate that died with it.  There is ONE engine: 'ucore'.  "
+            "To restore the model: git checkout "
+            "be4eb2c32f930e12575da5a6359b4fead3c28f96 -- sim/")
+    if v == "fsm":
+        raise argparse.ArgumentTypeError(
+            "'fsm' is the ARCHIVED trace-fitted core -- removed 2026-09-19 "
+            "(WAVE 21).  Register: docs/notes/invalidation_ledger.md RET-2.  "
+            "There is ONE engine: 'ucore'.")
+    raise argparse.ArgumentTypeError(
+        f"unknown engine {v!r}; there is ONE: {CORES[0]!r}")
+
+
+# ⚠ THERE IS NO `core_required()` HELPER, AND THAT IS A MEASURED SIMPLIFICATION.
+# The first design added one, on the assumption that a declaration whose default
+# was `"sim"` needed a guard at the consumption point or it would silently yield
+# `None` and run the ucore.  **argparse APPLIES `type=` TO A STRING DEFAULT** --
+# measured: `add_argument("--core", default="sim", type=core_choice)` exits 2
+# with the banner above when `--core` is OMITTED, exactly as when it is passed.
+# So the default needs no guard, the refusal cannot be bypassed by omission, and
+# 13 consumption-point edits were not made.  One line per site, no special case.
+# (A `--core` whose default was already `"ucore"` is unaffected in every way.)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     for f in ("--build", "--force", "--require", "--disasm", "--id"):

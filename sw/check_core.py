@@ -40,6 +40,7 @@ SW = Path(__file__).resolve().parent
 ROOT = SW.parent
 sys.path.insert(0, str(SW))
 import artifact as art                                       # noqa: E402
+import suitemeta                                             # noqa: E402
 SUITE = ROOT / "tests" / "v30" / "v0.1"
 TB_DIR = ROOT / "hdl" / "tb"
 # ⚠ `OBJ` / `BIN` WERE THE **ARCHIVED FSM CORE'S** UNSUFFIXED `obj_dir` UNTIL
@@ -787,6 +788,16 @@ def main():
     ap.add_argument("--no-mirror", action="store_true",
                     help="disable the flat-fail -> +mirror retry (pure flat 1 MB; "
                          "collision-dependent goldens then show as raw divergences)")
+    ap.add_argument("--no-known-divergences", action="store_true",
+                    help="IGNORE the suite's known_divergences.json and score "
+                         "every case.  ⚠ tests/v30/v0.3's list is the only one "
+                         "in the tree and its own `_doc` establishes it against "
+                         "commits 8fd94df/4508e08 -- the ARCHIVED FSM CORE, "
+                         "removed 2026-09-19 (invalidation_ledger.md RET-2).  "
+                         "An accepted-residue list written against a deleted "
+                         "implementation is hearsay until re-measured, so WAVE "
+                         "22 scores v0.3 BOTH WAYS "
+                         "(docs/notes/suite_scorer_prereg_2026-09-19.md §0.5).")
     ap.add_argument("--raw-flags", action="store_true",
                     help="disable ALL flags masking (compare raw PSW both sides). "
                          "Exposes V20-undefined bits our V30 computes deterministically.")
@@ -815,7 +826,13 @@ def main():
     # the prefix-clear fix) so future totals stay clean. {form: {idx: reason}}.
     kd_fn = suite / "known_divergences.json"
     known_div = {}
-    if kd_fn.exists():
+    if kd_fn.exists() and args.no_known_divergences:
+        raw = json.load(open(kd_fn))
+        nkd = sum(len(v) for k, v in raw.items() if not k.startswith("_"))
+        print(f"[known_divergences] --no-known-divergences: SCORING all "
+              f"{nkd} documented case(s) that this suite's list excludes "
+              f"(the list's provenance is the ARCHIVED FSM core -- RET-2)")
+    elif kd_fn.exists():
         raw = json.load(open(kd_fn))
         known_div = {k: set(int(i) for i in v) for k, v in raw.items()
                      if not k.startswith("_")}
@@ -823,11 +840,16 @@ def main():
         print(f"[known_divergences] excluding {nkd} documented pre-existing "
               f"case(s) from totals: "
               + ", ".join(f"{k}/{sorted(v)}" for k, v in known_div.items()))
-    # wait-state suites carry no metadata of their own; fall back to v0.1
-    meta_fn = suite / "metadata.json"
-    if not meta_fn.exists():
-        meta_fn = SUITE / "metadata.json"
-    meta = json.load(open(meta_fn))
+    # THE DIALECT ADAPTER (sw/suitemeta.py).  Three dialects, one rule: a
+    # suite's opcode map is its own metadata.json's when that file has one, and
+    # v0.1's otherwise.  This used to be TWO lines that handled only the
+    # file-absent half, which is why `tests/v30/v0.2` (347,000 cases) and
+    # `tests/v30/mod3_illegal` (128) died here with `KeyError: 'opcodes'` and
+    # had never been scored by anything -- `ucore_gaps_2026-08-04.md` §F.2,
+    # closed by WAVE 22.  Delegation is ANNOUNCED, never silent.
+    meta = suitemeta.load(suite)
+    if meta.delegated:
+        print(meta.note())
 
     if args.opcodes == "all":
         ops = sorted(p.name[:-8] for p in suite.glob("*.json.gz"))
@@ -874,13 +896,7 @@ def main():
         # opcodes[XX]["reg"][N] (docs/notes/singlesteptests_v20.md); the base
         # entry has no top-level flags-mask, so the old top-level lookup
         # silently defaulted grouped forms to 0xFFFF (masking never applied).
-        base = op.split(".")[0]
-        entry = meta["opcodes"].get(op) or meta["opcodes"].get(base, {})
-        if "." in op and "reg" in entry:
-            sub = op.split(".", 1)[1]
-            flags_mask = entry["reg"].get(sub, {}).get("flags-mask", 0xFFFF)
-        else:
-            flags_mask = entry.get("flags-mask", 0xFFFF)
+        flags_mask = meta.flags_mask(op)
         if args.raw_flags:
             flags_mask = 0xFFFF   # raw-PSW diagnostic: mask nothing
 
@@ -1143,6 +1159,23 @@ def main():
                         raw_flags=bool(args.raw_flags),
                         diffs=arch_diffs)) + "\n")
         else:
+            if args.result_log:
+                with open(args.result_log, "a") as rf:
+                    rf.write(json.dumps(dict(
+                        opcode=op, cases=cnt["total"],
+                        passed=cnt["full"], failed=cnt["total"] - cnt["full"],
+                        cycles=cnt["cycles"], arch=cnt["arch"],
+                        excluded=cnt["excluded"],
+                        flags_only=cnt["flags_only"],
+                        flags_mask=(0xFFFF if args.raw_flags else flags_mask),
+                        raw_flags=bool(args.raw_flags),
+                        # the taxonomy: EVERY first-divergence class, not the
+                        # printed top 3.  Keys are "row:column" for a cycle-row
+                        # diff and the note tuple otherwise.
+                        first_div={f"{k[0]}:{k[1]}" if isinstance(k, tuple)
+                                   and len(k) == 2 and isinstance(k[0], int)
+                                   else str(k): v
+                                   for k, v in first_div.items()})) + "\n")
             line = (f"{op}: {cnt['full']}/{cnt['total']} full  "
                     f"(cycles {cnt['cycles']}, arch {cnt['arch']}"
                     + (f", +{cnt['flags_only']} flag-residue-only"

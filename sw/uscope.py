@@ -55,10 +55,13 @@ def fmt(row):
 
 
 def main():
-    # U1 / P-2.  EAGERLY, before any loop: `ArtifactError` is a
-    # `RuntimeError`, and a per-case `except Exception` would turn one
-    # sentence naming a stale binary into N unreadable case failures.
-    simbin.ensure(why=__name__)
+    # ⚠⚠ WAVE 22 -- THE `simbin.ensure(why=__name__)` THAT STOOD HERE WAS
+    # DELETED, NOT MOVED.  This tool's `--core` has NO `sim` option and never
+    # had one: it disassembles a ucore TB run.  It was refused for the retired
+    # C++ model's sake (invalidation_ledger.md RET-1) by a precondition that
+    # could never have been satisfied by anything it does.  WAVE 20 wrote
+    # *"An eager precondition is a coupling"*; this was the purest instance of
+    # it in the tree.  The RTL postcondition is `artifact.require`, downstream.
     ap = argparse.ArgumentParser()
     ap.add_argument("form")
     ap.add_argument("idx", type=int)

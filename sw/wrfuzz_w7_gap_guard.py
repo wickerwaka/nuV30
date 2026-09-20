@@ -111,7 +111,12 @@ def check(core, entry):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--core", choices=("sim", "ucore", "both"), default="both")
+    ap.add_argument("--core", default="ucore", type=simbin.core_choice,
+                    help="⚠ WAVE 22: `both` MEANT sim+ucore and there is no "
+                         "second engine -- the C++ model is RETIRED (RET-1).  "
+                         "`both` and `sim` are now refused BY NAME rather than "
+                         "quietly meaning `ucore`, which would file a NEW "
+                         "measurement under an OLD registration.")
     ap.add_argument("--seeddir", type=Path, default=DEFAULT_SEEDDIR)
     args = ap.parse_args()
     if not args.seeddir.is_dir():
@@ -120,7 +125,8 @@ def main():
     # so with the C++ model retired (invalidation_ledger.md RET-1) it
     # would have killed this tool's RTL leg -- which never runs the
     # model -- for the model's sake.
-    cores = ("sim", "ucore") if args.core == "both" else (args.core,)
+    # WAVE 22: was `("sim", "ucore") if args.core == "both"`.  One engine, one leg.
+    cores = (args.core,)
     if "sim" in cores:
         simbin.ensure(why=__name__)
     ok = True
