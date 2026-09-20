@@ -1,0 +1,50 @@
+TOTAL --core add_argument declarations: 45
+
+THOSE OFFERING 'sim' (choices or default): 24
+  sw/s15_census.py:630: ap.add_argument("--core", default="sim", choices=("sim", "ucore"), help="replay engine, exactly as timed_fuzz --core: the C++ " "timed model (sim, the default and every historical " "run of 
+  sw/sm3_ackcmp.py:97: ap.add_argument("--core", default="sim", choices=("sim", "ucore"))
+  sw/sm3_bswap.py:44: ap.add_argument("--core", default="ucore", choices=["sim", "ucore"])
+  sw/sm3_famb_survey.py:177: ap.add_argument("--core", default="sim", choices=("sim", "ucore"))
+  sw/sm3_h1_cell.py:958: p.add_argument("--core", default="sim", choices=("sim", "ucore"))
+  sw/sm3_h1_cell.py:974: p.add_argument("--core", default="ucore", choices=("sim", "ucore"))
+  sw/sm3_h3_cell.py:676: s.add_argument("--core", default="sim", choices=("sim", "ucore"))
+  sw/sm3_h3_cell.py:688: ws.add_argument("--core", default="sim", choices=("sim", "ucore"))
+  sw/sm3_h7_cell.py:306: s.add_argument("--core", default="sim", choices=("sim", "ucore"))
+  sw/sm3_haltsupp.py:205: e.add_argument("--core", default="ucore", choices=("ucore", "sim"))
+  sw/sm3_nmigeom.py:199: ap.add_argument("--core", default="", choices=("", "sim", "ucore"))
+  sw/sm3_s16_score.py:155: ap.add_argument("--core", default="ucore", choices=("ucore", "sim"))
+  sw/sm3_tf_floor_cell.py:750: p.add_argument("--core", default="sim", choices=("sim", "ucore"))
+  sw/sm3_tf_floor_cell.py:760: p.add_argument("--core", default="sim", choices=("sim", "ucore"), help="the ENGINE scored against the retained chip rows: " "the C++ timed model (sim) or the ucore RTL in the " "Verilator TB
+  sw/timed_enter_replay.py:123: ap.add_argument("--core", default="sim", choices=("sim", "ucore"), help="replay engine: the C++ timed sim (default) or a " "verilated RTL core through the TB's +bootimg mode")
+  sw/timed_fuzz.py:722: ap.add_argument("--core", default="sim", choices=("sim", "ucore"), help="replay engine: the C++ timed model (sim) or an RTL " "core in the Verilator TB (ucore / fsm)")
+  sw/timed_ins_replay.py:201: ap.add_argument("--core", default="sim", choices=("sim", "ucore"), help="replay engine: the C++ timed sim (default) or a " "verilated RTL core through the TB's +bootimg mode")
+  sw/timed_wvec_gate.py:213: ap.add_argument("--core", choices=("sim", "ucore"), default="sim", help="which engine produces the per-bus-cycle stream " "(digest/baseline/scoring are identical for all)")
+  sw/w32_launch.py:215: ap.add_argument("--core", default="ucore", choices=("sim", "ucore"))
+  sw/w33_take_cell.py:231: p.add_argument("--core", default="ucore", choices=("ucore", "sim"))
+  sw/w34_grant.py:443: p.add_argument("--core", default="ucore", choices=("ucore", "sim"))
+  sw/w34_grant.py:450: p.add_argument("--core", default="ucore", choices=("ucore", "sim"))
+  sw/wrfuzz_w7_gap_guard.py:114: ap.add_argument("--core", choices=("sim", "ucore", "both"), default="both")
+  sw/wrfuzz_wr1_guard.py:102: ap.add_argument("--core", default="both", choices=("both", "sim", "ucore"))
+
+THOSE NOT OFFERING sim: 21
+  sw/causal_wrand.py:2753: p.add_argument("--core", action="store_true", help="also run the fabric core and flag where it diverges")
+  sw/causal_wrand.py:2775: p.add_argument("--core", action="store_true", help="also sweep the fabric core and compare boundaries")
+  sw/chainflat_probe.py:300: ap.add_argument('--golden-args', default='--core ucore --opcodes all ' '--cases 0')
+  sw/check_ab_sim.py:175: ap.add_argument("--core", default="ucore", help="RTL engine inside system_large.  THERE IS ONE: " "'ucore'.  'fsm' was removed 2026-09-19 " "(invalida
+  sw/check_core.py:724: ap.add_argument("--core", default="ucore", help="RTL engine.  THERE IS ONE: 'ucore'.  The " "trace-fitted 'fsm' core was archived 2026-08-04 and " "RE
+  sw/core_portlist_lint.py:271: ap.add_argument("--core", default=str(UCORE), help="the v30_core to read the port list from (override is " "for the NON-VACUITY controls only)")
+  sw/f20_cell.py:93: ap.add_argument("--core", default=str(OUT / "core"))
+  sw/fuzz_campaign.py:2684: p.add_argument("--core", default=None, help="THE ENGINE, explicitly.  Default None = " "`check_seq.CORE` WAS the ARCHIVED fsm core and now " "REFUSES 
+  sw/fz2_m10sys_falsify.py:63: ap.add_argument("--core-solve", required=True, help="fz2_m10.py solve --tb core output (the REFERENCE)")
+  sw/fz2_undoc_probe.py:83: ap.add_argument("--cores", default="ucore")   # was "ucore,fsm"; the FSM core was removed 2026-09-19 (RET-2)
+  sw/r7_lint.py:741: ap.add_argument("--core", default="ucore", help="THERE IS ONE: 'ucore'.  'fsm' was removed " "2026-09-19 (invalidation_ledger.md RET-2).")
+  sw/sm3_h1probe.py:44: ap.add_argument("--core", default="ucore")
+  sw/ss_flopcensus.py:426: ap.add_argument("--core", default="ucore", help="which core's RTL to census.  THERE IS ONE: 'ucore'. " "'fsm' was removed 2026-09-19 " "(invalidation_
+  sw/ss_lint.py:167: ap.add_argument("--core", default="ucore", help="which core's save-state map to lint.  THERE IS ONE: " "'ucore'.  'fsm' was removed 2026-09-19 " "(inv
+  sw/sweep_parallel.py:49: ap.add_argument("--core", choices=("ucore",), default="ucore")
+  sw/u4_tranche.py:288: v.add_argument("--core", default="ucore", choices=["ucore"])
+  sw/uarch.py:32: ap.add_argument("--core", default="ucore")
+  sw/uscope.py:65: ap.add_argument("--core", default="ucore")
+  sw/w33_pin5.py:176: p.add_argument("--core", default="ucore")
+  sw/w35_take.py:155: p.add_argument("--core", default="ucore", choices=("ucore",))
+  sw/wrfuzz_smoke.py:141: ap.add_argument("--core", default="ucore", choices=("ucore",))
