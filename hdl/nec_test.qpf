@@ -26,6 +26,11 @@ QUARTUS_VERSION = "17.1"
 DATE = "17:40:59  August 03, 2026"
 
 # Revisions
+#
+# ⚠ ONE REVISION SINCE 2026-09-19 (WAVE 21).  `PROJECT_REVISION = "nec_test"`
+# was the ARCHIVED FSM core's revision; `hdl/nec_test.qsf` and `hdl/files.qip`
+# were deleted with the core (docs/notes/invalidation_ledger.md RET-2).  The
+# project file keeps its name because every receipt, every flash_log entry and
+# FLASH #23 itself record the build as `nec_test -c nec_test_ucore`.
 
 PROJECT_REVISION = "nec_test_ucore"
-PROJECT_REVISION = "nec_test"

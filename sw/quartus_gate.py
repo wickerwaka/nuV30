@@ -13,7 +13,12 @@ WHAT IT GATES.  Exactly the registered G6 essentials (`ucore_provenance.md`
 §52.1, quoted in CLAUDE.md), on ONE clean CONTROL/DEFAULT build -- macro OFF,
 the configuration every bitstream is derived from:
 
-    E1  `sw/gen_ucore_qsf.py --check` is green BEFORE the build
+    E1  `sw/qsf_lint.py --check` is green BEFORE the build (the revision
+        .qsf is CANONICAL).  ⚠ IT USED TO BE `gen_ucore_qsf.py --check`,
+        whose bar was "a faithful derivative of hdl/nec_test.qsf" -- the
+        ARCHIVED FSM revision.  RETIRED 2026-09-19, and the A/B half of
+        that claim is retired with NOTHING replacing it: there is one
+        core and one revision.  invalidation_ledger.md RET-2.
         (a stale revision file is a build comparing two things that differ by
         more than the core; and it must be checked BEFORE, because Quartus
         REWRITES the .qsf it compiles -- §70.7)
@@ -108,6 +113,7 @@ EXIT 0 = PASS, 1 = RED, 2 = the gate could not run (missing tool / report, or
 a REFUSED invocation).
 """
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -151,10 +157,55 @@ def _qip_files(qip):
     return out
 
 
+# --------------------------------------------------------------------------- #
+# THE REVISION .qsf IS STASHED BEFORE A BUILD AND RESTORED AFTER IT.
+#
+# Quartus REWRITES the revision `.qsf` it compiles, materialising everything it
+# picked up from `source sys/sys.tcl` (measured on that file: 107
+# set_location_assignment, 50 set_instance_assignment, 8 set_global_assignment
+# including PRE_FLOW_SCRIPT_FILE).  Until 2026-09-19 the gate undid that by
+# re-running `sw/gen_ucore_qsf.py`, which REGENERATED the file from
+# `hdl/nec_test.qsf`.  That template was the ARCHIVED FSM core's revision and is
+# deleted (RET-2), so the restore now uses the bytes THIS PROCESS READ before
+# the build.  No second file, no `git`, and both sha256s are recorded so the
+# restore is auditable rather than assumed.
+# --------------------------------------------------------------------------- #
+def stash_revision_qsf():
+    """-> the revision .qsf as the gate found it, or None if absent."""
+    p = HDL / f"{REVISION}.qsf"
+    if not p.exists():
+        return None
+    b = p.read_bytes()
+    return {"path": art.relpath(p), "text": b.decode(),
+            "sha256": hashlib.sha256(b).hexdigest()}
+
+
+def restore_revision_qsf(stashed):
+    """Put the pre-build bytes back.  -> what happened, for the receipt."""
+    if not stashed:
+        return {"restored": False, "why": "nothing was stashed"}
+    p = HDL / f"{REVISION}.qsf"
+    after = hashlib.sha256(p.read_bytes()).hexdigest() if p.exists() else None
+    if after == stashed["sha256"]:
+        return {"restored": False, "why": "unchanged by the build",
+                "sha256": after}
+    p.write_text(stashed["text"])
+    back = hashlib.sha256(p.read_bytes()).hexdigest()
+    return {"restored": True, "sha256_before_build": stashed["sha256"],
+            "sha256_after_build": after, "sha256_now": back,
+            "ok": back == stashed["sha256"]}
+
+
 def input_files():
     """Every file the CONTROL build reads, as HDL-relative names."""
     files = set()
-    for p in ("nec_test.qsf", "nec_test_ucore.qsf", "files_ucore.qip",
+    # ⚠ `nec_test.qsf` WAS IN THIS LIST UNTIL 2026-09-19.  It was the
+    # ARCHIVED FSM core's revision and the template `nec_test_ucore.qsf` was
+    # generated from; both it and `files.qip` are deleted (RET-2).  There is
+    # ONE revision file and the compiler reads it directly.  The manifest
+    # therefore goes 99 -> 98 files and its sha256 MOVES; that is expected and
+    # registered, and it is NOT a claim about the bitstream.
+    for p in ("nec_test_ucore.qsf", "files_ucore.qip",
               "nec_test.sdc", "nec_test.sv"):
         files.add(p)
     qip = HDL / "files_ucore.qip"
@@ -374,15 +425,17 @@ RETENTION_MACRO = "X1_AD_RETENTION"
 # figure -- and a BYTE-IDENTICAL `.rbf`, so the setting was inert.  They now
 # live here and reach a build ONLY via `--signaltap`.
 #
-# WHY THEY ARE APPENDED TO THE REVISION .qsf RATHER THAN LEFT IN THE SOURCE:
-# `gen_ucore_qsf.py --check` (E1) gates that `nec_test_ucore.qsf` is a faithful
-# derivative of `nec_test.qsf` -- so the lines cannot be removed from the ucore
-# revision alone without failing that gate, and leaving them in one revision
-# only would make the A/B bitstreams differ by the DEBUG FABRIC as well as by
-# the core, which is precisely what E1 exists to prevent.  Appending happens
-# AFTER E1 has run and BEFORE the compile; Quartus rewrites the revision .qsf
-# during a build anyway (sec.70.7), and `main()` already regenerates it
-# afterwards.
+# WHY THEY ARE APPENDED TO THE REVISION .qsf RATHER THAN LEFT IN IT:
+# a flashed bitstream's debug capability must be a RECORDED DECISION rather than
+# an inherited default, so the tree's committed revision file carries none of
+# them and `--signaltap` puts them there for one build only.  E1 (`qsf_lint`)
+# would fail on a revision file that carried them permanently -- they are not
+# canonical form.  Appending happens AFTER E1 has run and BEFORE the compile;
+# Quartus rewrites the revision .qsf during a build anyway (sec.70.7), and the
+# gate RESTORES the stashed pre-build bytes afterwards.
+# ⚠ THIS COMMENT USED TO JUSTIFY THE PLACEMENT BY THE A/B -- "leaving them in
+# one revision only would make the A/B bitstreams differ by the DEBUG FABRIC as
+# well as by the core".  There is no A/B: one core, one revision (RET-2).
 SIGNALTAP_ASSIGNMENTS = (
     "set_global_assignment -name ENABLE_SIGNALTAP ON",
     "set_global_assignment -name USE_SIGNALTAP_FILE stp1.stp",
@@ -806,16 +859,16 @@ def parse_truefmax(path):
 
 # THE ONE DECLARED EXEMPTION, AND IT IS DECLARED RATHER THAN DISCOVERED.
 # Quartus REWRITES the revision `.qsf` it compiles (§70.7) -- that is the whole
-# reason E1 must run BEFORE the build and `gen_ucore_qsf.py` is re-run after
+# reason E1 must run BEFORE the build and the gate RESTORES the file after
 # it.  So this file moves on EVERY build, by the compiler, and calling that a
 # mid-build input flip would make E7 fire on every green run: a bar that always
 # fails is a bar nobody reads.  It is the SAME single exemption the fabric era
 # guard already carries ("87/88, the `.qsf` the one §70.7 exemption").
 #
 # ⚠ IT IS A NAMED LIST OF ONE, NOT A PATTERN.  Anything else moving mid-build
-# is a RED, including the OTHER `.qsf` (`hdl/nec_test.qsf` is hand-maintained;
-# Quartus does not rewrite it, and if it moved during a compile that is exactly
-# the event this bar exists for).
+# is a RED -- `nec_test.sdc`, `nec_test.sv`, `files_ucore.qip` and every RTL
+# file included.  (It used to say "including the OTHER `.qsf`"; there is no
+# other `.qsf` since 2026-09-19 -- RET-2.)
 INPUT_FLIP_EXEMPT = ("hdl/nec_test_ucore.qsf",)
 
 
@@ -1294,17 +1347,21 @@ def run_sweep(a, tree, receipt_path, logpath):
     # --- E1, before anything is compiled ----------------------------------- #
     e1 = {"pass": None, "note": "skipped (--no-qsf-check)"}
     if not a.no_qsf_check:
-        r = subprocess.run([sys.executable, str(ROOT / "sw" / "gen_ucore_qsf.py"),
+        r = subprocess.run([sys.executable, str(ROOT / "sw" / "qsf_lint.py"),
                             "--check"], capture_output=True, text=True)
-        e1 = {"bar": "hdl/nec_test_ucore.qsf is a faithful derivative of "
-                     "hdl/nec_test.qsf",
+        e1 = {"bar": "hdl/nec_test_ucore.qsf -- the project's ONE revision -- is in CANONICAL FORM: no assignment Quartus materialises from `source sys/sys.tcl` is left in it, and it declares exactly one file list and one output directory",
               "rc": r.returncode, "out": (r.stdout + r.stderr).strip(),
               "pass": r.returncode == 0}
-        print(f"quartus_gate: E1 gen_ucore_qsf --check -> "
+        print(f"quartus_gate: E1 qsf_lint --check -> "
               f"{'PASS' if e1['pass'] else 'RED'}: {e1['out']}", flush=True)
         if not e1["pass"]:
             print("quartus_gate: RED at E1 -- nothing built, no sweep run.")
             return 1
+
+    # THE REVISION .qsf, AS THE GATE FOUND IT.  Quartus will rewrite it during
+    # the compile; these are the bytes that go back afterwards.  Taken AFTER E1
+    # so a non-canonical file is never stashed and never restored.
+    qsf_stash = stash_revision_qsf()
 
     # --- the inputs, hashed BEFORE quartus_map (E7's `pre`) ----------------- #
     mf_pre = input_manifest()
@@ -1408,7 +1465,7 @@ def run_sweep(a, tree, receipt_path, logpath):
                "configuration": cfg, "configuration_detail": cfg_detail,
                "reports": report_manifest(tree, logpath),
                "tree": str(tree),
-               "E1_gen_ucore_qsf": e1,
+               "E1_qsf_canonical": e1,
                # WHAT MAKES THIS RECEIPT A DISTRIBUTION DRAW AND NOT A BUILD.
                # It SELF-LABELS both axes -- the configuration (derived, as
                # always, from the reports) and the seed (asked AND echoed) --
@@ -1493,8 +1550,7 @@ def run_sweep(a, tree, receipt_path, logpath):
           f"exempt {e7['value']['moved_exempt']}, "
           f"OFFENDING {e7['value']['moved_offending']})", flush=True)
 
-    subprocess.run([sys.executable, str(ROOT / "sw" / "gen_ucore_qsf.py")],
-                   capture_output=True, text=True)
+    qsf_restore = restore_revision_qsf(qsf_stash)
 
     # --- THE DISTRIBUTION RECORD ------------------------------------------- #
     fmaxes = [p["fmax_mhz"] for p in per_seed]
@@ -1535,7 +1591,8 @@ def run_sweep(a, tree, receipt_path, logpath):
             "configuration": (per_seed[0]["configuration"] if per_seed
                               else "UNDETERMINED -- no seed completed"),
             "tree": str(tree), "artifact_dir": art.relpath(art_dir),
-            "E1_gen_ucore_qsf": e1, "E11_no_build_stamp": stamp,
+            "E1_qsf_canonical": e1, "E11_no_build_stamp": stamp,
+            "qsf_restored_post_build": qsf_restore,
             "seeds": seeds, "n_seeds": n,
             "per_seed": per_seed,
             "fmax": _stat(fmaxes),
@@ -1835,7 +1892,7 @@ def main():
     # SCHEMA VERSIONING: every key the SM3-s13 shape carried is still present
     # and still means what it meant (`gate`, `gate_version`, `ts`,
     # `tool_version`, `input_manifest`, `configuration`, `tree`, `bars`,
-    # `figures`, `verdict`, `E1_gen_ucore_qsf`, `build`).  The §3 keys are
+    # `figures`, `verdict`, `E1_qsf_canonical`, `build`).  The §3 keys are
     # ADDED beside them.  Nothing that read the old shape breaks.
     rec = {"schema": art.SCHEMA, "schema_version": art.SCHEMA_VERSION,
            "kind": "quartus_bitstream",
@@ -1874,16 +1931,15 @@ def main():
 
     # --- E1: the revision file, BEFORE the build --------------------------- #
     if a.no_qsf_check:
-        rec["E1_gen_ucore_qsf"] = {"pass": None, "note": "skipped (--no-qsf-check)"}
+        rec["E1_qsf_canonical"] = {"pass": None, "note": "skipped (--no-qsf-check)"}
     else:
-        r = subprocess.run([sys.executable, str(ROOT / "sw" / "gen_ucore_qsf.py"),
+        r = subprocess.run([sys.executable, str(ROOT / "sw" / "qsf_lint.py"),
                             "--check"], capture_output=True, text=True)
-        rec["E1_gen_ucore_qsf"] = {"bar": "hdl/nec_test_ucore.qsf is a faithful "
-                                          "derivative of hdl/nec_test.qsf",
+        rec["E1_qsf_canonical"] = {"bar": "hdl/nec_test_ucore.qsf -- the project's ONE revision -- is in CANONICAL FORM: no assignment Quartus materialises from `source sys/sys.tcl` is left in it, and it declares exactly one file list and one output directory",
                                    "rc": r.returncode,
                                    "out": (r.stdout + r.stderr).strip(),
                                    "pass": r.returncode == 0}
-        print(f"quartus_gate: E1 gen_ucore_qsf --check -> "
+        print(f"quartus_gate: E1 qsf_lint --check -> "
               f"{'PASS' if r.returncode == 0 else 'RED'}: "
               f"{(r.stdout + r.stderr).strip()}", flush=True)
         if r.returncode != 0:
@@ -1902,6 +1958,10 @@ def main():
         # derivation; the compiler must see the debug fabric this run asked
         # for.  Recorded either way -- `[]` is "asked for nothing", and the
         # key is always present so a receipt can never be silent about it.
+        # THE REVISION .qsf, AS THE GATE FOUND IT -- taken AFTER E1 and BEFORE
+        # `--signaltap` appends anything, so the restore removes the debug
+        # fabric too and the tree is left exactly as the gate found it.
+        qsf_stash = stash_revision_qsf()
         rec["signaltap"] = {"requested": a.signaltap, "assignments_added": []}
         if a.signaltap:
             added = enable_signaltap(HDL / f"{REVISION}.qsf")
@@ -1915,11 +1975,10 @@ def main():
         rec["command"] = b["cmd"]
         rec["rc"] = b["rc"]
         rec["seconds"] = b["seconds"]
-        # Quartus REWRITES the revision .qsf it compiles (§70.7).  Put it back
-        # so the tree is not left dirty by its own gate; recorded, not hidden.
-        subprocess.run([sys.executable, str(ROOT / "sw" / "gen_ucore_qsf.py")],
-                       capture_output=True, text=True)
-        rec["qsf_regenerated_post_build"] = True
+        # Quartus REWRITES the revision .qsf it compiles (§70.7).  Put the
+        # STASHED bytes back so the tree is not left dirty by its own gate;
+        # recorded with both sha256s, not hidden.
+        rec["qsf_restored_post_build"] = restore_revision_qsf(qsf_stash)
 
     log_text = ""
     if logpath.exists():
@@ -1951,7 +2010,7 @@ def main():
     rec["figures"] = figs
     ok = all(v["pass"] for v in bars.values())
     if not a.no_qsf_check:
-        ok = ok and rec["E1_gen_ucore_qsf"]["pass"]
+        ok = ok and rec["E1_qsf_canonical"]["pass"]
     rec["verdict"] = "PASS" if ok else "RED"
     # THE OUTPUTS, HASHED.  §8: the layer does NOT try to make Quartus
     # bit-reproducible -- two builds from identical inputs may differ, the

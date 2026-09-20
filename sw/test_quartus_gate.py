@@ -71,6 +71,7 @@ import argparse
 import os
 import subprocess
 import sys
+import pathlib
 import tempfile
 from pathlib import Path
 
@@ -406,7 +407,7 @@ def q11_e7_input_ordering():
           qg.INPUT_FLIP_EXEMPT == ("hdl/nec_test_ucore.qsf",),
           str(qg.INPUT_FLIP_EXEMPT))
     base = {"sha256": "aaa", "files": {"hdl/nec_test_ucore.qsf": "1",
-                                       "hdl/nec_test.qsf": "1",
+                                       "hdl/nec_test.sdc": "1",
                                        "hdl/rtl/ucore/v30u_eu.sv": "1"}}
     qsf = {"sha256": "zzz", "files": dict(base["files"],
                                           **{"hdl/nec_test_ucore.qsf": "REWRITTEN"})}
@@ -417,15 +418,19 @@ def q11_e7_input_ordering():
           b["value"]["moved_exempt"] == ["hdl/nec_test_ucore.qsf"]
           and b["value"]["n_moved"] == 1, str(b["value"]))
     # ⚠ THE EXEMPTION IS ONE NAME, NOT A PATTERN.  The hand-maintained
-    # nec_test.qsf is NOT exempt, and neither is any RTL file.
+    # nec_test.sdc is NOT exempt, and neither is any RTL file.
+    # (This control used to move `hdl/nec_test.qsf`, the ARCHIVED FSM core's
+    # revision.  That file was deleted 2026-09-19 -- invalidation_ledger.md
+    # RET-2 -- so the control now moves a file that EXISTS.  The property
+    # being checked is unchanged: one NAME is exempt, nothing else is.)
     other = {"sha256": "yyy", "files": dict(base["files"],
-                                            **{"hdl/nec_test.qsf": "MOVED"})}
+                                            **{"hdl/nec_test.sdc": "MOVED"})}
     b = qg.input_stability_bar(base, other)
-    check("the OTHER .qsf moving is still a RED", b["pass"] is False)
+    check("a non-exempt hdl/ file moving is still a RED", b["pass"] is False)
     check("...and is listed as OFFENDING",
-          b["value"]["moved_offending"] == ["hdl/nec_test.qsf"], str(b["value"]))
+          b["value"]["moved_offending"] == ["hdl/nec_test.sdc"], str(b["value"]))
     both = {"sha256": "xxx", "files": {"hdl/nec_test_ucore.qsf": "REWRITTEN",
-                                       "hdl/nec_test.qsf": "1",
+                                       "hdl/nec_test.sdc": "1",
                                        "hdl/rtl/ucore/v30u_eu.sv": "MOVED"}}
     b = qg.input_stability_bar(base, both)
     check("an RTL flip ALONGSIDE the exempt rewrite is still a RED",
@@ -1031,6 +1036,97 @@ def q17_build_stamp_bar():
           rc == 0, out.strip()[-200:])
 
 
+
+def q18_e1_qsf_canonical():
+    """Q18 -- E1 IS `qsf_lint` NOW, AND IT FIRES.  (WAVE 21, 2026-09-19.)
+
+    E1's bar used to be `gen_ucore_qsf.py --check`: "hdl/nec_test_ucore.qsf is
+    a faithful derivative of hdl/nec_test.qsf" -- which made the ARCHIVED FSM
+    revision the ORIGINAL.  That revision is deleted
+    (`invalidation_ledger.md` RET-2) and the bar is now CANONICAL FORM on the
+    ONE revision.  A new bar without a falsifier is exactly what this repo
+    forbids, so here it is.
+
+    ⚠ WHAT THIS DOES **NOT** TEST, because the bar does not claim it: that the
+    settings are CORRECT, that `files_ucore.qip` lists the right files, or
+    anything at all about an A/B -- there is one core and one revision, and
+    that guarantee is retired with nothing replacing it."""
+    import qsf_lint as ql
+    print("\nQ18 E1: the revision .qsf is CANONICAL -- and the bar FIRES")
+
+    # the positive control FIRST: the real tree must pass.
+    rc, lines = ql.check()
+    check("the real hdl/nec_test_ucore.qsf is CANONICAL (rc 0)", rc == 0,
+          "\n".join(lines))
+    check("...and says so", any("CANONICAL" in x for x in lines))
+
+    real = (ROOT / "hdl" / "nec_test_ucore.qsf").read_text()
+    with tempfile.TemporaryDirectory() as td:
+        d = pathlib.Path(td)
+
+        # (a) ONE materialised assignment spliced in -> RED, and NAMED.
+        f = d / "loc.qsf"
+        f.write_text(real.replace("source files_ucore.qip",
+                                  "set_location_assignment PIN_AA1 -to FAKE\n"
+                                  "source files_ucore.qip"))
+        rc, lines = ql.check(f)
+        blob = "\n".join(lines)
+        check("a spliced set_location_assignment is a RED", rc == 1, blob)
+        check("...and the offending line is NAMED",
+              "PIN_AA1" in blob and "MATERIALISED" in blob, blob)
+        check("...and the restore command is printed",
+              "git checkout --" in blob, blob)
+
+        # (b) the file list removed -> RED, counted.
+        f = d / "nolist.qsf"
+        f.write_text(real.replace("source files_ucore.qip", ""))
+        rc, lines = ql.check(f)
+        blob = "\n".join(lines)
+        check("a missing `source files_ucore.qip` is a RED", rc == 1, blob)
+        check("...and says how many it found", "found 0" in blob, blob)
+
+        # (c) TWO output directories -> RED.  (A revision that wrote two
+        #     places would make `outputs` ambiguous and E7 unreadable.)
+        f = d / "twoout.qsf"
+        f.write_text(real.replace(
+            "source sys/sys.tcl",
+            "set_global_assignment -name PROJECT_OUTPUT_DIRECTORY elsewhere\n"
+            "source sys/sys.tcl"))
+        rc, lines = ql.check(f)
+        check("two PROJECT_OUTPUT_DIRECTORY lines is a RED", rc == 1,
+              "\n".join(lines))
+
+        # (d) CANNOT MEASURE is 2, never PASS -- the vacuous-gate rule.
+        rc, lines = ql.check(d / "does-not-exist.qsf")
+        check("an absent revision file is exit 2, not PASS", rc == 2,
+              "\n".join(lines))
+        check("...and says CANNOT MEASURE",
+              any("CANNOT MEASURE" in x for x in lines))
+        f = d / "empty.qsf"
+        f.write_text("   \n")
+        rc, lines = ql.check(f)
+        check("an EMPTY revision file is exit 2, not PASS", rc == 2,
+              "\n".join(lines))
+
+        # (e) a COMMENTED-OUT materialised line is NOT a hit -- the lint reads
+        #     assignments, not text, and a false positive here would fire on
+        #     every build.
+        f = d / "comment.qsf"
+        f.write_text(real.replace(
+            "source sys/sys.tcl",
+            "# set_location_assignment PIN_AA1 -to FAKE\nsource sys/sys.tcl"))
+        rc, _ = ql.check(f)
+        check("a COMMENTED materialised line is not a hit", rc == 0)
+
+    # and the gate wires it: the receipt key moved with the bar.
+    src = (ROOT / "sw" / "quartus_gate.py").read_text()
+    check("quartus_gate calls sw/qsf_lint.py for E1", '"qsf_lint.py"' in src)
+    check("...under the receipt key E1_qsf_canonical",
+          '"E1_qsf_canonical"' in src)
+    check("...and no longer calls gen_ucore_qsf.py",
+          '"gen_ucore_qsf.py"' not in src)
+
+
 def main():
     global VERBOSE
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
@@ -1055,6 +1151,7 @@ def main():
     q15_summary_stats()
     q16_paired_reporting()
     q17_build_stamp_bar()
+    q18_e1_qsf_canonical()
 
     print(f"\n{NCHECK - len(FAILS)} / {NCHECK} checks pass")
     for f in FAILS:

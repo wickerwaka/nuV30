@@ -3,7 +3,7 @@
 # just runs them in one place so the results document quotes one transcript.
 set -x
 cd "$(dirname "$0")/.." || exit 1
-python3 sw/gen_ucore_qsf.py --check
+python3 sw/qsf_lint.py --check
 python3 sw/r7_lint.py
 python3 sw/ss_lint.py --core ucore
 python3 sw/test_artifact.py

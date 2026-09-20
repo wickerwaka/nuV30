@@ -1,13 +1,36 @@
 # ---------------------------------------------------------------------------
-#  GENERATED FILE -- do not edit.  Regenerate with `sw/gen_ucore_qsf.py`.
-#
-#  The `nec_test_ucore` REVISION: hdl/nec_test.qsf with the core's file list
-#  swapped for the ucore's and its own output directory.  Everything else --
-#  device, pins, timing settings, optimisation settings, VERILOG_MACROs -- is
-#  copied verbatim, so the two-bitstream A/B differs by the CORE and by nothing
-#  else.  `sw/gen_ucore_qsf.py --check` is the gate on that claim.
+#  nec_test_ucore -- THE PROJECT'S ONE QUARTUS REVISION.  HAND-MAINTAINED.
+#  EDIT THIS FILE DIRECTLY.
 #
 #      quartus_sh --flow compile nec_test -c nec_test_ucore
+#
+#  ⚠ IT USED TO BE GENERATED, AND THE THING IT WAS GENERATED FROM IS GONE.
+#  Until 2026-09-19 this file was written by `sw/gen_ucore_qsf.py` from
+#  `hdl/nec_test.qsf` -- the ARCHIVED FSM core's revision -- and bar E1 of
+#  `sw/quartus_gate.py` asserted it was "a faithful derivative" of that file,
+#  i.e. that the FSM revision was the ORIGINAL and this one the DERIVATIVE.
+#  USER RULING 2026-09-19: "Ucore is the only valid implementation in this code
+#  base."  `hdl/nec_test.qsf` and `hdl/files.qip` are deleted, `nec_test` is
+#  gone from `nec_test.qpf`, and there is ONE revision.
+#  `docs/notes/invalidation_ledger.md` RET-2.
+#
+#  ⚠ QUARTUS REWRITES THIS FILE DURING A BUILD.  It materialises everything it
+#  picked up from `source sys/sys.tcl` -- measured on that file: 107
+#  set_location_assignment, 50 set_instance_assignment and 8
+#  set_global_assignment including PRE_FLOW_SCRIPT_FILE.  So:
+#    * `sw/qsf_lint.py --check` is bar E1 (receipt key `E1_qsf_canonical`) and
+#      gates that the tree's copy is CANONICAL -- that no build's rewrite was
+#      left in it.  It runs BEFORE the compile, never after.
+#    * `sw/quartus_gate.py` STASHES these bytes before a build and writes them
+#      back after, so its own gate never leaves the tree dirty.
+#    * if you ran `quartus_sh` by hand and this file is now 160 lines longer:
+#          git checkout -- hdl/nec_test_ucore.qsf
+#
+#  THE FILE LIST IS `files_ucore.qip`, SOURCED BELOW.  There is no environment
+#  variable and no conditional selecting it: the .qsf is read by a restricted
+#  settings parser with no `if` (measured: Error 125048 on every line of a Tcl
+#  conditional).  Anything that claims otherwise is wrong -- see the erratum at
+#  the head of `files_ucore.qip`.
 # ---------------------------------------------------------------------------
 # --------------------------------------------------------------------------
 #

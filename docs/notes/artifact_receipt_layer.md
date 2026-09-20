@@ -108,7 +108,10 @@ directory.
   },
   "command":  ["quartus_sh", "--flow", "compile", "nec_test", "-c",
                "nec_test_ucore"],
-  "env":      { "V30_CORE": "ucore" },     // only vars the command READS
+  "env":      { "X1_AD_RETENTION": "1" },  // only vars the command READS
+                                           // (this example named V30_CORE
+                                           // until 2026-09-19; that variable
+                                           // never existed -- WAVE 21, RET-2)
   "tool":     "Quartus Prime 17.1.0 Build 590 SJ Lite",
   "tool_sha256": null,                     // when the tool is in-tree, hash it
 

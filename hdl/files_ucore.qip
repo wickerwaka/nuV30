@@ -1,18 +1,36 @@
 # ---------------------------------------------------------------------------
-#  files_ucore.qip -- the SIBLING of files.qip that builds the ucore bitstream.
+#  files_ucore.qip -- THE PROJECT'S ONE RTL FILE LIST.
 #
-#  The two cores are drop-in alternatives selected by the RTL FILE LIST: the
-#  module stays named `v30_core`, the package stays named `v30_ss_pkg`, and
-#  system_large.sv / nec_test.sv / the TB are untouched.  This file is the
-#  synthesis-side twin of `sw/check_core.py`'s CORE_RTL["ucore"], and the two
-#  must list the same modules in the same order.
+#  It is SOURCED, unconditionally, by the project's one revision:
 #
-#  Selected by the `V30_CORE` environment variable, read in nec_test.qsf:
-#      V30_CORE=ucore  quartus_sh --flow compile nec_test     -> this file
-#      (unset / anything else)                                -> files.qip
+#      hdl/nec_test_ucore.qsf :  source files_ucore.qip
+#      quartus_sh --flow compile nec_test -c nec_test_ucore
 #
-#  EXACTLY ONE of rtl/core/v30_ss_pkg.sv and rtl/ucore/v30u_ss_pkg.sv may be
-#  compiled -- they declare the same package name on purpose.
+#  This file is the synthesis-side twin of `sw/check_core.py`'s
+#  CORE_RTL["ucore"], and the two must list the same modules in the same order.
+#
+#  ⚠⚠ ERRATUM 2026-09-19 (WAVE 21) -- THIS HEADER DOCUMENTED A BUILD COMMAND
+#  THAT DID NOT WORK AND REPORTED SUCCESS.  It used to read:
+#
+#      "Selected by the `V30_CORE` environment variable, read in nec_test.qsf:
+#           V30_CORE=ucore  quartus_sh --flow compile nec_test  -> this file
+#           (unset / anything else)                             -> files.qip"
+#
+#  **MEASURED: `V30_CORE` occurred EXACTLY ONCE IN THE WHOLE TREE -- in that
+#  comment.**  Nothing read it, in `nec_test.qsf` or anywhere else, and it could
+#  not have: the .qsf is read by a restricted settings parser with NO `if`
+#  (measured: Error 125048 on every line of a Tcl conditional -- which is why
+#  the two revisions existed at all).  Following the documented command built
+#  the **FSM** core and reported success: ACCEPTED-AND-IGNORED, class E-6,
+#  sitting inside a build instruction.
+#
+#  There is now no selection to make.  `hdl/files.qip` and `hdl/rtl/core/` were
+#  removed under the user instruction "Remove the FSM core, fix whatever
+#  dependencies exist" (docs/notes/invalidation_ledger.md RET-2), and the
+#  package-name clash the old last paragraph warned about -- EXACTLY ONE of
+#  rtl/core/v30_ss_pkg.sv and rtl/ucore/v30u_ss_pkg.sv may be compiled, because
+#  they declare the same package name on purpose -- CANNOT ARISE: there is one
+#  package file and it is listed below.
 # ---------------------------------------------------------------------------
 
 # --- platform: identical to files.qip, and deliberately so ------------------
@@ -34,8 +52,9 @@ set_global_assignment -name SYSTEMVERILOG_FILE rtl/ucore/v30u_ucrom.sv
 set_global_assignment -name SYSTEMVERILOG_FILE rtl/ucore/v30u_eu.sv
 
 # So the EU's `include "v30u_eu_*.svh"` resolve by BASENAME via the
-# project-relative search path, independent of the compiler's cwd -- the same
-# arrangement files.qip uses for the FSM core's race_law.svh.  There are
+# project-relative search path, independent of the compiler's cwd.  (It was
+# "the same arrangement files.qip uses for the FSM core's race_law.svh" until
+# 2026-09-19; that file list is gone -- RET-2.)  There are
 # NINETEEN of them since WAVE 7: the nine that were always here, the nine
 # `v30u_eu_arm_<state>.svh` the chain flattening carved out of the step case so
 # that position 0 and the flattened positions >= 1 share ONE copy of each

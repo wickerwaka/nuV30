@@ -1,92 +1,51 @@
 #!/usr/bin/env python3
-"""gen_ucore_qsf -- derive hdl/nec_test_ucore.qsf from hdl/nec_test.qsf.
+"""gen_ucore_qsf -- RETIRED 2026-09-19 (WAVE 21).  IT DERIVED THE ucore
+REVISION FROM THE FSM ONE, AND THERE IS NO FSM ONE.
 
-The two cores are drop-in alternatives selected by the RTL FILE LIST, so the
-ucore bitstream is a Quartus REVISION of the same project rather than a second
-project: `quartus_sh --flow compile nec_test -c nec_test_ucore`.
+It wrote `hdl/nec_test_ucore.qsf` from `hdl/nec_test.qsf` by changing exactly
+two lines, and it was bar **E1** of `sw/quartus_gate.py` -- the gate on every
+RTL landing and every flash in this project.  Its bar text, verbatim from
+FLASH #23's own CONTROL receipt:
 
-The .qsf cannot choose its own file list -- Quartus reads it with a restricted
-settings parser that has no `if` (measured: Error 125048 on every line of a Tcl
-conditional).  So the revision file is GENERATED from the FSM one by changing
-exactly two things:
+    "hdl/nec_test_ucore.qsf is a faithful derivative of hdl/nec_test.qsf"
 
-    source files.qip            ->  source files_ucore.qip
-    PROJECT_OUTPUT_DIRECTORY    ->  output_files_ucore
+**THAT SENTENCE MAKES THE ARCHIVED FSM REVISION THE ORIGINAL.**  Under the user
+ruling of 2026-09-19 -- *"Ucore is the only valid implementation in this code
+base, if it has dependencies on any other implementations those need to be
+removed.  Documentation that gives those other implementations precedence is
+suspect."* -- that precedence is inverted, so the claim is VOID rather than
+merely unmeasurable.  `hdl/nec_test.qsf` and `hdl/files.qip` are deleted,
+`hdl/nec_test_ucore.qsf` is AUTHORED, and there is ONE revision.
 
-...and nothing else, so a settings change made for the FSM build cannot be
-silently missing from the ucore build.  `--check` re-derives and compares,
-which is the gate: a stale revision file is a build comparing two things that
-differ by more than the core.
+⚠ **AND IT WAS NOT THE BLOCKER THE BRIEF SAID IT WAS.**  `derive()` was pure
+text substitution on ONE settings file: it never opened `hdl/files.qip` and
+never read `hdl/rtl/core/`.  **MEASURED: it ran GREEN with the entire FSM core
+deleted** (`fsm_removal_results_2026-09-19.md` §Z-4a).  The re-basing was a
+deliberate act under the ruling, not a repair forced by the deletion.
 
-NOTE, measured: **Quartus REWRITES the revision .qsf it compiles**, appending
-the assignments it picked up from `source sys/sys.tcl` (the ~180 pin locations
-and the PRE_FLOW_SCRIPT).  So this file must be regenerated before a build and
-`--check` must be run BEFORE compiling, not after -- a post-build `--check`
-failure is Quartus's materialisation, not drift.  Regenerating is always safe:
-everything Quartus appends is re-derived from the sourced .tcl anyway.
+WHAT REPLACED IT, AND WHAT DID NOT
+----------------------------------
+`sw/qsf_lint.py --check` is bar E1 now, receipt key `E1_qsf_canonical`.  It
+proves the ONE revision is in CANONICAL FORM -- that no build's in-place Quartus
+rewrite was left in the tree.  **The other half of the old bar -- "the two A/B
+bitstreams differ by the CORE and nothing else" -- IS RETIRED AND NOTHING
+REPLACES IT**, because there is no second core and no second revision for it to
+be about.
 
-    sw/gen_ucore_qsf.py [--check]
+The POST-BUILD RESTORE this file used to perform (`sw/quartus_gate.py` ran it
+with no arguments after every compile, because Quartus rewrites the revision
+.qsf it reads) is now done INSIDE `quartus_gate.py`, from bytes it stashes
+before the build.  That needs no second file and no `git`.
+
+`docs/notes/invalidation_ledger.md` **RET-2**.
 """
-import argparse
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-SRC = ROOT / "hdl" / "nec_test.qsf"
-DST = ROOT / "hdl" / "nec_test_ucore.qsf"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import fsmcore                                              # noqa: E402
 
-HEADER = """# ---------------------------------------------------------------------------
-#  GENERATED FILE -- do not edit.  Regenerate with `sw/gen_ucore_qsf.py`.
-#
-#  The `nec_test_ucore` REVISION: hdl/nec_test.qsf with the core's file list
-#  swapped for the ucore's and its own output directory.  Everything else --
-#  device, pins, timing settings, optimisation settings, VERILOG_MACROs -- is
-#  copied verbatim, so the two-bitstream A/B differs by the CORE and by nothing
-#  else.  `sw/gen_ucore_qsf.py --check` is the gate on that claim.
-#
-#      quartus_sh --flow compile nec_test -c nec_test_ucore
-# ---------------------------------------------------------------------------
-"""
-
-
-def derive(text):
-    out, seen_src, seen_out = [], 0, 0
-    for ln in text.splitlines():
-        s = ln.strip()
-        if s == "source files.qip":
-            out.append("source files_ucore.qip")
-            seen_src += 1
-        elif s.startswith("set_global_assignment -name PROJECT_OUTPUT_DIRECTORY"):
-            out.append("set_global_assignment -name PROJECT_OUTPUT_DIRECTORY "
-                       "output_files_ucore")
-            seen_out += 1
-        else:
-            out.append(ln)
-    if seen_src != 1:
-        sys.exit(f"gen_ucore_qsf: expected exactly one 'source files.qip' in "
-                 f"{SRC}, found {seen_src}")
-    if seen_out != 1:
-        sys.exit(f"gen_ucore_qsf: expected exactly one PROJECT_OUTPUT_DIRECTORY "
-                 f"in {SRC}, found {seen_out}")
-    return HEADER + "\n".join(out) + "\n"
-
-
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--check", action="store_true",
-                    help="fail if the generated file is out of date")
-    a = ap.parse_args()
-    want = derive(SRC.read_text())
-    if a.check:
-        have = DST.read_text() if DST.exists() else ""
-        if have != want:
-            sys.exit(f"gen_ucore_qsf: {DST} is STALE -- regenerate it "
-                     f"(the two bitstreams would differ by more than the core)")
-        print(f"gen_ucore_qsf: {DST.name} is up to date")
-        return
-    DST.write_text(want)
-    print(f"gen_ucore_qsf: wrote {DST}")
-
-
-if __name__ == "__main__":
-    main()
+fsmcore.refuse(
+    "sw/gen_ucore_qsf.py -- it derived hdl/nec_test_ucore.qsf from "
+    "hdl/nec_test.qsf, the ARCHIVED FSM core's revision.  There is one "
+    "revision now and it is AUTHORED.  Bar E1 is `sw/qsf_lint.py --check`")
