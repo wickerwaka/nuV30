@@ -1,0 +1,14 @@
+[suitemeta] enter_nesting: dialect 'emitter' -- NO opcode map of its own; DELEGATING to tests/v30/v0.1/metadata.json
+Traceback (most recent call last):
+  File "/home/wickerwaka/src/nec_test/sw/check_core.py", line 1203, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/wickerwaka/src/nec_test/sw/check_core.py", line 976, in main
+    sims = run_batch(cases, False)
+  File "/home/wickerwaka/src/nec_test/sw/check_core.py", line 919, in run_batch
+    compose_batch(cs, batch, arch_only=args.arch_only)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/wickerwaka/src/nec_test/sw/check_core.py", line 335, in compose_batch
+    r = c["initial"]["regs"]
+        ~^^^^^^^^^^^
+KeyError: 'initial'

@@ -1,0 +1,12 @@
+0 x_w1_EB
+0 x_w0evt
+0 x_w2evt
+0 x_w1
+0 x_w3
+0 x_w1evt
+1 x_enter
+1 x_mod3
+0 x_f0lock
+0 x_f4a
+0 x_biased
+0 x_w3evt

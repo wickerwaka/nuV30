@@ -44,7 +44,7 @@ so neither is displaced.)*
 | `v0.2` | `--waits 0 --raw-flags` | 347,000 | **347,000 / 347,000 full** |
 | `v0.3` | `--no-known-divergences` | 3,700,000 | **3,699,998 / 3,700,000 full** |
 | `v0.3` | list applied | 3,699,997 | **3,699,997 / 3,699,997 full** |
-| `v20suite` | **`--arch-only` (REQUIRED)** | 3,125,000 | **3,124,992 / 3,125,000 ARCH** |
+| `v20suite` | **`--arch-only` (REQUIRED)** | 3,125,000 | ⭐ **3,125,000 / 3,125,000 ARCH** (WAVE 25; it was 3,124,992 until the testbench re-latch was fixed — `tb_relatch_results_2026-09-20.md`) |
 | `mod3_illegal` | **`--opcodes goldens`** | 128 | **cycles 128/128 · ARCH 0/128** |
 
 **TEN FAILING CASES IN 7,172,000**, all characterised:
@@ -92,6 +92,74 @@ so the historical **"7.17 M" headline DOUBLE-COUNTS**.
 suite's opcode map comes from its own `metadata.json` when that file has one,
 and from `v0.1`'s otherwise*), falsifier `python3 sw/suitemeta.py --selfcheck`
 (**PASS, 17 checks, 3 dialects reached**, non-vacuity fires).
+
+### ⚠⚠⚠ **WAVE 25 ADDENDUM, 2026-09-20 — `v20suite` IS `3,125,000 / 3,125,000 ARCH`.  THE EIGHT WERE ONE LINE OF TESTBENCH, AND THE OTHER 7.85 M CASES DID NOT MOVE.**
+
+`docs/notes/tb_relatch_prereg_2026-09-20.md` / `..._results_2026-09-20.md`.
+**`hdl/rtl/` UNTOUCHED — 107 synthesis inputs sha256-identical before and
+after, and identical to WAVE 23's after-manifest.  NO QUARTUS RUN WAS MADE AND
+NONE IS OWED.  NOTHING WAS FLASHED; FLASH #23 STILL COVERS THE TREE**
+(`flash_log.jsonl` 26 entries, sha256 `13a81a43f30c380a…`).
+
+* **THE LAW IS ONE SENTENCE**: *the settle window's re-latch fires EXACTLY
+  ONCE — on the first clock after the window-closing F pop at which the EU's
+  outstanding work has drained — and then the window closes.*  **The edit is
+  ONE LINE**, `fin_wait <= 5'd0;` in `hdl/tb/tb_v30_core.sv`'s re-latch arm.
+* **WHY THE OLD FORM WAS WRONG**: `dbg_pend` is
+  `(rd_pending != 0) || (rdq_n != 0) || poste` (`v30u_eu.sv:2671`) and `poste`
+  **pulses once per instruction** — measured on a **three-CPU-cycle period for
+  the whole 16-cycle window**, so the block re-armed and re-latched on every
+  instruction that retired inside it (**five times on a single case**).
+* ⚠ **THE WINDOW IS LOAD-BEARING AND DELETING IT IS NOT THE FIX.**  At the
+  closing F pop, `dbg_regs.flags` on `v20suite` `03`/case 0 still reads the
+  case's INITIAL `0xf8c3`; the golden's final is `0xf017` and the core writes
+  it ON THAT EDGE, so the close's own latch takes the stale value.  **The
+  re-latch is needed by instructions with no ghost load at all.**
+* ⚠ **`ip` IS EXCLUDED BECAUSE IT CANNOT BE SEPARATED IN TIME** — the FOLLOWING
+  instruction commits its `ip` on the same edge this one commits its flags.
+  F9 (`ucore_provenance.md` §18) is why the close's `ip` is already right.
+* **THE FALSIFIER IS TWO-SIDED AND DIRECTED** (WAVE 24's rig, unchanged):
+  `FF CC` (= `DEC SP`) at the retirement point of 20 PASSING `v20suite` `03`
+  cases is **0/20 before and 20/20 after**; at `+2`, **0/20 → 20/20**; at
+  `+4 … +16` and at `+64`, **20/20 both ways**; `base` **20/20** both ways.
+* ⭐ **THE ATTRIBUTION IS COMPLETE AND IT IS A `diff`, NOT AN INFERENCE.**  The
+  two 360-form `v20suite` logs differ in **38 lines and no others** — the eight
+  failure blocks and the TOTAL.  **8 moved, all 8 inside WAVE 24's 2,284-case
+  predicate (re-derived here); 0 of the other 3,122,716 moved in either
+  direction.**
+* **THE LADDER IS ZERO-DELTA — 31 BRIEFED LEGS + 11 EXTRA, BOTH SIDES
+  MEASURED**, every scored line byte-identical: 169,000 at `--ce-div` 2/3/4/8
+  with div 1 REFUSED citing **C-a** · the four HLT sweeps **279/283** at
+  `--waits 0/1/2/3` with the same three `busstat` survivors · `v0.2`
+  **347,000/347,000** · `v0.3` **3,699,998/3,699,998 [2 excluded]**, its
+  355-form log **byte-identical on both sides AND to WAVE 24's registered run**
+  (`644a11c5e09f38ed…`) · `ss_lint` **232 / 229 flops / 4 whitelist / 0
+  UNMAPPED** · `cutset_lint` 81/0 · `phase_split_lint` 157/779/0 · `r7_lint`
+  PASS · `qsf_lint --check` CANONICAL · `core_portlist_lint` 4 configurations ·
+  `test_quartus_gate` **302/302** · `test_artifact` **45/45** ·
+  `lea_mod3_gate` **PASS, 71 whole-program replays through this very
+  testbench** · `chainflat_relocation_check` 9/9 · `chain_lfsr_gate` **PASS
+  with its four signatures BYTE-IDENTICAL** · `demux_off_gate` PASS ·
+  `check_boot` 220 and 400 · `check_ab_sim` **187** · `ghost_launch_law score`
+  **200/200** · G0 **9,988** · `pla3_check` **21**.  Extras, all
+  byte-identical: `v0.1-w1`/`-w3` **1,200** · `EB` **200** · the four `evt`
+  cells **200/1,200/200/1,200** · `v0.1-w1evt-biased` **1,200** ·
+  `f4a_boundary` **160** · `f0lock_tranche` **400** · `mod3_illegal`
+  **cycles 128/128 · ARCH 0/128, KNOWN-RED and UNMOVED**.
+* ⚠ **A SECOND LINE WAS WRITTEN, MEASURED, AND DELIBERATELY NOT LANDED.**
+  `fin_ghost` is never cleared at a case boundary, so a case whose `dbg_pend`
+  never fell could arm the next one.  A directed counter at the closing pop
+  measured that at **0 over 3,644,883 cases**, with a **structural positive
+  control** (the probe sits in the same statement that assigns `fin_regs`, so a
+  dead site would fail every case).  **A line with a measured effect of zero is
+  not landed**; the measurement lives in the block's own comment.
+* ⚠ **WHAT CLOSING THE EIGHT DOES NOT ESTABLISH.**  The goldens are a
+  **uPD70108 (V20)**'s; this core models the **uPD70116 (V30)**.  It proves
+  **the comparator was wrong** — not that the parts agree architecturally
+  anywhere the suite does not reach, and it is **not a cycle claim**
+  (`--arch-only` skips the cycle-row diff and masks the final queue by design).
+* ⚠ **`enter_nesting` IS NOT A `check_core` SUITE** — `KeyError: 'initial'` on
+  BOTH sides, identically.  Not a WAVE 25 casualty.
 
 ### ⚠⚠ **WAVE 23 ADDENDUM, 2026-09-20 — `mod3_illegal`'s `0 / 128` IS A TESTBENCH STIMULUS DEFECT.  THE ucore IS RIGHT, AND THE METADATA'S "WEDGE" IS THE DELETED FSM CORE'S.**
 
@@ -171,7 +239,11 @@ nothing flashed, FLASH #23 intact.
   `flags` and **not `ip`** — and **not one of the eight real failures moves
   `ip` either.  8 of 8.**  One predicate (*the continuation point has a
   recorded non-`0x90` byte within 4*) selects **2,284 of 3,125,000 and contains
-  all eight**.  **DISPOSITION PROPOSED, NOT TAKEN — `3,124,992 / 3,125,000
+  all eight**.  ⚠ **SUPERSEDED BY WAVE 25 (2026-09-20), WHICH TOOK ROUTE (a):
+  the re-latch now fires EXACTLY ONCE and `v20suite` is `3,125,000 / 3,125,000
+  ARCH`.  The quotable figure is the new one.**  WAVE 24's own text is kept
+  below because a ratchet is only readable against its own history.
+  **DISPOSITION PROPOSED, NOT TAKEN — `3,124,992 / 3,125,000
   ARCH` stays the quotable figure.**
 * ⚠⚠ **THE TWO `VOID` GOLDENS CANNOT BE REPLACED, AND THE REASON IS A GATE
   NOBODY HAS: THE EMITTER AND THE BATCH SCORER ARE IN DIFFERENT IMAGE ERAS.**
@@ -219,7 +291,7 @@ nothing flashed, FLASH #23 intact.
   sweeps **279/283** at `--waits 0/1/2/3`, survivors at `(10, 'busstat')`,
   `(12, 'busstat')`, `(14, 'busstat')` · `v0.2` **347,000/347,000** · `v0.3`
   **3,699,998/3,699,998 [2 excluded]** · `v20suite` **3,124,992/3,125,000 ARCH**
-  with the SAME eight forms · `ss_lint` **232 / 229 flops / 4 whitelist / 0
+  with the SAME eight forms (⚠ **3,125,000/3,125,000 since WAVE 25**) · `ss_lint` **232 / 229 flops / 4 whitelist / 0
   UNMAPPED** · `cutset_lint` 81/0 · `phase_split_lint` 157/779/0 · `r7_lint`
   PASS · `qsf_lint --check` CANONICAL · `core_portlist_lint` 4 configurations ·
   `test_quartus_gate` **302/302** · `test_artifact` **45/45** ·

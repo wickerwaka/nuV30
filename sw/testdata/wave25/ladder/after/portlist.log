@@ -1,0 +1,10 @@
+core_portlist_lint: tb_v30_core / check_core.py:253
+    defines ['V30_BACKDOOR', 'V30_MUXED_AD', 'V30_PFX_ASSERT']  instance `dut`  34 declared, 34 connected  -> OK
+core_portlist_lint: system_large / Verilator (check_ab_sim, tb_sys)
+    defines ['V30_MUXED_AD']  instance `u_core`  24 declared, 24 connected  -> OK
+core_portlist_lint: system_large / FABRIC (nec_test_ucore.qsf VERILOG_MACROs)
+    defines ['SYNTHESIS', 'V30_MUXED_AD']  instance `u_core`  24 declared, 24 connected  -> OK
+core_portlist_lint: tb_demux_min / demux_off_gate.py (the DE-MUXED configuration)
+    defines (none)  instance `dut`  23 declared, 23 connected  -> OK
+
+core_portlist_lint: PASS | every named connection to v30_core is a declared port, in 4 configuration(s)

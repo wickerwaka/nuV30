@@ -1,0 +1,32 @@
+WAVE 25 -- THE CROSS-CASE `fin_ghost` LEAK, MEASURED.
+
+`fin_ghost` is a module-level reg in tb_v30_core.sv and is not cleared at a
+case boundary.  A case whose `dbg_pend` never fell inside its settle window
+would leave the flag armed and let the NEXT case re-latch on its first settle
+clock.  With the WAVE 25 fix in place (`fin_wait <= 0` on the single re-latch),
+a TEMPORARY counter was added at the window-closing F pop -- the same statement
+that latches `fin_regs` -- counting cases that arrive with `fin_ghost` already
+set, and cases that arrive with a previous window still open (`fin_wait != 0`).
+
+  v0.1                 cases   169,000   ghost-leak 0   wait-overlap 0
+  v0.2                 cases   347,000   ghost-leak 0   wait-overlap 0
+  v20suite             cases 3,125,000   ghost-leak 0   wait-overlap 0
+  s10-hltsweep-w0      cases        97   ghost-leak 0   wait-overlap 0
+  s10-hltsweep-w1      cases        95   ghost-leak 0   wait-overlap 0
+  s13-hltsweep-w2      cases        46   ghost-leak 0   wait-overlap 0
+  s13-hltsweep-w3      cases        45   ghost-leak 0   wait-overlap 0
+  v0.1-w1evt           cases     1,200   ghost-leak 0   wait-overlap 0
+  v0.1-w3evt           cases     1,200   ghost-leak 0   wait-overlap 0
+  v0.1-w1evt-biased    cases     1,200   ghost-leak 0   wait-overlap 0
+                       -------------------------------------------------
+                       TOTAL 3,644,883   ghost-leak 0   wait-overlap 0
+
+THE POSITIVE CONTROL is structural and independently measured: the probe site
+is the SAME statement that assigns `fin_regs`.  If it were not reached once per
+case, `fin_regs` would never be latched and every case would FAIL -- and every
+one of those suites scores its registered figure on the same binary.  A count
+of 0 is therefore the predicate being false, not the code being dead.
+
+The counter is NOT in the landed testbench.  A defensive `fin_ghost <= 0` at
+the close was written, measured indistinguishable, and DELIBERATELY NOT LANDED;
+the reasoning and this measurement are in the block's own comment.

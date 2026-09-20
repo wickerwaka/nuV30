@@ -1,0 +1,12 @@
+WAVE 25 -- directed control, AFTER (binary sha256 ca31aeac8d390307...)
+base     TOTAL ARCH: 20/20
+inj0     TOTAL ARCH: 20/20
+inj2     TOTAL ARCH: 20/20
+inj4     TOTAL ARCH: 20/20
+inj6     TOTAL ARCH: 20/20
+inj8     TOTAL ARCH: 20/20
+inj10    TOTAL ARCH: 20/20
+inj12    TOTAL ARCH: 20/20
+inj16    TOTAL ARCH: 20/20
+far64    TOTAL ARCH: 20/20
+null90   TOTAL ARCH: 20/20

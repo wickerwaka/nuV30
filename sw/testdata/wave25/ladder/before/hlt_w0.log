@@ -1,0 +1,5 @@
+[suitemeta] s10-hltsweep-w0: dialect 'absent' -- NO opcode map of its own; DELEGATING to tests/v30/v0.1/metadata.json
+HLT.INT: 48/48 full  (cycles 48, arch 48)
+HLT.RES: 49/49 full  (cycles 49, arch 49)
+
+TOTAL: 97/97 full (cycles 97, arch 97)

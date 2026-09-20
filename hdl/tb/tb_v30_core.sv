@@ -478,14 +478,61 @@ always @(posedge clk) begin
                 fin_wait <= 5'd16;
             end
         end
-        // ghost loads (POP-to-reg data still in flight at the closing F)
-        // complete within the settle window; re-latch everything except
-        // the retired IP (the following NOPs keep retiring)
+        // ------------------------------------------------------------------
+        // THE SETTLE WINDOW.  IT FIRES ONCE.  (WAVE 25)
+        //
+        // The window-closing F pop is the NEXT instruction's opcode pop, and
+        // at that edge the instruction under test has NOT finished
+        // committing: its PSW write lands ON that edge -- so the
+        // `fin_regs <= dbg_regs` above captures the PRE-edge, stale value --
+        // and a POP-to-register's read data can still be in flight behind it.
+        // MEASURED, `v20suite` form `03` case 0: `dbg_regs`' flags read the
+        // case's INITIAL 0xf8c3 at the close and the golden's final 0xf017 one
+        // CPU cycle later.  So the window is load-bearing for ORDINARY
+        // instructions, not only for a ghost load, and deleting it is not an
+        // option.
+        //
+        // `ip` is excluded because the FOLLOWING instruction commits its own
+        // `ip` on the SAME edge on which this one commits its flags; the two
+        // are inseparable in time.  (At the closing pop the live `pc` IS the
+        // retired IP -- F9, ucore_provenance.md sec.18 -- so the close's own
+        // latch already has the right value and must not be disturbed.)
+        //
+        // AND IT MUST FIRE EXACTLY ONCE.  `dbg_pend` is
+        // `(rd_pending != 0) || (rdq_n != 0) || poste` (v30u_eu.sv), and
+        // `poste` PULSES ONCE PER INSTRUCTION -- measured on a three-CPU-cycle
+        // period for the whole 16-cycle window.  This block used to RE-ARM on
+        // every pulse, so every instruction that retired inside the window
+        // wrote the captured final state (five re-latches on a single case).
+        // Invisible on this repo's own suites, whose emitter cannot place a
+        // non-0x90 byte at the retirement point (`emit_suite`'s
+        // `_operand_abuts_code`, margin 8) -- and it was the WHOLE of the
+        // `v20suite` residue.
+        //
+        // THE FALSIFIER IS TWO-SIDED AND DIRECTED: `FF CC` (= `DEC SP`)
+        // injected at the retirement point of 20 PASSING `v20suite` form-`03`
+        // cases scores 0/20 without the `fin_wait <= 0` below, every one with
+        // `sp == exp - 1`, and 20/20 with it; at +2 it is 0/20 and 20/20; at
+        // +4 ... +16 and at +64 it is 20/20 either way.
+        // docs/notes/tb_relatch_{prereg,results}_2026-09-20.md.
+        //
+        // NOT DONE, AND MEASURED RATHER THAN ARGUED: `fin_ghost` is not
+        // cleared at the close, so a case whose `dbg_pend` never fell could
+        // leak an armed flag into the next case.  A directed probe counting
+        // exactly that at the closing pop reads **0 over 3,644,883 cases**
+        // (v0.1 169,000 + v0.2 347,000 + v20suite 3,125,000 + the four HLT
+        // sweeps + three evt cells), and the probe's site is reached once per
+        // case by construction -- it is the same statement that latches
+        // `fin_regs`, without which every case would fail.  A defensive
+        // `fin_ghost <= 0` here would therefore be a line with no measured
+        // effect, and is deliberately NOT added.
+        // ------------------------------------------------------------------
         if (fin_wait != 0) begin
             fin_wait <= fin_wait - 5'd1;
             if (dbg_pend) fin_ghost <= 1;
             else if (fin_ghost) begin
                 fin_ghost <= 0;
+                fin_wait  <= 5'd0;   // captured: the window is CLOSED
                 fin_regs[191:0]   <= dbg_regs[191:0];
                 fin_regs[223:208] <= dbg_regs[223:208];
             end

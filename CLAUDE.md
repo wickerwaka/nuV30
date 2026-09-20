@@ -119,6 +119,64 @@ them).
 
 ## Gate quick reference
 
+### ⚠⚠⚠⚠ READ FIRST — **`v20suite` IS `3,125,000 / 3,125,000 ARCH` SINCE WAVE 25 (2026-09-20).  THE EIGHT WERE ONE LINE OF TESTBENCH.**
+
+`docs/notes/tb_relatch_prereg_2026-09-20.md` /
+`..._results_2026-09-20.md`; the addendum with the authoritative rows is
+`standing_gates.md`'s **WAVE 25 ADDENDUM**.  **`hdl/rtl/` UNTOUCHED — 107
+synthesis inputs sha256-identical before and after and identical to WAVE 23's
+after-manifest, so THE BITSTREAM DID NOT MOVE, NO QUARTUS RUN IS OWED, AND
+FLASH #23 STILL COVERS THE TREE** (`flash_log.jsonl` **26 entries**, untouched).
+**NO BOARD CONTACT OF ANY KIND.**
+
+**THE LAW IS ONE SENTENCE**: *the settle window's re-latch fires EXACTLY ONCE —
+on the first clock after the window-closing F pop at which the EU's outstanding
+work has drained — and then the window closes.*  **The edit is ONE LINE OF
+CODE**, `fin_wait <= 5'd0;` in `hdl/tb/tb_v30_core.sv`'s re-latch arm.
+
+* **WHY**: `dbg_pend` is `(rd_pending != 0) || (rdq_n != 0) || poste`
+  (`v30u_eu.sv:2671`) and **`poste` PULSES ONCE PER INSTRUCTION** — measured on
+  a **three-CPU-cycle period for the whole 16-cycle window** — so the block
+  re-armed and re-latched on every instruction that retired inside it
+  (**five times on a single case**), letting it write the captured final state.
+* ⚠ **THE WINDOW IS LOAD-BEARING; DELETING IT IS NOT THE FIX.**  At the closing
+  F pop the core has NOT finished committing: on `v20suite` `03`/case 0
+  `dbg_regs.flags` still reads the case's INITIAL `0xf8c3` and the core writes
+  the golden's `0xf017` ON THAT EDGE.  **The re-latch is needed by instructions
+  with no ghost load at all**, which the block's old comment did not say.
+* ⚠ **`ip` IS EXCLUDED BECAUSE IT CANNOT BE SEPARATED IN TIME** — the FOLLOWING
+  instruction commits its `ip` on the same edge.  That hand-exclusion was the
+  tell: the author knew later instructions retire inside the window, and every
+  other field they wrote went into the captured state.
+* **THE FALSIFIER IS TWO-SIDED AND DIRECTED** (WAVE 24's rig, unchanged):
+  `FF CC` (= `DEC SP`) at the retirement point of 20 PASSING `03` cases is
+  **0/20 before and 20/20 after**; at `+2` **0/20 → 20/20**; at `+4 … +16` and
+  `+64`, **20/20 both ways**.
+* ⭐ **THE ATTRIBUTION IS A `diff`, NOT AN INFERENCE**: the two 360-form
+  `v20suite` logs differ in **38 lines and no others**.  **8 cases moved, all 8
+  inside WAVE 24's 2,284-case predicate; 0 of the other 3,122,716 moved in
+  either direction.**
+* **THE LADDER IS ZERO-DELTA — 31 BRIEFED LEGS + 11 EXTRA, BOTH SIDES
+  MEASURED**, every scored line byte-identical, `v0.3`'s 355-form log
+  **byte-identical to WAVE 24's registered run** (`644a11c5e09f38ed…`).
+  The only textual differences anywhere are a printed **receipt id**, a
+  Verilator **walltime** banner and a **random temp directory name**.
+* ⚠ **A SECOND LINE WAS WRITTEN, MEASURED AND DELIBERATELY NOT LANDED**:
+  `fin_ghost` is never cleared at a case boundary, and a directed counter
+  measured that leak at **0 over 3,644,883 cases** with a structural positive
+  control.  **A line with a measured effect of zero is not landed.**
+* ⚠ **WHAT IT DOES NOT ESTABLISH**: the goldens are a **uPD70108 (V20)**'s and
+  this core models the **uPD70116 (V30)**.  It proves **the comparator was
+  wrong**, not that the parts agree architecturally where the suite does not
+  reach — and it is **not a cycle claim** (`--arch-only` skips the cycle-row
+  diff and masks the final queue, by design).
+* ⚠ **THE SECOND FIX THE USER ASKED FOR IS NOT IN THIS WAVE.**  The
+  `ea_pair_valid` qualifier in `hdl/rtl/ucore/v30u_eu.sv` (WAVE 24 §6.3) is a
+  SEPARATE wave and **not one byte of it was written here.**
+
+*The WAVE 24 banner follows, SUPERSEDED in its `v20suite` disposition only, and
+kept verbatim because a ratchet is only readable against its own history.*
+
 ### ⚠⚠⚠⚠ READ FIRST — **THE SUITE "KNOWN DIVERGENCES" ARE MOSTLY INSTRUMENTS (WAVE 24, 2026-09-20).  AND `tests/v30/v0.3` AND `v0.2` CAN NO LONGER BE RE-EMITTED AT ALL.**
 
 `docs/notes/suite_divergence_prereg_2026-09-20.md` /

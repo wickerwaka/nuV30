@@ -1719,7 +1719,7 @@ The measured replacement figures are:
 | `v0.1` | 169,000 / 169,000 |
 | `v0.2` | **347,000 / 347,000** (and identically under `--raw-flags`) |
 | `v0.3` | **3,699,998 / 3,700,000** (list disabled) · **3,699,997 / 3,699,997** (list applied) |
-| `v20suite` | **3,124,992 / 3,125,000** ARCH |
+| `v20suite` | **3,124,992 / 3,125,000** ARCH — ⚠ **`3,125,000 / 3,125,000` SINCE WAVE 25**, 2026-09-20: the eight were the testbench's settle-window re-latch, not the engine (`tb_relatch_results_2026-09-20.md`).  The WAVE 22 figure stands as WAVE 22's measurement |
 | `mod3_illegal` | cycles **128/128** · ARCH **0/128**, confinement CONFIRMED |
 
 ⚠ **AND THE REPLACEMENT IS NOT A GATE.**  `v0.2`, `v0.3` and `v20suite` are NOT
