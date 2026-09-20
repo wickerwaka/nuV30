@@ -1,0 +1,49 @@
+  LEDGER   sw/testdata/fz2/fz2_failure_ledger_f23_2026-09-19.json   (fz2_replay fidelity reference)
+           2026-09-20T00:02:03Z   102 failures / denominator 3837   era sof 0f4fcfa5cd55…
+
+  --- FABRIC ERA GUARD ---
+    bitstream   0f4fcfa5cd55bc32…  flashed 2026-09-19T23:48:27Z  git 6de3e322b5-dirty
+    receipt     5f686aeb054522e8…  FLASH#23 RETENTION draw@seed1-seed1
+    its inputs  99/99 hash IDENTICAL in the tree at HEAD
+    FABRIC ERA GUARD: PASS
+
+  DUT tb_sys   hdl/tb/obj_dir_sys_ret/Vtb_sys
+               receipt 215e4a2d8ccc4c937b6535403c87dce0de6376ac95083bd9f783d3a47da885f4
+               tree    fa352669b52087d8…
+  git          6de3e322b5-dirty
+
+  population   1 seeds with banked socket rows (1 fabric-FAIL, 0 fabric-PASS)
+  ran in 1s, 0 errors
+
+=== THE FIDELITY TABLE: offline verdict vs FABRIC verdict ===
+
+  --- tb_sys REPLAY (both directives + overlay + the seed's own wait source) ---
+                            replay PASS  replay FAIL
+    fabric PASS                       0            0
+    fabric FAIL                       0            1
+    AGREEMENT 1 / 1 = 100.0 %
+    of the 1 both-FAIL seeds, first_bad IDENTICAL on 1
+
+  --- VERDICT agreement by WAIT MODE ---
+                            tb_sys
+    wvec               1 /   1  100%
+
+  --- VERDICT agreement by WHETHER THE SEED HAS A STIMULUS EVENT (the one-scheduler blindness) ---
+                                    tb_sys
+    stimulus event             1 /   1  100%
+
+  --- VERDICT agreement by LEDGER FAMILY ---
+                                                  tb_sys
+    C2 INTA-vectored delivery                1 /   1  100%
+
+  --- FIRST-BAD-ROW agreement by WAIT MODE ---
+                            tb_sys
+    wvec               1 /   1  100%
+
+  --- FIRST-BAD-ROW agreement by WHETHER THE SEED HAS A STIMULUS EVENT (the one-scheduler blindness) ---
+                                    tb_sys
+    stimulus event             1 /   1  100%
+
+  --- FIRST-BAD-ROW agreement by LEDGER FAMILY ---
+                                                  tb_sys
+    C2 INTA-vectored delivery                1 /   1  100%

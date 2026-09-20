@@ -1,0 +1,22 @@
+== C-1: A-12 EXCLUDED 3 `ps3_8080` seed(s) from every scored rate, NUMERATOR AND DENOMINATOR (census/raw:0 census/soup:1 enriched/raw:0 enriched/soup:2)  [EXC-1, prereg §31]
+== C-3 / C-5: regenerating every image
+  3840 seeds in 11.3s
+
+bar   verdict        measured
+C-1   MET (rate clauses VALIDATED on fz2v/960 -- soup 98.12 %, raw 80.83 %; §16.2 / A-9) {"per_tier": {"census/soup": {"n": 479, "reached": 472, "pct": 98.54, "excluded_ps3_8080": 1, "n_incl_excluded": 480, "disposition
+C-2   MET            {"dumps": 3512, "magic_constant": true, "distinct": {"AW": 2853, "MAGIC": 1, "PC": 3092, "PS": 3110, "PSW": 199, "SS": 3337, "SP":
+C-3   MET            {"bad_0f_pairs": 0, "seeds": 3840, "ps3_8080": 3, "ps3_scoreable": true, "generation_ok": true, "R1_detected": {"retained_scored":
+C-4   MET            {"distinct_eras": 1, "absent": 0, "incomplete": 0, "build_stale": 0, "lines": 3840}
+C-5   MET            {"gen_drift": 0, "wvec_mismatch": 0, "seeds": 3840}
+C-6   MISSED         {"holds_in_corpus": {"2": 1241, "300": 679}, "hold_rows_exact": 4637, "hold_rows_off": 1, "control_leg": {"stage": "fz2 C-6 contro
+C-7   MET            {"scored": 3840, "max": 957, "at_or_over": 0, "ks": []}
+C-8   MET            {"div_guards": 63, "unpinned": 0, "unpinned_detail": []}
+C-9   MET            {"seeds": 192, "stable": 192, "unstable": 0, "errors": 0}
+C-10  MET            {"quarantines": 0, "run_error_lines": 0, "consecutive_quarantine_break_at": null, "halted": null, "c9_errors": 0}
+C-11  MET            {"census_banked": 480, "census_expected": 480, "census_exact": true, "enriched_banked": 143, "capped": {"census": 0, "enriched": 0
+
+census: captured 960  rows-exact 97.4  arch-exact 90.0  unscoreable 86   (three decompositions, never one aggregate)
+
+enriched: captured 2880  rows-exact 97.22  arch-exact 90.56  unscoreable 247   (three decompositions, never one aggregate)
+
+FZ2 BARS: 10/11 MET  NOT MET: C-6

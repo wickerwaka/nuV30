@@ -1,0 +1,392 @@
+{
+ "stage": "fz2 preflight",
+ "host": "root@mister-nec",
+ "gen_git": "d5f5fca539",
+ "seed_list_sha256": "45d25f31a325c4965da81117d5f4217b86487aa1abb0078faed26a72ed9bec32",
+ "ts": "2026-09-19T14:24:41Z",
+ "div_guards": [
+  {
+   "tag": "preflight",
+   "readback": "div=8 (4 MHz), commanded by this connection",
+   "state": "PINNED",
+   "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
+   "ts": "2026-09-19T14:24:47Z"
+  },
+  {
+   "tag": "preflight-end",
+   "readback": "div=8 (4 MHz), commanded by this connection",
+   "state": "PINNED",
+   "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
+   "ts": "2026-09-19T14:24:48Z"
+  }
+ ],
+ "capture_path_gaps": [],
+ "uptime": "14:24:41  up 68 days 18:50,  0 users,  load average: 0.00, 0.00, 0.00",
+ "board_procs": [],
+ "single_writer": "OK",
+ "local_serve_procs": [],
+ "flash_log_tail": {
+  "sha256": "1ab9a37149e6e90fe499c54bca51622840717db776aa3f7d931aeff12ee2b53f",
+  "ts": "2026-09-19T14:23:40Z",
+  "git_describe": "d5f5fca539-dirty",
+  "verify": "OK"
+ },
+ "resident_rig": {
+  "gap": [],
+  "why": "receipt a43b7a487bb6\u2026, 'FLASH#22 RETENTION draw@seed1-seed1'",
+  "receipt": "a43b7a487bb63bbd77aa48fd1c51aa0d92a1d8f8b335130a50cbd91e19b7c06a",
+  "flash_sha256": "1ab9a37149e6e90fe499c54bca51622840717db776aa3f7d931aeff12ee2b53f"
+ },
+ "manifests": {
+  "fz2c": {
+   "sof_sha256": "1ab9a37149e6e90fe499c54bca51622840717db776aa3f7d931aeff12ee2b53f",
+   "flash_ts": "2026-09-19T14:23:40Z",
+   "flash_git": "d5f5fca539-dirty",
+   "flash_verify": "OK",
+   "rtl": {
+    "receipt_id": "a43b7a487bb63bbd77aa48fd1c51aa0d92a1d8f8b335130a50cbd91e19b7c06a",
+    "inputs_sha256": "c3305d40f62e497fbf8141fad69f8300c39a196ad1971cdcd4363a0c34e99fff",
+    "n_files": 99,
+    "label": "FLASH#22 RETENTION draw@seed1-seed1"
+   },
+   "gen_git": "d5f5fca539",
+   "rig_evt_hold_bits": 12,
+   "rules_version": "1.0"
+  },
+  "fz2e": {
+   "sof_sha256": "1ab9a37149e6e90fe499c54bca51622840717db776aa3f7d931aeff12ee2b53f",
+   "flash_ts": "2026-09-19T14:23:40Z",
+   "flash_git": "d5f5fca539-dirty",
+   "flash_verify": "OK",
+   "rtl": {
+    "receipt_id": "a43b7a487bb63bbd77aa48fd1c51aa0d92a1d8f8b335130a50cbd91e19b7c06a",
+    "inputs_sha256": "c3305d40f62e497fbf8141fad69f8300c39a196ad1971cdcd4363a0c34e99fff",
+    "n_files": 99,
+    "label": "FLASH#22 RETENTION draw@seed1-seed1"
+   },
+   "gen_git": "d5f5fca539",
+   "rig_evt_hold_bits": 12,
+   "rules_version": "1.0"
+  }
+ },
+ "regen_sample": {
+  "per_stratum": [
+   {
+    "j": 0,
+    "stratum": "cen/soup/noevt/fix0",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 1,
+    "stratum": "cen/soup/noevt/wrand3",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 2,
+    "stratum": "cen/soup/noevt/wvec-uni",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 3,
+    "stratum": "cen/soup/stim/fix0",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 4,
+    "stratum": "cen/soup/stim/wrand3",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 5,
+    "stratum": "cen/soup/stim/wvec-uni",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 6,
+    "stratum": "cen/raw/noevt/fix0",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 7,
+    "stratum": "cen/raw/noevt/wrand3",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 8,
+    "stratum": "cen/raw/noevt/wvec-uni",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 9,
+    "stratum": "cen/raw/stim/fix0",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 10,
+    "stratum": "cen/raw/stim/wrand3",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 11,
+    "stratum": "cen/raw/stim/wvec-uni",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 12,
+    "stratum": "enr/soup/noevt/fix0",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 13,
+    "stratum": "enr/soup/noevt/fix1",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 14,
+    "stratum": "enr/soup/noevt/fix2",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 15,
+    "stratum": "enr/soup/noevt/fix3",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 16,
+    "stratum": "enr/soup/noevt/wrand1",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 17,
+    "stratum": "enr/soup/noevt/wrand3",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 18,
+    "stratum": "enr/soup/noevt/wrand7",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 19,
+    "stratum": "enr/soup/noevt/wrand15",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 20,
+    "stratum": "enr/soup/noevt/wvec-uni",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 21,
+    "stratum": "enr/soup/stim/fix0",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 22,
+    "stratum": "enr/soup/stim/fix1",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 23,
+    "stratum": "enr/soup/stim/fix2",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 24,
+    "stratum": "enr/soup/stim/fix3",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 25,
+    "stratum": "enr/soup/stim/wrand1",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 26,
+    "stratum": "enr/soup/stim/wrand3",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 27,
+    "stratum": "enr/soup/stim/wrand7",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 28,
+    "stratum": "enr/soup/stim/wrand15",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 29,
+    "stratum": "enr/soup/stim/wvec-uni",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 30,
+    "stratum": "enr/raw/noevt/fix0",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 31,
+    "stratum": "enr/raw/noevt/fix1",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 32,
+    "stratum": "enr/raw/noevt/fix2",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 33,
+    "stratum": "enr/raw/noevt/fix3",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 34,
+    "stratum": "enr/raw/noevt/wrand1",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 35,
+    "stratum": "enr/raw/noevt/wrand3",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 36,
+    "stratum": "enr/raw/noevt/wrand7",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 37,
+    "stratum": "enr/raw/noevt/wrand15",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 38,
+    "stratum": "enr/raw/noevt/wvec-uni",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 39,
+    "stratum": "enr/raw/stim/fix0",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 40,
+    "stratum": "enr/raw/stim/fix1",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 41,
+    "stratum": "enr/raw/stim/fix2",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 42,
+    "stratum": "enr/raw/stim/fix3",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 43,
+    "stratum": "enr/raw/stim/wrand1",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 44,
+    "stratum": "enr/raw/stim/wrand3",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 45,
+    "stratum": "enr/raw/stim/wrand7",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 46,
+    "stratum": "enr/raw/stim/wrand15",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   },
+   {
+    "j": 47,
+    "stratum": "enr/raw/stim/wvec-uni",
+    "sampled": 4,
+    "bad_0f_pairs": 0
+   }
+  ],
+  "hits": 0,
+  "seeds": 192
+ },
+ "rig_readback_check": {
+  "ok": true,
+  "registers": [
+   "EVT_ADDR[0]",
+   "EVT_ADDR[1]",
+   "EVT_ADDR[2]",
+   "EVT_CFG[0]",
+   "EVT_CFG[1]",
+   "EVT_CFG[2]",
+   "TVEC",
+   "VECCTL"
+  ]
+ },
+ "check_ab_hw": {
+  "rc": 0,
+  "tail": [
+   "== chip position (use_core=0): boot vs golden ==",
+   "chip-vs-golden: MATCH over 800 rows",
+   "",
+   "== core position (use_core=1): boot ==",
+   "core-vs-chip:   MATCH over 800 rows",
+   "core-vs-golden: MATCH over 800 rows"
+  ]
+ },
+ "board_leg": true,
+ "verdict": "OK"
+}

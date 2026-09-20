@@ -1,0 +1,5 @@
+check_fuzz_bank: TB leg /home/wickerwaka/src/nec_test/hdl/tb/obj_dir/Vtb_v30_core
+fuzz_accept: rule type 'open_bus_escape' is RETIRED and is NOT loaded -- retired 2026-08-11 by user ruling -- there is no open bus on this rig (test_mem.sv mirrors the image across the 1 MB space) and the rule's `ad_data == addr & 0xFFFF` test is the address phase of a multiplexed bus, true on 140,741 of 140,741 chip CODE T1 rows.  The fuzz-v2 vocabulary is `escaped` (fuzz_classify.escaped_code_region).  See the tombstone in sw/fuzz_accept.py.
+check_fuzz_bank: SUPERSEDED banks EXCLUDED: 3242 seeds in 4 campaign(s) (mc1:1295 mc2:1294 t30-brkem:85 t30-raw:568) -- pass --include-superseded to include them (docs/notes/invalidation_ledger.md § SUP-1)  |  EXCLUDED seeds: 2 seed(s) in 1 ACTIVE campaign(s) (fz2e:2) -- pass --include-excluded to include them (docs/notes/invalidation_ledger.md § EXC-1)
+
+check_fuzz_bank: PASS | 621 banked seeds | stable 621 improved 0 worse 0 | gen_drift 0 regen_err 0 | float-floor 0 | new-sig TIMING 0

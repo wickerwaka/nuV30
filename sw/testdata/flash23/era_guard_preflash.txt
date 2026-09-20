@@ -1,0 +1,12 @@
+  LEDGER   sw/testdata/fz2/fz2_failure_ledger_f22_2026-09-19.json   (fz2_replay fidelity reference)
+           2026-09-19T14:37:19Z   102 failures / denominator 3838   era sof 1ab9a37149e6…
+
+  --- FABRIC ERA GUARD ---
+    bitstream   1ab9a37149e6e90f…  flashed 2026-09-19T14:23:40Z  git d5f5fca539-dirty
+    receipt     a43b7a487bb63bbd…  FLASH#22 RETENTION draw@seed1-seed1
+    its inputs  98/99 hash IDENTICAL in the tree at HEAD
+      MOVED     hdl/rtl/ucore/v30u_eu.sv   <-- RTL
+
+  ERA MISMATCH -- REFUSING TO SCORE.  An offline replay of RTL that is not the RTL in the socket is a
+  statement about two trees.  Re-flash, or pass --no-fabric-era-guard and say so beside the number.
+

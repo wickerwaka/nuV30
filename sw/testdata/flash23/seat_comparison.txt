@@ -1,0 +1,82 @@
+=== C-4 / C-5 / C-6 / C-7 ===
+F22 failures 102  F23 failures 102
+corpus F23 : {"campaigns": ["fz2c", "fz2e"], "seeds": 3840, "discards": 3, "denominator": 3837, "matched": 3735, "failures": 102, "seed_match_pct": 97.3417, "seed_match_pct_incl_discards": 97.2656, "rows_compared": 11326175, "rows_diverging": 93955, "row_match_pct": 99.1705}
+shared 102 MOVED seats 0 []
+ENTERED 0 []
+LEFT    0 []
+flips   0
+first_bad EARLIER anywhere: 0 []
+F23 SEAT DIGEST 102 c411a808926ca3bc392700b5c09e6f6a2c96a8fe41a7ad90597a632fb95d65f8
+F22 SEAT DIGEST 102 c411a808926ca3bc392700b5c09e6f6a2c96a8fe41a7ad90597a632fb95d65f8
+
+=== C-8 the row metric ===
+sum F22 94014 -> sum F23 94014  reconciled prediction 94014  UNEXPLAINED 0
+
+=== C-9 / C-9b ===
+discards F23: [('fz2c/402059', 'soup'), ('fz2e/509069', 'soup'), ('fz2e/516044', 'soup')]
+discards F22: [('fz2e/509069', 'soup'), ('fz2e/515039', 'soup')]
+overlay F23: ['fz2c/406073', 'fz2c/407064', 'fz2e/518039', 'fz2e/518044']
+   A1 qs-pop one clock late                         5 ->   5 
+   A2 qs-pop other offset                           4 ->   4 
+   A3 cycle-time slip (non-qs)                     15 ->  15 
+   B1 HALT-cycle address                            1 ->   1 
+   B2 HALT entry (one leg only)                     2 ->   2 
+   C1 vector-1 trap MISSED by core                  1 ->   1 
+   C2 INTA-vectored delivery                        8 ->   8 
+   C3 NMI(vec2) entry                               1 ->   1 
+   C4 other-vector delivery                         1 ->   1 
+   D1 chip fetched, core did not                    8 ->   8 
+   D2 core fetched, chip did not                    7 ->   7 
+   D3 both fetched, different address               4 ->   4 
+   E1 same-status data cycle, different address    38 ->  38 
+   E2 different-status data cycle                   2 ->   2 
+   NEW/UNCLASSIFIED                                 5 ->   5 
+
+=== C-10..C-15 named non-movers ===
+C-10 KM three
+    fz2c/404041    F22 ABSENT           F23 ABSENT           OK
+    fz2e/501066    F22 ABSENT           F23 ABSENT           OK
+    fz2e/513019    F22 ABSENT           F23 ABSENT           OK
+C-11 phantom-T1
+    fz2c/404071    F22 (1, 243)         F23 (1, 243)         OK
+    fz2e/514044    F22 (1, 234)         F23 (1, 234)         OK
+    fz2e/516001    F22 (1, 583)         F23 (1, 583)         OK
+C-12 64.1 four
+    fz2c/405002    F22 (840, 527)       F23 (840, 527)       OK
+    fz2c/405013    F22 (921, 1331)      F23 (921, 1331)      OK
+    fz2c/405072    F22 (891, 636)       F23 (891, 636)       OK
+    fz2e/512056    F22 (984, 1475)      F23 (984, 1475)      OK
+C-13 W7-4 one
+    fz2c/410047    F22 (3589, 227)      F23 (3589, 227)      OK
+    fz2e/535027    F22 ABSENT           F23 ABSENT           OK
+C-14 M10 LEA-mod3
+    fz2c/406054    F22 (3141, 470)      F23 (3141, 470)      OK
+    fz2c/408019    F22 (1087, 1617)     F23 (1087, 1617)     OK
+    fz2e/518038    F22 (194, 429)       F23 (194, 429)       OK
+    fz2e/522019    F22 (3075, 396)      F23 (3075, 396)      OK
+    fz2e/524034    F22 (3479, 457)      F23 (3479, 457)      OK
+    fz2e/530001    F22 (20, 442)        F23 (20, 442)        OK
+    fz2e/520066    F22 (8, 1249)        F23 (8, 1249)        OK
+C-14b F20 movers
+    fz2c/406063    F22 (3165, 249)      F23 (3165, 249)      OK
+    fz2e/528010    F22 (7, 1383)        F23 (7, 1383)        OK
+C-14c F21 flippers
+    fz2e/513024    F22 ABSENT           F23 ABSENT           OK
+    fz2e/526056    F22 ABSENT           F23 ABSENT           OK
+    fz2e/527051    F22 ABSENT           F23 ABSENT           OK
+C-14d F22 departures
+    fz2c/407000    F22 ABSENT           F23 ABSENT           OK
+    fz2e/514072    F22 ABSENT           F23 ABSENT           OK
+    fz2e/516065    F22 ABSENT           F23 ABSENT           OK
+C-14e F22 entrants
+    fz2e/516077    F22 (10, 1214)       F23 (10, 1214)       OK
+    fz2e/521006    F22 (8, 369)         F23 (8, 369)         OK
+    fz2e/529058    F22 (4, 1799)        F23 (4, 1799)        OK
+    fz2e/532032    F22 (2, 3029)        F23 (2, 3029)        OK
+    fz2e/534041    F22 (1402, 1090)     F23 (1402, 1090)     OK
+C-15 falsifier
+    fz2c/404040    F22 ABSENT           F23 ABSENT           OK
+
+=== X-8: sha256 over sorted (seed, capture_sha256) pairs ===
+102 failures carry a capture_sha256: True
+6b73be02d28eb887e079184e506c653e83fc816b80414b17a2e42e392732b5e7

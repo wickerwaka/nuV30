@@ -1,0 +1,24 @@
+  LEDGER   sw/testdata/fz2/fz2_failure_ledger_f23_2026-09-19.json   (IMMATERIAL disposition)
+           2026-09-20T00:02:03Z   102 failures / denominator 3837   era sof 0f4fcfa5cd55…
+
+== IMMATERIAL falsifiers over 102 ledger failures (denominator 3837, era sof 0f4fcfa5cd55bc32…)
+   members 22   non-members 80
+   G1 DUMP PROOF     : 0 / 20 seeds without a two-sided dump take the class  [PASS]
+   G2 DUMP IDENTITY  : 0 / 32 seeds whose 15 words differ take the class  [PASS]
+   G3 SCHEDULE       : 0 / 72 seeds whose schedule moved take the class  [PASS]
+   G4 NOT UNIVERSAL  : FALSE on 80 / 102 entries  [PASS]
+      why not, by first failing clause: {'cycle_starts': 28, 'arch': 32, 'no_dump_proof': 20}
+   G5 CONTROLS       : C-ROW 102 / 102 · C-ARCH 102 / 102  [PASS]
+   G6 THE CENSUS     : 4 / 8 registered cells disagree with the derivation  [FAIL]
+     ** FUNCTIONAL: doc 44 != derived 41
+     ** TIMING: doc 30 != derived 28
+     ** UNSCOREABLE: doc 10 != derived 11
+     ** total: doc 106 != derived 102
+   G7 THE DOCUMENT   : 1 / 23 disagreements doc vs derivation  [FAIL]
+     ** WORKING-RESIDUE headline (84, 106, 22) != derived (80, 102, 22)
+   G8 NO FORK        : 0 / 102 entries where the clauses and the census disagree (0 not askable, controls failed)  [PASS]
+
+   the working residue: 80 = 102 - 22   (41 FUNCTIONAL + 28 TIMING + 11 UNSCOREABLE)
+   NOT dispositioned, and printed every time: UNSCOREABLE 11 · TIMING_RECONVERGED 7
+
+IMMATERIAL FALSIFIERS: FAIL
