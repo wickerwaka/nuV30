@@ -1627,9 +1627,32 @@ them against `fb9365c01c`.
 ### GATE STATUS — what moved, and what did not
 
 The full BEFORE/AFTER table is `docs/notes/fsm_removal_results_2026-09-19.md`
-§Z-5.  Headline: **the live ladder is ZERO-DELTA**, and the only legs that moved
-are the ones this entry retires, plus `check_boot --timed` (RET-1's, corrected)
-and `test_quartus_gate` (its E1 tests were re-registered onto the new bar).
+§Z-5, with both logs committed at `sw/testdata/wave21/{before,after}_ladder.txt`.
+
+**THE LIVE LADDER IS ZERO-DELTA: 23 legs SAME, 0 MOVED.**  `check_core
+--opcodes all --cases 0` **169,000 / 169,000** at `--ce-div` 2, 3, 4 **and** 8
+with div 1 still refused · the exact 181 (`FA` **500** · `FB` **500** ·
+`INT.FB` **200**) · the four HLT sweeps at `--waits 0/1/2/3`
+**97 · 93 · 45 · 44 = 279 / 283** · `r7_lint` PASS · `ss_lint` **232 / 229
+flops / 4 whitelist / 0 UNMAPPED, `SS_VERSION` 0x8F, `SS_TAG` 0x8FE8** ·
+`cutset_lint` **PASS 81 / 0** · `phase_split_lint` **157 / 779 / 0** ·
+`demux_off_gate` PASS · `test_artifact` **45 / 45** · `ucrom_mif_check` PASS ·
+`check_ucore_tables` (G0) **PASS, 9,988 entries** · `chain_lfsr_gate` **PASS
+with its four signatures BYTE-IDENTICAL** (`1d01c9b269ffaa94` ·
+`b39b040a98b28e5d` · `0997b773cd99c030` · `d05b6c3c3d9fbe78`, and every
+`ce_clocks`/`g0` count with them) · `chainflat_relocation_check` **9 / 9** ·
+`check_boot` **220 and 400 MATCH** · `check_ab_sim --core ucore` **187 rows
+MATCH** · `ghost_launch_law score` **200 / 200**.
+
+**FOUR LEGS CHANGED AND ALL FOUR ARE THIS ENTRY'S OWN BUSINESS**:
+`check_fuzz_bank` (RETIRED, replaced by nothing), **E1** (RETIRED, half
+replaced), `core_portlist_lint` (RE-POINTED, 2 → 4 configurations), and
+`test_quartus_gate` **287 → 302 / 302** (+15: Q18, the new bar's falsifier,
+pre-registered as a possible rise).
+
+⚠ **`check_boot --timed 220`/`400` was DEAD ON BOTH SIDES** — a RET-1 casualty
+this entry's §"WHAT ELSE CHANGED" documents, and the reason the rows above name
+`check_boot.py 220` / `400` instead.
 
 ### THE FALSIFIER, registered with the entry
 

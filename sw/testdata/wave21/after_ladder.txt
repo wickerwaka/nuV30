@@ -1,0 +1,33 @@
+=== WAVE 21 AFTER  2026-09-20T04:26:28Z  HEAD=a09f34defd
+cc_div4                                  rc=0  TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+cc_div2                                  rc=0  TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+cc_div3                                  rc=0  TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+cc_div8                                  rc=0  TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+cc_div1                                  rc=2    docs/notes/ce_contract_correction_prereg_2026-08-13.md §2.
+cc_FA                                    rc=0  TOTAL: 500/500 full (cycles 500, arch 500)
+cc_FB                                    rc=0  TOTAL: 500/500 full (cycles 500, arch 500)
+cc_INTFB                                 rc=0  TOTAL: 200/200 full (cycles 200, arch 200)
+hlt_w0                                   rc=0  TOTAL: 97/97 full (cycles 97, arch 97)
+hlt_w1                                   rc=1  TOTAL: 93/95 full (cycles 93, arch 95)
+hlt_w2                                   rc=1  TOTAL: 45/46 full (cycles 45, arch 46)
+hlt_w3                                   rc=1  TOTAL: 44/45 full (cycles 44, arch 45)
+r7_lint                                  rc=0  === r7_lint: PASS   (0 undeclared carrier(s), 0 undeclared unresolved, 0 `stop` site(s))
+ss_lint                                  rc=0  ss_flopcensus: PASS (229 architectural flops, all SSA-mapped or whitelisted; 4 whitelist entries)
+cutset                                   rc=0  === cutset_lint: PASS   (81 members / 0 violations)
+phasesplit                               rc=0  === phase_split_lint: PASS   (157 members / 779 bits / 0 violations)
+demux_off                                rc=0  === demux_off_gate: PASS -- the de-muxed core builds and runs, the two muxed ports are GONE, and the define is what removes them
+test_artifact                            rc=0      through an irrelevant change.  NON-VACUOUS.
+test_qgate                               rc=0  === test_quartus_gate: PASS
+ucrom_mif                                rc=0  ucrom_mif_check: PASS -- every emitted microcode table matches its .hex word for word
+g0_tables                                rc=0  check_ucore_tables: PASS -- G0 GREEN (1028 rows + 8192 micro-addresses + 768 PLA entries = 9988 entries byte-identical to the frozen `v30sim dump-tables` reference, on both legs)
+chain_lfsr                               rc=0  chain_lfsr_gate: PASS -- CHAIN_MAX 7, observed depth [6], 0 overflows, 4 seeds x 400000 clocks
+chainflat                                rc=0  chainflat_relocation_check: PASS -- 9 arms, one copy each, byte-identical to aba01feb07, reconstruction exact
+check_boot220                            rc=0  BOOT REPLAY MATCHES over 220 rows from RESET release
+check_boot400                            rc=0  BOOT REPLAY MATCHES over 400 rows from RESET release
+check_ab_sim                             rc=0  AB SIM MATCHES CHIP BOOT over 187 rows from RESET release
+ghost_law                                rc=0  == ALL THREE POPULATIONS: 200/200 = 100.0 %
+qsf_lint                                 rc=0  qsf_lint: nec_test_ucore.qsf is CANONICAL (0 materialised assignments, one file list, one output directory)
+fuzz_bank                                rc=1      leg is a DIFFERENT MEASUREMENT: re-register, never re-label.
+boot_timed                               rc=1    ============================================================
+portlist                                 rc=0  core_portlist_lint: PASS | every named connection to v30_core is a declared port, in 4 configuration(s)
+=== AFTER ucore ladder done 2026-09-20T04:34:37Z

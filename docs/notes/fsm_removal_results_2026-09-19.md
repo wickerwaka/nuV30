@@ -292,7 +292,61 @@ FLASH #21 (v)/(vi) debt and every other pre-existing fabric debt are unchanged.
 
 ## §Z-5 THE LIVE LADDER — BEFORE SIDE TAKEN FIRST
 
-**Z-5 RESULTS TABLE**
+**BOTH SIDES MEASURED IN THIS SESSION.  BEFORE at `6c3de357d9` (the
+pre-registration commit, the FSM core still in the tree); AFTER at `a09f34defd`
+(the core, the FSM Quartus revision and the TB's probe block all gone).  Both
+logs are committed at `sw/testdata/wave21/{before,after}_ladder.txt`.**
+
+| leg | BEFORE | AFTER | |
+|---|---|---|---|
+| `check_core --opcodes all --cases 0 --ce-div 4` | 169,000 / 169,000 | **169,000 / 169,000** | SAME |
+| ` … --ce-div 2` | 169,000 / 169,000 | **169,000 / 169,000** | SAME |
+| ` … --ce-div 3` | 169,000 / 169,000 | **169,000 / 169,000** | SAME |
+| ` … --ce-div 8` | 169,000 / 169,000 | **169,000 / 169,000** | SAME |
+| ` … --ce-div 1` | REFUSED, exit 2, clause cited | **REFUSED, exit 2** | SAME |
+| **the exact 181** — `FA` | 500 / 500 | **500 / 500** | SAME |
+| ` ` `FB` | 500 / 500 | **500 / 500** | SAME |
+| ` ` `INT.FB` | 200 / 200 | **200 / 200** | SAME |
+| the four HLT sweeps, `--waits 0/1/2/3` | 97 · 93 · 45 · 44 = **279 / 283** | **97 · 93 · 45 · 44 = 279 / 283** | SAME |
+| `r7_lint` | PASS — 0 carriers / 0 unresolved / 0 `stop` sites | **PASS, identical** | SAME |
+| `ss_lint` | PASS — 109×2 BIU + 122×2 EU + tag = **232**, 229 flops, 4 whitelist, 0 UNMAPPED, `SS_VERSION` 0x8F, `SS_TAG` 0x8FE8 | **identical** | SAME |
+| `cutset_lint` | PASS — 81 members / 0 violations | **PASS 81 / 0** | SAME |
+| `phase_split_lint` | PASS — 157 members / 779 bits / 0 violations | **PASS 157 / 779 / 0** | SAME |
+| `demux_off_gate` | PASS | **PASS** | SAME |
+| `test_artifact` | 45 / 45, NON-VACUOUS | **45 / 45** | SAME |
+| `ucrom_mif_check` | PASS | **PASS** | SAME |
+| **`check_ucore_tables` (G0)** | PASS — **9,988 entries** byte-identical on both legs | **PASS, 9,988** | SAME |
+| `chain_lfsr_gate` | PASS — `CHAIN_MAX` 7, depth [6], 0 overflows, sigs `1d01c9b269ffaa94` · `b39b040a98b28e5d` · `0997b773cd99c030` · `d05b6c3c3d9fbe78` | **PASS, and ALL FOUR SIGNATURES BYTE-IDENTICAL**, with every `ce_clocks` and `g0` count identical too | SAME |
+| `chainflat_relocation_check` | PASS — 9 arms, one copy each | **PASS 9 / 9** | SAME |
+| `check_boot 220` (the RTL leg) | MATCH over 220 rows | **MATCH over 220 rows** | SAME ⚠ |
+| `check_boot 400` (the RTL leg) | MATCH over 400 rows | **MATCH over 400 rows** | SAME ⚠ |
+| `check_ab_sim --core ucore` | MATCH over 187 rows | **MATCH over 187 rows** | SAME |
+| `ghost_launch_law score` | 200 / 200 = 100.0 % on all three populations | **200 / 200** | SAME |
+| `core_portlist_lint` | PASS — the two cores' port lists agree in 2 configurations | **PASS — every named connection is a declared port, in 4 configurations** | ⚠ **RE-POINTED**, §D-12 / RET-2 |
+| `test_quartus_gate` | 287 / 287 | **302 / 302** | ⚠ **+15, PRE-REGISTERED** — Q18 is the new E1's falsifier |
+| E1 | `gen_ucore_qsf --check` PASS | **`qsf_lint --check` PASS** | ⚠ **RETIRED AND REPLACED**, §Z-2 |
+| **`check_fuzz_bank`** | **PASS \| 621 \| stable 621 improved 0 worse 0 \| gen_drift 0 regen_err 0 \| float-floor 0 \| new-sig TIMING 0** | **REFUSES — `FsmCoreRetired`** | ⚠ **FORMALLY RETIRED**, RET-2, replaced by NOTHING |
+| `check_boot --timed 220` / `400` | **already DEAD — `simbin.ModelRetired`** | **`ModelRetired`** | ⚠ a RET-1 casualty that RET-1 recorded as green — §D-5 |
+
+**THE LIVE LADDER IS ZERO-DELTA.  Twenty-three legs SAME, ZERO moved, and the
+only four that changed are the four this wave formally disposes of** — two
+retirements (`check_fuzz_bank`, E1), one re-pointing (`core_portlist_lint`) and
+one deliberate rise (`test_quartus_gate` 287 → 302, the new bar's falsifier).
+
+⚠ **THE TWO `check_boot` ROWS CARRY A ⚠ FOR A REASON THAT IS NOT THIS WAVE'S.**
+The BEFORE column for them was measured on `check_boot.py 220` / `400`, the RTL
+legs — **not** on `check_boot.py --timed 220`, which is what `CLAUDE.md`'s quick
+reference printed and which was DEAD on both sides.  Measuring the registered
+spelling would have scored **two REDs on the BEFORE side**, and the first
+instrument this wave pointed at that row found it.  §D-5.
+
+⚠ **AND THE HLT SWEEPS' `--waits` TRAP IS STILL LIVE AND WAS OBEYED.**  Run
+without `--waits 1/2/3` the three waited suites read `0 / 0 / 0` and look like a
+catastrophic regression with every failure at `(1, 'seg')`
+(`ghost8f_read_results_2026-08-09.md` §10.2).  Both columns above pass
+`--waits 0/1/2/3`.
+
+**Z-5: MET.**
 
 ---
 
