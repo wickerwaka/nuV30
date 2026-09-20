@@ -1,0 +1,119 @@
+{
+ "rig": "sw/b2_ea_lane.py",
+ "truth_source": "SOCKET (real chip, use_core=False)",
+ "divider_commanded": "# CLOCK DIVIDER: div=8 (4 MHz), PINNED at the emission call sites (ucsim_t_provenance 21.1)",
+ "divider_readback": "div=8 (4 MHz), commanded by this connection",
+ "regs": {
+  "ax": 4369,
+  "cx": 8738,
+  "dx": 13107,
+  "bx": 17476,
+  "sp": 16128,
+  "bp": 26214,
+  "si": 30583,
+  "di": 34952,
+  "cs": 0,
+  "ip": 33024,
+  "ds": 4096,
+  "es": 8192,
+  "ss": 12288,
+  "flags": 61442
+ },
+ "probe": "8D F7 = LEA SI,DI at mod==3",
+ "probes": [
+  {
+   "tag": "C1",
+   "pre_bytes": "a3 34 12",
+   "prose": "MOV [1234h],AW",
+   "ea": 4660,
+   "predicted_si": 4660
+  },
+  {
+   "tag": "C2",
+   "pre_bytes": "a3 ef be",
+   "prose": "MOV [BEEFh],AW",
+   "ea": 48879,
+   "predicted_si": 48879
+  },
+  {
+   "tag": "C3",
+   "pre_bytes": "90",
+   "prose": "NOP (no EA)",
+   "ea": null,
+   "predicted_si": null
+  },
+  {
+   "tag": "R1",
+   "pre_bytes": "88 26 10 30",
+   "prose": "MOV [3010h],AH",
+   "ea": 12304,
+   "predicted_si": 16673
+  },
+  {
+   "tag": "R2",
+   "pre_bytes": "8b 0e 55 44",
+   "prose": "MOV CW,[4455h]",
+   "ea": 17493,
+   "predicted_si": null
+  },
+  {
+   "tag": "M0",
+   "pre_bytes": "89 00",
+   "prose": "MOV [BW+IX],AW",
+   "ea": 48059,
+   "predicted_si": 52428
+  },
+  {
+   "tag": "M1",
+   "pre_bytes": "89 01",
+   "prose": "MOV [BW+IY],AW",
+   "ea": 52428,
+   "predicted_si": 56797
+  },
+  {
+   "tag": "M2",
+   "pre_bytes": "89 02",
+   "prose": "MOV [BP+IX],AW",
+   "ea": 56797,
+   "predicted_si": 61166
+  },
+  {
+   "tag": "M3",
+   "pre_bytes": "89 03",
+   "prose": "MOV [BP+IY],AW",
+   "ea": 61166,
+   "predicted_si": 65535
+  },
+  {
+   "tag": "M4",
+   "pre_bytes": "89 04",
+   "prose": "MOV [IX],AW",
+   "ea": 30583,
+   "predicted_si": 34952
+  },
+  {
+   "tag": "M5",
+   "pre_bytes": "89 05",
+   "prose": "MOV [IY],AW",
+   "ea": 34952,
+   "predicted_si": 39321
+  },
+  {
+   "tag": "M6",
+   "pre_bytes": "89 06 34 12",
+   "prose": "MOV [1234h],AW",
+   "ea": 4660,
+   "predicted_si": 9029
+  },
+  {
+   "tag": "M7",
+   "pre_bytes": "89 07",
+   "prose": "MOV [BW],AW",
+   "ea": 17476,
+   "predicted_si": 21845
+  }
+ ],
+ "n_goldens": 13,
+ "fails": [],
+ "date": "2026-09-20T17:31:55Z"
+}

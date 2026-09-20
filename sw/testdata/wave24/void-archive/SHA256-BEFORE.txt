@@ -1,0 +1,6 @@
+7e1f444cb31822733acebae6655c9aef29ef64ad5e360ea79ae33658c38d4672  tests/v30/v0.3/0F1B.json.gz
+8e7824acc4e36677cdaac4b1d9f02b772b7e04922d6c90cf557af0b7eaccf43a  tests/v30/v0.3/83.5.json.gz
+7e1f444cb31822733acebae6655c9aef29ef64ad5e360ea79ae33658c38d4672  sw/testdata/wave24/void-archive/0F1B.json.gz.orig
+28ea899190a69f1b85ef1c94bebcf4d7366bd66f98d0b8048c8514141260764b  sw/testdata/wave24/void-archive/0F1B.seeds.json.orig
+8e7824acc4e36677cdaac4b1d9f02b772b7e04922d6c90cf557af0b7eaccf43a  sw/testdata/wave24/void-archive/83.5.json.gz.orig
+9b21be84a7be17123693933653ae899c614c5ca085adf2f30c96814c85f8885e  sw/testdata/wave24/void-archive/83.5.seeds.json.orig

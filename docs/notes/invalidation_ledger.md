@@ -1818,6 +1818,139 @@ read 3, and had the un-exempted case regressed the numerator would be 3,699,997.
 Log retained at `sw/testdata/edge-removal/v03_confirm.log`, sha256 `644a11c5e09f38ed…`.
 **This figure is now MEASURED and quotable with that artifact.**
 
+## E — ⚠⚠ THE EMITTER AND THE SCORER ARE IN DIFFERENT IMAGE ERAS, AND NO GATE SEES IT (WAVE 24, 2026-09-20)
+
+**THIS IS NOT ONE OF THE FIVE REGISTERS AND IT DOES NOT PRETEND TO BE.**  It is
+not an **INV** — no rig defect is alleged and no capture is false; not a **SUP**
+— no population is superseded and nothing came back with a flag; not an **EXC**
+— no seed leaves any numerator; not an **ERR** — no derived column is wrong; not
+a **RET** — nothing is retired.  **What it records is a CAPABILITY that is gone
+and that nothing measured until it was needed.**
+
+### WHAT WAS ATTEMPTED
+
+WAVE 24 was authorised by the user to **re-capture the two `VOID` goldens of
+§D from silicon** — `0F1B`/3917 and `83.5`/8683 — with a non-colliding layout,
+and retire the exemptions.  The collision was first **re-derived from the banked
+cases alone, with no engine** (`sw/testdata/wave24/b1_collision_proof.py`), and
+it reproduces `v03_divergence_ledger.md` F4bc byte for byte:
+
+```
+0F1B/3917  code phys dc33, preload span dc2f..dc32 = 63 c0 63 c0
+           operand EA = DS*16+BW+IY = dc30   want 89 -> image holds c0   COLLIDES
+                                      dc31   want 11 -> image holds 63   COLLIDES
+83.5/8683  code phys 979b, preload span 9797..979a = 63 c0 63 c0
+           operand EA = DS*16+BW    = 9799   want a7 -> image holds 63   COLLIDES
+                                      979a   want a4 -> image holds c0   COLLIDES
+```
+
+**THE CLAIM IS CONFIRMED THREE TIMES OVER** — the 2026-07 ledger text, WAVE 22's
+measured `exp 0x63C0` rows, and now this arithmetic.
+
+Both indices were then re-emitted from the **socket** (`emit_suite reemit
+--validate`, `EMIT_USE_CORE` False, divider readback `div=8 (4 MHz), commanded
+by this connection`).  Both came back **`neither`** — the emitter's own
+flat-validity gate saying *neither a flat nor a 64K-mirrored replay reproduces
+this golden*.
+
+### WHAT THE CONTROL SAID — **`neither` IS NOT ABOUT THESE TWO CASES**
+
+`sw/testdata/wave24/b1_control.py`, seven ARBITRARY v0.3 indices, emitted in
+memory and **never written into the suite**:
+
+```
+88/100  neither   01/200  neither   8B/300  resolved
+83.5/100 neither  0F1B/100 neither  88/101  neither   01/201 resolved
+```
+
+**FIVE OF SEVEN ORDINARY INDICES ARE UNREPLAYABLE TOO.**  And the other
+direction, offline, no board (`sw/testdata/wave24/b1_era.py`):
+
+```
+_flat_mirror_check on 18 BANKED v0.3 cases (88, 01, 8B)   ->  {'flat': 18}
+```
+
+**18 of 18 banked cases replay perfectly; 5 of 7 freshly captured ones cannot.**
+The difference is not the case.  **It is the era of the image the case was
+captured in.**
+
+### THE ERA SIGNATURE, IN THE ARTIFACTS THEMSELVES
+
+```
+banked 88   : cases carrying a 0xCC byte    88/10000   carrying a 0x90 byte 10000/10000
+banked 01   :                              131/10000                        10000/10000
+banked 8B   :                              123/10000                        10000/10000
+banked 0F1B :                              107/10000                         9999/10000
+banked 83.5 :                              138/10000                         9999/10000
+
+0F1B/3917  banked 2026-07: has 0x90, no 0xCC   captured today: has 0xCC, no 0x90
+83.5/8683  banked 2026-07: has 0x90, no 0xCC   captured today: has 0xCC, no 0x90
+```
+
+and in the failing rows themselves — the diverging column **is the fill word**:
+
+```
+83.5/8683 banked  row 0  ... data 37008 = 0x9090 ...   (PASV Ti, retained bus)
+83.5/8683 today   row 0  ... data 52428 = 0xCCCC ...
+```
+
+### THE NAMED CANDIDATE CAUSE — **stated as a candidate, with its falsifier**
+
+* `sw/testimage.py:63` — **`CODE_FILL = 0xCC`** (INT3).  The fuzz-v2 composer
+  fills the image with INT3 so a runaway traps to the terminator; the v1
+  composer the v0.3 suite was emitted under used **`0x90`** (NOP) and a
+  fall-through store stub.
+* `hdl/tb/tb_v30_core.sv:1072` — the batch scorer's memory is
+  **`for (i = 0; i < 1048576; i++) mem[i] = 8'h90;`**, an unconditional
+  literal.  The `+scr` script path has a `fill` token (`:934`); **the `+batch`
+  path, which every golden suite is scored through, has none.**
+
+> **A GOLDEN CAPTURED TODAY IS SCORED AGAINST A DIFFERENTLY-FILLED MEMORY.**
+> Every byte the chip touched inside the window is recorded in the case, so the
+> case is not wrong; what is not recorded is the **pre-window retained bus** and
+> the fill the part saw around the window, and those are 0xCC on the board and
+> 0x90 in the testbench.
+
+**FALSIFIER, REGISTERED**: change the `+batch` path's fill to `8'hCC` (an `hdl/`
+edit, forbidden in WAVE 24) and re-run both legs.  If the cause is named
+correctly the two fresh captures replay **`flat`** and the 18 banked ones stop
+replaying.  Until that is run, the cause is a CANDIDATE and is quoted as one.
+
+### THE DISPOSITION TAKEN
+
+**THE SUITE WAS RESTORED BYTE-IDENTICAL AND THE TWO EXEMPTIONS STAY.**
+
+```
+sha256 BEFORE  7e1f444cb318...  tests/v30/v0.3/0F1B.json.gz
+               8e7824acc4e3...  tests/v30/v0.3/83.5.json.gz
+sha256 AFTER   7e1f444cb318...  /  8e7824acc4e3...      IDENTICAL
+```
+
+Shipping the replacements would have swapped a **documented, understood,
+independently re-derived** golden defect for an **undocumented failure caused by
+the instrument**, and would have moved `v0.3`'s published figure on the strength
+of a capture the scorer cannot read.  **`v0.3` stays `3,699,998 / 3,699,998
+[2 documented pre-existing excluded]`**, and WAVE 24's registered prediction of
+`3,700,000 / 3,700,000` is a **REGISTERED MISS, reported as registered**
+(`docs/notes/suite_divergence_prereg_2026-09-20.md` P-B1b/c).
+
+**NOTHING IS DESTROYED.**  The originals are archived byte-identical at
+`sw/testdata/wave24/void-archive/` (`*.json.gz.orig`, on disk beside a suite
+that is itself disk-only, with `SHA256-BEFORE.txt` and
+`SHA256-AFTER-RESTORE.txt` committed), the two original cases are committed in
+full as `original-cases.json`, and **the two re-captures are true silicon and
+are RETAINED** at `recaptured-2026-09-20.json` — outside the suite, with their
+full per-clock rows, their divider readback and their truth-source stamp.
+
+### WHAT THIS COSTS, STATED PLAINLY
+
+**`tests/v30/v0.3` (3,700,000 cases) and `tests/v30/v0.2` (347,000) CAN NO
+LONGER BE EXTENDED, REPAIRED OR RE-EMITTED** while the two eras disagree.  The
+suites still score, because the cases on disk were captured in the era the
+scorer implements.  **A capability that only fails when it is used is a
+capability nothing gates**, and this one had been gone for an unknown length of
+time before a wave needed it.
+
 ## D — `tests/v30/v0.3/known_divergences.json` — MEASURED, NOT EDITED
 
 Its three entries were established against **`8fd94df` / `4508e08`** (2026-07-25);

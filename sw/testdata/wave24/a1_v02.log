@@ -1,0 +1,6 @@
+[suitemeta] v0.2: dialect 'emitter' -- NO opcode map of its own; DELEGATING to tests/v30/v0.1/metadata.json
+INT.90: 1000/1000 full  (cycles 1000, arch 1000)
+INT.9D: 1000/1000 full  (cycles 1000, arch 1000)
+INT.FB: 1000/1000 full  (cycles 1000, arch 1000)
+
+TOTAL: 3000/3000 full (cycles 3000, arch 3000)

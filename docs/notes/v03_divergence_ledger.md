@@ -1,3 +1,33 @@
+> # ⚠ WAVE 24 HEADER, 2026-09-20 — **THIS DOCUMENT IS FSM-ERA HISTORY. RETAINED, NOT DELETED.**
+>
+> **DATED 2026-07-19 … 2026-07-23.**  `hdl/rtl/ucore/` **first appears at
+> `0bfea2bfd0`, 2026-08-03.**  Every family, discriminator and fix-locus below
+> was derived against the trace-fitted FSM core, archived 2026-08-04 and
+> REMOVED 2026-09-19 (`invalidation_ledger.md` **RET-2**).  **None of it is
+> evidence about the ucore.**
+>
+> **RE-MEASURED AGAINST THE ucore, 2026-09-20, EXEMPTIONS OFF.**  The nine forms
+> this ledger's 62 cases live in, plus the whole Family-5/7 string-I/O
+> prefetch-ordering intake (6C · 6D · 6E · 6F · 36.6E · 26.6E · 2E.6F · 646F):
+>
+> ```
+> python3 sw/check_core.py --core ucore --suite-dir tests/v30/v0.3 \
+>   --opcodes 0F31,0F26,0F22,0F20,HLT.RES,IE0.90,0F1B,83.5,FF.3,\
+>             6E,6F,36.6E,26.6E,2E.6F,646F,6C,6D \
+>   --cases 0 --no-known-divergences
+> TOTAL: 169998/170000 full (cycles 169998, arch 169998)
+> ```
+>
+> **EXACTLY TWO FAILURES IN 170,000, AND THEY ARE THE `F4bc` `VOID` PAIR.**
+> Family 1 (`0F31`, 25) · Family 2 (BCD-4S, 24) · Family 3 (pin-event, 10) ·
+> `FF.3/7685` (*"DEFINITIVE segment-offset-wrap"*) are **0 failures each**, and
+> the ~44,935-case Family 5/7 intake is **10,000/10,000 on every one of its eight
+> forms**.  ⚠ **The `F4bc` pair is a defect of the GOLDEN, not of any engine**
+> (see the entry's own text and `invalidation_ledger.md` §D), and WAVE 24 tried
+> to replace it from silicon and was BLOCKED by an instrument era mismatch —
+> `invalidation_ledger.md` **§E**.
+> `docs/notes/suite_divergence_results_2026-09-20.md`.
+
 # v0.3 divergence ledger — chip-vs-RTL residuals
 
 > **STATUS 2026-07-23: 62 → 52.** Family 3 (pin-event, 10 cases) RESOLVED as a capture/

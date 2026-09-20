@@ -1,0 +1,35 @@
+[known_divergences] --no-known-divergences: SCORING all 2 documented case(s) that this suite's list excludes (the list's provenance is the ARCHIVED FSM core -- RET-2)
+[suitemeta] v0.3: dialect 'absent' -- NO opcode map of its own; DELEGATING to tests/v30/v0.1/metadata.json
+0F31: 10000/10000 full  (cycles 10000, arch 10000)
+0F26: 10000/10000 full  (cycles 10000, arch 10000)
+0F22: 10000/10000 full  (cycles 10000, arch 10000)
+0F20: 10000/10000 full  (cycles 10000, arch 10000)
+HLT.RES: 10000/10000 full  (cycles 10000, arch 10000)
+IE0.90: 10000/10000 full  (cycles 10000, arch 10000)
+  0F1B idx 3917 ('clr1 imm word [bx+di] 05h'):
+    row 9 bus: exp 484288 got 463241
+    row 9 data: exp 25536 got 4489
+    row 10 bus: exp 484288 got 463241
+    row 10 data: exp 25536 got 4489
+    row 18 data: exp 25536 got 4489
+    row 19 bus: exp 484288 got 463241
+0F1B: 9999/10000 full  (cycles 9999, arch 9999)  first-div: (9, 'bus')x1
+  83.5 idx 8683 ('sub w,simm8 word [bx] 01h'):
+    row 7 bus: exp 222144 got 239552
+    row 7 data: exp 25536 got 42944
+    row 8 bus: exp 222144 got 239552
+    row 8 data: exp 25536 got 42944
+    row 11 bus: exp 230336 got 230308
+    row 11 data: exp 33728 got 33700
+83.5: 9999/10000 full  (cycles 9999, arch 9999)  first-div: (7, 'bus')x1
+FF.3: 10000/10000 full  (cycles 10000, arch 10000)
+6E: 10000/10000 full  (cycles 10000, arch 10000)
+6F: 10000/10000 full  (cycles 10000, arch 10000)
+36.6E: 10000/10000 full  (cycles 10000, arch 10000)
+26.6E: 10000/10000 full  (cycles 10000, arch 10000)
+2E.6F: 10000/10000 full  (cycles 10000, arch 10000)
+646F: 10000/10000 full  (cycles 10000, arch 10000)
+6C: 10000/10000 full  (cycles 10000, arch 10000)
+6D: 10000/10000 full  (cycles 10000, arch 10000)
+
+TOTAL: 169998/170000 full (cycles 169998, arch 169998)

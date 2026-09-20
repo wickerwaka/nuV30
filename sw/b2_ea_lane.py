@@ -61,10 +61,22 @@ UCORE_W23 = {"C1": 0x1234, "C2": 0xBEEF, "R1": 0x9211, "R2": 0x1190,
 
 
 def _case(pre, tag, prose):
+    """The body is TWO instructions: the predecessor, then the mod3 LEA.
+
+    `emit_case`'s cycle window is ONE instruction wide -- `build_rows` opens at
+    F pop #`n_skip_f` and closes at #`n_skip_f + n_close`, and `emit_case` passes
+    `n_close = 1 + n_prefix(spec)` -- so the window closes at the SECOND F pop,
+    which here is the LEA's own opcode.  `next_ip` must therefore name the
+    PREDECESSOR's end, or the emitter refuses with `continuation mismatch`
+    (measured, all 13 probes, 2026-09-20).
+
+    THE CYCLE ROWS OF THESE GOLDENS COVER THE PREDECESSOR ONLY.  What B-2 reads
+    is `final.regs.si`, and that comes from the terminator's register dump at
+    the END of the body -- after BOTH instructions have retired."""
     instr = pre + LEA
     return {"regs": dict(REGS), "instr": instr, "ram": [], "ivt": None,
             "name": f"{prose} ; LEA SI,DI(mod3)  [{tag}]",
-            "next_ip": (REGS["ip"] + len(instr)) & 0xFFFF, "next_cs": None}
+            "next_ip": (REGS["ip"] + len(pre)) & 0xFFFF, "next_cs": None}
 
 
 def main():

@@ -1,3 +1,31 @@
+> # ⚠ WAVE 24 HEADER, 2026-09-20 — **THIS DOCUMENT IS FSM-ERA HISTORY. RETAINED, NOT DELETED.**
+>
+> **DATED 2026-07-18.**  `hdl/rtl/ucore/` — the only implementation this repo
+> now has — **first appears at `0bfea2bfd0`, 2026-08-03**, sixteen days later.
+> The trace-fitted FSM core this document was written against was archived
+> 2026-08-04 (`80d9cc8228`) and REMOVED 2026-09-19
+> (`docs/notes/invalidation_ledger.md` **RET-2**).  **Nothing below is evidence
+> about the ucore** (USER RULING 2026-09-19: *"treat the documentation as
+> hearsay until proven otherwise"*).
+>
+> **RE-MEASURED AGAINST THE ucore, 2026-09-20 — ALL SEVEN PASS.**  The seven
+> cases this document escalated as *"a genuine chip-vs-RTL disagreement"*
+> (`INT.90/239`, `INT.9D/44,62,954`, `INT.FB/142,368,730`) are scored by
+> whole-form inclusion:
+>
+> ```
+> python3 sw/check_core.py --core ucore --suite-dir tests/v30/v0.2 \
+>                          --opcodes INT.90,INT.9D,INT.FB --cases 0
+> INT.90: 1000/1000 full   INT.9D: 1000/1000 full   INT.FB: 1000/1000 full
+> TOTAL: 3000/3000 full (cycles 3000, arch 3000)
+> ```
+>
+> **The document's own closing section already said why** — the seven are the
+> `final.flags` store-stub CAPTURE CONVENTION, closed under task #21 by
+> re-deriving 269 v0.2 pin-event goldens host-side.  **The SUITE was edited, not
+> the RTL**, and the suite on disk carries that fix.  The escalation stands as
+> history and is not a live lead.  `docs/notes/suite_divergence_results_2026-09-20.md`.
+
 # v0.2 suspected real divergences (KEEP + escalated) — 2026-07-18
 
 Found during the flat-validity three-way discrimination of the collision re-emission.

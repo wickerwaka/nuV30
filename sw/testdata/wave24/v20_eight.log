@@ -1,0 +1,30 @@
+  03 idx 2019 ('add bp, word [ds:bp+di-30h]'): arch diff reg_bad=['sp', 'flags'] ram_bad=[]
+      sp: exp 3279 got 3278
+      flags: exp 61586 got 61442
+03: ARCH 9999/10000  fail-classes: regs:sp,flagsx1
+  0F1D idx 4712 ('set1 word [ss:bp+si], FFF7h'): arch diff reg_bad=['bx', 'flags'] ram_bad=[]
+      bx: exp 39410 got 39414
+      flags: exp 64535 got 62598
+0F1D: ARCH 9999/10000  fail-classes: regs:bx,flagsx1
+  29 idx 9262 ('sub word [cs:si-21FCh], bx'): arch diff reg_bad=['sp', 'bp'] ram_bad=[]
+      sp: exp 29825 got 24486
+      bp: exp 24484 got 37008
+29: ARCH 9999/10000  fail-classes: regs:sp,bpx1
+  62 idx 1229 ('bound cx, word [ss:bp+4Ah]'): arch diff reg_bad=['dx'] ram_bad=[]
+      dx: exp 6001 got 17265
+62: ARCH 9999/10000  fail-classes: regs:dxx1
+  85 idx 4717 ('test word [cs:bp+si+16h], ax'): arch diff reg_bad=['cx', 'flags'] ram_bad=[]
+      cx: exp 59539 got 59540
+      flags: exp 62466 got 62594
+85: ARCH 9999/10000  fail-classes: regs:cx,flagsx1
+  86 idx 9919 ('xchg dl, byte [ss:bx-3Bh]'): arch diff reg_bad=['dx'] ram_bad=[]
+      dx: exp 31926 got 37046
+86: ARCH 9999/10000  fail-classes: regs:dxx1
+  E8 idx 216 ('call 0002h'): arch diff reg_bad=['sp'] ram_bad=[]
+      sp: exp 2697 got 2695
+E8: ARCH 9999/10000  fail-classes: regs:spx1
+  E9 idx 7762 ('jmp 0002h'): arch diff reg_bad=['sp'] ram_bad=[]
+      sp: exp 38381 got 38379
+E9: ARCH 9999/10000  fail-classes: regs:spx1
+
+TOTAL ARCH: 79992/80000

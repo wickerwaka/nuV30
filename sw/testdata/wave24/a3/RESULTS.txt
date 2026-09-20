@@ -1,0 +1,23 @@
+WAVE 24 -- A-3, the v20suite EIGHT.  Directed controls, form `03`, 20 PASSING
+cases selected by "no recorded ram byte within 20 of the instruction's end".
+Scored with `check_core --core ucore --arch-only`, 2026-09-20.
+
+  base                                   ARCH 20/20   (the slice is clean)
+  inj0    FF CC (DEC SP) at end+0        ARCH  0/20   ALL 20 fail, sp == exp-1
+  inj2    FF CC at end+2                 ARCH  0/20   ALL 20 fail
+  inj4    FF CC at end+4                 ARCH 20/20
+  inj6/8/10/12/16                        ARCH 20/20
+  null90  90 90 at end+0                 ARCH 20/20   (VACUOUS: the TB already
+                                                       fills with 0x90)
+  far64   FF CC at end+64                ARCH 20/20   (the REAL negative control)
+
+THE FINGERPRINT: every one of the 20 injected failures moves `sp` AND `flags`
+and NOT `ip` -- and `tb_v30_core.sv:489-490` re-latches `fin_regs[191:0]` and
+`fin_regs[223:208]`, which is every architectural register EXCEPT index 12,
+`ip` (check_core.REGS[12]).  All EIGHT real v20suite failures have the same
+fingerprint: 03 sp,flags | 0F1D bx,flags | 29 sp,bp | 62 dx | 85 cx,flags |
+86 dx | E8 sp | E9 sp -- NOT ONE `ip`.  8 of 8.
+
+CENSUS (a3_census2.py, one predicate, REACH=4):
+  "the case's CONTINUATION point has a recorded non-0x90 byte within 4 bytes"
+  2,284 of 3,125,000 -- and ALL EIGHT failures are inside it.
