@@ -68,6 +68,68 @@ pattern one level down).
 
 ## A. THE STANDING SET — core-neutral
 
+### ⚠⚠⚠ **2026-09-19, WAVE 21 — THE FSM CORE IS REMOVED, AND BAR E1 IS RETIRED AND ONLY HALF REPLACED.**
+
+**USER INSTRUCTION: *"Remove the FSM core, fix whatever dependencies exist"*.
+USER RULING: *"Ucore is the only valid implementation in this code base, if it
+has dependencies on any other implementations those need to be removed.
+Documentation that gives those other implementations precedence is suspect."***
+Register: `docs/notes/invalidation_ledger.md` **RET-2**.  Wave:
+`fsm_removal_prereg_2026-09-19.md` / `..._results_2026-09-19.md`.  **This
+OVERRIDES WAVE 20's audit recommendation.**  §C is now an EMPTY section.
+
+**E1 — THE AUTHORITATIVE ROW.**  It was `sw/gen_ucore_qsf.py --check`, bar text
+*"hdl/nec_test_ucore.qsf is a faithful derivative of hdl/nec_test.qsf"* — which
+made the ARCHIVED FSM revision the ORIGINAL.  It is now:
+
+| **E1** | `python3 sw/qsf_lint.py --check` | receipt key **`E1_qsf_canonical`** | `hdl/nec_test_ucore.qsf` — the project's ONE revision — is in CANONICAL FORM: none of the assignments Quartus materialises from `source sys/sys.tcl` is left in it, and it declares exactly one file list and one output directory |
+
+**WHAT IT PROVES**: no previous build's in-place Quartus rewrite was left in the
+tree, and no assignment reaches the compiler that is not in the committed
+revision file.  Measured on `hdl/sys/sys.tcl`: a rewrite adds **107**
+`set_location_assignment`, **50** `set_instance_assignment` and **8**
+`set_global_assignment` including `PRE_FLOW_SCRIPT_FILE`; canonical form has
+**0**, **1** (the revision's own `PARTITION_HIERARCHY`) and none.
+
+⚠ **WHAT IT DOES NOT PROVE, AND WHAT NOTHING PROVES ANY MORE.**  **NOT** *"the
+two A/B bitstreams differ by the CORE and nothing else"* — **that guarantee is
+RETIRED AND NOTHING REPLACES IT**, because there is no second core and no second
+revision for it to be about.  **NOT** faithfulness to a second file: there is no
+template, the revision file IS the source of truth, and **nothing now
+cross-checks the settings against a second copy** — the replacement for that
+cross-check is that there is only one copy to get wrong.  **NOT** the contents
+of `files_ucore.qip` (sourced, not derived).  **NOT** that the settings are
+CORRECT.  **NOT** anything about what Quartus does with them.
+
+**ITS FALSIFIER IS `test_quartus_gate` Q18** (six positive controls), and that
+gate reads **302 / 302** — up from 287, pre-registered as a possible rise.
+
+**THE POST-BUILD RESTORE MOVED INSIDE THE GATE.**  `quartus_gate.py` stashes the
+revision `.qsf`'s bytes after E1 and before the compile and writes them back
+afterwards, recording both sha256s.  It used to re-run `gen_ucore_qsf`, which
+regenerated the file from the deleted FSM revision.
+⚠ **MEASURED ON BOTH WAVE-21 BUILDS: Quartus did NOT rewrite the file**
+(`{"restored": false, "why": "unchanged by the build"}`), and **E7 reported
+`n_moved: 0` with `moved_exempt: []`** — so `INPUT_FLIP_EXEMPT`'s one entry was
+VACUOUS on those runs.  Recorded, not explained.
+
+**THE BITSTREAM IS UNAFFECTED, MEASURED TWICE.**  One CONTROL build after the
+RTL deletion alone and one after the `.qsf` re-basing: **both `.rbf`s are
+BYTE-IDENTICAL to FLASH #23's CONTROL draw,
+`e91a67badeef2c17262b5239e0700672f3be69eeb44e749e5c9d53ae1302a613`**, both at
+34.68 MHz / +2.419 ns, receipts `cf468aa4fc361a6a…` and `3dbde6847d004851…`.
+⚠ **The `.sof` DIFFERS ON EVERY BUILD while the `.rbf` does not** — three builds
+of the identical configuration gave three `.sof` hashes and one `.rbf` hash.
+**The `.sof` is not a byte-identity instrument; the `.rbf` is.**
+
+**THE LADDER IS ZERO-DELTA — 23 legs SAME, 0 MOVED** (RET-2's GATE STATUS).
+**Four legs changed and all four are the wave's own disposals**:
+`check_fuzz_bank` RETIRED (last figure **PASS 621**, replaced by NOTHING and
+deliberately NOT re-pointed), E1 above, `core_portlist_lint` RE-POINTED
+(2 → 4 configurations), and `test_quartus_gate` 287 → 302.
+
+---
+
 ### ⚠⚠⚠ **2026-09-19, WAVE 20 — THE C++ MODEL IS REMOVED FROM THE TREE, AND THE GATES THAT RAN ON IT ARE FORMALLY RETIRED.**
 
 **USER DIRECTIVE 2026-09-19: *"The old C model has not been maintained, remove
@@ -111,7 +173,9 @@ every gate that died**.  Audit: `docs/notes/staleness_audit_2026-09-19.md`.**
   `chainflat_relocation_check` 9/9 · `ucrom_mif_check` · `demux_off_gate` ·
   `chain_lfsr_gate` with its **four signatures byte-identical** ·
   `test_artifact` 45/45 · `test_quartus_gate` 287/287 ·
-  `check_fuzz_bank` **PASS 621** · `gen_ucore_qsf --check` · `pla3_check`.
+  ⚠ `check_fuzz_bank` **RETIRED 2026-09-19 with the FSM core, last figure
+  PASS 621** (RET-2) · `gen_ucore_qsf --check` **RETIRED — E1 is now
+  `qsf_lint --check`** · `pla3_check`.
 * ⚠ **SIX LIVE GATES WERE ONE COMMIT FROM DYING FOR THE MODEL'S SAKE** and
   were repaired in the same wave: `check_boot 220`/`400`, `timed_fuzz --core
   ucore`, `sm3_tf_floor_cell --core ucore` (an **IMPORT-TIME** `ensure()`),
@@ -128,7 +192,7 @@ every gate that died**.  Audit: `docs/notes/staleness_audit_2026-09-19.md`.**
 | optable selfcheck | `python3 sw/optable.py --selfcheck` | the opcode table agrees with fuzz_cov + instructions.json |
 | fuzz_campaign lint | `python3 sw/fuzz_campaign.py lint --report-every 5000` | the soup/raw generators never emit a chip-wedging image.  **GREEN, SM3 s12: `LINT PASS: soup hits=0 compose_err=0; raw hits=0 compose_err=0` over 10,000 soup + 100,000 raw seeds.**  §72.7a's NOT-RUN debt is DISCHARGED and the "hang" is EXPLAINED, not fixed: `--report-every` defaults to **0**, so the tool prints NOTHING until each phase ends, and the raw phase is 100,000 seeds at ~69/s ≈ **25 minutes**.  The `do_wait` / 0 % CPU process s11 observed was the WRAPPER SHELL; the worker sits at 99.8 % CPU throughout.  **Pass `--report-every` or it will look hung again** (`ucore_provenance.md` §73.10) |
 | test_fuzz_classify / test_fuzz_accept | `python3 sw/test_fuzz_{classify,accept}.py` | the verdict tree + acceptance rules (offline) |
-| gen_ucore_qsf | `python3 sw/gen_ucore_qsf.py --check` | `hdl/nec_test_ucore.qsf` is a faithful derivative of `hdl/nec_test.qsf` — the two A/B bitstreams differ by the CORE and nothing else |
+| ⚠ ~~gen_ucore_qsf~~ **→ qsf_lint** | `python3 sw/qsf_lint.py --check` | **RE-SPECIFIED 2026-09-19 (WAVE 21, RET-2).**  It was *"`hdl/nec_test_ucore.qsf` is a faithful derivative of `hdl/nec_test.qsf` — the two A/B bitstreams differ by the CORE and nothing else"*.  `hdl/nec_test.qsf` is DELETED and there is one core, so that claim has no referent and **nothing replaces it**.  The bar is now CANONICAL FORM on the one revision — see the WAVE 21 banner at the head of this section |
 | **THE DE-MUXED CONFIGURATION** **NEW, 2026-08-14** | `python3 sw/demux_off_gate.py` | that `V30_MUXED_AD` OFF is a configuration that BUILDS AND RUNS, not a claim about text.  Three legs, ~2 min, offline: **RUN** — `hdl/tb/tb_demux_min.sv` (the core with no `AD`/`AD_OE`/`CE_HALF`, fed from a memory addressed by `ADDR_O` into `DATA_I`, stores committed from `DATA_O`) over 200,000 fabric clocks, bars `FPOPS` **2,742** ≥ 1 · `BS_KINDS` **7** ≥ 4 · `WRITES` **1,390** ≥ 1 · `ADDR_MOVES` **7,729** ≥ 1; **GONE** — splicing `.AD`, `.AD_OE` or `.CE_HALF` back in must FAIL **naming the pin**, 3/3; **ON** — the same TB WITH the define must ALSO fail (no `DATA_I` there), which is the control that the first leg is the define's doing.  ⚠ It is NOT a scorer: there are no goldens for a bus this shape and inventing some would be fitting.  `docs/notes/demux_bus_results_2026-08-14.md` §5 |
 | **R7′ structural lint** **NEW** | `python3 sw/r7_lint.py` | the shape §73 closed R7′ with is still the shape in the tree: **no undeclared live-`READY` carrier crosses BIU → EU, and no `stop` in the twelve-position chain is gated by one.**  0.2 s.  See below |
 | **BRK/TF floor cell** ⧉ **NEW, SM3 s24** | `python3 sw/sm3_tf_floor_cell.py score --floors 3` | the single-step trap's floor, against SILICON per clock: **121,890 rows, 0 row-diffs, all 30 retained captures**, at floor **3** and at no other value in [1, 7] (nearest is 11,032).  Scores the RETAINED captures in `sw/testdata/sm3-s24tfcell/` — **no board contact, and none is needed**: the trap is internal, so the cell drives no pin and the captures are deterministic from RESET.  It also re-runs the cell's other registered bars (the TF-clear null, determinism, the `iret`/`popfnone` asymmetry, no-take-at-a-prefix-boundary, storm grace).  **`--core {sim,ucore}` SINCE SM3 s25**: the `ucore` leg is LANDED (§86) and scores **121,860 rows, 0 row-diffs, EXACT on all 30 captures** at its own depth **4** — which IS the model's measured floor of 3, one coordinate over (§86.B) — and **0** at no other depth in [1,7] (nearest 14,630).  W-2 on its own prediction table: surviving depths **{4}**, **22/22 cells**, the two SATURATED controls included.  This is the sharpest gate the trap has and both engines are held to it |
@@ -930,7 +994,7 @@ paths. **Nothing in the tree saw it, because the standing set is board-free by
 design and had no Quartus leg at all.** That is this document's own vacuous-gate
 pattern by ABSENCE rather than by blindness.
 
-**What it does**: `gen_ucore_qsf --check` first (E1 — it must run BEFORE the
+**What it does**: `qsf_lint --check` first (E1 — it must run BEFORE the
 build, because Quartus REWRITES the .qsf it compiles, §70.7), then **ONE clean
 CONTROL/DEFAULT build from a deleted `db`/`incremental_db`** — macro OFF, the
 configuration every bitstream is derived from — and it gates **only** the
@@ -938,7 +1002,7 @@ registered G6 essentials:
 
 | | bar |
 |---|---|
-| **E1** | `gen_ucore_qsf --check` green |
+| **E1** | `qsf_lint --check` green (⚠ it was `gen_ucore_qsf --check` until 2026-09-19; RET-2) |
 | **E2** | 0 compile errors, every stage `Successful` |
 | **E3** | `divclk` Fmax **≥ 32 MHz** |
 | **E4** | worst setup slack **> 0** on every domain |
