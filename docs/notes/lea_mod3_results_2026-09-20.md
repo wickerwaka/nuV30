@@ -164,8 +164,14 @@ named register takes the value and **no other GPR moves**.
 
 **FIVE RTL PERTURBATIONS WERE BUILT AND RUN AGAINST IT**, each in an isolated
 `git worktree` at `3818953ad2`, each with the unperturbed build as its own
-control (control: **PASS**, three distinct binaries recorded in the worktree's
-`verilator_binary.jsonl`, so every perturbation provably reached the compiler):
+control (control: **PASS**).  **THAT EACH PERTURBATION REACHED THE COMPILER IS
+MEASURED, NOT ASSUMED**: the worktree's `verilator_binary.jsonl` gained **six
+receipts, one per build** (control + five perturbations), and the first three
+were inspected and carry **three DISTINCT binary sha256s**
+(`26336242c79f12c9…`, `11fa2ef59866a67f…`, `d2003c98cecd839a…`) — so the
+`.svh` is a declared input and a perturbation of it forces a rebuild.  ⚠ The
+remaining three receipts were counted, **not hash-inspected**, and that is
+stated rather than glossed:
 
 | # | perturbation of `v30u_eu_arm_bind.svh` | gate |
 |---|---|---|
