@@ -1,4 +1,4 @@
-# WAVE 23 — RESULTS.  **THERE IS NO WEDGE AND NO MISSING MECHANISM: THE ucore ALREADY REPRODUCES SILICON'S STALE-EA WITNESSES, AND `0 / 128` IS A STIMULUS DEFECT OF THE TESTBENCH.  NOT ONE `hdl/` BYTE MOVED — AND THE WAVE FOUND A DIFFERENT, REAL SILICON DIVERGENCE ON THE WAY.**
+# WAVE 23 — RESULTS.  **THERE IS NO WEDGE AND NO MISSING MECHANISM: THE ucore ALREADY REPRODUCES BOTH OF SILICON'S POSITIVE STALE-EA WITNESSES, AND `0 / 128` IS A STIMULUS DEFECT OF THE TESTBENCH.  NOT ONE `hdl/` BYTE MOVED — AND THE WAVE FOUND A DIFFERENT, REAL SILICON DIVERGENCE ON THE WAY.**
 
 Pre-registration `3818953ad2`
 (`docs/notes/lea_mod3_prereg_2026-09-20.md`), committed **before the first
@@ -21,7 +21,10 @@ Pre-registration `3818953ad2`
 
 ---
 
-## §2  THE PROOF THAT THE ucore IS RIGHT
+## §2  THE PROOF THAT THE ucore IS RIGHT **ON THE MECHANISM THE 128 GOLDENS TEST**
+
+⚠ *Scoped deliberately.  §4 shows it is **not** right on a neighbouring one,
+and the two statements are about different predecessors.*
 
 `sw/tb_bootrun.py`'s `+bootimg` mode drives the composed image **from RESET
 with no backdoor injection at all**, so the image's own loader runs inside the
@@ -69,6 +72,18 @@ and the mechanism is named.**
 
 > **A GOLDEN WHOSE OUTCOME DEPENDS ON PRE-WINDOW MICROARCHITECTURAL STATE IS
 > UNSCOREABLE BY AN INJECTED ENGINE BY CONSTRUCTION.**  No RTL changes that.
+
+⚠ **AND THE OBVIOUS ALTERNATIVE — REPLAY ALL 128 AS WHOLE PROGRAMS AT THEIR
+OWN ADDRESS — IS SHUT BY THE IMAGE ANCHOR, INDEPENDENTLY CONFIRMED.**  The
+goldens sit at `0000:0500`; the live composer's code region is
+`[0x8000, 0xC000)`.  `invalidation_ledger.md` RET-2's own audit row for
+`sw/check_mod3_illegal.py` records it in the same words — *"ALREADY DOWN —
+`ComposeError: body [0500,0502) is not inside the code region [8000,c000)`"*,
+**a v1-anchor casualty**.  Reconstructing the v1 image would mean guessing the
+capture's `stub_linear`, which `emit_case` no longer passes and no artifact
+records — **and a guessed stimulus is a fabricated one.**  So §2 scores the
+mechanism on the rows that DO carry a silicon reference, at an address the live
+composer will accept, and says which.
 
 **AND THE OBVIOUS "FIX" IS A STOP, NOT A FIX** — pre-registered as **S-4**.
 Injecting `ea_residue = PC` through the backdoor would read 128/128 tomorrow.
@@ -209,6 +224,47 @@ files moved**.  `sw/testdata/wave23/synth-manifest-{before,after}.txt`.
 tree and not a comparison of two trees.
 
 <!-- WAVE23-LADDER-BEGIN -->
+**Every leg below was RUN on this tree in this wave.  `RC` is the process exit
+code, captured with `${PIPESTATUS[0]}`, never `tail`'s.**
+
+| leg | command | registered | **measured** | |
+|---|---|---|---|---|
+| `check_core` | `--core ucore --opcodes all --cases 0 --ce-div 4` | 169,000 | **169,000 / 169,000 full** | SAME |
+| `check_core` | `… --ce-div 2` | 169,000 | **169,000 / 169,000 full** | SAME |
+| `check_core` | `… --ce-div 3` | 169,000 | **169,000 / 169,000 full** | SAME |
+| `check_core` | `… --ce-div 8` | 169,000 | **169,000 / 169,000 full** | SAME |
+| `check_core` | `… --ce-div 1` | **REFUSED** | **exit 2**, clause **C-a** cited by name | SAME |
+| HLT sweep `s10-w0` | `--suite-dir … --waits 0` | 97 | **97 / 97 full** | SAME |
+| HLT sweep `s10-w1` | `--waits 1` | 93 | **93 / 95 full** | SAME |
+| HLT sweep `s13-w2` | `--waits 2` | 45 | **45 / 46 full** | SAME |
+| HLT sweep `s13-w3` | `--waits 3` | 44 | **44 / 45 full** | SAME |
+| *the four sweeps* | | **279 / 283** | **279 / 283** | SAME |
+| `v0.2` | `--suite-dir tests/v30/v0.2 … --waits 0` | 347,000 | **347,000 / 347,000 full** | SAME |
+| `v0.3` | `--suite-dir tests/v30/v0.3 …` | 3,699,998 [2 excluded] | **3,699,998 / 3,699,998 full  [2 documented pre-existing excluded]** | SAME |
+| `v20suite` | `--suite-dir tests/v30/v20suite … --arch-only` | 3,124,992 / 3,125,000 | **3,124,992 / 3,125,000 ARCH** | SAME |
+| `mod3_illegal` | `--suite-dir … --opcodes goldens` | — | **0 / 128 full (cycles 128, arch 0)** | **P-1 MET** |
+| `check_boot` | `220` | MATCH | **BOOT REPLAY MATCHES over 220 rows from RESET release** | SAME |
+| `check_boot` | `400` | MATCH | **MATCHES over 400 rows** | SAME |
+| `check_ab_sim` | `--core ucore` | 187 | **AB SIM MATCHES CHIP BOOT over 187 rows** | SAME |
+| `ghost_launch_law` | `score` | 200/200 | **ALL THREE POPULATIONS: 200/200 = 100.0 %** | SAME |
+| `r7_lint` | | PASS | **PASS — 0 undeclared carriers, 0 undeclared unresolved, 41 `stop` sites, 0 violations** | SAME |
+| `cutset_lint` | | 81 / 0 | **PASS (81 members / 0 violations)** | SAME |
+| `phase_split_lint` | | 157 / 779 / 0 | **PASS (157 members / 779 bits / 0 violations)** | SAME |
+| `chainflat_relocation_check` | | 9/9 | **PASS — 9 arms, one copy each, byte-identical to `aba01feb07`, reconstruction exact** | SAME |
+| `chain_lfsr_gate` | | four signatures byte-identical | **PASS** — `1d01c9b269ffaa94` · `b39b040a98b28e5d` · `0997b773cd99c030` · `d05b6c3c3d9fbe78`, **all four byte-identical to the record**; CHAIN_MAX 7, observed depth [6], 0 overflows | SAME |
+| `demux_off_gate` | | PASS | **PASS** — 3 legs | SAME |
+| `core_portlist_lint` | | 4 configurations | **PASS — 4 configuration(s)** | SAME |
+| `qsf_lint --check` (E1) | | CANONICAL | **CANONICAL** (0 materialised assignments, one file list, one output directory) | SAME |
+| `ucrom_mif_check` | | PASS | **PASS** — every emitted table matches its `.hex` word for word | SAME |
+| `check_ucore_tables` (G0) | | 9,988 | **PASS — 9,988 entries byte-identical on both legs** | SAME |
+| `pla3_check` | | 21 checks | **OK (21 checks passed)** | SAME |
+| `ss_lint --core ucore` | | 232 / 229 flops / 4 whitelist / 0 UNMAPPED | **PASS — 232 (109x2 BIU + 122x2 EU + tag); 229 architectural flops; 4 whitelisted; 0 UNMAPPED** | **SAME — the ONE permitted delta WAS NOT USED** |
+| `test_artifact` | | 45/45 | **45 / 45** | SAME |
+| `test_quartus_gate` | | 302/302 | **302 / 302** | SAME |
+| **`lea_mod3_gate`** | **NEW** | — | **PASS — L1 2/2 · L2 64/64 · L3 3/3 · L4 2 of 2 KNOWN-RED**, 71 replays, exit 0 | **NEW** |
+
+**30 legs SAME · `mod3_illegal` 0/128 UNCHANGED (P-1 MET) · 0 MOVED · 1 NEW.**  Total architectural cases re-scored this
+wave: **169,000 x 4 + 347,000 + 3,699,998 + 3,125,000 + 283 + 128 = 7,848,409.**
 <!-- WAVE23-LADDER-END -->
 
 ---
