@@ -14,7 +14,7 @@ observes the socketed chip: the capture path, memory model and pin sampling
 serve both identically. The on-silicon confirmation is sw/check_seq.py with
 CFG.use_core toggled on the board (Mission C/E).
 
-Usage: check_ab_sim.py [nrows] [--core {fsm,ucore}] [--build] [--keep]
+Usage: check_ab_sim.py [nrows] [--core ucore] [--build] [--keep]
 
 ucore U4: `--core ucore` swaps the RTL list for the ROM-driven twin, exactly as
 `sw/check_core.py --core` does -- the module is `v30_core` and the package is

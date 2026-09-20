@@ -1,3 +1,36 @@
+# ⚠⚠⚠ **THIS DOCUMENT IS HISTORY AS OF 2026-09-19.  THE CORE IT DESCRIBES IS NO LONGER IN THE WORKING TREE.**
+
+**WAVE 21 removed `hdl/rtl/core/` under the user instruction *"Remove the FSM
+core, fix whatever dependencies exist"* and the ruling that *"ucore is the only
+valid implementation in this code base"*.  The register is
+`docs/notes/invalidation_ledger.md` **RET-2**; the wave is
+`fsm_removal_prereg_2026-09-19.md` / `..._results_2026-09-19.md`.**
+
+**Read every sentence below in the past tense.**  In particular:
+
+* **§5's "WHAT REMAINS VALID" table is a THIRD-INSTRUMENT ERRATUM.**  It
+  registers `check_core --core fsm` at **168,400 / 169,000** and the HLT sweeps
+  at **16 / 283**.  Measured on this tree on the day of the removal (receipt
+  `6ef5e51f32e75735…`) the same commands give **169,000 / 169,000** and
+  **87·82·30·27 = 226 / 283**.  Nothing in `hdl/rtl/core/` ever changed; the
+  COMPARATOR did, at `0254d9f23e`.  **Any FSM figure must name its comparator.**
+* **§6's RE-ACTIVATION PROCEDURE no longer works as written.**  `--core fsm` is
+  REFUSED BY NAME (`sw/fsmcore.py`); recovery now starts with
+  `git checkout fb9365c01c -- hdl/rtl/core/ …`, and RET-2 carries the full list.
+* **§5's last bullet — "the A/B harness itself … `gen_ucore_qsf.py --check`
+  still gates that the two bitstreams differ by the core and nothing else" — is
+  RETIRED.**  There is one revision; that bar's claim has no referent and
+  **nothing replaces it** (`fsm_removal_prereg_2026-09-19.md` §2b).
+* **§6a's and §6b's port-list addenda are discharged**: the rule they served
+  (*the two cores are DROP-IN alternatives and must have the same port list*)
+  has one operand left.  `sw/core_portlist_lint.py` now compares the ucore's
+  port list against the INSTANTIATION SITES instead.
+* **What is NOT retracted: everything in §2 and §3.**  Those are measurements
+  and decisions, and they stand.  `sw/testdata/**` is untouched; every capture
+  this core produced or adjudicated remains true.
+
+---
+
 # The FSM core — ARCHIVE RECORD, 2026-08-04
 
 **Disposition: ARCHIVED.**  Taken by the campaign owner on 2026-08-04, from the

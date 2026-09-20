@@ -2,17 +2,27 @@
 """receipt_diff -- §5 of `docs/notes/artifact_receipt_layer.md`, the A/B DELTA
 MANIFEST.
 
-`gen_ucore_qsf.py --check` already proves one A/B claim -- that the two `.qsf`
-files differ by the core and nothing else -- and it proves it on SETTINGS.  This
-generalises it to ARTIFACTS: given two receipts it prints the symmetric
-difference of their declared inputs, plus the command / env / tool delta.
+Given two receipts it prints the symmetric difference of their declared inputs,
+plus the command / env / tool delta.
+
+⚠ THE CORE A/B ROW IS GONE, WAVE 21 (2026-09-19).  This header used to open
+"`gen_ucore_qsf.py --check` already proves one A/B claim -- that the two `.qsf`
+files differ by the core and nothing else" and to list
+
+    FSM vs ucore bitstream            files_ucore.qip <-> files.qip + the cores
+
+as a legitimate pair.  `hdl/files.qip` and `hdl/rtl/core/` NO LONGER EXIST
+(`docs/notes/invalidation_ledger.md` RET-2), there is ONE core and ONE Quartus
+revision, and that bar is retired with NOTHING replacing its A/B claim -- see
+`sw/qsf_lint.py`.  **No two-core comparison can be made on this tree**; the row
+is history and is kept so a receipt from before 2026-09-19 is still readable.
 
 For a legitimate A/B pair the output must be EXACTLY the intended axis:
 
     the pair                          the ONLY expected delta
-    FSM vs ucore bitstream            files_ucore.qip <-> files.qip + the cores
     retention vs control binary       `command` (the -D macro) ONLY --
                                       inputs IDENTICAL
+    retention vs control bitstream    `command` (--verilog_macro) ONLY
     a golden re-capture               the rig's version, nothing in hdl/
 
 `--expect` turns that sentence into an assertion.  SM3 sitting 13 spent a whole

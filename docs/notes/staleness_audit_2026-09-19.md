@@ -111,7 +111,31 @@ removing: enumerated gate-by-gate in RET-1; the largest single item is the
 
 ---
 
-## §2 THE ARCHIVED FSM CORE `hdl/rtl/core/` — **RECOMMEND: KEEP THE RTL, RETIRE FOUR GATES**
+## §2 THE ARCHIVED FSM CORE `hdl/rtl/core/` — **RECOMMENDATION OVERRULED 2026-09-19.  THE CORE WAS REMOVED.**
+
+### ⚠⚠ **THE USER OVERRODE THIS SECTION THE SAME DAY.**
+
+> *"Remove the FSM core, fix whatever dependencies exist"* — user instruction,
+> 2026-09-19, and the ruling that followed it: *"Ucore is the only valid
+> implementation in this code base, if it has dependencies on any other
+> implementations those need to be removed.  Documentation that gives those
+> other implementations precedence is suspect."*
+
+**Executed by WAVE 21** — `invalidation_ledger.md` **RET-2**,
+`fsm_removal_prereg_2026-09-19.md`, `fsm_removal_results_2026-09-19.md`.
+**The recommendation below is NOT retracted as an argument; it is overruled as
+a decision**, and one of its premises was measured wrong:
+
+⚠ **THIS SECTION'S "WHY IT CANNOT SIMPLY BE REMOVED" NAMED THE WRONG
+DEPENDENCY.**  It says `sw/gen_ucore_qsf.py --check` *"DERIVES THE ucore
+REVISION FROM THE FSM ONE"* and that *"deleting `hdl/rtl/core/` breaks the A/B
+derivation the gate exists to protect"*.  **MEASURED: `derive()` is pure text
+substitution on `hdl/nec_test.qsf`.  It never opens `hdl/files.qip` and never
+reads `hdl/rtl/core/`, and it ran GREEN with the whole FSM core deleted.**  The
+dependency was on ONE SETTINGS FILE, not on the core.  The re-basing WAVE 21
+performed was therefore a deliberate act under the ruling, not a repair forced
+by the deletion.
+
 
 ### What it is, measured
 

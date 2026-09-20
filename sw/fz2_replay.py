@@ -85,7 +85,8 @@ receipt whose OUTPUT that `.sof` is; this file re-hashes every DECLARED INPUT
 of that receipt against the tree and REFUSES when an `hdl/rtl/` file has moved.
 `hdl/nec_test_ucore.qsf` is exempt and the exemption is NAMED: Quartus
 materialises its sourced assignments into that file during a build (§70.7), it
-carries no RTL, and `gen_ucore_qsf --check` is the gate that owns it.
+carries no RTL, and `sw/qsf_lint.py --check` is the gate that owns it
+(it was `gen_ucore_qsf --check` until WAVE 21, 2026-09-19 -- RET-2).
 
 `--no-fabric-era-guard` exists and has exactly one honest use: deliberately
 reading a cross-era column, knowing that is what you are doing.
