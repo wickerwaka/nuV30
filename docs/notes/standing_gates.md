@@ -214,6 +214,23 @@ nothing flashed, FLASH #23 intact.
   — all thirteen MATCH, **the four that already MATCH must not move**, and
   `lea_mod3_gate` stays PASS with `mod3_illegal` unmoved at `0/128`.
   ⚠ `mod=01`/`mod=10` (base+index **and** displacement) was **NOT PROBED**.
+* **THE LADDER IS ZERO-DELTA — 31 LEGS SAME, 0 MOVED, 0 NEW.**  169,000 at
+  `--ce-div` 2, 3, 4 **and** 8 with div 1 REFUSED citing **C-a** · the four HLT
+  sweeps **279/283** at `--waits 0/1/2/3`, survivors at `(10, 'busstat')`,
+  `(12, 'busstat')`, `(14, 'busstat')` · `v0.2` **347,000/347,000** · `v0.3`
+  **3,699,998/3,699,998 [2 excluded]** · `v20suite` **3,124,992/3,125,000 ARCH**
+  with the SAME eight forms · `ss_lint` **232 / 229 flops / 4 whitelist / 0
+  UNMAPPED** · `cutset_lint` 81/0 · `phase_split_lint` 157/779/0 · `r7_lint`
+  PASS · `qsf_lint --check` CANONICAL · `core_portlist_lint` 4 configurations ·
+  `test_quartus_gate` **302/302** · `test_artifact` **45/45** ·
+  `lea_mod3_gate` PASS · `chainflat_relocation_check` 9/9 · `chain_lfsr_gate`
+  PASS · `demux_off_gate` PASS · `check_boot` 220 and 400 · `check_ab_sim`
+  **187** · `ghost_launch_law score` **200/200** · G0 **9,988** · `pla3_check`
+  21 · `ucrom_mif_check` PASS.
+  ⭐ **AND THE `v0.3` LEG'S 355-FORM LOG IS BYTE-IDENTICAL** (sha256
+  `644a11c5e09f38ed…`) **to `sw/testdata/edge-removal/v03_confirm.log`**, the
+  §D.1 confirming run — which is also the strongest proof that the B-1 restore
+  worked: one changed golden in 3,700,000 would have moved a per-form line.
 
 ---
 

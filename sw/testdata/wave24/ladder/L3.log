@@ -1,0 +1,218 @@
+=== check_core ce-div 2
+NMI.90: 200/200 full  (cycles 200, arch 200)
+NMI.B8: 200/200 full  (cycles 200, arch 200)
+POLL.LO: 200/200 full  (cycles 200, arch 200)
+POLL.REL: 200/200 full  (cycles 200, arch 200)
+
+TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+--- rc=0
+=== check_core ce-div 3
+NMI.90: 200/200 full  (cycles 200, arch 200)
+NMI.B8: 200/200 full  (cycles 200, arch 200)
+POLL.LO: 200/200 full  (cycles 200, arch 200)
+POLL.REL: 200/200 full  (cycles 200, arch 200)
+
+TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+--- rc=0
+=== check_core ce-div 4
+NMI.90: 200/200 full  (cycles 200, arch 200)
+NMI.B8: 200/200 full  (cycles 200, arch 200)
+POLL.LO: 200/200 full  (cycles 200, arch 200)
+POLL.REL: 200/200 full  (cycles 200, arch 200)
+
+TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+--- rc=0
+=== check_core ce-div 8
+NMI.90: 200/200 full  (cycles 200, arch 200)
+NMI.B8: 200/200 full  (cycles 200, arch 200)
+POLL.LO: 200/200 full  (cycles 200, arch 200)
+POLL.REL: 200/200 full  (cycles 200, arch 200)
+
+TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+--- rc=0
+=== check_core ce-div 1 (must REFUSE)
+    C-a  `ce` and `ce_half` are never asserted on the same fabric clock.
+  div 1 asserts BOTH on EVERY clock.  Adjacent enables ARE legal (USER RULING
+  2026-08-13), so the minimum legal divisor is 2 -- which is M72's catch-up
+  burst rate.  The default is 4, and a default is not a floor.
+  See hdl/rtl/ucore/v30_core.sv's own assert, hdl/nec_test.sdc and
+  docs/notes/ce_contract_correction_prereg_2026-08-13.md §2.
+--- rc=2
+=== HLT s10-w0
+[suitemeta] s10-hltsweep-w0: dialect 'absent' -- NO opcode map of its own; DELEGATING to tests/v30/v0.1/metadata.json
+HLT.INT: 48/48 full  (cycles 48, arch 48)
+HLT.RES: 49/49 full  (cycles 49, arch 49)
+
+TOTAL: 97/97 full (cycles 97, arch 97)
+--- rc=0
+=== HLT s10-w1
+  HLT.INT idx 9 ('halt <halt/int d=38>'):
+    row 10 busstat: exp 'CODE' got 'PASV'
+HLT.INT: 44/46 full  (cycles 44, arch 46)  first-div: (10, 'busstat')x2
+HLT.RES: 49/49 full  (cycles 49, arch 49)
+
+TOTAL: 93/95 full (cycles 93, arch 95)
+--- rc=1
+=== HLT s13-w2
+  HLT.INT idx 12 ('halt <halt/int d=38>'):
+    row 12 busstat: exp 'CODE' got 'PASV'
+HLT.INT: 20/21 full  (cycles 20, arch 21)  first-div: (12, 'busstat')x1
+HLT.RES: 25/25 full  (cycles 25, arch 25)
+
+TOTAL: 45/46 full (cycles 45, arch 46)
+--- rc=1
+=== HLT s13-w3
+  HLT.INT idx 15 ('halt <halt/int d=38>'):
+    row 14 busstat: exp 'CODE' got 'PASV'
+HLT.INT: 19/20 full  (cycles 19, arch 20)  first-div: (14, 'busstat')x1
+HLT.RES: 25/25 full  (cycles 25, arch 25)
+
+TOTAL: 44/45 full (cycles 44, arch 45)
+--- rc=1
+=== ss_lint
+ss_lint: PASS (109x2 BIU + 122x2 EU + tag = 232; constants OK)
+
+BIU (v30u_biu.sv): 91 architectural flops -> 91 SSA-mapped, 0 whitelisted, 0 UNMAPPED; 0 sim-only exempt (205 comb/next-state regs skipped)
+EU (v30u_eu.sv +20 includes): 138 architectural flops -> 134 SSA-mapped, 4 whitelisted, 0 UNMAPPED; 3 sim-only exempt (432 comb/next-state regs skipped)
+
+ss_flopcensus: PASS (229 architectural flops, all SSA-mapped or whitelisted; 4 whitelist entries)
+--- rc=0
+=== cutset_lint
+  cut-set members : 81
+  s1w_ in block   : 0 (must be 0 outside the alias lines)
+  module combinational values the block names : 0 (must be 0)
+  live-tainted members : none
+
+=== cutset_lint: PASS   (81 members / 0 violations)
+--- rc=0
+=== phase_split_lint
+  members      : 157
+  summed width : 779   S1W = 779
+  preload incl : 2
+  live-in-stage1: none
+
+=== phase_split_lint: PASS   (157 members / 779 bits / 0 violations)
+--- rc=0
+=== r7_lint
+  --- (b) `stop` under a live-READY condition ---
+  tainted signals     : 3 (eu_rd_edge, rd_edge_psw_take, rd_edge_take_raw)
+  `stop` sites      : 41 in v30u_eu_step.svh, v30u_eu_row.svh
+  OK: no `stop` sits under a live-READY condition
+
+=== r7_lint: PASS   (0 undeclared carrier(s), 0 undeclared unresolved, 0 `stop` site(s))
+--- rc=0
+=== qsf_lint --check
+qsf_lint: nec_test_ucore.qsf is CANONICAL (0 materialised assignments, one file list, one output directory)
+--- rc=0
+=== core_portlist_lint
+core_portlist_lint: system_large / FABRIC (nec_test_ucore.qsf VERILOG_MACROs)
+    defines ['SYNTHESIS', 'V30_MUXED_AD']  instance `u_core`  24 declared, 24 connected  -> OK
+core_portlist_lint: tb_demux_min / demux_off_gate.py (the DE-MUXED configuration)
+    defines (none)  instance `dut`  23 declared, 23 connected  -> OK
+
+core_portlist_lint: PASS | every named connection to v30_core is a declared port, in 4 configuration(s)
+--- rc=0
+=== test_quartus_gate
+Q17 E11: no %y%m%d build stamp on the build path -- and the bar FIRES
+
+Q18 E1: the revision .qsf is CANONICAL -- and the bar FIRES
+
+302 / 302 checks pass
+=== test_quartus_gate: PASS
+--- rc=0
+=== test_artifact
+[9] THE A/B DELTA MANIFEST -- spec §5
+
+=== test_artifact: 45/45 checks pass
+=== the layer rejects a perturbed input, a stale artifact, a receipt-less
+    artifact, a wrong-named output and a mismatched tool -- and runs
+    through an irrelevant change.  NON-VACUOUS.
+--- rc=0
+=== lea_mod3_gate
+  L1b OBSERVED      2 unscored row(s): MOV[3010h],AH si_loaded=0x4121 match=False; MOV CW,[4455h] si_loaded=0xd4e5 match=False
+  L4  KNOWN-RED     2 of 2 ModR/M-predecessor silicon row(s) DIVERGE -- REPORTED, NOT A BAR (results doc §4)
+  L2  ROUTING       64/64   (8 reg fields x 8 rm, confinement checked)
+  L3  NON-VACUITY   3/3
+  71 whole-program replays, from RESET, no backdoor injection
+PASS
+--- rc=0
+=== chainflat_relocation_check
+  G-11 S_TAIL_POP    exactly one copy: hdl/rtl/ucore/v30u_eu_arm_tail_pop.svh
+  G-11 S_INSTR_END   exactly one copy: hdl/rtl/ucore/v30u_eu_arm_instr_end.svh
+
+  G-12 reconstruction from `case (st_n)` onward: IDENTICAL to aba01feb07
+
+chainflat_relocation_check: PASS -- 9 arms, one copy each, byte-identical to aba01feb07, reconstruction exact
+--- rc=0
+=== chain_lfsr_gate
+      live  fpops=1366 qpops=2946 IOR=46 IOW=18 HALT=5 CODE=1866 MEMR=1625 MEMW=2027
+  seed 4: rc=0 CHAIN_DEPTH_MAX=6 entry_st=25 ce_clocks=66559 g0=8204 coincide=0 sig=d05b6c3c3d9fbe78
+      gaps g0=8204 g1=8360 g2=8356 g3=8278 g4=8361 g5=8274 g6=8278 g7=8448
+      live  fpops=468 qpops=907 IOR=10 IOW=5 HALT=4 CODE=554 MEMR=350 MEMW=340
+
+chain_lfsr_gate: PASS -- CHAIN_MAX 7, observed depth [6], 0 overflows, 4 seeds x 400000 clocks
+--- rc=0
+=== demux_off_gate
+  .AD_OE    spliced in -> exit 1: REFUSED, pin named
+
+=== LEG 3/3  ON -- the control: the define really selects
+  tb_demux_min built WITH -DV30_MUXED_AD -> exit 1, DATA_I named
+
+=== demux_off_gate: PASS -- the de-muxed core builds and runs, the two muxed ports are GONE, and the define is what removes them
+--- rc=0
+=== check_boot 220
+  RTL leg hdl/tb/obj_dir_ucore/Vtb_v30_core  receipt 5332bc26a38de4b2…
+
+loop CODE T1 @00100: real [26, 90, 154, 218] sim [26, 90, 154, 218]
+real loop period 64; sim loop period 64
+
+BOOT REPLAY MATCHES over 220 rows from RESET release
+--- rc=0
+=== check_boot 400
+  RTL leg hdl/tb/obj_dir_ucore/Vtb_v30_core  receipt 5332bc26a38de4b2…
+
+loop CODE T1 @00100: real [26, 90, 154, 218, 282, 346] sim [26, 90, 154, 218, 282, 346]
+real loop period 64; sim loop period 64
+
+BOOT REPLAY MATCHES over 400 rows from RESET release
+--- rc=0
+=== check_ab_sim
+== check_ab_sim: ucore core inside system_large, vs the chip's own boot capture ==
+   artifact hdl/tb/obj_dir_ab_ucore/tb_ab  receipt 4cd46765f677f1a9…
+
+loop CODE T1 @00100: real [26, 90, 154] core [26, 90, 154]
+
+AB SIM MATCHES CHIP BOOT over 187 rows from RESET release
+--- rc=0
+=== ghost_launch_law score
+     dGR 3    law=BARE  {'BARE': 4}
+     dGR 4    law=BARE  {'BARE': 8}
+     dGR 5    law=BARE  {'BARE': 8}
+     dGR 6    law=BARE  {'BARE': 4}
+
+== ALL THREE POPULATIONS: 200/200 = 100.0 %
+--- rc=0
+=== check_ucore_tables (G0)
+  pla3_tables.svh ext: 256/256 identical
+
+LEG C -- artifacts are current with the generator
+gen_ucore_tables --check: PASS (4 artifacts current)
+
+check_ucore_tables: PASS -- G0 GREEN (1028 rows + 8192 micro-addresses + 768 PLA entries = 9988 entries byte-identical to the frozen `v30sim dump-tables` reference, on both legs)
+--- rc=0
+=== pla3_check
+  ok  D: 0F page decodes at BLOCK granularity; 22 documented ModR/M forms + 18 alias fill-ins (29, 2B, 2C, 2D, 2E, 2F, 30, 32, 34, 35, 36, 37, 38, 3A, 3C, 3D, 3E, 3F)
+  ok  D: 0F page asserts nothing outside 0F 10-3F (0F FF BRKEM is handled entirely by microcode, not by this PLA)
+  ok  E: pla_2 bank 0 == all 16 native conditions, 2048/2048 cells (cc = opcode bits 3..0, flags V/CY/Z/S/P, all inputs active-low)
+  ok  E: pla_2 bank 1 == all 8 8080 conditions, 2048/2048 cells (ccc = opcode bits 5..3; AC and V are not testable, as on the 8080)
+
+pla3_check: OK (21 checks passed)
+--- rc=0
+=== ucrom_mif_check
+        8192 x 12  <- ucdecode.hex (8192 lines)  non-zero words 1656
+        every one of 8192 words identical
+  [OK ] nec_test_ucore.ram1_v30u_ucrom_f358d0ef.hdl.mif
+        1028 x 29  <- ucrom.hex (1028 lines)  non-zero words 1028
+        every one of 1028 words identical
+ucrom_mif_check: PASS -- every emitted microcode table matches its .hex word for word
+--- rc=0

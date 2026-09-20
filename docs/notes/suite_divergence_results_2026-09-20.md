@@ -20,7 +20,7 @@ first `tests/` edit and before the first board probe**; the B-2 rig
 | **B-1** re-capture the two `VOID` goldens | ⚠ **COLLISION PROVED, RE-CAPTURE TAKEN, AND THE REPLACEMENT REFUSED.**  The emitter and the scorer are in different image eras (§5); the suite was **RESTORED BYTE-IDENTICAL** and the exemptions stay.  **REGISTERED MISS** |
 | **B-2** the ModR/M retained-EA lane | ⭐ **CAPTURED FROM SILICON WITH CONSTRUCTED BYTES, 13 / 13.**  The controls reproduce the 2026-07-27 rows EXACTLY.  **A REAL DIVERGENCE, 6 of 13 — and WAVE 23's own reading of it is REFINED BY ITS OWN FALSIFIER** |
 | **B-3** `mod3_illegal` | route costed, **NOT TAKEN** (§7) |
-| ladder | §8 |
+| ladder | **31 legs SAME, 0 MOVED, 0 NEW** — §8 |
 
 **FOUR OF THE FIVE "KNOWN DIVERGENCES" ARE INSTRUMENTS.  THE ONE THAT IS NOT IS
 NEW, AND IT IS THE ONE NOBODY HAD ASKED FOR.**
@@ -198,6 +198,14 @@ today are `neither` too, while **18 of 18 BANKED cases replay `flat`**.
 > `tb_v30_core.sv:1072`.  The failing rows' diverging column **is the fill
 > word** — `0x9090` in the 2026-07 goldens, `0xCCCC` in one captured today.
 
+> ⭐ **AND B-2 CORROBORATES IT FROM A COMPLETELY DIFFERENT INSTRUMENT.**  The
+> frozen 2026-07-27 silicon row `MOV CW,[4455h]` reads **`0xD4E5 = 0x4455 +
+> 0x9090`**; the SAME instruction, captured from the socket today, reads
+> **`0x1121 = 0x4455 + 0xCCCC`** (§6.1).  *One term changed, and it is the
+> image fill byte, measured on silicon, with the law holding either side of it.*
+> **Two instruments, one fact: the composer's fill went `0x90` → `0xCC` and the
+> testbench's did not.**
+
 **THE SUITE WAS RESTORED BYTE-IDENTICAL** (`7e1f444cb318…` / `8e7824acc4e3…`,
 before and after) and **the two exemptions stay**.  Shipping the replacements
 would have traded a documented, thrice-derived golden defect for an
@@ -371,7 +379,56 @@ predecessor-free stimulus would add cases, not information.
 
 ## §8  THE LADDER
 
-<!-- WAVE24-LADDER -->
+**Every leg below was RUN on this tree in this wave.  `RC` is the process exit
+code, captured with `${PIPESTATUS[0]}`, never `tail`'s.**  Raw logs by value at
+`sw/testdata/wave24/ladder/`.
+
+| leg | command | registered | **measured** | |
+|---|---|---|---|---|
+| `check_core` | `--core ucore --opcodes all --cases 0 --ce-div 4` | 169,000 | **169,000 / 169,000 full** | SAME |
+| `check_core` | `… --ce-div 2` | 169,000 | **169,000 / 169,000 full** | SAME |
+| `check_core` | `… --ce-div 3` | 169,000 | **169,000 / 169,000 full** | SAME |
+| `check_core` | `… --ce-div 8` | 169,000 | **169,000 / 169,000 full** | SAME |
+| `check_core` | `… --ce-div 1` | **REFUSED** | **exit 2**, clause **C-a** cited by name | SAME |
+| HLT sweep `s10-w0` | `--waits 0` | 97 | **97 / 97** | SAME |
+| HLT sweep `s10-w1` | `--waits 1` | 93 | **93 / 95**, the survivor at `(10, 'busstat')` | SAME |
+| HLT sweep `s13-w2` | `--waits 2` | 45 | **45 / 46**, `(12, 'busstat')` | SAME |
+| HLT sweep `s13-w3` | `--waits 3` | 44 | **44 / 45**, `(14, 'busstat')` | SAME |
+| *the four sweeps* | | **279 / 283** | **279 / 283** | SAME |
+| `v0.2` | `--suite-dir tests/v30/v0.2 --opcodes all --cases 0` | 347,000 | **347,000 / 347,000 full** | SAME |
+| **`v0.3`** | `--suite-dir tests/v30/v0.3 --opcodes all --cases 0` | 3,699,998 [2 excluded] | **3,699,998 / 3,699,998 full  [2 documented pre-existing excluded]** | ⚠ **SAME — and the REGISTERED 3,700,000 / 3,700,000 IS A MISS (§5)** |
+| `v20suite` | `… --arch-only` | 3,124,992 / 3,125,000 | **3,124,992 / 3,125,000 ARCH**, the SAME eight forms, one case each | SAME |
+| `ss_lint --core ucore` | | 232 / 229 flops / 4 whitelist / 0 UNMAPPED | **PASS — 232 (109×2 BIU + 122×2 EU + tag); 229 flops; 4 whitelisted; 0 UNMAPPED** | SAME |
+| `cutset_lint` | | 81 / 0 | **PASS (81 members / 0 violations)** | SAME |
+| `phase_split_lint` | | 157 / 779 / 0 | **PASS (157 members / 779 bits / 0 violations)** | SAME |
+| `r7_lint` | | PASS | **PASS — 0 undeclared carriers, 0 undeclared unresolved, 41 `stop` sites, 0 violations** | SAME |
+| `qsf_lint --check` | | CANONICAL | **CANONICAL** (0 materialised assignments, one file list, one output directory) | SAME |
+| `core_portlist_lint` | | 4 configurations | **PASS — 4 configuration(s)** | SAME |
+| `test_quartus_gate` | | 302 / 302 | **302 / 302, PASS** | SAME |
+| `test_artifact` | | 45 / 45 | **45 / 45, NON-VACUOUS** | SAME |
+| `lea_mod3_gate` | | PASS | **PASS — L1 2/2 · L2 64/64 · L3 3/3 · L4 2 of 2 KNOWN-RED**, 71 replays | SAME |
+| `chainflat_relocation_check` | | 9 / 9 | **PASS — 9 arms, one copy each, byte-identical to `aba01feb07`, reconstruction exact** | SAME |
+| `chain_lfsr_gate` | | four signatures byte-identical | **PASS** — CHAIN_MAX 7, observed depth [6], 0 overflows, 4 seeds × 400,000 clocks | SAME |
+| `demux_off_gate` | | PASS | **PASS — 3 legs** | SAME |
+| `check_boot` | `220` | MATCH | **MATCHES over 220 rows from RESET release** | SAME |
+| `check_boot` | `400` | MATCH | **MATCHES over 400 rows** | SAME |
+| `check_ab_sim` | `--core ucore` | 187 | **AB SIM MATCHES CHIP BOOT over 187 rows** | SAME |
+| `ghost_launch_law` | `score` | 200 / 200 | **ALL THREE POPULATIONS: 200/200 = 100.0 %** | SAME |
+| `check_ucore_tables` (G0) | | 9,988 | **PASS — 1028 rows + 8192 micro-addresses + 768 PLA entries = 9,988 byte-identical on both legs** | SAME |
+| `pla3_check` | | 21 checks | **OK (21 checks passed)** | SAME |
+| `ucrom_mif_check` | | PASS | **PASS — every emitted table matches its `.hex` word for word** | SAME |
+
+**31 LEGS SAME · 0 MOVED · 0 NEW.**  Architectural cases re-scored this wave:
+**169,000 × 4 + 347,000 + 3,699,998 + 3,125,000 + 283 = 7,848,281**, plus the
+**170,000** of §4, the **80,000** of §4b's eight forms and the **3,000** of §3.
+
+> ⭐ **AND THE `v0.3` LEG IS BYTE-IDENTICAL TO THE RUN THAT REGISTERED IT.**
+> This wave's 355-form log has sha256 **`644a11c5e09f38ed…`** — **the same
+> file, byte for byte**, as `sw/testdata/edge-removal/v03_confirm.log`, the
+> confirming run `invalidation_ledger.md` §D.1 recorded earlier the same day.
+> **That is also the strongest available proof that §5's restore worked**: a
+> single changed golden anywhere in 3,700,000 would have changed a per-form
+> line, and none did.
 
 ---
 
@@ -399,7 +456,7 @@ predecessor-free stimulus would add cases, not information.
 | **Y-3** | **MET — ONE MECHANISM, and WAVE 22's is REFUTED** (§4b): a two-sided directed control at 20/20 and a fingerprint that holds 8/8 |
 | **Y-4** | ⚠ **PARTIAL, AND THE SHORTFALL IS THE RESULT.**  Collision **shown** (three derivations), case **regenerated**, **re-captured from silicon** — and the exemption **NOT retired**, because the replacement is unreadable by the scorer (§5).  Original archived byte-identical, ledger entry **§E** written |
 | **Y-5** | **MET** — 13/13 captured with CONSTRUCTED encodings, mechanism reported (§6.2), `hdl/` untouched, falsifier registered (§6.3) |
-| **Y-6** | §8 |
+| **Y-6** | **MET — 31 legs SAME, 0 MOVED, 0 NEW**, and `v0.3` did NOT move because §5's replacement was refused, which is the one deviation P-B1c registered in advance.  The `v0.3` leg's log is **byte-identical** to the run that registered the figure |
 | **Y-7** | **MET — `git diff -- hdl/` EMPTY throughout** |
 | **Y-8** | **MET** — no `git stash` / `checkout .` / `reset --hard` at any point; every `git add` by explicit path; `sw/testdata/receipts/*.jsonl` never staged; the user's 21 modified and 16 untracked files untouched |
 | **Y-9** | **MET** — §11, reported as a FLOOR with a disposition each |
@@ -417,6 +474,8 @@ predecessor-free stimulus would add cases, not information.
 | **W-5** | `sw/char_mod3.py` docstring | *"the four memory-operand-REQUIRED opcodes that **wedge v30_core at S_HALT**"* — describes the deleted FSM core (WAVE 23 proved the ucore does not wedge) | **LEFT WITH REASON** — it is the rig that froze the 2026-07-27 artifact, and its probe list already disagrees with the artifact it froze (§6).  Editing its prose would make it look like the rig that took those rows.  Recorded here and in §6 |
 | **W-6** | `tests/v30/v0.3/README.md` | *"every case is reproducible from seed `f\"{base}/{opcode}/{n}\"`"* — **not true today**: `0F1B`'s index 3917 came from seed-attempt **3919** (7,321 of 10,000 indices have `idx != seed`), and re-composing either VOID case's recorded seed today yields a **different instruction encoding and a different `CS:IP`** | **LEFT UNTOUCHED — IT IS THE USER'S OWN MODIFIED FILE** (`git status`: ` M`).  Recorded here instead |
 | **W-7** | `emit_suite.cmd_reemit` docstring | *"only valid for forms whose current file has `idx == seed`"* — and `_emit_one_index` **always** starts from `.../{idx}`, so on a form where they differ a re-emit silently produces a different lineage.  `cmd_reemit` also does **not** update `XX.seeds.json`, whose `[idx, seed]` map cannot express a within-index reroll `.../{idx}/{r}` at all | **RECORDED, NOT FIXED** — a wave that could not ship its re-emission should not also rewrite the re-emitter |
+
+| **W-8** | `sw/lea_mod3_gate.py`, leg **L1b/L4** | prints the frozen `si_loaded=0xd4e5` for `MOV CW,[4455h]` as *the* silicon value.  **It is FILL-DEPENDENT**: the same instruction on the same part reads **`0x1121`** today, because the composer's fill moved `0x90` → `0xCC` (§5, §6.1).  The gate is not wrong — it reads the artifact, and L4 is REPORTED, not a bar — but the number is not reproducible on the current rig and nothing says so | **RECORDED, NOT FIXED** — the gate is WAVE 23's and its L4 is explicitly not a bar; changing what it prints in the wave that found the reason would make the two waves' outputs incomparable |
 
 ⚠ **THE COUNT IS A FLOOR AND THE METHOD SAYS SO.**  This is a manual
 enumeration over the documents this wave had reason to open.  **W-3, W-4 and

@@ -1,0 +1,3 @@
+TOTAL: 3699998/3699998 full (cycles 3699998, arch 3699998)  [2 documented pre-existing excluded]
+TOTAL ARCH: 3124992/3125000
+TOTAL: 347000/347000 full (cycles 347000, arch 347000)

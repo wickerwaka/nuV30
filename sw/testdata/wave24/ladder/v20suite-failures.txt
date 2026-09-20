@@ -1,0 +1,8 @@
+03: ARCH 9999/10000  fail-classes: regs:sp,flagsx1
+0F1D: ARCH 9999/10000  fail-classes: regs:bx,flagsx1
+29: ARCH 9999/10000  fail-classes: regs:sp,bpx1
+62: ARCH 9999/10000  fail-classes: regs:dxx1
+85: ARCH 9999/10000  fail-classes: regs:cx,flagsx1
+86: ARCH 9999/10000  fail-classes: regs:dxx1
+E8: ARCH 9999/10000  fail-classes: regs:spx1
+E9: ARCH 9999/10000  fail-classes: regs:spx1
