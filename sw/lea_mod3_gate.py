@@ -172,7 +172,11 @@ class Runner:
 # --------------------------------------------------------------------------- #
 #  L1 / L1b -- the suite's own SILICON rows
 # --------------------------------------------------------------------------- #
-_PRE_RE = re.compile(r"^MOV\s*\[([0-9A-Fa-f]+)h\]\s*,\s*AW$")
+# `MOV [imm16],AW` -- the rig's own probe instruction, and the ONE preceding
+# form this gate will encode.  Matched on the prose field with all whitespace
+# removed, so "MOV[1234h],AW" and "MOV [1234h], AW" both hit and nothing else
+# does (`MOV[3010h],AH` and `MOV CW,[4455h]` are deliberately misses).
+_PRE_RE = re.compile(r"^MOV\[([0-9A-Fa-f]+)h\],AW$")
 
 
 def silicon_rows():
@@ -185,8 +189,7 @@ def silicon_rows():
     meta = json.loads((SUITE / "metadata.json").read_text())
     enc, unenc = [], []
     for row in meta.get("stale_ea_probe", []):
-        m = _PRE_RE.match(row["pre"].replace(" ", "").replace(",", " , ")
-                          .replace(" , ", ",").replace("MOV", "MOV "))
+        m = _PRE_RE.match("".join(row["pre"].split()))
         if m and int(m.group(1), 16) == row["ea"]:
             enc.append(row)
         else:
