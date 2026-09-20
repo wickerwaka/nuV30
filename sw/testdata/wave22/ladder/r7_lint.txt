@@ -1,0 +1,3 @@
+  OK: no `stop` sits under a live-READY condition
+
+=== r7_lint: PASS   (0 undeclared carrier(s), 0 undeclared unresolved, 0 `stop` site(s))

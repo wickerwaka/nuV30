@@ -1,0 +1,3 @@
+     dGR 6    law=BARE  {'BARE': 4}
+
+== ALL THREE POPULATIONS: 200/200 = 100.0 %

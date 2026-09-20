@@ -1212,7 +1212,7 @@ run after the removal and its behaviour recorded (`§Y-2 DEMONSTRATED`).
 | `python3 sw/simbin.py --disasm` (§A row 1, ⧉) | disasm byte-exact vs `V20UC.TXT`, **1,285 rows** | GREEN (run this session) | **NOTHING.** The ROM's disassembly has no second implementation in this tree |
 | `python3 sw/ulockstep.py --golden all --cases 50` | **17,350 / 17,350 ALL LOCKSTEP** | **GREEN — measured this session at `975ecd0187` before the removal** | **NOTHING.** It was the only model-vs-RTL clock-for-clock comparator, and its governing premise had been superseded for six weeks |
 | `python3 sw/timed_gate.py --suite … --forms all` | `v0.1` **169,000/169,000** · `-w1`/`-w3` 1,200 each · `EB` 200 · the four `evt` cells 200/1,200/200/1,200 · `w1evt-biased` 1,200 · the four HLT sweeps **283/283** | **GREEN on `v0.1` — measured this session, row-diffs 0** | **NOTHING for the model.** The same goldens are scored against the RTL by `check_core`, which is unmoved at 169,000 and 279/283 |
-| `python3 sw/ucsim_check.py --suite …` | the architectural ladder, **7,341,126 cases** (v0.1 169,000 + v0.2 347,000 + v0.3 3,699,998 + v20suite 3,125,000 + mod3_illegal 128) | not re-measured this session | **NOTHING — and this is the single largest loss in this entry.** `check_core --suite-dir` can reach the same suites against the RTL, but `v0.2` raises `KeyError: 'opcodes'` and **three of the four suites have never been run against the ucore** (`ucore_gaps_2026-08-04.md`). **The 7.17 M cases outside `v0.1` are now scored by nothing.** |
+| `python3 sw/ucsim_check.py --suite …` | the architectural ladder, **7,341,126 cases** (v0.1 169,000 + v0.2 347,000 + v0.3 3,699,998 + v20suite 3,125,000 + mod3_illegal 128) | not re-measured this session | ✅ **REPLACED 2026-09-19 (WAVE 22) by `python3 sw/check_core.py --core ucore --suite-dir tests/v30/<suite> --opcodes all --cases 0`** — `v20suite` needs `--arch-only`, `mod3_illegal` needs `--opcodes goldens`, and the metadata dialects are adapted by `sw/suitemeta.py`. `docs/notes/suite_scorer_prereg_2026-09-19.md` / `..._results_2026-09-19.md` carry the four measured totals and their taxonomies. ⚠ **THE REPLACEMENT IS NOT EQUAL TO WHAT WENT**: `check_core` scores the **RTL**, `ucsim_check` scored the **model**, and the two were never one measurement. ⚠ **AND THIS ROW OWED THREE CORRECTIONS, EACH MEASURED IN WAVE 22**: (a) **`v0.3` and `v20suite` were never BLOCKED — only never RUN**; (b) the `KeyError` also hit `mod3_illegal`, unnamed here; (c) **the 7.17 M double-counts** — `v0.3` *"supersedes v0.2 outright"* (`v0.3/README.md`), same seed base, 2.1 % of the 347,000 prefix cases differing. ⚠ **STILL TRUE**: `v0.2`/`v0.3`/`v20suite` are **NOT IN GIT** (per each suite's own `.gitignore`), so a scorer is not a repo-reproducible gate. *The original text: "NOTHING — and this is the single largest loss in this entry."* |
 | `python3 sw/ucsim_fuzz.py --bank …` | the S3 sequence gauntlet, **2,125 / 2,125** architectural dumps | not re-measured | **NOTHING** |
 | `python3 sw/check_boot.py --timed 220` | **220 / 220** rows from RESET release | not re-measured | the RTL legs `check_boot 220` and `400`, **which are PRESERVED and measured unmoved** — they had been killed by an unconditional `simbin.ensure()` and this wave made it conditional |
 | `python3 sw/qdepth_probe.py` | `rdq_ ≤ 2`, `rd_done_q_ ≤ 1` — the regime in which `timed_fuzz`'s `BOUND WARNINGS` is a theorem | not re-measured | **NOTHING.** The bound is still asserted as a hard failure inside `check_core`, where it is a theorem; what is gone is the instrument that PROVED the regime |
@@ -1694,3 +1694,85 @@ unexamined artifact. Each of these was checked this session and cleared.
 | **R6 — the s10/s13 per-repetition rows** | **a retention GAP, not poison** | Both manifests bank every per-rep `raw_sha` and `evt_fired`; only the per-rep *rows* are missing, so `HLT.INT_w2_d0`'s `stable_identical: false` cannot be **verified** as the same pad artefact as `HLT.INT_w0_d0`. Nothing captured is wrong; a verification is unavailable and needs the board. Standing caveat retained: `stable_key` changed at §26.1 and keys stored before it are internally valid and **not comparable across the change**. |
 | the campaign result logs (`sw/testdata/campaigns/*/results.jsonl`, 3,005 records asking `hold=300`) | **metadata only, no gate** | no standing gate reads `sw/testdata/campaigns/` |
 | the campaign raw capture archives (13,252 files) | **CLEAN** | schema is `{"real": [rows]}`; they carry no `evt` axis at all |
+
+---
+
+# ⚠ WAVE 22 ADDENDUM, 2026-09-19 — GATES THAT MOVED, AND WHY NONE DIED SILENTLY
+
+**This is not a new register.**  Nothing here is an `INV`, `SUP`, `EXC`, `ERR`
+or `RET`: no capture is false, no population moved, no seed left a rate, no
+derived column was recomputed, and **no instrument was deleted**.  It is the
+W-8 record of WAVE 22 (`docs/notes/suite_scorer_prereg_2026-09-19.md` /
+`..._results_2026-09-19.md`), filed here because this is where a reader looks
+for "what happened to that gate".
+
+## A — WHAT `RET-1` SAID WAS LOST, AND WHAT IT COSTS NOW
+
+RET-1's load-bearing row called `ucsim_check`'s 7,341,126-case architectural
+ladder *"the single largest loss in this entry … now scored by nothing"*.  That
+row is updated in place above.  **Its replacement is not equal to what went**:
+`check_core --suite-dir` scores the **RTL**; `ucsim_check` scored the **model**.
+The measured replacement figures are:
+
+| suite | **ucore, WAVE 22** |
+|---|---|
+| `v0.1` | 169,000 / 169,000 |
+| `v0.2` | **347,000 / 347,000** (and identically under `--raw-flags`) |
+| `v0.3` | **3,699,998 / 3,700,000** (list disabled) · **3,699,997 / 3,699,997** (list applied) |
+| `v20suite` | **3,124,992 / 3,125,000** ARCH |
+| `mod3_illegal` | cycles **128/128** · ARCH **0/128**, confinement CONFIRMED |
+
+⚠ **AND THE REPLACEMENT IS NOT A GATE.**  `v0.2`, `v0.3` and `v20suite` are NOT
+IN GIT (per each suite's own `.gitignore`), so **7,172,000 of those cases exist
+only on the machine that measured them.**  Recorded with per-suite sha256
+manifests; deciding whether they belong in the repository is the owner's call.
+
+## B — FIVE EAGER PRECONDITIONS REPAIRED (a WAVE 20 class, not a WAVE 20 miss)
+
+WAVE 20 repaired six unconditional `simbin.ensure()` calls and wrote *"An eager
+precondition is a coupling."*  **All six sat AFTER `parse_args()`.**  These five
+sat BEFORE it, so they refused for the retired model's sake before the flag that
+selects the engine had been read:
+
+| tool | last state | now | replaced by |
+|---|---|---|---|
+| `sw/timed_wvec_gate.py` | refused: `ModelRetired` on EVERY invocation | `ensure` behind `--core sim` | its OWN `gen_seq._v1_anchor_stop` refusal — **the v1-anchor casualty is on `master` too, and the blocker is the ANCHOR, not the model.**  Its registered `--core ucore` **88/88, +0.0 %** is anchor-blocked |
+| `sw/timed_enter_replay.py` | " | " | same; registered `--core ucore` **154/154 ×5** is anchor-blocked |
+| `sw/timed_ins_replay.py` | " | " | `FileNotFoundError: sw/case31_all_exts.txt`, **a file never committed to this repo** — confirming `CLAUDE.md`'s own staleness erratum §(a).  Registered `--core ucore` **1,312/1,312** and **2,624/2,624** are input-blocked |
+| `sw/uscope.py` | " (and it has NO `sim` option, ever) | `ensure` **DELETED** | **NOTHING — it works.**  `uscope 00 0` exits 0 |
+| `sw/wrfuzz_smoke.py` | " (`--core choices=("ucore",)`) | `ensure` **DELETED** | its OWN defect, `KeyError: 'brkem_pairs'`.  **Reported, NOT fixed** — a different mechanism |
+
+**Nothing was retired and nothing was replaced by nothing.**  Three ratchets
+that appeared model-blocked are now correctly attributed to an image anchor and
+an uncommitted input file; two tools that could never have run the model are
+alive.
+
+## C — `check_fuzz_bank` — AN ERRATUM AGAINST A LIVE LADDER, NOT A NEW DEATH
+
+WAVE 22's own briefing listed `check_fuzz_bank` **PASS 621** as a live
+zero-delta leg.  Measured: it **exits 1** through the `check_seq` pin with
+`FsmCoreRetired`.  **That is not a WAVE 22 casualty** — `RET-2` /
+`fsm_removal_results_2026-09-19.md:330` already records it as **FORMALLY
+RETIRED, replaced by NOTHING**, with `PASS | 621 | stable 621 …` as its LAST
+REGISTERED figure.  Recorded here so the figure is not quoted as current again.
+⚠ It refuses via a **traceback** rather than `fsmcore.refuse()`'s banner; noted,
+not changed.
+
+## D — `tests/v30/v0.3/known_divergences.json` — MEASURED, NOT EDITED
+
+Its three entries were established against **`8fd94df` / `4508e08`** (2026-07-25);
+`git ls-tree 4508e08 hdl/rtl/` lists `core` and **no `ucore`**.  **It is the
+ARCHIVED FSM CORE's accepted-residue list**, inherited by the ucore and never
+re-tested — including by `ucore_gaps_2026-08-04.md` §F.3.
+
+| entry | class | measured on the ucore |
+|---|---|---|
+| `0F1B`/3917 | VOID | **FAILS** — and its expected data is literally `0x63C0`, the PRELOAD bytes.  **The VOID claim is INDEPENDENTLY RE-DERIVED** |
+| `83.5`/8683 | VOID | **FAILS**, same signature.  Claim re-derived |
+| `646F`/8988 | EDGE | ✅ **PASSES 10,000/10,000 — THE EXEMPTION IS OBSOLETE** |
+
+**THE FILE IS UNEDITED AND NO ENTRY IS REMOVED.**  One sitting's reading is not
+grounds to change another's denominator, and removing the `EDGE` entry would
+move `v0.3`'s published denominator on a single wave's authority.
+`sw/check_core.py --no-known-divergences` exists so the question can be re-asked
+by anyone, at any time, without editing a list.

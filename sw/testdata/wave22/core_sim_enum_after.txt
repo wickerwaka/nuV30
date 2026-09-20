@@ -1,0 +1,17 @@
+TOTAL --core declarations: 47
+STILL OFFERING 'sim': 14
+  sw/s15_census.py:630: ap.add_argument("--core", default="sim", type=simbin.core_choice, help="replay engine, exactly as timed_fuzz --core.  ⚠ WAVE " "22: THERE IS ONE, `ucore`.  The C++ timed model " "(`sim`) was the DEFAU
+  sw/simbin.py:208: # measured: `add_argument("--core", default="sim", type=core_choice)` exits 2
+  sw/sm3_ackcmp.py:98: ap.add_argument("--core", default="sim", type=simbin.core_choice)
+  sw/sm3_famb_survey.py:177: ap.add_argument("--core", default="sim", type=simbin.core_choice)
+  sw/sm3_h1_cell.py:959: p.add_argument("--core", default="sim", type=simbin.core_choice)
+  sw/sm3_h3_cell.py:677: s.add_argument("--core", default="sim", type=simbin.core_choice)
+  sw/sm3_h3_cell.py:689: ws.add_argument("--core", default="sim", type=simbin.core_choice)
+  sw/sm3_h7_cell.py:307: s.add_argument("--core", default="sim", type=simbin.core_choice)
+  sw/sm3_tf_floor_cell.py:750: p.add_argument("--core", default="sim", type=simbin.core_choice)
+  sw/sm3_tf_floor_cell.py:760: p.add_argument("--core", default="sim", type=simbin.core_choice, help="the ENGINE scored against the retained chip rows.  " "⚠ THERE IS ONE: the ucore RTL in the Verilator TB.  " "The C++ timed model 
+  sw/timed_enter_replay.py:123: ap.add_argument("--core", default="sim", type=simbin.core_choice, help="replay engine.  ⚠ WAVE 22: THERE IS ONE -- a " "verilated RTL core through the TB's +bootimg mode, " "`--core ucore`.  The C++ t
+  sw/timed_fuzz.py:722: ap.add_argument("--core", default="sim", type=simbin.core_choice, help="replay engine.  ⚠ WAVE 22: THERE IS ONE, `ucore` -- " "the RTL core in the Verilator TB.  `sim` (the C++ " "timed model) was the
+  sw/timed_ins_replay.py:201: ap.add_argument("--core", default="sim", type=simbin.core_choice, help="replay engine.  ⚠ WAVE 22: THERE IS ONE -- a " "verilated RTL core through the TB's +bootimg mode, " "`--core ucore`.  The C++ t
+  sw/timed_wvec_gate.py:213: ap.add_argument("--core", type=simbin.core_choice, default="sim", help="which engine produces the per-bus-cycle stream " "(digest/baseline/scoring are identical for all).  " "⚠ WAVE 22: THERE IS ONE, 
+CARRYING type=simbin.core_choice: 24

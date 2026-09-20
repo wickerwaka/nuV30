@@ -1,0 +1,3 @@
+real loop period 64; sim loop period 64
+
+BOOT REPLAY MATCHES over 220 rows from RESET release

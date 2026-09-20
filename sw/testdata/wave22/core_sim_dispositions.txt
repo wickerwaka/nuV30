@@ -1,0 +1,52 @@
+DISPOSITION TABLE -- every --core hit that offered 'sim'
+
+FIXED                sw/sm3_ackcmp.py               choices offered 'sim'
+                       ap.add_argument("--core", default="sim", choices=("sim", "ucore"))
+FIXED                sw/sm3_bswap.py                choices offered 'sim'
+                       ap.add_argument("--core", default="ucore", choices=["sim", "ucore"])
+FIXED                sw/sm3_famb_survey.py          choices offered 'sim'
+                       ap.add_argument("--core", default="sim", choices=("sim", "ucore"))
+FIXED                sw/sm3_h1_cell.py              choices offered 'sim'
+                       p.add_argument("--core", default="sim", choices=("sim", "ucore"))
+FIXED                sw/sm3_h1_cell.py              choices offered 'sim'
+                       p.add_argument("--core", default="ucore", choices=("sim", "ucore"))
+SKIPPED (2 matches)  sw/sm3_h3_cell.py              choices offered 'sim'
+                       s.add_argument("--core", default="sim", choices=("sim", "ucore"))
+FIXED                sw/sm3_h3_cell.py              choices offered 'sim'
+                       ws.add_argument("--core", default="sim", choices=("sim", "ucore"))
+FIXED                sw/sm3_h7_cell.py              choices offered 'sim'
+                       s.add_argument("--core", default="sim", choices=("sim", "ucore"))
+FIXED                sw/sm3_haltsupp.py             choices offered 'sim'
+                       choices=("ucore", "sim"))
+FIXED                sw/sm3_s16_score.py            choices offered 'sim'
+                       ap.add_argument("--core", default="ucore", choices=("ucore", "sim"))
+FIXED                sw/sm3_tf_floor_cell.py        choices offered 'sim'
+                       p.add_argument("--core", default="sim", choices=("sim", "ucore"))
+FIXED                sw/w32_launch.py               choices offered 'sim'
+                       ap.add_argument("--core", default="ucore", choices=("sim", "ucore"))
+FIXED                sw/w33_take_cell.py            choices offered 'sim'
+                       p.add_argument("--core", default="ucore", choices=("ucore", "sim"))
+FIXED                sw/sm3_nmigeom.py              default="" means NO engine leg -- kept; only "sim" left the list
+                       ap.add_argument("--core", default="", choices=("", "sim", "ucore"))
+FIXED                sw/sm3_tf_floor_cell.py        help named the model as an engine
+                       the help-string declaration
+FIXED                sw/wrfuzz_wr1_guard.py         "both" meant sim+ucore; no second engine exists
+                           ap.add_argument("--core", default="both",
+                    choi
+FIXED                sw/wrfuzz_wr1_guard.py         the "both" expansion named the retired model
+                           cores = ("sim", "ucore") if a.core == "both" else (a.core,)
+FIXED                sw/wrfuzz_w7_gap_guard.py      "both" meant sim+ucore; no second engine exists
+                           ap.add_argument("--core", choices=("sim", "ucore", "both"), defaul
+FIXED                sw/wrfuzz_w7_gap_guard.py      the "both" expansion named the retired model
+                           cores = ("sim", "ucore") if args.core == "both" else (args.core,)
+
+18 FIXED, 1 SKIPPED
+
+DISPOSITION TABLE (continued)
+FIXED                sw/sm3_h3_cell.py              choices offered 'sim' (disambiguated from its `ws.` sibling)
+FIXED                sw/s15_census.py               help + default named the retired model as an engine
+FIXED                sw/timed_enter_replay.py       help + default named the retired model as an engine
+FIXED                sw/timed_ins_replay.py         help + default named the retired model as an engine
+FIXED                sw/timed_fuzz.py               help + default named the retired model AND the removed fsm core
+FIXED                sw/timed_wvec_gate.py          help + default named the retired model as an engine
+FIXED (2 sites)      sw/w34_grant.py                choices offered 'sim'

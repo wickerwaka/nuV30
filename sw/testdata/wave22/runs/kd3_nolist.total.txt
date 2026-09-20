@@ -1,0 +1,3 @@
+646F: 10000/10000 full  (cycles 10000, arch 10000)
+
+TOTAL: 29998/30000 full (cycles 29998, arch 29998)

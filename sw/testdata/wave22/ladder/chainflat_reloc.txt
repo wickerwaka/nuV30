@@ -1,0 +1,3 @@
+  G-12 reconstruction from `case (st_n)` onward: IDENTICAL to aba01feb07
+
+chainflat_relocation_check: PASS -- 9 arms, one copy each, byte-identical to aba01feb07, reconstruction exact

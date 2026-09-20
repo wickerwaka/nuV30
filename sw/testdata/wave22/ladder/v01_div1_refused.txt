@@ -1,0 +1,3 @@
+  burst rate.  The default is 4, and a default is not a floor.
+  See hdl/rtl/ucore/v30_core.sv's own assert, hdl/nec_test.sdc and
+  docs/notes/ce_contract_correction_prereg_2026-08-13.md §2.

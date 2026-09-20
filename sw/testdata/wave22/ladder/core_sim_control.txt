@@ -1,0 +1,3 @@
+  (6) core_choice_optional('') == '' -- sm3_nmigeom's "no engine leg" state survives
+
+CONTROL PASS -- 8 checks, 42 --core declarations, 24 validated, 13 defaults kept by design

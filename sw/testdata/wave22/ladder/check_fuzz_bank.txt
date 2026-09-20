@@ -1,0 +1,3 @@
+  ⚠ any figure this tool used to print is an FSM figure.  A ucore
+    leg is a DIFFERENT MEASUREMENT: re-register, never re-label.
+

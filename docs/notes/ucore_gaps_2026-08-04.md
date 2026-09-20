@@ -86,7 +86,7 @@ are new and the three ledger statements they correct.
 | # | area | item | size | owner | closer |
 |---|---|---|---|---|---|
 | **F1** | functional | **8080 / BRKEM execution is STRUCTURALLY UNREACHABLE in the ucore** — the loader never selects `pla3_mode8080` and `ld_page_n` never emits pages 5/6 — while `sim/` DOES implement it | 192 ROM rows + the BRKEM/RETEM/CALLN entries; 116 of 1,028 ROM rows never executed | **ucore** (undeclared RTL-vs-model gap) | render the 8080 page select + entry/exit path, **or** register an explicit scope exclusion so a gate can assert it. **THE EXCLUSION IS NOW REGISTERED — USER DECISION 2026-08-05: "8080 mode should not be tested or considered right now. It is something we will explore in a later campaign."** F1, the class-A PF_LOST population (92 REG seeds, §63.5), all 50 `has_brkem` seeds, and the `t30-brkem` bank (8/62) are DEFERRED-BY-DECISION residue for this campaign — carried in every census as a named exclusion, not worked, not counted against any silicon-match verdict. |
-| **F2** | functional | **Three of the four golden suites have never been run against the ucore** — `v0.2` (347,000), `v0.3` (3,699,998), `v20suite` (3,125,000). A U0-era deferral never revisited. **And `v0.2` cannot be run at all**: `check_core.py:709` reads a `metadata.json` `opcodes` map that `v0.2`'s emitter schema does not have (`KeyError`, either core) | 7,172,126 cases un-run of 7,341,126 | **coverage** + **rig** | run `v0.3` / `v20suite`; for `v0.2`, fall back to `flags_mask = 0xFFFF` when the manifest carries no `opcodes` map, or re-emit a compatible manifest |
+| **F2** | functional | ✅ **CLOSED 2026-09-19 BY WAVE 22** — `docs/notes/suite_scorer_prereg_2026-09-19.md` / `..._results_2026-09-19.md`.  All four suites now score against the ucore through `sw/check_core.py --suite-dir`, via the declared dialect adapter `sw/suitemeta.py`.  ⚠ **AND THREE OF THIS ROW'S OWN CLAIMS WERE WRONG, MEASURED**: (a) the line is **878**, not 709; (b) **`v0.3` and `v20suite` were never BLOCKED — they were never RUN**, and both scored on the unmodified tree the day WAVE 22 opened; (c) the suggested `flags_mask = 0xFFFF` fallback is the WRONG repair — the right one DELEGATES to `v0.1`'s opcode map, and WAVE 22 scored `v0.2` **both ways** to show the choice does not move its total.  *The original text is preserved below in §F.2 with a superseded banner, because a gap is only readable against what it claimed.* | **was** 7,172,126 un-run of 7,341,126 | **coverage** + **rig** | **DONE** |
 | **F3** | functional | **INM/OUTM (6C-6F) block I/O was rendered but ungated.** Measured this session: **229,999 / 229,999 cycles AND arch** over all 23 `v0.3` block-I/O forms | **CLOSED** | — | — (registered in `standing_gates.md` §B and `CLAUDE.md`) |
 | **F4** | functional | far-CALL / far-JMP `CS` recognition shadow and the taken-branch recognition boundary (`post_flush`) — documented, **not rendered**; no golden reaches either | 2 mechanisms | **ucore** (deliberate) | a golden that reaches them. None exists in any emitted suite. |
 | **F5** | functional | `opr_free_p` / `set_oprfree` are **PROVABLY VACUOUS** (F31) | 2 signals | ucore (benign) | none needed — recorded so it is not re-derived |
@@ -256,6 +256,34 @@ the ucore has been graded on **169,000** — 2.3 % — plus this session's 229,9
 block I/O, and `v20suite` is the independent µPD70108 architectural oracle. A
 core graded only on `v0.1` is graded on the population it was DEBUGGED against.
 
+> ### ⚠⚠ SUPERSEDED 2026-09-19 BY WAVE 22 — READ THIS BEFORE THE PARAGRAPHS BELOW
+>
+> **THE GAP IS CLOSED AND THREE OF THIS SECTION'S CLAIMS DID NOT SURVIVE
+> MEASUREMENT.**  `docs/notes/suite_scorer_prereg_2026-09-19.md` §0.4 and
+> `..._results_2026-09-19.md`.
+>
+> 1. **`v0.3` AND `v20suite` WERE NEVER BLOCKED.**  On the unmodified tree, with
+>    no edit of any kind, `check_core --core ucore --suite-dir tests/v30/v0.3
+>    --opcodes 00 --cases 0` scores **10000/10000 full** and
+>    `--suite-dir tests/v30/v20suite --arch-only` scores ARCH 4/4.  The table
+>    row's *"never been run"* was right; this section's framing of all three as
+>    one blockage was not.  **`v0.2` was the only hard blocker** — and so was
+>    `tests/v30/mod3_illegal`, which this section never mentions and which shares
+>    `v0.2`'s dialect exactly.
+> 2. **THE LINE IS 878, NOT 709.**  Stale by 169 lines.
+> 3. **IT IS NOT A DEFECT, IT IS A DIALECT MISMATCH**, and the repair suggested
+>    below (`flags_mask = 0xFFFF`) is the WRONG one: masking nothing is
+>    *stricter*, and the mask encodes flag bits the part leaves undefined, so
+>    0xFFFF manufactures failures that are not divergences.  The rule that
+>    resolves it is ONE SENTENCE — *a suite's opcode map comes from its own
+>    `metadata.json` when that file has one, and from `v0.1`'s otherwise* — and
+>    **`sw/ucsim_check.py::load_meta` already implemented it**, which is why the
+>    C++ model's own scorer could read `v0.2` when `check_core` could not.  It
+>    now lives in `sw/suitemeta.py` with its own falsifier.
+>
+> *The original text follows unchanged, because a gap is only readable against
+> what it claimed.*
+
 **AND `v0.2` IS BLOCKED ON A TOOLING DEFECT, not on time — measured this
 session.** `sw/check_core.py --suite-dir tests/v30/v0.2` dies on the first form
 with `KeyError: 'opcodes'` at `check_core.py:709`, **for either core**:
@@ -297,6 +325,18 @@ block-I/O forms:
 TOTAL: 229,999 / 229,999 full (cycles 229,999, arch 229,999)
                                    [1 documented pre-existing excluded: 646F/[8988]]
 ```
+
+> ⚠ **WAVE 22, 2026-09-19 — THAT ONE EXCLUSION WAS INHERITED, NOT MEASURED.**
+> `646F/8988` is the single `EDGE` entry of
+> `tests/v30/v0.3/known_divergences.json`, and that file's own `_doc` establishes
+> its three entries against commits **8fd94df / 4508e08** (2026-07-25).
+> `git ls-tree 4508e08 hdl/rtl/` lists **`core` and NO `ucore`** — so the list is
+> the **ARCHIVED FSM CORE's** accepted residue, established two weeks before the
+> ucore existed and carried into this figure without ever being re-tested against
+> it.  WAVE 22 re-scored `v0.3` with the list DISABLED
+> (`check_core --no-known-divergences`, a flag it added) and reports both
+> numbers; see `suite_scorer_prereg_2026-09-19.md` §0.5 and the results document.
+> **The figure above is not withdrawn — its denominator is annotated.**
 
 **Registered as a ucore ratchet.** *Disambiguation, because the names collide*:
 `timed_ins_replay`'s 1,312/2,624 is the **bit-field INS** (`0F 31` / `0F 39`,
@@ -1007,6 +1047,8 @@ future reader can tell measurement from inheritance.
 * **`v0.2`** (347,000) — **attempted and BLOCKED**, `KeyError: 'opcodes'` at
   `check_core.py:709`. That is the §F.2 tooling finding, and it is a result: the
   suite has never been runnable through this checker, for either core.
+  ⚠ **CLOSED 2026-09-19 (WAVE 22); the line was 878, and the cause was a dialect
+  mismatch rather than a defect.  See the §F.2 banner.**
 * **The full `v0.3`** (3,699,998) — launched at the end of this session. If it
   is not recorded in §Z.2 it did not finish inside the session, and §F.2 stands
   as written. Its 23 block-I/O forms DID complete and are §F.3.

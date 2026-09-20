@@ -1,0 +1,3 @@
+  tb_demux_min built WITH -DV30_MUXED_AD -> exit 1, DATA_I named
+
+=== demux_off_gate: PASS -- the de-muxed core builds and runs, the two muxed ports are GONE, and the define is what removes them

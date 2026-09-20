@@ -1,0 +1,3 @@
+      fired: 16 of 347 v0.2 forms move when the target is emptied
+
+suitemeta --selfcheck: PASS -- 17 checks, 3 dialects reached, 0 skipped

@@ -1,0 +1,9 @@
+v0.1       347 forms, 0 differ, 16 carry a real mask (non-vacuous)
+v20suite   360 forms, 0 differ, 99 carry a real mask (non-vacuous)
+v0.1-w1          6 forms, 0 differ
+v0.1-w3          6 forms, 0 differ
+v0.1-w1evt       6 forms, 0 differ
+f4a_boundary     4 forms, 0 differ
+f0lock_tranche   4 forms, 0 differ
+
+W-2 PART A: 733 forms compared, 0 DIFFER -> PASS (adapter is a pure no-op where the old code could reach)

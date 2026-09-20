@@ -1,0 +1,3 @@
+
+302 / 302 checks pass
+=== test_quartus_gate: PASS

@@ -236,6 +236,20 @@ audit is `docs/notes/staleness_audit_2026-09-19.md`.**
   `check_core --suite-dir` reaches the same goldens against the RTL, but
   `v0.2` raises `KeyError: 'opcodes'` and three of the four have never been run
   against the ucore (`ucore_gaps_2026-08-04.md`).
+  ✅ **CLOSED 2026-09-19 BY WAVE 22** (`docs/notes/suite_scorer_prereg_2026-09-19.md`,
+  `..._results_2026-09-19.md`).  All four suites score against the ucore through
+  `check_core --suite-dir`; the blocker was a **METADATA DIALECT**, not a defect,
+  and the rule is one sentence now living in `sw/suitemeta.py`.
+  ⚠ **AND THIS BULLET OWED THREE CORRECTIONS, EACH MEASURED**: (a) **`v0.3` and
+  `v20suite` were never BLOCKED — only never RUN**, and both scored on the
+  unmodified tree; (b) the blocker also hit **`tests/v30/mod3_illegal`** (128),
+  which this bullet never named; (c) **the 7.17 M DOUBLE-COUNTS** — `v0.3`
+  *"supersedes v0.2 outright"* in `v0.3/README.md`'s own words, same seed base,
+  2.1 % of the 347,000 prefix cases differing.
+  ⚠ **WHAT IS STILL TRUE AND IS THE REAL EXPOSURE**: those three suites are
+  **NOT IN GIT** — 1 tracked file of 351, 3 of 746, 3 of 364, deliberate per each
+  suite's `.gitignore` (916 MB) — so giving them a scorer does **not** give them
+  a repo-reproducible GATE.
 * **GATE G0 IS PRESERVED.**  `check_ucore_tables` diffs against a **FROZEN
   SNAPSHOT** of `v30sim dump-tables` (`sw/testdata/g0-tables/`, sha256
   `23d0025bc72eff93…`) and still reports **9,988 entries identical on both
@@ -629,7 +643,9 @@ deleted; `--core fsm` still builds and runs. What changed:
   implements it (and it is **DEFERRED BY USER DECISION 2026-08-05** — not to be
   tested or considered until a later campaign); three of the four golden suites
   have never been run against the ucore (and `v0.2` cannot be,
-  `KeyError: 'opcodes'`).  ⚠ **That document's residue headline is a 2026-08-04
+  `KeyError: 'opcodes'`) — ⚠ **BOTH HALVES CLOSED 2026-09-19 BY WAVE 22; the
+  `KeyError` was a dialect mismatch and the line was 878, not the gap document's
+  709.  `suite_scorer_results_2026-09-19.md` carries the four real totals.**  ⚠ **That document's residue headline is a 2026-08-04
   snapshot and is SUPERSEDED**: it said *"the ucore's own registered-fuzz residue
   is 9 seeds (210 of its 219 are model-shared)"*.  The current partition is
   `sm3_s27_residue_census_2026-08-05.md`: total banked-corpus residue **222**
@@ -647,10 +663,26 @@ Values are monotone: never re-scored downward without a loud, itemized entry.)
   as an independent reference is **G0's frozen snapshot**
   (`check_ucore_tables`, 9,988 entries).  `make -C sim test` is gone with it.
   **THE LIVE HALF OF THIS ROW IS `python3 sw/pla3_check.py` (21 checks).**
-- **Functional**: `python3 sw/ucsim_check.py --suite tests/v30/<suite>`
-  (mod3_illegal needs `--residue stale-ea`; v20suite needs `--no-mirror`);
-  full set = v0.1 169,000 + v0.2 347,000 + v0.3 3,699,998 + v20suite
+- **Functional**: ⚠ **`sw/ucsim_check.py` IS RETIRED (RET-1) — the recipe that
+  stood here named a tool that exits non-zero, and `--residue stale-ea` is ITS
+  flag, reachable only through that refusal.**  Its last registered figure was
+  the full set = v0.1 169,000 + v0.2 347,000 + v0.3 3,699,998 + v20suite
   3,125,000 + mod3_illegal 128 = **7,341,126 cases**.
+  **THE LIVE RECIPE, SINCE WAVE 22 (2026-09-19) — every suite, against the
+  ucore, through ONE tool:**
+  `python3 sw/check_core.py --core ucore --suite-dir tests/v30/<suite>
+  --opcodes all --cases 0`, with **`--arch-only` REQUIRED for `v20suite`** (a
+  V20 8-bit-bus capture: its cycle rows are not comparable with a V30 core, and
+  without the flag it scores 0) and **`--opcodes goldens` for `mod3_illegal`**
+  (one file, not per-opcode).  The metadata-dialect adapter is
+  `sw/suitemeta.py` (`--selfcheck` is its falsifier); `--no-known-divergences`
+  scores `v0.3` without its FSM-provenanced residue list.
+  **Measured totals and their failure taxonomies:
+  `docs/notes/suite_scorer_results_2026-09-19.md`.**
+  ⚠ **`v0.2`, `v0.3` and `v20suite` ARE NOT IN GIT** (each suite's own
+  `.gitignore`), so these are figures against bytes that exist only on the
+  machine that measured them, recorded with per-suite sha256 manifests.  A
+  scorer is not a repo-reproducible gate.
 - **Timed, per-suite** — `sw/timed_gate.py --suite tests/v30/<suite>
   --forms all [--waits N]`:
   `v0.1` **169,000/169,000** (3 collision-dependent under the 64K mirror;

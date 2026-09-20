@@ -1,0 +1,3 @@
+EU (v30u_eu.sv +20 includes): 138 architectural flops -> 134 SSA-mapped, 4 whitelisted, 0 UNMAPPED; 3 sim-only exempt (432 comb/next-state regs skipped)
+
+ss_flopcensus: PASS (229 architectural flops, all SSA-mapped or whitelisted; 4 whitelist entries)

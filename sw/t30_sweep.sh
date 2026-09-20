@@ -55,6 +55,17 @@
 # NOT DELETED: a refusal that names the decision is readable; a missing script
 # is not.  The v0.1 / v0.3 / f4a / f0lock suites it swept are UNAFFECTED and are
 # still swept against the ucore by `sw/check_core.py` (the standing ladder).
+#
+# ⚠⚠ WAVE 22, 2026-09-19 -- THE SENTENCE ABOVE WAS FALSE OF `v0.3` WHEN IT WAS
+# WRITTEN.  `v0.1`, `f4a_boundary` and `f0lock_tranche` were on the standing
+# ladder; **`v0.3` (3,700,000 cases) WAS NOT, AND HAD NEVER BEEN RUN AGAINST THE
+# ucore AT ALL** -- `ucore_gaps_2026-08-04.md` §F.2, and WAVE 20's own RET-1 row
+# calls the same population "the single largest loss".  A sweep's retirement note
+# claimed a successor gate that did not exist.  WAVE 22 ran it
+# (`docs/notes/suite_scorer_prereg_2026-09-19.md` / `..._results_2026-09-19.md`)
+# and the claim is now true; it was not true for the fourteen hours between the
+# two waves.  Recorded rather than quietly corrected, because a retirement note
+# that over-claims its successor is exactly how a gate dies silently.
 # --------------------------------------------------------------------------- #
 SW="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 exec python3 -c "import sys; sys.path.insert(0, sys.argv[1]); import fsmcore; \

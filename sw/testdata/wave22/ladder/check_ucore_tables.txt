@@ -1,0 +1,3 @@
+gen_ucore_tables --check: PASS (4 artifacts current)
+
+check_ucore_tables: PASS -- G0 GREEN (1028 rows + 8192 micro-addresses + 768 PLA entries = 9988 entries byte-identical to the frozen `v30sim dump-tables` reference, on both legs)

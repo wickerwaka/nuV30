@@ -15,6 +15,84 @@ and `sw/ss_flopcensus.py` **now default to `--core ucore`** (they defaulted to
 `fsm` before 2026-08-04). The `timed_*` tools still default to `--core sim`, the
 C++ reference model — that is the spec engine and it did not change.
 
+⚠⚠ **THAT LAST SENTENCE IS DEAD AS OF 2026-09-19 AND IS KEPT AS HISTORY.**  The
+C++ model was REMOVED by WAVE 20 (`invalidation_ledger.md` **RET-1**), so there
+is no spec engine and `--core sim` names nothing.  WAVE 22 finished the
+`--core` half of the cleanup: **`"sim"` is gone from all 24 `choices` lists that
+offered it (of 42 `--core` declarations in `sw/`), and the 13 tools that
+DEFAULTED to it now REFUSE BY NAME on omission** — argparse applies `type=` to a
+string default, so no default had to be silently re-pointed at `ucore`.  **THE
+STANDING CORE IS THE ONLY CORE: `ucore`.**
+
+---
+
+
+## §W22 — THE FOUR ARCHITECTURAL SUITES, AGAINST THE ucore (WAVE 22, 2026-09-19)
+
+*(The `§A` / `§B` labels used elsewhere in this file are the Quartus and ucore
+sections referred to by `CLAUDE.md`; this block is new and takes its own label
+so neither is displaced.)*
+
+**THE AUTHORITATIVE ROWS.**  `docs/notes/suite_scorer_prereg_2026-09-19.md` /
+`..._results_2026-09-19.md`.  Scorer: `python3 sw/check_core.py --core ucore
+--suite-dir tests/v30/<suite> --opcodes all --cases 0`.
+
+| suite | command addenda | cases | **ucore** |
+|---|---|---:|---:|
+| `v0.1` | — | 169,000 | **169,000 / 169,000 full** |
+| `v0.2` | `--waits 0` | 347,000 | **347,000 / 347,000 full** |
+| `v0.2` | `--waits 0 --raw-flags` | 347,000 | **347,000 / 347,000 full** |
+| `v0.3` | `--no-known-divergences` | 3,700,000 | **3,699,998 / 3,700,000 full** |
+| `v0.3` | list applied | 3,699,997 | **3,699,997 / 3,699,997 full** |
+| `v20suite` | **`--arch-only` (REQUIRED)** | 3,125,000 | **3,124,992 / 3,125,000 ARCH** |
+| `mod3_illegal` | **`--opcodes goldens`** | 128 | **cycles 128/128 · ARCH 0/128** |
+
+**TEN FAILING CASES IN 7,172,000**, all characterised:
+
+* **`v0.3` 2** — exactly the two `VOID` entries of
+  `tests/v30/v0.3/known_divergences.json`.  Their claim is **independently
+  re-derived against the ucore**: the golden's expected data on both is literally
+  **`0x63C0`**, the `63 C0` PRELOAD bytes `v03_divergence_ledger.md` F4bc says
+  overwrote the operand.  They stay excluded, now measured rather than inherited.
+* **`v20suite` 8** — eight forms, exactly one case each.  `sp` moves on four
+  instructions that do not touch it; the image fill byte `0x90` appears in two
+  `got` values; six of eight carry a segment override, two are wild jumps to
+  `0002h`.  **ONE mechanism would account for all eight** (the two parts' queues
+  are different depths, so a case reaching past its own instruction is not a
+  comparable case) — **hypothesis, BOOKED with its falsifier, not established.**
+* **`mod3_illegal` 128** — the LEA-mod3 stale-EA residue, and the metadata's
+  **CONFINEMENT** claim is **CONFIRMED against the ucore for the first time**:
+  128/128 diverge in exactly ONE register, RAM identical on 128/128, queue OK on
+  128/128, and the eight diverging registers pair with the ModR/M `reg` field
+  **8 for 8** (`/0 ax /1 cx /2 dx /3 bx /4 sp /5 bp /6 si /7 di`) — which is the
+  classifier's own positive control.
+
+⚠ **THREE DISPOSITIONS THAT ARE NOT CLOSURES.**
+(a) `known_divergences.json`'s **`EDGE` entry (`646F`/8988) IS OBSOLETE** — an
+FSM-core cycle-edge claim (`8fd94df`/`4508e08`, a tree with **no `ucore`**), and
+the ucore scores that form **10,000 / 10,000**.  **The list is UNEDITED**; the
+measurement is booked.
+(b) `mod3_illegal`'s `0/128` is the honest ARCHITECTURAL number.  A
+confinement-style gate would score 128/128, and building one after seeing 0/128
+would be choosing a comparator after seeing a result.  **Booked, not taken.**
+(c) ⚠⚠ **`v0.2`, `v0.3` AND `v20suite` ARE NOT IN GIT** — 1 tracked file of 351,
+3 of 746, 3 of 364, deliberate per each suite's own `.gitignore` (916 MB).
+**7,172,000 of these 7,341,128 cases live only on the machine that measured
+them, so a SCORER IS NOT A REPO-REPRODUCIBLE GATE.**  Each leg is recorded beside
+its suite's per-file sha256 manifest digest
+(`sw/testdata/wave22/manifest-*.txt`): `v0.1` `af07d949a38c166d…` · `v0.2`
+`cbc0fde9d9586996…` · `v0.3` `6abe383d34ac0fa5…` · `v20suite`
+`67b8c7d7c83e8af5…` · `mod3_illegal` `67161a0c409c7fc6…`.
+
+⚠ **`v0.2` IS ~97.9 % REDUNDANT WITH `v0.3`** (`v0.3/README.md`: *"supersedes
+v0.2 outright"*, same seed base, 2.1 % of the 347,000 prefix cases differing),
+so the historical **"7.17 M" headline DOUBLE-COUNTS**.
+
+**THE DIALECT ADAPTER IS `sw/suitemeta.py`** — three dialects, one rule (*a
+suite's opcode map comes from its own `metadata.json` when that file has one,
+and from `v0.1`'s otherwise*), falsifier `python3 sw/suitemeta.py --selfcheck`
+(**PASS, 17 checks, 3 dialects reached**, non-vacuity fires).
+
 ---
 
 ## THE RECEIPT REQUIREMENT (SM3 sitting 14, 2026-08-05)
@@ -155,6 +233,20 @@ every gate that died**.  Audit: `docs/notes/staleness_audit_2026-09-19.md`.**
   have no scorer at all.**  `check_core --suite-dir` can reach them against the
   RTL; `v0.2` raises `KeyError: 'opcodes'` and three of the four have never
   been run against the ucore.
+  ✅ **CLOSED 2026-09-19 BY WAVE 22** — `docs/notes/suite_scorer_prereg_2026-09-19.md`
+  and `..._results_2026-09-19.md`.  All four suites now score against the ucore
+  through `check_core --suite-dir`; the blocker was a METADATA DIALECT and the
+  rule that resolves it is one sentence, now in `sw/suitemeta.py` with its own
+  `--selfcheck`.  ⚠ **THREE CORRECTIONS THIS BULLET OWES, MEASURED**: (a) `v0.3`
+  and `v20suite` were **never blocked — only never run**, and both scored on the
+  unmodified tree; (b) the blocker also hit `tests/v30/mod3_illegal` (128), which
+  no version of this bullet named; (c) **`v0.2` is ~97.9 % REDUNDANT with
+  `v0.3`** by `v0.3/README.md`'s own words (*"supersedes v0.2 outright"*, same
+  seed base, 2.1 % of prefix cases differ), so **the "7.17 M" double-counts**.
+  ⚠ **AND WHAT IS STILL TRUE**: `v0.2`, `v0.3` and `v20suite` are **NOT IN GIT**
+  (1 tracked file of 351, 3 of 746, 3 of 364 — deliberate, per each suite's own
+  `.gitignore`), so a scorer is not a repo-reproducible GATE.  Every WAVE 22 leg
+  records the suite's per-file sha256 manifest digest instead.
 * **G0 IS PRESERVED, NOT RETIRED.**  `check_ucore_tables` now diffs against a
   **FROZEN SNAPSHOT** of `v30sim dump-tables` — `sw/testdata/g0-tables/`,
   sha256 `23d0025bc72eff93…`, 9,992 lines — and still reports the same

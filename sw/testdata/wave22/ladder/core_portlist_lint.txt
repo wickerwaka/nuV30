@@ -1,0 +1,3 @@
+    defines (none)  instance `dut`  23 declared, 23 connected  -> OK
+
+core_portlist_lint: PASS | every named connection to v30_core is a declared port, in 4 configuration(s)

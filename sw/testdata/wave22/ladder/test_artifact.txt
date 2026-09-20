@@ -1,0 +1,3 @@
+=== the layer rejects a perturbed input, a stale artifact, a receipt-less
+    artifact, a wrong-named output and a mismatched tool -- and runs
+    through an irrelevant change.  NON-VACUOUS.

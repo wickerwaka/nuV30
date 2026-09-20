@@ -1,0 +1,3 @@
+646F: 9999/9999 full  (cycles 9999, arch 9999, 1 excluded-known)
+
+TOTAL: 29997/29997 full (cycles 29997, arch 29997)  [3 documented pre-existing excluded]

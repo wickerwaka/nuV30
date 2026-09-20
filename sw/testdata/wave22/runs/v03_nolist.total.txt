@@ -1,0 +1,3 @@
+POLL.REL: 10000/10000 full  (cycles 10000, arch 10000)
+
+TOTAL: 3699998/3700000 full (cycles 3699998, arch 3699998)

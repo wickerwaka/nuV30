@@ -1,0 +1,3 @@
+HLT.RES: 49/49 full  (cycles 49, arch 49)
+
+TOTAL: 97/97 full (cycles 97, arch 97)

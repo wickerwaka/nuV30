@@ -1,0 +1,3 @@
+      live  fpops=468 qpops=907 IOR=10 IOW=5 HALT=4 CODE=554 MEMR=350 MEMW=340
+
+chain_lfsr_gate: PASS -- CHAIN_MAX 7, observed depth [6], 0 overflows, 4 seeds x 400000 clocks

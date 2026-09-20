@@ -1,0 +1,3 @@
+goldens: 0/128 full  (cycles 128, arch 0)
+
+TOTAL: 0/128 full (cycles 128, arch 0)
