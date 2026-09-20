@@ -212,7 +212,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--seeddir",
                     default=str(Path.home() / ".cache/ucsimt-tmp/wrfuzz_w2/seeds"))
-    ap.add_argument("--core", default="ucore", choices=("sim", "ucore", "fsm"))
+    ap.add_argument("--core", default="ucore", choices=("sim", "ucore"))
     ap.add_argument("--jobs", type=int, default=12)
     ap.add_argument("--out", default="")
     ap.add_argument("--only", default="", help="comma-separated k values")

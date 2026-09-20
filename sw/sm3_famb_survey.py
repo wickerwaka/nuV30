@@ -174,7 +174,7 @@ def survey_fuzz(path):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--core", default="sim", choices=("sim", "ucore", "fsm"))
+    ap.add_argument("--core", default="sim", choices=("sim", "ucore"))
     ap.add_argument("--fuzz", help="a timed_fuzz --report json")
     ap.add_argument("--save")
     a = ap.parse_args()

@@ -32,13 +32,12 @@ sys.path.insert(0, str(SW))
 from decode_capture import decode  # noqa: E402
 
 ROOT = SW.parent
-# --core {fsm,ucore}: the two RTL engines are drop-in alternatives built into
-# separate obj_dirs by sw/check_core.py.  `ucore` is the DEFAULT since
-# 2026-08-04 (the FSM core was ARCHIVED - see
-# docs/notes/fsm_core_archive_2026-08-04.md); `--core fsm` still runs the
-# archived leg.  NOTE there is no `choices=` validation on this hand-rolled
-# parser: an unknown name yields a nonexistent obj_dir_<name> and a clean
-# "missing binary" error, not a silent wrong-core run.
+# --core ucore: THERE IS ONE RTL ENGINE.  `hdl/rtl/core/` -- the ARCHIVED
+# trace-fitted core -- was REMOVED 2026-09-19 (`invalidation_ledger.md` RET-2);
+# `--core fsm` is refused by name below.  NOTE there is no `choices=`
+# validation on this hand-rolled parser: an unknown name yields a nonexistent
+# obj_dir_<name> and a clean "missing binary" error, not a silent wrong-core
+# run.
 CORE = "ucore"
 _REQUIRED = set()
 
@@ -47,7 +46,11 @@ def _bin():
     """THE SCORER POSTCONDITION IS ASSERTED HERE (sw/artifact.py): the boot
     march runs 220 and 400 cycles of RTL, and a MATCH from a binary nobody can
     date is not a MATCH about this tree."""
-    d = "obj_dir" if CORE == "fsm" else f"obj_dir_{CORE}"
+    if CORE == "fsm":
+        import fsmcore                                      # noqa: PLC0415
+        fsmcore.retired("check_boot --core fsm -- the only core in this tree "
+                        "is ucore")
+    d = f"obj_dir_{CORE}"
     b = ROOT / "hdl" / "tb" / d / "Vtb_v30_core"
     if CORE not in _REQUIRED and b.exists():
         import artifact as art                              # noqa: PLC0415
@@ -139,12 +142,28 @@ def main():
     # `RuntimeError`, and a per-case `except Exception` would turn one
     # sentence naming a stale binary into N unreadable case failures.
     #
-    # WAVE 20: and ONLY on `--timed`.  This call was UNCONDITIONAL, so with the
-    # C++ model retired (invalidation_ledger.md RET-1) it would have killed
-    # `check_boot 220` / `400` -- the RTL boot-replay legs of the STANDING
-    # LADDER, which have never run the model -- for the model's sake.
+    # ⚠⚠ WAVE 20 MADE THIS CONDITIONAL AND PUT THE CONDITION ON THE WRONG SIDE,
+    # AND RET-1's OWN GATE STATUS TABLE CARRIED A GREEN ROW FOR IT.
+    #
+    # WAVE 20 wrote "ONLY on `--timed` ... it would have killed `check_boot
+    # 220` / `400` -- the RTL boot-replay legs of the STANDING LADDER, which
+    # have never run the model".  But `--timed` IS THE MODEL LEG: `run_timed()`
+    # runs `$SIM timed-boot`, and `run_sim()` is the Verilator TB.  So the
+    # guard protected the leg it meant to retire and retired the leg it meant
+    # to protect -- `sw/check_boot.py --timed 220`, the command `CLAUDE.md`'s
+    # quick reference still printed, raised `ModelRetired`.
+    # MEASURED 2026-09-20 (WAVE 21) before the repair: `--timed 220` and
+    # `--timed 400` both exit 1 with `simbin.ModelRetired`; `check_boot.py 220`
+    # and `400` both MATCH.
+    #
+    # The MODEL leg is a RET-1 casualty and is refused BY NAME, which is what
+    # `simbin.ensure()` already does.  It is kept HERE, on the `--timed` path
+    # only, because that is the only path that runs the model.  Nothing else
+    # changed: `run_timed()` still exists and still names the model, so a
+    # future recovery of `sim/` restores this leg with no edit.
     if timed:
-        simbin.ensure(why=__name__)
+        simbin.ensure(why=f"{__name__} --timed (the C++ MODEL boot leg; the "
+                          f"RTL legs are `check_boot.py 220` / `400`)")
     for a in sys.argv[1:]:
         if a.startswith("--core="):
             CORE = a.split("=", 1)[1]

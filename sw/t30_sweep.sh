@@ -36,6 +36,30 @@
 # CODES.  A leg that exits 0 while PRINTING a failing total is still not
 # caught.  Line 4's rule is about suite TOTALS; this is about exit status.
 # Booked, not taken.
+# --------------------------------------------------------------------------- #
+# ⚠⚠ WAVE 21, 2026-09-19 -- THIS SWEEP IS RETIRED.  IT IS THE ARCHIVED FSM
+# CORE'S REGRESSION SWEEP, AND `hdl/rtl/core/` NO LONGER EXISTS IN THIS TREE.
+#
+# USER INSTRUCTION 2026-09-19: "Remove the FSM core, fix whatever dependencies
+# exist".  Every leg below is FSM-structural or `--core fsm`, and each of those
+# tools now REFUSES BY NAME (`sw/fsmcore.py`).  Running them would print
+# fourteen identical refusals; this script says it ONCE instead.
+#
+# ITS LAST REGISTERED FIGURE, and it is not a green one: measured 2026-09-19 by
+# WAVE 18, the sweep correctly reports FAILED because three of its legs
+# (`check_ff_t4`, `check_mod3_illegal`, and `check_enter_nesting` as a RED) are
+# v1-anchor casualties -- `staleness_audit_2026-09-19.md` §4.  Its per-leg
+# BEFORE figures, measured on 2026-09-20 immediately before the removal, are in
+# `docs/notes/invalidation_ledger.md` RET-2.
+#
+# NOT DELETED: a refusal that names the decision is readable; a missing script
+# is not.  The v0.1 / v0.3 / f4a / f0lock suites it swept are UNAFFECTED and are
+# still swept against the ucore by `sw/check_core.py` (the standing ladder).
+# --------------------------------------------------------------------------- #
+SW="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+exec python3 -c "import sys; sys.path.insert(0, sys.argv[1]); import fsmcore; \
+fsmcore.refuse(\"sw/t30_sweep.sh -- the ARCHIVED FSM core's regression sweep\")" "$SW"
+
 set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"

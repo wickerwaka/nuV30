@@ -196,7 +196,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--bank", default=",".join(BANKS))
     ap.add_argument("--pin", type=int, default=1)
-    ap.add_argument("--core", default="", choices=("", "sim", "ucore", "fsm"))
+    ap.add_argument("--core", default="", choices=("", "sim", "ucore"))
     ap.add_argument("--jobs", type=int, default=os.cpu_count() or 4)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--report", default="")

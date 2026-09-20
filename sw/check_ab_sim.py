@@ -56,14 +56,14 @@ _PLATFORM = [
     ROOT / "hdl" / "rtl" / "iords_buf.sv",
     ROOT / "hdl" / "rtl" / "hps_axi_slave.sv",
 ]
-# ...and this list must stay a subset of hdl/files.qip's.  Three files had
-# drifted out of it (v30_ss_pkg.sv, wvec_buf.sv, iords_buf.sv) and the gate had
-# not built since 2026-07-13 as a result.
-_CORE_DIR = {"fsm": ROOT / "hdl" / "rtl" / "core",
-             "ucore": ROOT / "hdl" / "rtl" / "ucore"}
-# the package FIRST -- v30_core.sv and v30_eu.sv both import it.
+# ...and this list must stay a subset of `hdl/files_ucore.qip`'s.  Three files
+# had drifted out of it (v30_ss_pkg.sv, wvec_buf.sv, iords_buf.sv) and the gate
+# had not built since 2026-07-13 as a result.
+# ⚠ THAT SENTENCE USED TO NAME `hdl/files.qip`, THE ARCHIVED FSM CORE'S FILE
+# LIST, WHICH WAS DELETED BY WAVE 21 (`invalidation_ledger.md` RET-2).
+_CORE_DIR = {"ucore": ROOT / "hdl" / "rtl" / "ucore"}
+# the package FIRST -- v30_core.sv and v30u_eu.sv both import it.
 _CORE_RTL = {
-    "fsm": ["v30_ss_pkg.sv", "v30_core.sv", "v30_biu.sv", "v30_eu.sv"],
     "ucore": ["v30u_ss_pkg.sv", "v30_core.sv", "v30u_biu.sv",
               "v30u_ucrom.sv", "v30u_eu.sv"],
 }
@@ -97,7 +97,11 @@ def core_rtl(core):
 
 
 def core_obj(core):
-    return TB_DIR / ("obj_dir_ab" if core == "fsm" else f"obj_dir_ab_{core}")
+    if core not in _CORE_DIR:
+        import fsmcore                                       # noqa: PLC0415
+        fsmcore.retired(f"check_ab_sim --core {core} -- the only core in this "
+                        f"tree is ucore")
+    return TB_DIR / f"obj_dir_ab_{core}"
 
 T_NAME = {0: "Ti", 1: "T1", 2: "T2", 3: "T3", 4: "Tw", 5: "T4"}
 BS_NAME = {0: "INTA", 1: "IOR", 2: "IOW", 3: "HALT",
@@ -163,10 +167,11 @@ def load_real():
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("nrows", nargs="?", type=int, default=200)
-    ap.add_argument("--core", choices=("fsm", "ucore"), default="ucore",
-                    help="RTL engine inside system_large (default: ucore "
-                         "since 2026-08-04; 'fsm' is the ARCHIVED core, still "
-                         "invokable - docs/notes/fsm_core_archive_2026-08-04.md)")
+    ap.add_argument("--core", default="ucore",
+                    help="RTL engine inside system_large.  THERE IS ONE: "
+                         "'ucore'.  'fsm' was removed 2026-09-19 "
+                         "(invalidation_ledger.md RET-2; its last figure was "
+                         "MATCH over 187 rows) and is refused by name.")
     ap.add_argument("--build", action="store_true")
     ap.add_argument("--keep", action="store_true")
     a = ap.parse_args()

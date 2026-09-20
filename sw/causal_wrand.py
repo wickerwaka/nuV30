@@ -266,12 +266,22 @@ BSN = {CODE: "CODE", MEMR: "MEMR", MEMW: "MEMW", IOR: "IOR", IOW: "IOW",
 
 
 def _load_state_names():
-    """Parse the EU state enum from hdl/rtl/core/v30_eu.sv so onset_state
-    numbers dumped by the TB decode to names (S_EA1/S_EA2/S_RMWX/...). The enum
-    is a flat `typedef enum logic [6:0] { ... } state_e;` with values assigned
-    in declaration order from 0."""
+    """Parse the EU state enum from the ARCHIVED FSM core's v30_eu.sv so
+    onset_state numbers dumped by the TB decode to names (S_EA1/S_EA2/...).
+
+    ⚠ WAVE 21, 2026-09-19: `hdl/rtl/core/v30_eu.sv` NO LONGER EXISTS
+    (`docs/notes/invalidation_ledger.md` RET-2) and this ran at MODULE IMPORT,
+    so it took down every importer -- including `sw/timed_wvec_gate.py` -- with
+    a bare `FileNotFoundError`.  RET-1's rule is that NO GATE DIES WITH A FILE
+    ERROR, so the absence is now handled here and the REFUSAL is raised where
+    the archived core is actually USED, in `run_tb_internal()` below.  An empty
+    map degrades the label to `S#<n>`, which is what this function already
+    returned for an unparsable enum."""
     import re
-    src = (SW.parent / "hdl" / "rtl" / "core" / "v30_eu.sv").read_text()
+    src_path = SW.parent / "hdl" / "rtl" / "core" / "v30_eu.sv"
+    if not src_path.exists():
+        return {}
+    src = src_path.read_text()
     m = re.search(r"typedef enum logic \[6:0\] \{(.*?)\} state_e;", src, re.S)
     if not m:
         return {}
@@ -712,7 +722,12 @@ def run_tb_internal(image, n, wvec):
     (onset_age; 0 = rises on this row), and the opcode/kind/dir latched at onset."""
     import subprocess, tempfile, shutil
     from pathlib import Path
-    from check_seq import BIN, ROOT
+    # ⚠ WAVE 21: `check_seq.BIN` was the ARCHIVED FSM core's TB binary and now
+    # REFUSES BY NAME (`sw/fsmcore.py`, `invalidation_ledger.md` RET-2).  This
+    # whole function -- and therefore every `class5_*` reader of it -- is an
+    # FSM-core instrument: it dumps `+eudbg`, whose field order is
+    # `hdl/rtl/core/v30_eu.sv`'s.  It is kept so the refusal names the tool.
+    from check_seq import BIN, ROOT                          # noqa: PLC0415
     # ALWAYS clean the temp dir (finally): this used to leak one dir - holding a
     # multi-MB eudbg dump - per TB invocation, i.e. hundreds per census run. The
     # accumulation eventually blew the user's disk QUOTA and wedged every shell

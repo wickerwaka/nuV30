@@ -117,7 +117,15 @@ _WVEC_REQUIRED = set()
 def tb_bin(core):
     """sw/check_boot.py::_bin, verbatim: the two RTL engines are drop-in
     alternatives built into separate obj_dirs by sw/check_core.py."""
-    d = "obj_dir" if core == "fsm" else f"obj_dir_{core}"
+    # ⚠ WAVE 21, 2026-09-19: the `obj_dir` special case was the ARCHIVED
+    # FSM core's, and that core is gone (`invalidation_ledger.md` RET-2).
+    # `fsm` is refused BY NAME here rather than resolving to a path that
+    # is not there.
+    if core == "fsm":
+        import fsmcore                                      # noqa: PLC0415
+        fsmcore.retired(f"{__name__}.tb_bin('fsm') -- the only RTL core "
+                        f"in this tree is ucore")
+    d = f"obj_dir_{core}"
     b = ROOT / "hdl" / "tb" / d / "Vtb_v30_core"
     # THE SCORER POSTCONDITION (sw/artifact.py), once per core per process.
     if core not in _WVEC_REQUIRED and b.exists():
@@ -202,7 +210,7 @@ def main():
     ap.add_argument("--seeds", default="")
     ap.add_argument("--wvecs", default="")
     ap.add_argument("-v", "--verbose", action="store_true")
-    ap.add_argument("--core", choices=("sim", "fsm", "ucore"), default="sim",
+    ap.add_argument("--core", choices=("sim", "ucore"), default="sim",
                     help="which engine produces the per-bus-cycle stream "
                          "(digest/baseline/scoring are identical for all)")
     ap.add_argument("--tb", action="store_true",

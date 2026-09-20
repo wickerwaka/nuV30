@@ -94,7 +94,7 @@ def one(args):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--core", default="sim", choices=("sim", "ucore", "fsm"))
+    ap.add_argument("--core", default="sim", choices=("sim", "ucore"))
     ap.add_argument("--jobs", type=int, default=os.cpu_count() or 4)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--report", default="")

@@ -26,6 +26,21 @@ Detection gate set (all board-free):
 
 Usage: nohup setsid python3 sw/biu_law_mutation.py > sw/biu_law_mutation.log 2>&1 &
 """
+
+# --------------------------------------------------------------------------- #
+# WAVE 21, 2026-09-19 -- THE ARCHIVED FSM CORE IS RETIRED AND SO IS THIS TOOL.
+# it mutates hdl/rtl/core/v30_biu.sv and v30_eu.sv
+# It is NOT deleted: a refusal that names the decision is readable, a missing
+# file is not.  `docs/notes/invalidation_ledger.md` RET-2 carries this tool's
+# LAST REGISTERED FIGURE.  ⚠ That figure is an FSM figure and may not be
+# re-labelled onto a ucore leg -- re-register, never re-label.
+# --------------------------------------------------------------------------- #
+import sys as _sys                                            # noqa: E402
+from pathlib import Path as _Path                             # noqa: E402
+_sys.path.insert(0, str(_Path(__file__).resolve().parent))
+import fsmcore as _fsmcore                                    # noqa: E402
+_fsmcore.refuse("sw/biu_law_mutation.py -- it mutates hdl/rtl/core/v30_biu.sv and v30_eu.sv")
+
 import subprocess
 import sys
 import re

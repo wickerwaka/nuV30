@@ -80,7 +80,7 @@ def probe(body, core, rows=fzc.TB_ROWS, waits=0):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--cores", default="ucore,fsm")
+    ap.add_argument("--cores", default="ucore")   # was "ucore,fsm"; the FSM core was removed 2026-09-19 (RET-2)
     ap.add_argument("--ops", default=None,
                     help="comma list of hex BODIES (`f1`, `fef8`, ...); "
                          "default = optable.UNDOC + the NOP control")

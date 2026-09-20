@@ -23,10 +23,16 @@ Checks:
 
 Exit 0 = clean, non-zero = a listed violation. No build required.
 
---core {fsm,ucore}
-------------------
-Two cores, two maps, one lint. `--core fsm` (default) is the standing gate and
-its output is byte-stable. `--core ucore` audits hdl/rtl/ucore's map.
+--core ucore
+------------
+⚠ ONE CORE, ONE MAP, SINCE WAVE 21 (2026-09-19).  This block used to read
+"Two cores, two maps, one lint. `--core fsm` (default) is the standing gate" --
+and that sentence was ALREADY FALSE when it was written: the default flipped to
+`ucore` on 2026-08-04.  `hdl/rtl/core/` was removed under the user instruction
+"Remove the FSM core, fix whatever dependencies exist"
+(`docs/notes/invalidation_ledger.md` RET-2); `--core fsm` is refused by name.
+Its last registered figure -- PASS, 203 addresses / 181 flops / 0 UNMAPPED --
+is in RET-2.  The two maps were never stream-compatible.
 
 The ucore's EU is SPLIT ACROSS `.svh` INCLUDES -- both save arms
 (v30u_eu_ss_read.svh / v30u_eu_ss_write.svh) live in includes, and so does most
@@ -45,18 +51,6 @@ ROOT = Path(__file__).resolve().parent.parent
 UCORE = ROOT / "hdl/rtl/ucore"
 
 CORES = {
-    "fsm": {
-        "pkg": ROOT / "hdl/rtl/core/v30_ss_pkg.sv",
-        "biu": [ROOT / "hdl/rtl/core/v30_biu.sv"],
-        "eu": [ROOT / "hdl/rtl/core/v30_eu.sv"],
-        "expect": {
-            "SS_VERSION": 0x03,   # v3: +SSA_E_LAST_EA (task #30 LEA-mod3 latch)
-            "SS_BIU_COUNT": 82,
-            "SS_EU_COUNT": 120,
-            "SS_COUNT": 203,
-            "SS_TAG": 0x03CB,     # (0x03 << 8) | 203
-        },
-    },
     "ucore": {
         "pkg": UCORE / "v30u_ss_pkg.sv",
         "biu": [UCORE / "v30u_biu.sv"],
@@ -170,12 +164,17 @@ def field_widths(pkg_text):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--core", choices=tuple(CORES), default="ucore",
-                    help="which core's save-state map to lint (default: ucore "
-                         "since 2026-08-04; 'fsm' is the ARCHIVED core's map, "
-                         "still linted on demand - "
-                         "docs/notes/fsm_core_archive_2026-08-04.md)")
+    ap.add_argument("--core", default="ucore",
+                    help="which core's save-state map to lint.  THERE IS ONE: "
+                         "'ucore'.  'fsm' was removed 2026-09-19 "
+                         "(invalidation_ledger.md RET-2) and is refused by "
+                         "name; the flag survives so registered '--core ucore' "
+                         "invocations run verbatim.")
     args = ap.parse_args()
+    if args.core not in CORES:
+        import fsmcore                                       # noqa: PLC0415
+        fsmcore.refuse(f"ss_lint --core {args.core} -- the only save-state map "
+                       f"in this tree is {'/'.join(CORES)}")
     cfg = CORES[args.core]
     PKG, EXPECT = cfg["pkg"], cfg["expect"]
 

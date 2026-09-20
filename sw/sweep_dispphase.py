@@ -31,6 +31,21 @@ Usage:
   sweep_dispphase.py --tb        (core side from the Verilator TB instead
                                   of use_core=1 - pre-flash dry run)
 """
+
+# --------------------------------------------------------------------------- #
+# WAVE 21, 2026-09-19 -- THE ARCHIVED FSM CORE IS RETIRED AND SO IS THIS TOOL.
+# its BIN is hdl/tb/obj_dir/Vtb_v30_core, the FSM TB binary
+# It is NOT deleted: a refusal that names the decision is readable, a missing
+# file is not.  `docs/notes/invalidation_ledger.md` RET-2 carries this tool's
+# LAST REGISTERED FIGURE.  ⚠ That figure is an FSM figure and may not be
+# re-labelled onto a ucore leg -- re-register, never re-label.
+# --------------------------------------------------------------------------- #
+import sys as _sys                                            # noqa: E402
+from pathlib import Path as _Path                             # noqa: E402
+_sys.path.insert(0, str(_Path(__file__).resolve().parent))
+import fsmcore as _fsmcore                                    # noqa: E402
+_fsmcore.refuse("sw/sweep_dispphase.py -- its BIN is hdl/tb/obj_dir/Vtb_v30_core, the FSM TB binary")
+
 import argparse
 import subprocess
 import sys

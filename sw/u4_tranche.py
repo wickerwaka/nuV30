@@ -285,7 +285,7 @@ def main():
     c.add_argument("--force", action="store_true")
     c.set_defaults(fn=cmd_capture)
     v = sub.add_parser("vsim")
-    v.add_argument("--core", default="ucore", choices=["ucore", "fsm"])
+    v.add_argument("--core", default="ucore", choices=["ucore"])
     v.set_defaults(fn=cmd_vsim)
     s = sub.add_parser("score")
     s.add_argument("--legs", default="core")

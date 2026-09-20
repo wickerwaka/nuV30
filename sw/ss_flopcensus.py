@@ -82,8 +82,11 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-BIU = ROOT / "hdl/rtl/core/v30_biu.sv"
-EU = ROOT / "hdl/rtl/core/v30_eu.sv"
+# ⚠ WAVE 21, 2026-09-19: these two MODULE-LEVEL defaults named the ARCHIVED
+# FSM core, which no longer exists (`invalidation_ledger.md` RET-2).  They are
+# the ucore's now; `--core fsm` is refused by name in `main()`.
+BIU = ROOT / "hdl/rtl/ucore/v30u_biu.sv"
+EU = ROOT / "hdl/rtl/ucore/v30u_eu.sv"
 WHITELIST = ROOT / "sw/ss_flop_whitelist.txt"
 
 UCORE_DIR = ROOT / "hdl/rtl/ucore"
@@ -420,12 +423,17 @@ def main_ucore():
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--core", choices=("fsm", "ucore"), default="ucore",
-                    help="which core's RTL to census (default: ucore since "
-                         "2026-08-04; 'fsm' is the ARCHIVED core)")
+    ap.add_argument("--core", default="ucore",
+                    help="which core's RTL to census.  THERE IS ONE: 'ucore'. "
+                         "'fsm' was removed 2026-09-19 "
+                         "(invalidation_ledger.md RET-2) and is refused by "
+                         "name; its last figure was 181 flops / 0 whitelist.")
     args = ap.parse_args()
     if args.core == "ucore":
         return main_ucore()
+    import fsmcore                                           # noqa: PLC0415
+    fsmcore.refuse(f"ss_flopcensus --core {args.core} -- the only core in this "
+                   f"tree is ucore")
 
     errs = []
     wl = load_whitelist()

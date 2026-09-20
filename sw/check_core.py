@@ -42,7 +42,18 @@ sys.path.insert(0, str(SW))
 import artifact as art                                       # noqa: E402
 SUITE = ROOT / "tests" / "v30" / "v0.1"
 TB_DIR = ROOT / "hdl" / "tb"
-OBJ = TB_DIR / "obj_dir"
+# ⚠ `OBJ` / `BIN` WERE THE **ARCHIVED FSM CORE'S** UNSUFFIXED `obj_dir` UNTIL
+# WAVE 21 (2026-09-19), AND `:180` CLAIMED THEY HAD NO CONSUMERS.  THEY HAD
+# SEVEN, MEASURED: `emit_suite.py:2258`, `f4a_boundary_battery.py:73`,
+# `char_divergence.py:26`, `validate_strio_sim.py:158`, `class5_hext.py:58`
+# take `CC.BIN`; `pi1a_trace.py:29` and `repro_segleak.py:33` take `CC.OBJ`.
+# `emit_suite` calls `CC.build()` -- which builds the DEFAULT ucore into
+# `obj_dir_ucore` -- and then ran `CC.BIN`, the archived core's binary.  The
+# trap the old comment warned about was already sprung.
+# They are RE-POINTED at the ucore.  THAT IS A CHANGE OF ENGINE for those
+# tools, declared in `invalidation_ledger.md` RET-2; none of them carries a
+# figure on a standing ladder.
+OBJ = TB_DIR / "obj_dir_ucore"
 BIN = OBJ / "Vtb_v30_core"
 
 # --- engine selection (ucore campaign, stage U1) ---------------------------
@@ -50,16 +61,16 @@ BIN = OBJ / "Vtb_v30_core"
 # port list, same package name `v30_ss_pkg`.  Only the RTL file list, the
 # include path, the obj_dir and one define change.
 #
-# `ucore` is the DEFAULT since 2026-08-04 (the FSM core was ARCHIVED - see
-# docs/notes/fsm_core_archive_2026-08-04.md).  `--core fsm` stays a first-class
-# leg and every FSM gate is re-runnable by passing it explicitly.  NOTE the
-# asymmetric obj_dir naming below is historical: fsm builds into the UNSUFFIXED
-# `obj_dir`, which nine other tools hardcode, so it was NOT renamed.
-CORE_DIR = {"fsm": ROOT / "hdl" / "rtl" / "core",
-            "ucore": ROOT / "hdl" / "rtl" / "ucore"}
+# ⚠ THERE IS ONE CORE.  WAVE 21, 2026-09-19.
+# `hdl/rtl/core/` -- the ARCHIVED trace-fitted core -- was REMOVED from the
+# tree under the user instruction "Remove the FSM core, fix whatever
+# dependencies exist" and the ruling that "ucore is the only valid
+# implementation in this code base".  `invalidation_ledger.md` RET-2.
+# `--core fsm` is REFUSED BY NAME (`sw/fsmcore.py`), never by a Verilator file
+# error, and `--core` survives with one choice so that every registered
+# invocation spelled `--core ucore` still runs verbatim.
+CORE_DIR = {"ucore": ROOT / "hdl" / "rtl" / "ucore"}
 CORE_RTL = {
-    "fsm": ["v30_ss_pkg.sv", "@tb", "v30_core.sv", "v30_biu.sv",
-            "v30_eu.sv"],
     "ucore": ["v30u_ss_pkg.sv", "@tb", "v30_core.sv", "v30u_biu.sv",
               "v30u_ucrom.sv", "v30u_eu.sv"],
 }
@@ -93,7 +104,7 @@ CORE_RTL = {
 # RTL.  Do not stub the signal to make the observer land early -- a tied-off
 # withdrawal event is an observer that cannot fire, which is the vacuous-gate
 # pattern `docs/notes/artifact_receipt_layer.md` tracks by name.
-CORE_DEFS = {"fsm": ["-DV30_FSM_PROBES"], "ucore": ["-DV30_UCORE"]}
+CORE_DEFS = {"ucore": ["-DV30_UCORE"]}
 
 # --------------------------------------------------------------------------- #
 # THE ce/ce_half CONTRACT'S DIVISOR -- ONE DECLARATION, ALL CONSUMERS.
@@ -162,26 +173,35 @@ def ce_div_refuse(div):
     return None
 
 
+def _one_core(core):
+    """WAVE 21: `fsm` is gone.  Refuse BY NAME -- never by a file error."""
+    if core not in CORE_DIR:
+        import fsmcore                                       # noqa: PLC0415
+        fsmcore.retired(f"check_core --core {core} -- the only core in this "
+                        f"tree is {'/'.join(CORE_DIR)}")
+
+
 def core_paths(core):
+    _one_core(core)
     d = CORE_DIR[core]
     special = {"@tb": TB_DIR / "tb_v30_core.sv"}
     return [special[f] if f in special else (d / f) for f in CORE_RTL[core]]
 
 
 def core_objdir(core):
-    return OBJ if core == "fsm" else TB_DIR / f"obj_dir_{core}"
+    _one_core(core)
+    return TB_DIR / f"obj_dir_{core}"
 
 
 def core_bin(core):
     return core_objdir(core) / "Vtb_v30_core"
 
 
-# Legacy module-level constants, both pinned to the FSM layout and both with NO
-# consumers anywhere in the tree (checked 2026-08-04): `BIN` above and `RTL`
-# here.  They are NOT routed through core_bin()/core_paths(), so anything that
-# starts using them would silently get the ARCHIVED core.  Use core_bin(core) /
-# core_paths(core).
-RTL = core_paths("fsm")
+# Legacy module-level constants.  ⚠ THE COMMENT THAT USED TO STAND HERE SAID
+# THEY HAD "NO consumers anywhere in the tree (checked 2026-08-04)" AND IT WAS
+# FALSE -- see `OBJ`/`BIN` above for the seven, measured 2026-09-19.  They are
+# now the ucore's, like the default.  Prefer core_bin(core) / core_paths(core).
+RTL = core_paths("ucore")
 
 REGS = ["ax", "cx", "dx", "bx", "sp", "bp", "si", "di",
         "es", "cs", "ss", "ds", "ip", "flags"]
@@ -701,13 +721,13 @@ def check_case(c, sim, flags_mask, arch_only=False):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--build", action="store_true")
-    ap.add_argument("--core", choices=("fsm", "ucore"), default="ucore",
-                    help="RTL engine: 'ucore' (DEFAULT since 2026-08-04, the "
-                         "ROM-driven twin of sim/) or 'fsm' (the trace-fitted "
-                         "core, ARCHIVED 2026-08-04 - still fully invokable, "
-                         "see docs/notes/fsm_core_archive_2026-08-04.md). "
-                         "Swaps the RTL file list, include path and obj_dir; "
-                         "the TB is engine-neutral.")
+    ap.add_argument("--core", default="ucore",
+                    help="RTL engine.  THERE IS ONE: 'ucore'.  The "
+                         "trace-fitted 'fsm' core was archived 2026-08-04 and "
+                         "REMOVED 2026-09-19 (invalidation_ledger.md RET-2); "
+                         "'--core fsm' is refused by name.  The flag survives "
+                         "so every registered '--core ucore' invocation still "
+                         "runs verbatim.")
     ap.add_argument("--opcodes", default="all",
                     help="comma list; 'all' = every form in the suite "
                          "dir; 'legacy' = the historic DEFAULT_OPS")

@@ -46,7 +46,7 @@ def main():
     # default, which was `fsm` and is now `ucore` (the FSM core was ARCHIVED -
     # docs/notes/fsm_core_archive_2026-08-04.md).  Passing it removes the
     # silent dependency in both directions.
-    ap.add_argument("--core", choices=("fsm", "ucore"), default="ucore")
+    ap.add_argument("--core", choices=("ucore",), default="ucore")
     a = ap.parse_args()
     extra = ([("--raw-flags",) if a.raw_flags else ()][0]
              + (("--no-mirror",) if a.no_mirror else ()))

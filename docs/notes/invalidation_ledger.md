@@ -1383,6 +1383,277 @@ it has three falsifiers, each cheap:
 
 ---
 
+---
+
+---
+
+## RET-2 — THE ARCHIVED FSM CORE `hdl/rtl/core/`, AND THE FSM QUARTUS REVISION
+
+**Retired 2026-09-19, branch `master`, WAVE 21.  No rig defect.  Nothing was
+destroyed — `git rm` keeps every byte in history, and the recovery commands are
+in this entry.**
+
+### THE AUTHORITY
+
+**USER INSTRUCTION, 2026-09-19, verbatim:**
+
+> *"Remove the FSM core, fix whatever dependencies exist"*
+
+**USER RULING, 2026-09-19, verbatim, which widened it from a deletion to a
+re-basing:**
+
+> *"These are the kinds of discrepancies I am asking you to audit and resolve.
+> There have been a lot of iterations in this project and you need to treat the
+> documentation as hearsay until proven otherwise.  Ucore is the only valid
+> implementation in this code base, if it has dependencies on any other
+> implementations those need to be removed.  Documentation that gives those
+> other implementations precedence is suspect."*
+
+⚠ **THIS OVERRIDES WAVE 20's AUDIT RECOMMENDATION.**
+`staleness_audit_2026-09-19.md` §2 recommended **"KEEP THE RTL, RETIRE FOUR OF
+ITS TEN GATES"**.  The user's instruction is the removal; the audit's
+recommendation is recorded as what it was, and is not retracted as an argument —
+it is overruled as a decision.
+
+### WHAT WENT — measured, not estimated
+
+| | |
+|---|---|
+| the artifact | `hdl/rtl/core/` — the cycle-accurate, **trace-fitted** V30 core (campaigns 3 and 4, first light 2026-07-13; ARCHIVED 2026-08-04, `docs/notes/fsm_core_archive_2026-08-04.md`) |
+| tracked payload | **6 files, 467,184 bytes** — `v30_eu.sv` 292,906 · `v30_biu.sv` 111,724 · `v30_ss_pkg.sv` 25,826 · `v30_core.sv` 16,799 · `race_law.svh` 14,809 (GENERATED) · `int9d_race.hex` 5,120 |
+| its Verilator binary | `hdl/tb/obj_dir/Vtb_v30_core`, receipt **`6ef5e51f32e75735…`**, built and receipted in this session immediately before the removal |
+| the Quartus side | `hdl/files.qip` (the FSM file list, 1,058 bytes) · `hdl/nec_test.qsf` (the FSM revision) · `PROJECT_REVISION = "nec_test"` in `hdl/nec_test.qpf` · `sw/gen_ucore_qsf.py` (the derivation and bar **E1**) |
+| also gone | `sw/race_law_equiv_tb.sv` — the FSM-only Verilator harness `check_race_law` built |
+| **ARCHIVED BY RENAME, not deleted** | `hdl/rtl/core/int9d_race.hex` → **`docs/facts/int9d_race_contract_archived_2026-09-19.hex`**.  ⚠ **IT IS A MEASURED CONTRACT, NOT RTL** — `sw/exp_race.py:8` calls it *"the measured contract: bit=1 → class B"* for the POP-PSW/INT race, and `race_law.svh` was GENERATED from it.  The RET-1 precedent (`sim/README.md` → `docs/notes/…`).  `docs/facts/int9d_race_table.json.gz` holds the same table in the facts tree |
+| **NOT retired with it** | `sw/gen_race_law.py` — the generator survives as a REFUSAL, because it is the provenance of the archived contract |
+
+### WHY — and the ruling is the reason, not a measurement
+
+The archive of 2026-08-04 already recorded the evidence (`fsm_core_archive_
+2026-08-04.md` §3: 59/178 vs 176/178 in fabric on the priority tranche; a
+**104-seed silent regression** no gate saw; the unfixed F51 HALT pad-drive
+defect; the rail forest the SIMPLICITY directive names).  WAVE 20 added the
+maintenance measurement: **two authorised changes since the archive, both pure
+port-list maintenance forced by ucore landings** (§6a's `AD_OE`, §6b's
+`ADDR_O`/`DATA_O`/`STATUS_O`), **five weeks unreachable by its own documented
+procedure**, and **one whole wave (18) spent so that a gate could elaborate**,
+which produced a permanent standing gate whose only job was to keep the two
+port lists equal.
+
+**AND IT WAS GREEN ON THE DAY IT WENT, WHICH IS NOT A DEFENCE.**  Measured in
+this session, on the tree that carried it (`6c3de357d9`):
+
+| leg | measured 2026-09-20, immediately before the removal |
+|---|---|
+| `check_core --core fsm --opcodes all --cases 0` | **169,000 / 169,000** (cycles 169,000, arch 169,000) |
+| the four HLT sweeps, `--waits 0/1/2/3` | **87/97 · 82/95 · 30/46 · 27/45 = 226 / 283** |
+| `ss_lint --core fsm` | **PASS — 203 addresses (82×2 BIU + 120×2 EU + tag), 181 architectural flops, 0 UNMAPPED** |
+| `check_ab_sim --core fsm` | **MATCH over 187 rows from RESET release** |
+| `check_race_law` | **PASS (2/2 sub-checks)** |
+| `prefix_clear_lint` | **PASS (20 `S_FIRST` sites, 4 PFX-KEEP, single source, no drift)** |
+| `ea_step_lint` | **PASS** |
+
+⚠ **AND THAT CONFIRMS WAVE 18's ERRATUM AND REFUTES THE ARCHIVE'S OWN §5.**
+`fsm_core_archive_2026-08-04.md` §5 registers **168,400 / 169,000** and
+**16 / 283** on *"the corrected comparator"*.  Measured on this tree the same
+commands give **169,000 / 169,000** and **226 / 283**.  Nothing in
+`hdl/rtl/core/` changed; the COMPARATOR did, at `0254d9f23e`, whose own message
+says *"it moves NOTHING"* and quotes the **ucore** leg.  **Both figures are that
+instrument's, and any FSM figure must name which comparator produced it.**
+
+### WHICH RIG DEFECT
+
+# **NONE.**
+
+No rig defect is alleged, none is diagnosed, and none is fixed by this entry.
+No capture is false.  Every figure ever scored against this core stays true *of
+this core*, and the receipt that identifies the bytes that produced the final
+set (`6ef5e51f32e75735…`) is recorded here so those figures keep their artifact
+id.
+
+### EVERY GATE THAT DIED — enumerated, with its last registered figure
+
+⚠ **This is the field that makes the retirement honest.**  Every row was run
+AFTER the removal and its behaviour recorded (the results document's §Z-3
+table).  **STATUS** is the gate's state at the moment it went, not today's.
+
+**A. `standing_gates.md` §C — THE TEN ON-DEMAND FSM GATES.  §C IS NOW EMPTY.**
+
+| gate | last registered figure | status when it went | replaced by |
+|---|---|---|---|
+| `python3 sw/check_core.py --core fsm --opcodes all --cases 0` | **169,000 / 169,000** (⚠ §5 of the archive says 168,400 — different comparator) | **GREEN, measured this session** | **NOTHING for this core.** The same goldens are scored against the ucore by `check_core` with no flag, unmoved at 169,000 |
+| the four HLT sweeps, `--core fsm` | **226 / 283** (87·82·30·27) | **RED as registered, measured this session** | **NOTHING.** The ucore's own sweeps are 279/283 and are UNMOVED |
+| `python3 sw/ss_lint.py --core fsm` | **PASS, 203 addresses / 181 flops / 0 UNMAPPED** | **GREEN, measured this session** | **NOTHING.** The ucore leg (232 / 229 / 4 whitelist / 0 UNMAPPED, `SS_VERSION` 0x8F, `SS_TAG` 0x8FE8) is the default and is UNMOVED. ⚠ **The two maps were never stream-compatible** |
+| `python3 sw/ss_flopcensus.py --core fsm` | **PASS, 181 flops, 0 whitelist** | **GREEN, measured this session** | **NOTHING** |
+| `python3 sw/check_ab_sim.py --core fsm` | **MATCH over 187 rows** | **GREEN, measured this session** | **NOTHING for this core.** The `--core ucore` leg is the default, also 187 rows MATCH, UNMOVED |
+| `python3 sw/check_race_law.py` | **PASS (2/2)** — `race_law.svh` exhaustively matches `int9d_race.hex` AND regenerates byte-for-byte | **GREEN, measured this session** | **NOTHING.** The POP-PSW/INT race law has no ucore equivalent: the ucore does not carry a race table. ⚠ **The measured contract is PRESERVED** (`docs/facts/int9d_race_contract_archived_2026-09-19.hex`) and `sw/gen_race_law.py` survives as its provenance |
+| `python3 sw/prefix_clear_lint.py` | **PASS (20 `S_FIRST` sites, 4 PFX-KEEP, single source, no drift)** — RR4 | **GREEN, measured this session** | **NOTHING.** It greps `hdl/rtl/core/v30_eu.sv`; the ucore has no `clear_prefixes()` |
+| `python3 sw/ea_step_lint.py` | **PASS** — every operand EA step wraps via `ea_step2` (F4a) | **GREEN, measured this session** | **NOTHING.** It greps `hdl/rtl/core/v30_eu.sv` |
+| `python3 sw/check_ff_t4.py` | `SLOT_FF_T4` non-vacuous | **ALREADY DOWN — `V1AnchorStop`, confirmed this session.** ⚠ It also carried one of WAVE 18's two booked STALE-BINARY hazards (`:34`, raw `check_seq.BIN`, no artifact assertion) — **that hazard dies with it** | nothing; it was already unrunnable |
+| `python3 sw/check_mod3_illegal.py` | LEA mod=11 executes chip-exact (task #30) | **ALREADY DOWN — `ComposeError: body [0500,0502) is not inside the code region [8000,c000)`, confirmed this session** | nothing; a v1-anchor casualty (`staleness_audit_2026-09-19.md` §4) |
+| `python3 sw/check_lc6_gate.py` | the Family-5 strio-single uline-1 veto is intact | **ALREADY DOWN — `ComposeError: body [0500,0517) …`, confirmed this session** | nothing; a v1-anchor casualty |
+| `python3 sw/check_enter_nesting.py` | ENTER walk == chip (task #31) | **ALREADY RED, AND ENGINE-INDEPENDENTLY SO — `check_enter_nesting: FAIL`, confirmed this session.** The identical instrument with `check_seq.CORE = "ucore"` fails the same 512: it composes a v2 image and scores it against v1 goldens. **A LOUD RED CAN BE AS FALSE AS A SILENT GREEN** | nothing; a v1-anchor casualty |
+| `python3 sw/check_fuzz_bank.py [--strict]` | **`PASS \| 621 banked seeds \| stable 621 improved 0 worse 0 \| gen_drift 0 regen_err 0 \| float-floor 0 \| new-sig TIMING 0`** (⚠ and `--strict` exits 0 since SM3 sitting 7) | see the dedicated section below | **NOTHING, and it is NOT re-pointed.  See below.** |
+| `sw/t30_sweep.sh` | *"any non-full suite total or failed gate = regression"*, read against 169,000 and 226/283 | **RED as registered** (three legs are v1-anchor casualties; the script was only made capable of reporting RED at `becaf81e89`, 2026-09-19) | **NOTHING as an aggregate.** Its v0.1 / v0.3 / f4a_boundary / f0lock_tranche legs are swept against the ucore by `sw/check_core.py` on the standing ladder |
+| `python3 sw/r7_lint.py --core fsm` | **INFORMATIONAL ONLY — never a gate.** Measured this session: **`WOULD FAIL`** | not a gate, so not a casualty | nothing; the ucore leg is the gate and is PASS |
+
+**B. THE QUARTUS A/B, AND THE ONE GUARANTEE THAT DIES WITH NOTHING REPLACING IT**
+
+| gate | last registered figure | status | replaced by |
+|---|---|---|---|
+| `python3 sw/gen_ucore_qsf.py --check` — bar **E1** of `quartus_gate.py`, receipt key `E1_gen_ucore_qsf`, bar text *"hdl/nec_test_ucore.qsf is a faithful derivative of hdl/nec_test.qsf"* | **PASS** — measured this session, and PASS on FLASH #23's own CONTROL receipt | **GREEN** | ⚠ **SPLIT IN TWO.**  (a) The half with a surviving referent — *the revision file the compiler reads has not drifted from what the tree declares, i.e. no previous build's in-place Quartus rewrite was left in it* — is **REPLACED by `sw/qsf_lint.py --check`**, receipt key **`E1_qsf_canonical`**, a CANONICAL-FORM bar.  (b) The half the bar was named for — ***"the two A/B bitstreams differ by the CORE and nothing else"*** — **IS RETIRED AND NOTHING REPLACES IT.  There is no second core and no second revision for it to be about.**  Every A/B claim resting on it is HISTORY as of this entry |
+| the FSM A/B bitstream | `nec_test.sof` **`a4533dfef09b896ebb08763658b053e7cfb0946877b1ce43831fbd7b89f500e2`** (FLASH #2, 2026-08-04T04:06:15Z) — **the last FSM bitstream built from a then-HEAD, and it was NEVER on the board after FLASH #3** | not on the board; `flash_log.jsonl` keeps its entry | **NOTHING.** No FSM bitstream can be built from this tree. ⚠ **The A/B experiment is CLOSED, not paused** — reproducing it requires the recovery below AND a board session, and `fsm_core_archive_2026-08-04.md` §5's standing warning (build and flash BOTH cores from ONE HEAD) still governs anyone who does |
+| `sw/receipt_diff.py`'s *"FSM vs ucore bitstream: `files_ucore.qip` ↔ `files.qip` + the cores"* row | a documented comparison mode | it names a file list that no longer exists | **NOTHING.** The row is corrected to say so |
+
+**C. TOOLS, NOT GATES — `CLAUDE.md` and `standing_gates.md` never listed these
+as gates and this entry does not promote them.**  All refuse by name through
+`sw/fsmcore.py`: `sw/biu_law_mutation.py`, `sw/biu_law_lc3_gadget.py`,
+`sw/biu_law_lc3_seedsearch.py`, `sw/biu_law_lc6_gadget.py`,
+`sw/biu_law_gatesearch.py` (all five mutate `hdl/rtl/core/v30_biu.sv`),
+`sw/gen_race_law.py`, `sw/exp_race.py`, `sw/sweep_popa.py` (and through it
+`sweep_farjmp` / `sweep_loop` / `sweep_push` / `sweep_regea` / `sweep_swint`),
+`sw/sweep_dispphase.py`.  Refusing through **`check_seq`'s retired pin**:
+`sw/causal_wrand.py`'s `run_tb_internal` and its ~20 `class5_*` readers,
+`sw/dumpeu.py`, `sw/exact_predict.py`, `sw/f7a_arbitrate.py`,
+`sw/exp_iret.py`, `sw/pi1a_trace.py`.
+
+**D. THE PIN THAT MADE MOST OF C POSSIBLE — `sw/check_seq.py`.**
+`CORE = "fsm"` was the single declaration that decided which engine every
+`check_seq.run_tb()` caller got when it named none, and `BIN` was the FSM
+`obj_dir` path.  **`CORE` IS NOW `None` AND BOTH REFUSE BY NAME.**  A caller
+that means the ucore must say so (`core="ucore"`) — which `fz2_replay`,
+`emit_suite`, `fz2_a1_rescore`, `fz2_c1_rescore`, `fz2_c2_rescore`, `fz2_m10`,
+`fz2_p2_probe` and `fz2_undoc_probe` already did, and which is why **no live
+standing gate moved.**
+
+### ⚠ `check_fuzz_bank` — RETIRED, NOT RE-POINTED, AND WHY
+
+`sw/check_fuzz_bank.py:76` replays every banked seed through
+`check_seq.run_tb(...)` **with no `core=`** — i.e. through `check_seq.CORE`,
+which was `"fsm"`. Its registered figure is therefore **an FSM figure**.
+
+**IT IS NOT RE-POINTED TO THE ucore, AND THAT IS A DECISION WITH A REASON.**
+`sw/fuzz_bank.py:261` computed each entry's banked `replay_verdict` **by calling
+this same function** — on the FSM TB.  A ucore replay would compare a ucore
+verdict against an FSM-derived column: a guaranteed FAIL that measures the
+engine swap and nothing else.  And RET-1's falsifier #3 forbids the alternative:
+*a re-pointed leg may not inherit the retired leg's figure.*
+
+**BOOKED, NOT TAKEN**: re-deriving the banked `replay_verdict` column on a ucore
+replay, under the `ERR-1` / `sw/cfb_rederive.py` pre-registration pattern
+(archive the column byte-identical first, score a full dry run, register the
+movers in advance).  Until then the gate has **NO** replacement.
+
+⚠ **WHAT IS LOST WITH IT, stated plainly**: it was the load-bearing control for
+the U5 comparator change (**3,242 banked seeds replayed and re-classified,
+worse 0** — `ucore_provenance.md` §57.2) and for the SM3 sitting 6 `IOW` fix.
+**Those measurements remain true and citable; the instrument that could repeat
+them does not exist on this tree.**
+
+### WHAT ELSE CHANGED, AND IT IS NOT A RETIREMENT
+
+* **`sw/core_portlist_lint.py` — RE-POINTED, and its old claim retired.**
+  WAVE 18's gate compared the TWO cores' port lists; with one core that has no
+  second operand and **nothing replaces it.**  It now checks, per
+  CONFIGURATION, that **every `.NAME(...)` named connection to `v30_core` is a
+  port the module declares under the same define set** — the same defect class
+  (`%Error-PINNOTFOUND`; Quartus's accept-and-ignore Critical Warning) with the
+  operand that still exists, and it now covers the **FABRIC** configuration
+  (`SYNTHESIS` + `V30_MUXED_AD`) that no Verilator run exercises.  **Measured:
+  PASS in 4 configurations** — `tb_v30_core` (34 ports / 34 connections),
+  `system_large` under Verilator and under `SYNTHESIS` (24 / 24 each),
+  `tb_demux_min` (23 / 23).
+  ⚠ **AND IT WAS CARRYING A SILENT BUG.**  WAVE 18's `_strip_comments`
+  stripped `/* … */` with a regex over the RAW text; `hdl/tb/tb_v30_core.sv:40`
+  is a LINE comment containing `hdl/rtl/core/*.sv`, so the regex matched from
+  there to line 254's `*/` and **deleted 200 lines including the `v30_core dut (`
+  instantiation.**  It never showed because WAVE 18 only ever fed it the two
+  `v30_core.sv` files.  Found the first time the function was pointed at the TB,
+  and it presented as **exit 2 CANNOT MEASURE** — which is the only reason it
+  was not a silent wrong answer.  Replaced by a scanner.
+* **`sw/check_core.py`'s `BIN` / `OBJ` / `RTL` — RE-POINTED to the ucore, and
+  five tools change engine.**  `:180` declared them *"pinned to the FSM layout
+  and both with NO consumers anywhere in the tree (checked 2026-08-04)"*.
+  **MEASURED FALSE: `BIN` has five consumers and `OBJ` two** —
+  `sw/emit_suite.py:2258`, `sw/f4a_boundary_battery.py:73`,
+  `sw/char_divergence.py:26`, `sw/validate_strio_sim.py:158`,
+  `sw/class5_hext.py:58`; `sw/pi1a_trace.py:29` and `sw/repro_segleak.py:33`.
+  ⚠ **`emit_suite.py` calls `CC.build()` — which builds the DEFAULT ucore into
+  `obj_dir_ucore` — and then executes `CC.BIN`, the ARCHIVED core's binary in
+  the unsuffixed `obj_dir`.**  The trap the comment warned about was already
+  sprung.  **This is a CHANGE OF ENGINE and it is declared: no registered figure
+  is inherited across it**, and none of the seven tools carries a figure on any
+  standing ladder (`f4a_boundary` 160/160 and `f0lock_tranche` 400/400 are taken
+  through `check_core --suite-dir`, not through `f4a_boundary_battery.py`).
+* **`sw/check_boot.py` — A LIVE COUPLING TO RET-1'S MODEL, FIXED HERE.**
+  RET-1 §A claims the `check_boot` RTL legs *"had been killed by an
+  unconditional `simbin.ensure()` and this wave made it conditional"*.
+  **MEASURED: the condition it landed is `if timed:` — and `--timed` is the
+  MODEL leg (`run_timed()` runs `$SIM timed-boot`).**  So
+  `sw/check_boot.py --timed 220`, the command `CLAUDE.md`'s quick reference
+  still prints under *"Timed, whole-program"*, **dies with `ModelRetired`**, and
+  the live RTL legs are `check_boot.py 220` / `check_boot.py 400` — **measured
+  MATCH over 220 and 400 rows this session.**  The `--timed` leg is therefore a
+  RET-1 casualty that RET-1's own GATE STATUS table records as *"UNMOVED"*.
+  Corrected in both documents.
+
+### HOW TO RECOVER IT — nothing was destroyed
+
+```sh
+git checkout fb9365c01c -- hdl/rtl/core/ hdl/files.qip hdl/nec_test.qsf
+git checkout fb9365c01c -- sw/gen_ucore_qsf.py sw/race_law_equiv_tb.sv
+git checkout fb9365c01c -- sw/check_core.py sw/check_seq.py sw/check_ab_sim.py
+git checkout fb9365c01c -- sw/ss_lint.py sw/ss_flopcensus.py sw/r7_lint.py
+git checkout fb9365c01c -- sw/core_portlist_lint.py sw/quartus_gate.py
+git checkout fb9365c01c -- sw/t30_sweep.sh sw/check_race_law.py sw/gen_race_law.py
+#   ...and `PROJECT_REVISION = "nec_test"` back into hdl/nec_test.qpf
+python3 sw/check_core.py --build --core fsm
+```
+
+`fb9365c01c` (2026-09-19) is WAVE 20's tip, the last commit with the FSM core in
+the working tree.  The `git rm` in this wave removes the files from the WORKING
+TREE only; **every byte, every revision and the whole of campaigns 3 and 4
+remain in history.**  `docs/notes/fsm_core_archive_2026-08-04.md` keeps its
+record of what the core achieved and why it was archived, and is now a HISTORY
+document rather than a description of the tree.
+
+⚠ **One thing recovery does NOT restore**: the ucore's own RTL comments cite
+`hdl/rtl/core/` by path (`hdl/rtl/ucore/v30_core.sv:5`, `v30u_biu.sv:100`,
+`v30u_ss_pkg.sv:7`) and are **LEFT STANDING DELIBERATELY** — they are the
+ucore's provenance, and deleting them would delete the provenance rather than
+the dangle.  `hdl/rtl/ucore/` was not edited in this wave (bar **Z-6**).  Read
+them against `fb9365c01c`.
+
+### GATE STATUS — what moved, and what did not
+
+The full BEFORE/AFTER table is `docs/notes/fsm_removal_results_2026-09-19.md`
+§Z-5.  Headline: **the live ladder is ZERO-DELTA**, and the only legs that moved
+are the ones this entry retires, plus `check_boot --timed` (RET-1's, corrected)
+and `test_quartus_gate` (its E1 tests were re-registered onto the new bar).
+
+### THE FALSIFIER, registered with the entry
+
+The claim is **"no gate died silently, the live ladder is unmoved, and the
+removal is bitstream-neutral"**, and it has four falsifiers:
+
+1. **FALSIFIED IF** any tool that bound the archived core raises
+   `FileNotFoundError`, `ImportError`, `ModuleNotFoundError` or a bare Verilator
+   `%Error-PINNOTFOUND` instead of `FsmCoreRetired` — with the five RET-1
+   exceptions (the user's own uncommitted files) excepted.  The test is the
+   run-them-all sweep in the results document §Z-3.
+2. **FALSIFIED IF** the CONTROL `.rbf` built after the removal differs from
+   FLASH #23's CONTROL draw
+   (`e91a67badeef2c17262b5239e0700672f3be69eeb44e749e5c9d53ae1302a613`).  That
+   would mean the FSM core, or the `.qsf` re-basing, was reaching the ucore
+   bitstream.  **Scored as TWO builds so a difference names its own cause.**
+3. **FALSIFIED IF** `core_portlist_lint` ever reports PASS on a tree where a
+   `.NAME(...)` connection to `v30_core` names an undeclared port.  Its positive
+   controls are in the results document.
+4. **FALSIFIED IF** a future sitting restores a retired gate to green by
+   pointing it at the ucore and keeping the FSM's registered figure.  Those
+   figures are the FSM core's; an RTL leg that inherits them is a different
+   measurement wearing their name.  **Re-register, never re-label.**
+
 ## AUDITED AND **NOT** INVALIDATED
 
 Recorded because an unexamined suspicion is indistinguishable from an

@@ -41,7 +41,7 @@ def rowstr(r):
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--seed", required=True)
-    ap.add_argument("--core", default="ucore", choices=["sim", "ucore", "fsm"])
+    ap.add_argument("--core", default="ucore", choices=["sim", "ucore"])
     ap.add_argument("--ctx", type=int, default=10)
     a = ap.parse_args()
 

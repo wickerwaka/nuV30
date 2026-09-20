@@ -56,12 +56,14 @@ Known blind spots, stated so they are not discovered as surprises:
   * The taint walk in (b) covers the EU's continuous wires plus blocking
     assignments made inside the chain sources themselves.  A carrier laundered
     through a flop is, correctly, not tainted -- that is the invariant.
-  * `--core fsm` is INFORMATIONAL ONLY.  The FSM core is archived
-    (`docs/notes/fsm_core_archive_2026-08-04.md`); it is never gated here.
+  * ⚠ `--core fsm` IS GONE (WAVE 21, 2026-09-19).  It was INFORMATIONAL ONLY
+    and never a gate; its last reading was `WOULD FAIL`, measured immediately
+    before the removal.  `hdl/rtl/core/` left the tree under the user
+    instruction "Remove the FSM core, fix whatever dependencies exist"
+    (`docs/notes/invalidation_ledger.md` RET-2) and the flag is refused by name.
 
     python3 sw/r7_lint.py                  # the ucore, the gate
     python3 sw/r7_lint.py -v               # ...and print every net's verdict
-    python3 sw/r7_lint.py --core fsm       # informational, never a gate
 
 EXIT 0 = PASS, 1 = VIOLATION, 2 = the lint could not run (missing source).
 """
@@ -130,14 +132,6 @@ CORES = {
         "biu_mod": "v30u_biu", "eu_mod": "v30u_eu",
         "eu_incl": "v30u_eu_*.svh",
         "chain": ["v30u_eu_step.svh", "v30u_eu_row.svh"],
-        "ready": "ready", "stop": "stop",
-    },
-    "fsm": {                       # ARCHIVED -- informational, never a gate
-        "dir": "hdl/rtl/core",
-        "top": "v30_core.sv", "biu": "v30_biu.sv", "eu": "v30_eu.sv",
-        "biu_mod": "v30_biu", "eu_mod": "v30_eu",
-        "eu_incl": "v30_eu_*.svh",
-        "chain": [],
         "ready": "ready", "stop": "stop",
     },
 }
@@ -744,7 +738,9 @@ def _chain_to(name, via, carriers):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--core", default="ucore", choices=sorted(CORES))
+    ap.add_argument("--core", default="ucore",
+                    help="THERE IS ONE: 'ucore'.  'fsm' was removed "
+                         "2026-09-19 (invalidation_ledger.md RET-2).")
     ap.add_argument("-v", "--verbose", action="store_true",
                     help="print every BIU->EU net's verdict")
     ap.add_argument("--root", default="",
@@ -753,6 +749,10 @@ def main():
                          "file's, which is the point: they travel with the "
                          "gate, not with the tree being gated.")
     a = ap.parse_args()
+    if a.core not in CORES:
+        import fsmcore                                       # noqa: PLC0415
+        fsmcore.refuse(f"r7_lint --core {a.core} -- the only core in this tree is ucore")
+
     return run(a.core, a.verbose, gate=(a.core == "ucore"),
                root=Path(a.root).resolve() if a.root else None)
 

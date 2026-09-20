@@ -77,7 +77,15 @@ def tb_bin(core="ucore"):
     per process, because this function is the single choke point through which
     `timed_enter_replay` and `timed_ins_replay` reach the RTL.  It does NOT
     rebuild -- a mismatch is an error with two hashes in it."""
-    d = "obj_dir" if core == "fsm" else f"obj_dir_{core}"
+    # ⚠ WAVE 21, 2026-09-19: the `obj_dir` special case was the ARCHIVED
+    # FSM core's, and that core is gone (`invalidation_ledger.md` RET-2).
+    # `fsm` is refused BY NAME here rather than resolving to a path that
+    # is not there.
+    if core == "fsm":
+        import fsmcore                                      # noqa: PLC0415
+        fsmcore.retired(f"{__name__}.tb_bin('fsm') -- the only RTL core "
+                        f"in this tree is ucore")
+    d = f"obj_dir_{core}"
     b = ROOT / "hdl" / "tb" / d / "Vtb_v30_core"
     if core not in _REQUIRED and b.exists():
         import artifact as art                              # noqa: PLC0415

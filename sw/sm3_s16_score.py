@@ -152,7 +152,7 @@ def run_one(args):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--core", default="ucore", choices=("ucore", "fsm", "sim"))
+    ap.add_argument("--core", default="ucore", choices=("ucore", "sim"))
     ap.add_argument("--jobs", type=int, default=4)
     ap.add_argument("--details", type=int, default=8)
     ap.add_argument("--save", help="write the per-cell PASS map here")

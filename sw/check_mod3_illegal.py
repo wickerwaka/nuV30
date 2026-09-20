@@ -17,6 +17,21 @@ the current-RTL Verilator core and asserts:
 PASS proves the wedge is gone, the timing is chip-exact, and every value
 mismatch is the documented dest-register residue covered by fuzz_accept.lea_mod3.
 """
+
+# --------------------------------------------------------------------------- #
+# WAVE 21, 2026-09-19 -- THE ARCHIVED FSM CORE IS RETIRED AND SO IS THIS TOOL.
+# it replays through check_seq's FSM-pinned TB
+# It is NOT deleted: a refusal that names the decision is readable, a missing
+# file is not.  `docs/notes/invalidation_ledger.md` RET-2 carries this tool's
+# LAST REGISTERED FIGURE.  ⚠ That figure is an FSM figure and may not be
+# re-labelled onto a ucore leg -- re-register, never re-label.
+# --------------------------------------------------------------------------- #
+import sys as _sys                                            # noqa: E402
+from pathlib import Path as _Path                             # noqa: E402
+_sys.path.insert(0, str(_Path(__file__).resolve().parent))
+import fsmcore as _fsmcore                                    # noqa: E402
+_fsmcore.refuse("sw/check_mod3_illegal.py -- it replays through check_seq's FSM-pinned TB")
+
 import gzip
 import json
 import sys

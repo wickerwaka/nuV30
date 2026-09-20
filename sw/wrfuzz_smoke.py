@@ -137,7 +137,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--cid", default="wrsmoke")
     ap.add_argument("--n", type=int, default=20)
-    ap.add_argument("--core", default="ucore", choices=("ucore", "fsm"))
+    ap.add_argument("--core", default="ucore", choices=("ucore",))
     ap.add_argument("--shapes", default=",".join(wv.SHAPES))
     ap.add_argument("--report", default="")
     a = ap.parse_args()
@@ -153,7 +153,7 @@ def main():
     # vacuous-gate pattern passes; naming the path that `run_tb` invokes is
     # the one it does not.
     assert str(binp).endswith(
-        "obj_dir/Vtb_v30_core" if a.core == "fsm"
+        "obj_dir_ucore/Vtb_v30_core" if a.core == "ucore"
         else f"obj_dir_{a.core}/Vtb_v30_core"), binp
     print(f"wrfuzz_smoke: NON-GATE.  {a.n} seeds, engines = the timed model "
           f"and the {a.core} RTL core")

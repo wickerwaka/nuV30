@@ -57,30 +57,58 @@ ROOT = SW.parent
 # and `check_enter_nesting` all reach the TB through `run_tb` below, so all four
 # inherit the fix at once.
 #
-# The core is `fsm` DELIBERATELY and it is NOT changed here: these are ARCHIVED,
-# on-demand gates (`standing_gates.md` §C) and their registered figures are FSM
-# figures.  Migrating the plumbing must not move a number, so the engine stays
-# exactly where it was.
+# ⚠⚠ THE PIN WAS `"fsm"` AND IT IS NOW `None` -- WAVE 21, 2026-09-19.
 #
-# `BIN` is kept because tools import it, and it is now ONLY a path -- ask
-# `tb_bin()` for a binary you intend to RUN, because that is the call that
-# asserts the receipt postcondition.
+# `CORE` was the SINGLE DECLARATION that decided which engine every
+# `run_tb()` caller got when it named none, and it said `"fsm"`: the ARCHIVED
+# trace-fitted core.  `hdl/rtl/core/` was removed from the tree by WAVE 21
+# (`docs/notes/invalidation_ledger.md` RET-2) under the user instruction
+# "Remove the FSM core, fix whatever dependencies exist" and the ruling that
+# "ucore is the only valid implementation in this code base".
+#
+# IT IS NOT SILENTLY RE-POINTED AT THE ucore.  Flipping this constant would
+# change what ~30 tools MEASURE without moving one line of their code, and the
+# figures they carry are FSM figures -- RE-REGISTER, NEVER RE-LABEL (RET-1's
+# falsifier #3).  So the pin REFUSES, by name, and a caller that means the
+# ucore must SAY `core="ucore"`.  Eight already did (`fz2_replay`,
+# `emit_suite`, `fz2_a1_rescore`, `fz2_c1_rescore`, `fz2_c2_rescore`,
+# `fz2_m10`, `fz2_p2_probe`, `fz2_undoc_probe`), which is why no live standing
+# gate moved when the core went.
+#
+# `BIN` was the FSM `obj_dir` path and is now a module-level `__getattr__` that
+# raises the same refusal -- so `from check_seq import BIN` says WHY rather
+# than handing out a path to a file that is not there.  Ask `tb_bin(core)` for
+# a binary you intend to RUN: that is the call that asserts the receipt
+# postcondition.
 # --------------------------------------------------------------------------- #
-CORE = "fsm"
-BIN = ROOT / "hdl" / "tb" / "obj_dir" / "Vtb_v30_core"
+CORE = None
 _BIN_OK = {}
+
+
+def __getattr__(name):
+    """`BIN` was the ARCHIVED core's TB binary.  Refuse BY NAME, not by path."""
+    if name == "BIN":
+        import fsmcore                                       # noqa: PLC0415
+        fsmcore.retired("check_seq.BIN -- the FSM TB binary "
+                        "hdl/tb/obj_dir/Vtb_v30_core")
+    raise AttributeError(name)
 
 
 def tb_bin(core=None):
     """The TB binary, BUILT IF THE CONTENT KEY MOVED and then proved fresh
-    against this tree.  Memoised: a 3,242-seed replay pays the hashing once.
+    against this tree.  Memoised: a 621-seed replay pays the hashing once.
 
-    `core=None` means the module's pinned `CORE` and is what every historical
-    caller gets, byte for byte.  An EXPLICIT core is for a caller that intends
-    to name its engine (fuzz-v2 erratum E-1: the `--tb-only` figures were taken
-    on the ARCHIVED fsm core because this pin is the only thing that decides,
-    and nothing in the output said so).  It does NOT move the pin."""
-    core = CORE if core is None else core
+    ⚠ `core=None` USED TO MEAN the module's pinned `CORE`, which was the
+    ARCHIVED fsm core (fuzz-v2 erratum E-1: the `--tb-only` figures were taken
+    on it because this pin was the only thing that decided, and nothing in the
+    output said so).  Since WAVE 21 the pin is `None` and this REFUSES: name
+    your engine."""
+    if core is None or core == "fsm":
+        import fsmcore                                       # noqa: PLC0415
+        fsmcore.retired(
+            f"check_seq.tb_bin({core!r}) -- this module's engine pin was "
+            f"'fsm'.  Pass core=\"ucore\" explicitly, and RE-REGISTER the "
+            f"figure: a ucore leg is a different measurement")
     if core not in _BIN_OK:
         import check_core                                   # noqa: PLC0415
         import artifact                                     # noqa: PLC0415

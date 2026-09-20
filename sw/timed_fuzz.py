@@ -276,9 +276,18 @@ def wait_args(entry, td):
 
 
 def tb_bin(core):
-    """The Verilator TB binary for an RTL leg -- `sw/check_boot._bin`'s rule,
-    unchanged: the FSM core is `obj_dir`, every other core is `obj_dir_<core>`."""
-    d = "obj_dir" if core == "fsm" else f"obj_dir_{core}"
+    """The Verilator TB binary for an RTL leg -- `sw/check_boot._bin`'s rule:
+    every core is `obj_dir_<core>`.  (It used to carve out `obj_dir` for the
+    ARCHIVED FSM core; that core was removed 2026-09-19, RET-2.)"""
+    # ⚠ WAVE 21, 2026-09-19: the `obj_dir` special case was the ARCHIVED
+    # FSM core's, and that core is gone (`invalidation_ledger.md` RET-2).
+    # `fsm` is refused BY NAME here rather than resolving to a path that
+    # is not there.
+    if core == "fsm":
+        import fsmcore                                      # noqa: PLC0415
+        fsmcore.retired(f"{__name__}.tb_bin('fsm') -- the only RTL core "
+                        f"in this tree is ucore")
+    d = f"obj_dir_{core}"
     return ROOT / "hdl" / "tb" / d / "Vtb_v30_core"
 
 
@@ -710,7 +719,7 @@ def main():
                          "unchanged)")
     # U3.  The ENGINE, and nothing else.  `sim` is the default so every
     # standing invocation of this harness scores exactly what it scored before.
-    ap.add_argument("--core", default="sim", choices=("sim", "ucore", "fsm"),
+    ap.add_argument("--core", default="sim", choices=("sim", "ucore"),
                     help="replay engine: the C++ timed model (sim) or an RTL "
                          "core in the Verilator TB (ucore / fsm)")
     # U3.  The pin-hold the seed record stores is what the HOST asked for;

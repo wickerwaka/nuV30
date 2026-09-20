@@ -198,7 +198,7 @@ def main():
     # window -- run it longer and a later instruction hijacks the resolution.
     ap.add_argument("--clocks", type=int, default=4063)
     ap.add_argument("--verbose", action="store_true")
-    ap.add_argument("--core", default="sim", choices=("sim", "ucore", "fsm"),
+    ap.add_argument("--core", default="sim", choices=("sim", "ucore"),
                     help="replay engine: the C++ timed sim (default) or a "
                          "verilated RTL core through the TB's +bootimg mode")
     ap.add_argument("--raw", action="store_true",

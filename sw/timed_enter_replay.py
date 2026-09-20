@@ -120,7 +120,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--verbose", action="store_true")
     ap.add_argument("--waits", default="")
-    ap.add_argument("--core", default="sim", choices=("sim", "ucore", "fsm"),
+    ap.add_argument("--core", default="sim", choices=("sim", "ucore"),
                     help="replay engine: the C++ timed sim (default) or a "
                          "verilated RTL core through the TB's +bootimg mode")
     args = ap.parse_args()

@@ -203,7 +203,7 @@ def main():
     sub.add_parser("chip").set_defaults(fn=cmd_chip)
     e = sub.add_parser("engine")
     e.add_argument("--core", default="ucore",
-                   choices=("ucore", "fsm", "sim"))
+                   choices=("ucore", "sim"))
     e.set_defaults(fn=cmd_engine)
     a = ap.parse_args()
     sys.exit(a.fn(a))

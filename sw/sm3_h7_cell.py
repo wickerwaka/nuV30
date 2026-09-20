@@ -303,7 +303,7 @@ def main():
     rp = sub.add_parser("report")
     rp.add_argument("--out", default="")
     s = sub.add_parser("score")
-    s.add_argument("--core", default="sim", choices=("sim", "ucore", "fsm"))
+    s.add_argument("--core", default="sim", choices=("sim", "ucore"))
     s.add_argument("--out", default="")
     idl = sub.add_parser("idle")
     idl.add_argument("--out", default="")
