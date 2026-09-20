@@ -316,7 +316,8 @@ class EngineError(RunError):
 def _tb_core():
     """Name the core the TB leg runs, EXPLICITLY.
 
-    `check_seq.CORE` is pinned to the ARCHIVED fsm core, and the campaign plan
+    `check_seq.CORE` WAS pinned to the ARCHIVED fsm core (it is `None` and
+    REFUSES since WAVE 21, RET-2), and the campaign plan
     records that `--tb-only` figures were read as ucore figures for exactly
     this reason: the pin is the only thing that decides and nothing in the
     output said so.  Ask for `ucore` if this `run_tb` takes a core, and if it

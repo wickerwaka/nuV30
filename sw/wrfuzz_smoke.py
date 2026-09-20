@@ -67,7 +67,8 @@ def run_tb(image, vec, nrows, td, core):
     """The RTL leg, invoking the NAMED core's binary DIRECTLY.
 
     ⚠ IT DOES NOT GO THROUGH `check_seq.run_tb`, AND THE FIRST VERSION OF THIS
-    FILE DID.  `check_seq.CORE` is **`"fsm"`**, pinned there deliberately
+    FILE DID.  `check_seq.CORE` WAS **`"fsm"`**, pinned there deliberately
+    (it is `None` and REFUSES since WAVE 21, RET-2)
     (`check_seq.py` §60: the gates that reach the TB through it are ARCHIVED
     on-demand gates whose registered figures are FSM figures, so migrating the
     plumbing must not move the engine).  So `check_seq.run_tb` builds and runs
@@ -159,7 +160,8 @@ def main():
           f"and the {a.core} RTL core")
     print(f"  RTL leg {art.relpath(binp)} receipt "
           f"{str(art.receipt_id(binp))[:16]}…  "
-          f"(invoked DIRECTLY -- check_seq.CORE is pinned to 'fsm')",
+          f"(invoked DIRECTLY -- check_seq.CORE was pinned to 'fsm' and "
+          f"now refuses; WAVE 21, RET-2)",
           flush=True)
 
     ov = {"wvec_shapes": [s for s in a.shapes.split(",") if s],

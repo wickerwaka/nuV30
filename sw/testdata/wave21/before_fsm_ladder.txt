@@ -1,0 +1,20 @@
+=== WAVE 21 BEFORE / FSM LEGS  2026-09-20T03:52:54Z  HEAD=6c3de357d9
+fsm_build                                rc=0  artifact: PROMOTED hdl/tb/obj_dir/Vtb_v30_core  receipt 6ef5e51f32e75735…  (16.8s)
+fsm_v01                                  rc=0  TOTAL: 169000/169000 full (cycles 169000, arch 169000)
+fsm_hlt_w0                               rc=1  TOTAL: 87/97 full (cycles 87, arch 97)
+fsm_hlt_w1                               rc=1  TOTAL: 82/95 full (cycles 82, arch 95)
+fsm_hlt_w2                               rc=1  TOTAL: 30/46 full (cycles 30, arch 46)
+fsm_hlt_w3                               rc=1  TOTAL: 27/45 full (cycles 27, arch 45)
+fsm_ss_lint                              rc=0  ss_flopcensus: PASS (181 architectural flops, all SSA-mapped or whitelisted; 0 whitelist entries)
+fsm_flopcensus                           rc=0  ss_flopcensus: PASS (181 architectural flops, all SSA-mapped or whitelisted; 0 whitelist entries)
+fsm_ab_sim                               rc=0  AB SIM MATCHES CHIP BOOT over 187 rows from RESET release
+fsm_race_law                             rc=0  check_race_law.py: PASS (2/2 sub-checks)
+fsm_prefix                               rc=0  prefix_clear_lint: PASS (20 S_FIRST sites; 4 PFX-KEEP; clear_prefixes single source; no drift)
+fsm_ea_step                              rc=0  ea_step_lint: PASS (all eu_addr operand steps wrap via ea_step2; only the IVT high-word read is linear, by design)
+fsm_r7                                   rc=0  === r7_lint [fsm]: WOULD FAIL  (INFORMATIONAL ONLY -- this core is archived and is never gated)
+fsm_ff_t4                                rc=1    see sw/gen_seq._v1_anchor_stop for the full reasoning.
+fsm_mod3                                 rc=1  testimage.ComposeError: body [0500,0502) is not inside the code region [8000,c000)
+fsm_lc6                                  rc=1  testimage.ComposeError: body [0500,0517) is not inside the code region [8000,c000)
+fsm_enter                                rc=1  check_enter_nesting: FAIL
+fsm_fuzz_bank                            rc=0  check_fuzz_bank: PASS | 621 banked seeds | stable 621 improved 0 worse 0 | gen_drift 0 regen_err 0 | float-floor 0 | new-sig TIMING 0
+=== BEFORE FSM legs done 2026-09-20T04:03:08Z

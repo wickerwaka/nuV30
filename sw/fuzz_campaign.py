@@ -509,7 +509,8 @@ def wvec_of(cfg):
 def capture_tb(image, meta, cfg, core=None):
     """Single Verilator TB leg (temp hygiene handled inside run_tb).
 
-    `core=None` is `check_seq.CORE`, i.e. the ARCHIVED fsm core -- see
+    `core=None` WAS `check_seq.CORE`, i.e. the ARCHIVED fsm core.  It now
+    REFUSES BY NAME (WAVE 21, invalidation_ledger.md RET-2) -- see
     `tb_engine()` below, which is the call that makes the engine SAY WHICH ONE
     IT IS instead of leaving it to a module-level pin."""
     w = cfg["waits"]
@@ -523,7 +524,7 @@ def capture_tb(image, meta, cfg, core=None):
 def tb_engine(core=None):
     """WHICH ENGINE A TB LEG ACTUALLY RAN -- (core, path, receipt id).
 
-    Erratum E-1 was taken on the archived fsm core because `check_seq.CORE` is
+    Erratum E-1 was taken on the archived fsm core because `check_seq.CORE` was
     pinned to it and NOTHING IN THE OUTPUT SAID SO.  Every tool here that runs
     a TB leg prints this triple, and it is derived three independent ways:
 
@@ -1888,7 +1889,8 @@ def cmd_measure(a):
     anything -- the numbers go to the reviewer.
 
     THE ENGINE IS NAMED, NOT ASSUMED.  E-1's first measurement went through
-    `check_seq.CORE`, which is pinned to the ARCHIVED fsm core
+    `check_seq.CORE`, which WAS pinned to the ARCHIVED fsm core and now
+    refuses (WAVE 21, RET-2)
     (`standing_gates.md` §C / §F-4), and nothing in the output said so, so the
     numbers could not be quoted as ucore figures.  `--core` now selects the
     engine explicitly and EVERY ROW carries the core, the binary path and its
@@ -2681,7 +2683,8 @@ def main():
     p.add_argument("--out", default=None, help="per-seed rows as JSON")
     p.add_argument("--core", default=None,
                    help="THE ENGINE, explicitly.  Default None = "
-                        "`check_seq.CORE` = the ARCHIVED fsm core, which is "
+                        "`check_seq.CORE` WAS the ARCHIVED fsm core and now "
+                        "REFUSES (WAVE 21, RET-2), which is "
                         "how E-1 was first measured without saying so.  Every "
                         "row carries the core, binary and receipt actually "
                         "used.")

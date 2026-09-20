@@ -3,7 +3,7 @@
 
 T2's finding F4 said `0xF1` parks the EU forever, and `undoc` was the largest
 depressor of erratum E-1's terminator-reached column (59.6 %).  Every figure
-behind that was taken through `check_seq.CORE`, which is pinned to the ARCHIVED
+behind that was taken through `check_seq.CORE`, which WAS pinned to the ARCHIVED
 fsm core -- so the finding could equally be a property of the CORPUS or an
 artifact of the INSTRUMENT, and E-1 cannot be registered until it is known
 which.  This probe asks the question directly and on both engines.

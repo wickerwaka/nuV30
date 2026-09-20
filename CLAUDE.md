@@ -957,10 +957,19 @@ Values are monotone: never re-scored downward without a loud, itemized entry.)
   folded tree**. ⚠ **AND A `r7_lint` PASS IS NOT A TIMING CLAIM**: the 8F ghost
   FEED passes it — its route to the loader chain is register `D` pins, outside
   the `stop` charter — and **G6 measured 15.3 MHz on it**.
-- **`sw/ss_lint.py --core ucore` exits 0** — ⚠ **CURRENT, RE-MEASURED 2026-08-11
-  on `fuzz-v2-on-relanding` at the KM landing: `SS_VERSION` 0x8D / `SS_COUNT`
-  226 / `SS_TAG` 0x8DE2, 214 flops, 0 UNMAPPED** (the 0x8D bump is the wave-4
-  landings'; KM itself added no flop). *(Superseded: 2026-08-10 at
+- **`sw/ss_lint.py` exits 0** — ⚠⚠ **CURRENT, RE-MEASURED 2026-09-20 (WAVE 21):
+  `SS_VERSION` 0x8F / `SS_COUNT` 232 / `SS_TAG` 0x8FE8, 229 architectural flops,
+  4 whitelist entries, 0 UNMAPPED** (109×2 BIU + 122×2 EU + tag = 232; BIU 91
+  flops → 91 mapped, EU 138 → 134 mapped + 4 whitelisted, 3 sim-only exempt).
+  ⚠ **THE `--core fsm` LEG IS GONE** — the archived core was removed 2026-09-19
+  (`invalidation_ledger.md` RET-2); its last figure was 203 addresses / 181
+  flops / 0 UNMAPPED and the two maps were never stream-compatible.
+  ⚠ **AND THE NEXT PARAGRAPH PRESENTED 0x8D / 226 / 214 AS "CURRENT" UNTIL
+  2026-09-19** — WAVE 20 item W-2, five map bumps stale, while
+  `standing_gates.md` §B was already correct.  *(Superseded: 2026-08-11 on
+  `fuzz-v2-on-relanding` at the KM landing: `SS_VERSION` 0x8D / `SS_COUNT`
+  226 / `SS_TAG` 0x8DE2, 214 flops, 0 UNMAPPED* — the 0x8D bump is the wave-4
+  landings'; KM itself added no flop.*)* *(Superseded: 2026-08-10 at
   `399ba6729d` read `SS_VERSION` 0x8C / 224 / `SS_TAG` 0x8CE0, 212 flops)* (`SS_BIU_COUNT` 101, `SS_EU_COUNT` 122; BIU 83 flops → 83
   mapped, EU 129 → 127 mapped + 2 whitelisted, 1 sim-only exempt). The map
   reached 0x8C/224 at the **8F ghost READ** (`d1d9f168d4`: SSA `0x176` plus the
