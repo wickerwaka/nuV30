@@ -2079,10 +2079,30 @@ both suites shipped an `emit_log.txt`.
 | **ABSENT, `REJECTED_BY_v0.3`** | **85** | `v0.3`'s generator **rerolled this exact seed attempt away** — *"implausible final PSW"*, *"PC push bytes not contiguous"*, *"footprint overlap"*, *"footprint intersects the reserved page"* |
 | | **7,127** | |
 
-**ONLY 85 OF 347,000 CASES ARE CONTENT THE LATER GENERATOR REFUSED.  THEY ARE
-PRESERVED ANYWAY AND THE MANIFEST SAYS SO**, each by form, index, `v0.2` seed
-attempt and class: a case the later generator calls implausible is **evidence
-about the generator**, and adjudicating it is not this wave's business.
+**ONLY 85 OF 347,000 SEED ATTEMPTS WERE REFUSED BY THE LATER GENERATOR.  THE
+`v0.2` RECORDS BEHIND THEM ARE PRESERVED ANYWAY AND THE MANIFEST SAYS SO**, each
+by form, index, `v0.2` seed attempt and class.
+
+⚠ **A SCOPING LIMIT, STATED SO THE CLASS IS NOT OVER-READ**: `REJECTED_BY_v0.3`
+means *`v0.3`'s generator rerolled that **seed attempt** away*.  It does **not**
+mean `v0.3` was handed this exact `v0.2` record and refused it — the two
+emissions build different cases from the same seed, which is exactly what the
+1,152 `SAME_SEED_DIFFERENT_RECORD` cases demonstrate.  `v0.3`'s own reasons, by
+count: **`implausible final PSW <value>` 45** (`0` ×37 plus eight distinct
+non-zero values) · **`pf assert before window <offset>` 37** · **`no F pop from
+close addr` 3** = 85.  Regenerate: `python3
+sw/testdata/wave27/w27_rejected_reasons.py`, which runs from the archive and
+`v0.3/emit_log.txt` alone and **exits non-zero if any of the 85 has no matching
+reroll line** — measured **0**.
+
+⚠ **AND A READING REFUTED BY ITS OWN CONTROL, RECORDED BECAUSE IT WAS ALMOST
+SHIPPED.**  Four spot-checked rejected cases carried **no `final.flags`**, which
+looked like the store-stub final-PSW capture defect `v0.3/README.md` says it
+fixed.  **The control kills it**: `final.flags` is absent from **all 7,127**
+archived records — rejected, same-seed and shifted alike — because `final.regs`
+is sparse in this schema and these pin-event forms do not list it.  **Absence of
+`final.flags` is not a discriminator; the reading is WITHDRAWN**, and what
+stands is `v0.3`'s own log.
 
 **7,120 of the 7,127 lie in the nine interrupt/HALT forms**, and they are
 exactly the positions where the two emissions used a **different seed attempt**

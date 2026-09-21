@@ -117,6 +117,40 @@ re-emissions, **two of them inside the compared prefix** (`36.6E` idx 517,
 re-emission pass over `v0.2` itself.  **The ten-case gap is stated as
 unexplained; 7,127 is what this tree measures and 7,127 is what is archived.**
 
+## ⚠ WHAT `REJECTED_BY_v0.3` DOES AND DOES NOT MEAN — a scoping limit, and a refuted reading
+
+**IT MEANS: `v0.3`'s generator rerolled that SEED ATTEMPT away.**  It does NOT
+mean `v0.3` was handed this exact `v0.2` record and refused it.  The two
+emissions build **different cases from the same seed** — that is precisely what
+the 1,152 `SAME_SEED_DIFFERENT_RECORD` cases demonstrate — so the candidate
+`v0.3` refused at seed *k* is its own candidate, not necessarily the record
+`v0.2` banked at that index.  **The class is a statement about the seed, and
+the archive preserves the `v0.2` record that sits behind it.**
+
+`v0.3`'s own reroll reason for each of the 85:
+
+| reason family, verbatim from `v0.3/emit_log.txt` | n |
+|---|---:|
+| `implausible final PSW <value>` — `0` ×37, plus 8 distinct non-zero values ×1 each | **45** |
+| `pf assert before window (<offset>)` — `0`, −1, −2, −3, −4, −58, −59, −60, −70, −71 | **37** |
+| `no F pop from close addr <addr>` | **3** |
+| | **85** |
+
+Regenerate with `python3 sw/testdata/wave27/w27_rejected_reasons.py` (runs from
+the archive and `v0.3/emit_log.txt` alone; it exits non-zero if any of the 85
+has no matching reroll line — measured **0**).  Frozen output:
+`sw/testdata/wave27/z2_rejected_reasons.txt`.
+
+⚠ **A READING THAT LOOKED OBVIOUS AND IS REFUTED BY ITS OWN CONTROL.**  Four
+spot-checked rejected cases all carried **no `final.flags`**, which suggested
+the 85 were `v0.2` captures with a defective final-PSW capture — the very thing
+`v0.3/README.md` says it fixed.  **The control says otherwise**: `final.flags`
+is absent from **all 7,127** archived records — 85 rejected, 1,152 same-seed,
+5,890 shifted alike — because `final.regs` is sparse in this schema and these
+pin-event forms do not list it.  **Absence of `final.flags` is not a
+discriminator and the reading is withdrawn.**  What stands is the reason
+histogram above, which is `v0.3`'s own log and needs no interpretation.
+
 ## `provenance/` — the suite's own records, and the only copies that exist
 
 `v0.2`'s five non-case files, preserved verbatim (gzipped, `mtime=0`) with

@@ -1,0 +1,48 @@
+WAVE 27 -- the 85 `REJECTED_BY_v0.3` seed attempts
+
+⚠ WHAT THE CLASS MEANS: v0.3's generator rerolled that SEED ATTEMPT away.
+   It does NOT mean v0.3 was handed this v0.2 record and refused it -- the
+   two emissions build different cases from the same seed, which is what
+   the 1,152 SAME_SEED_DIFFERENT_RECORD cases demonstrate.
+
+seed attempts with NO matching v0.3 reroll line (want 0): 0
+
+BY FAMILY:
+    45  implausible final PSW
+    37  pf assert before window
+     3  no F pop from close addr
+
+VERBATIM, every distinct line:
+    37  implausible final PSW 0
+    11  pf assert before window (0)
+     8  pf assert before window (-1)
+     6  pf assert before window (-2)
+     3  pf assert before window (-70)
+     2  pf assert before window (-59)
+     2  pf assert before window (-60)
+     2  pf assert before window (-4)
+     1  implausible final PSW 24373
+     1  implausible final PSW 8536
+     1  implausible final PSW 5211
+     1  implausible final PSW 23299
+     1  no F pop from close addr 06192
+     1  pf assert before window (-58)
+     1  no F pop from close addr 06948
+     1  pf assert before window (-3)
+     1  no F pop from close addr 04f96
+     1  pf assert before window (-71)
+     1  implausible final PSW 24456
+     1  implausible final PSW 17435
+     1  implausible final PSW 53598
+     1  implausible final PSW 24320
+
+THE CONTROL that refuted the `final.flags` reading -- `final.flags` in the
+archived v0.2 records, BY CLASS.  If absence were the discriminator the
+three rows would differ.  They do not:
+  REJECTED_BY_v0.3             n=   85  flags ABSENT=85
+  SAME_SEED_DIFFERENT_RECORD   n= 1152  flags ABSENT=1152
+  SHIFTED                      n= 5890  flags ABSENT=5890
+
+=> absence of `final.flags` is NOT a discriminator (`final.regs` is sparse
+   in this schema and these pin-event forms do not list it).  The reading
+   that the 85 are store-stub final-PSW capture failures is WITHDRAWN.
