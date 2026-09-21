@@ -1,0 +1,26 @@
+=== b2_ea_lane_ucore (WAVE 24's 13) ===
+M7   89 07          MOV [BW],AW          4444   5555     1111    1111  MATCH
+
+MATCH 13 / 13   DIVERGE 0 / 13
+=== w26_ea_lane2_ucore (21, vs the new socket capture) ===
+P7   89 44 f0       MOV [IX-10h],AW          7767   1101     1101    1101  MATCH  pred=HIT
+
+MATCH 21   DIVERGE 0   NO-SILICON 0   (of 21)
+=== chainflat (repaired gate, with positive control) ===
+  POSITIVE CONTROL: one synthetic line in S_ENTER moves the digest abb6954fe1a7…  ->  139da5f0a5b2…   CAUGHT
+
+chainflat_relocation_check: PASS -- 9 arms, one copy each, 7 byte-identical to aba01feb07, 2 DECLARED DEVIATION(S) pinned by digest
+=== ss_lint ===
+ss_lint: PASS (109x2 BIU + 122x2 EU + tag = 232; constants OK)
+ss_flopcensus: PASS (229 architectural flops, all SSA-mapped or whitelisted; 4 whitelist entries)
+=== cutset / phasespl / r7 ===
+=== cutset_lint: PASS   (81 members / 0 violations)
+=== phase_split_lint: PASS   (157 members / 779 bits / 0 violations)
+=== r7_lint: PASS   (0 undeclared carrier(s), 0 undeclared unresolved, 0 `stop` site(s))
+=== consumer census ===
+PASS -- ONE consumer, ZERO goldens reach it: the architectural ladder cannot move
+=== lea_mod3_gate ===
+  L4  MOV[3010h],AH          silicon 0x4121   ucore 0x4121  MATCH   (REPORTED, NOT A BAR)
+  L4  MOV CW,[4455h]         silicon 0xd4e5   ucore 0xd4e5  MATCH   (REPORTED, NOT A BAR)
+  L4  KNOWN-RED     0 of 2 ModR/M-predecessor silicon row(s) DIVERGE -- REPORTED, NOT A BAR (results doc §4)
+PASS

@@ -1,0 +1,7 @@
+[suitemeta] f4a_boundary: dialect 'absent' -- NO opcode map of its own; DELEGATING to tests/v30/v0.1/metadata.json
+0F31: 40/40 full  (cycles 40, arch 40)
+0F3B: 40/40 full  (cycles 40, arch 40)
+62: 40/40 full  (cycles 40, arch 40)
+C4: 40/40 full  (cycles 40, arch 40)
+
+TOTAL: 160/160 full (cycles 160, arch 160)

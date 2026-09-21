@@ -73,11 +73,14 @@
     m_kind_n = OK_NONE; m_idx_n = 3'd0; m_byte_n = 1'b0;
     r_kind_n = OK_NONE; r_idx_n = 3'd0; r_byte_n = 1'b0; r_ea_n = 16'd0; r_seg_n = 3'd3;
     // 8D / mod=3 performs no EA calculation.  Silicon nevertheless executes
-    // it and the row-1 SIGMA -> R transfer observes the retained EA-adder A
-    // lane.  If the preceding EA had two register inputs, its index rail is
-    // still selected on B; unary forms instead expose the ordinary tmpb rail.
-    // mc2/491 is the two-input witness (2594+retained SI 0fa3=3537), while
-    // mc1/1929 and t30-raw/624 are the unary counterexamples.
+    // it and the row-1 SIGMA -> R transfer observes BOTH retained EA-adder
+    // rails: A through `ea_residue`, and B through `ea_pair_rhs` whenever no
+    // tmpb write has replaced what the last EA calculation put there.  Every
+    // EA calculation loads B -- with the index, the displacement, or zero --
+    // so `ea_pair_valid` is about REPLACEMENT, not about the form.
+    // mc2/491 is the two-input witness (2594+retained SI 0fa3=3537); the
+    // single-addend rows, where B is zero and not stale, are M4/M5/M7 of the
+    // 2026-09-20 socket capture (sw/testdata/wave26/b2b/).
     if (!ld_ext_n && (ld_b_n == 8'h8D) && (rmmod == 2'd3)) begin
         tmpa_n = ea_residue_n;
         if (ea_pair_valid_n) tmpb_n = ea_pair_rhs_n;

@@ -1,0 +1,7 @@
+[suitemeta] f0lock_tranche: dialect 'absent' -- NO opcode map of its own; DELEGATING to tests/v30/v0.1/metadata.json
+F0.6C: 100/100 full  (cycles 100, arch 100)
+F0.6D: 100/100 full  (cycles 100, arch 100)
+F0.6E: 100/100 full  (cycles 100, arch 100)
+F0.6F: 100/100 full  (cycles 100, arch 100)
+
+TOTAL: 400/400 full (cycles 400, arch 400)

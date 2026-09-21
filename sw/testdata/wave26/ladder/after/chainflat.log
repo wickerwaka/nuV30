@@ -1,0 +1,28 @@
+  G-12 S_TAKE_OPC    relocated byte-identical,   5 lines
+  G-12 S_DECODE      relocated byte-identical,  30 lines
+  G-12 S_DECODE2     relocated byte-identical, 148 lines
+  G-12 S_EA_CALC     DEVIATES BY DECLARATION (WAVE 26, 2026-09-20),  43 lines
+  G-12 S_BIND        DEVIATES BY DECLARATION (WAVE 26, 2026-09-20), 122 lines
+  G-12 S_ENTER       relocated byte-identical,   8 lines
+  G-12 S_TAIL        relocated byte-identical,   5 lines
+  G-12 S_TAIL_POP    relocated byte-identical,  24 lines
+  G-12 S_INSTR_END   relocated byte-identical,  29 lines
+
+  G-11 S_TAKE_OPC    exactly one copy: hdl/rtl/ucore/v30u_eu_arm_take_opc.svh
+  G-11 S_DECODE      exactly one copy: hdl/rtl/ucore/v30u_eu_arm_decode.svh
+  G-11 S_DECODE2     exactly one copy: hdl/rtl/ucore/v30u_eu_arm_decode2.svh
+  G-11 S_EA_CALC     exactly one copy: hdl/rtl/ucore/v30u_eu_arm_ea_calc.svh
+  G-11 S_BIND        exactly one copy: hdl/rtl/ucore/v30u_eu_arm_bind.svh
+  G-11 S_ENTER       exactly one copy: hdl/rtl/ucore/v30u_eu_arm_enter.svh
+  G-11 S_TAIL        exactly one copy: hdl/rtl/ucore/v30u_eu_arm_tail.svh
+  G-11 S_TAIL_POP    exactly one copy: hdl/rtl/ucore/v30u_eu_arm_tail_pop.svh
+  G-11 S_INSTR_END   exactly one copy: hdl/rtl/ucore/v30u_eu_arm_instr_end.svh
+
+  G-12 DECLARED DEVIATION IN FORCE, digest abb6954fe1a73655…
+       WAVE 26, 2026-09-20 -- arms S_EA_CALC, S_BIND + the step file itself, 1 code hunk(s)
+       the retained EA lane takes the address adder's SECOND ADDEND on every EA calculation (one mux in S_EA_CALC); the S_BIND and S_ROW hunks are COMMENT-ONLY and carry the sentences silicon refuted.  docs/notes/ea_qualifier_results_2026-09-20.md
+       EVERYTHING ELSE from `case (st_n)` onward is byte-identical to aba01feb07.
+
+  POSITIVE CONTROL: one synthetic line in S_ENTER moves the digest abb6954fe1a7…  ->  139da5f0a5b2…   CAUGHT
+
+chainflat_relocation_check: PASS -- 9 arms, one copy each, 7 byte-identical to aba01feb07, 2 DECLARED DEVIATION(S) pinned by digest

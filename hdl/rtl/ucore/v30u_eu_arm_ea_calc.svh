@@ -33,14 +33,23 @@
     // microcode tmpa register.  The distinction is normally invisible, but
     // register-form LEA exposes it through the still-armed ADD datapath.
     ea_residue_n = ea;
-    // Only the four two-register address forms select a distinct RHS rail.
-    // Remember both that select and the index value; a later unary EA clears
-    // the select but leaves tmpb itself to evolve exactly as before.
-    ea_pair_valid_n = (rmrm <= 3'd3);
-    if ((rmrm == 3'd0) || (rmrm == 3'd2))
-        ea_pair_rhs_n = gpr_n[R_IX];
-    else if ((rmrm == 3'd1) || (rmrm == 3'd3))
-        ea_pair_rhs_n = gpr_n[R_IY];
+    // THE ADDER'S B RAIL IS LOADED ON EVERY EA CALCULATION, AND WHAT IT TAKES
+    // IS THE SECOND ADDEND -- the index register where the form has one and
+    // nothing is added after it, the displacement otherwise, and ZERO where
+    // there is nothing to add (`ld_disp_n` is 0 on a form with no
+    // displacement, so the one mux covers both).  Measured on silicon over
+    // thirteen directed socket probes, `<predecessor> 8D F7`:
+    // docs/notes/suite_divergence_results_2026-09-20.md sec.6.2.
+    //   [BW+IX]  -> IX      [BP+IY] -> IY      [IX] / [IY] / [BW] -> 0
+    //   [disp16] -> disp    and mod=01/10 -> disp (PREDICTED, NOT MEASURED:
+    //   no silicon probe of a base+index+displacement form exists).
+    // `_valid` no longer means "there was a pair"; it means "the rail was
+    // loaded by an EA calculation and nothing has written tmpb since", which
+    // is what the clear beside every tmpb write below already implemented.
+    ea_pair_valid_n = 1'b1;
+    ea_pair_rhs_n = ((rmmod == 2'd0) && (rmrm <= 3'd3))
+                  ? (rmrm[0] ? gpr_n[R_IY] : gpr_n[R_IX])
+                  : ld_disp_n;
     ea = ea + ld_disp_n;
     rseg = seg_override_n ? {1'b0, seg_ovr_n}
          : ((rmrm == 3'd2) || (rmrm == 3'd3) ||

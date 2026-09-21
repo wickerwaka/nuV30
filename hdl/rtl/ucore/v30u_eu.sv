@@ -244,14 +244,27 @@ reg [15:0] sreg [0:3];
 reg [15:0] pc;
 reg [15:0] psw;
 reg [15:0] tmpa, tmpb, tmpc;
-// The EA adder has a retained output beside the microcode tmp registers.
-// Ordinary tmpa writes refresh it; a ModR/M EA calculation instead leaves the
-// pre-displacement base here.  Only undocumented register-form LEA observes
-// the distinction.
+// The EA adder's TWO RAILS are retained beside the microcode tmp registers.
+// Only undocumented register-form LEA observes them -- `8D` at mod == 3
+// issues no EA calculation of its own, so its row-1 SIGMA -> R transfer adds
+// whatever the address adder was last given.
+//
+// THE A RAIL.  An EA calculation loads it with the FIRST addend, and ordinary
+// tmpa writes refresh it afterwards -- so by the time a following LEA reads
+// it, it normally holds the last datum the intervening instruction moved and
+// NOT an address.  That is silicon's behaviour and not an approximation of
+// it: `MOV [3010h],AH ; LEA SI,DI` reads 0x3010 + 0x1111 (AW), i.e. the
+// displacement from the B rail and the moved datum from this one.
 reg [15:0] ea_residue;
-// A two-register EA also leaves its index input selected on the adder's other
-// rail.  Unary EA forms do not select that rail, so their later undocumented
-// LEA observation continues to come from the ordinary tmpb scratch path.
+// THE B RAIL.  An EA calculation loads it on EVERY form, with the SECOND
+// ADDEND: the index register where the form has one and nothing is added
+// after it, the displacement otherwise, and ZERO where there is nothing to
+// add.  `_valid` records that the rail STILL HOLDS what the EA calculation
+// put there -- that no tmpb write has replaced it since.  It does NOT mean
+// "the EA had a register pair"; that is what it used to mean, and silicon
+// refuted it (21 directed socket probes, 2026-09-20:
+// docs/notes/suite_divergence_results_2026-09-20.md sec.6.2 and
+// docs/notes/ea_qualifier_results_2026-09-20.md).
 reg [15:0] ea_pair_rhs;
 reg        ea_pair_valid;
 reg [15:0] opr;

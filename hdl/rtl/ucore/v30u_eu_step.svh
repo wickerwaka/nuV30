@@ -362,9 +362,10 @@ S_ROW: if (chain == 4'd0) begin
                   (wb_kind_n == OK_REG) && (ea_residue_n != tmpa)))
                 ea_residue_n = tmpa_n;
         end
-        // Any real B-input micro-operation replaces the retained two-register
-        // EA selection.  This is why an intervening INC or LDS exposes tmpb,
-        // while mc2/491's byte load leaves the earlier SI rail standing.
+        // Any real B-input micro-operation replaces what the EA calculation
+        // left on the adder's B rail.  This is why an intervening INC or LDS
+        // exposes tmpb, while mc2/491's byte load leaves the earlier SI rail
+        // standing.
         if (tmpb_n != tmpb) ea_pair_valid_n = 1'b0;
     end
 end

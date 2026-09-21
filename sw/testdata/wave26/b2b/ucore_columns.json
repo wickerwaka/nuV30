@@ -1,0 +1,234 @@
+{
+ "probe": "8D F7 = LEA SI,DI at mod==3",
+ "regs": {
+  "ax": 4369,
+  "cx": 8738,
+  "dx": 13107,
+  "bx": 17476,
+  "sp": 16128,
+  "bp": 26214,
+  "si": 30583,
+  "di": 34952,
+  "cs": 0,
+  "ip": 33024,
+  "ds": 4096,
+  "es": 8192,
+  "ss": 12288,
+  "flags": 61442
+ },
+ "rows": [
+  {
+   "tag": "C1",
+   "pre_bytes": "a3 34 12",
+   "prose": "MOV [1234h],AW",
+   "ea": 4660,
+   "predicted_si": 4660,
+   "silicon_si": 4660,
+   "ucore_si": 4660,
+   "verdict": "MATCH"
+  },
+  {
+   "tag": "C2",
+   "pre_bytes": "a3 ef be",
+   "prose": "MOV [BEEFh],AW",
+   "ea": 48879,
+   "predicted_si": 48879,
+   "silicon_si": 48879,
+   "ucore_si": 48879,
+   "verdict": "MATCH"
+  },
+  {
+   "tag": "C3",
+   "pre_bytes": "90",
+   "prose": "NOP (no EA)",
+   "ea": null,
+   "predicted_si": null,
+   "silicon_si": 8738,
+   "ucore_si": 8738,
+   "verdict": "MATCH"
+  },
+  {
+   "tag": "R1",
+   "pre_bytes": "88 26 10 30",
+   "prose": "MOV [3010h],AH",
+   "ea": 12304,
+   "predicted_si": 16673,
+   "silicon_si": 16673,
+   "ucore_si": 16673,
+   "verdict": "MATCH"
+  },
+  {
+   "tag": "R2",
+   "pre_bytes": "8b 0e 55 44",
+   "prose": "MOV CW,[4455h]",
+   "ea": 17493,
+   "predicted_si": null,
+   "silicon_si": 4385,
+   "ucore_si": 4385,
+   "verdict": "MATCH"
+  },
+  {
+   "tag": "M0",
+   "pre_bytes": "89 00",
+   "prose": "MOV [BW+IX],AW",
+   "ea": 48059,
+   "predicted_si": 52428,
+   "silicon_si": 34952,
+   "ucore_si": 34952,
+   "verdict": "MATCH"
+  },
+  {
+   "tag": "M1",
+   "pre_bytes": "89 01",
+   "prose": "MOV [BW+IY],AW",
+   "ea": 52428,
+   "predicted_si": 56797,
+   "silicon_si": 39321,
+   "ucore_si": 39321,
+   "verdict": "MATCH"
+  },
+  {
+   "tag": "M2",
+   "pre_bytes": "89 02",
+   "prose": "MOV [BP+IX],AW",
+   "ea": 56797,
+   "predicted_si": 61166,
+   "silicon_si": 34952,
+   "ucore_si": 34952,
+   "verdict": "MATCH"
+  },
+  {
+   "tag": "M3",
+   "pre_bytes": "89 03",
+   "prose": "MOV [BP+IY],AW",
+   "ea": 61166,
+   "predicted_si": 65535,
+   "silicon_si": 39321,
+   "ucore_si": 39321,
+   "verdict": "MATCH"
+  },
+  {
+   "tag": "M4",
+   "pre_bytes": "89 04",
+   "prose": "MOV [IX],AW",
+   "ea": 30583,
+   "predicted_si": 34952,
+   "silicon_si": 4369,
+   "ucore_si": 4369,
+   "verdict": "MATCH"
+  },
+  {
+   "tag": "M5",
+   "pre_bytes": "89 05",
+   "prose": "MOV [IY],AW",
+   "ea": 34952,
+   "predicted_si": 39321,
+   "silicon_si": 4369,
+   "ucore_si": 4369,
+   "verdict": "MATCH"
+  },
+  {
+   "tag": "M6",
+   "pre_bytes": "89 06 34 12",
+   "prose": "MOV [1234h],AW",
+   "ea": 4660,
+   "predicted_si": 9029,
+   "silicon_si": 9029,
+   "ucore_si": 9029,
+   "verdict": "MATCH"
+  },
+  {
+   "tag": "M7",
+   "pre_bytes": "89 07",
+   "prose": "MOV [BW],AW",
+   "ea": 17476,
+   "predicted_si": 21845,
+   "silicon_si": 4369,
+   "ucore_si": 4369,
+   "verdict": "MATCH"
+  },
+  {
+   "tag": "P0",
+   "pre_bytes": "89 40 10",
+   "prose": "MOV [BW+IX+10h],AW",
+   "ea": 48075,
+   "predicted_si": 4385,
+   "silicon_si": 4385,
+   "ucore_si": 4385,
+   "verdict": "MATCH"
+  },
+  {
+   "tag": "P1",
+   "pre_bytes": "89 40 00",
+   "prose": "MOV [BW+IX+0],AW",
+   "ea": 48059,
+   "predicted_si": 4369,
+   "silicon_si": 4369,
+   "ucore_si": 4369,
+   "verdict": "MATCH"
+  },
+  {
+   "tag": "P2",
+   "pre_bytes": "89 46 10",
+   "prose": "MOV [BP+10h],AW",
+   "ea": 26230,
+   "predicted_si": 4385,
+   "silicon_si": 4385,
+   "ucore_si": 4385,
+   "verdict": "MATCH"
+  },
+  {
+   "tag": "P3",
+   "pre_bytes": "89 84 34 12",
+   "prose": "MOV [IX+1234h],AW",
+   "ea": 35243,
+   "predicted_si": 9029,
+   "silicon_si": 9029,
+   "ucore_si": 9029,
+   "verdict": "MATCH"
+  },
+  {
+   "tag": "P4",
+   "pre_bytes": "89 81 34 12",
+   "prose": "MOV [BW+IY+1234h],AW",
+   "ea": 57088,
+   "predicted_si": 9029,
+   "silicon_si": 9029,
+   "ucore_si": 9029,
+   "verdict": "MATCH"
+  },
+  {
+   "tag": "P5",
+   "pre_bytes": "89 45 20",
+   "prose": "MOV [IY+20h],AW",
+   "ea": 34984,
+   "predicted_si": 4401,
+   "silicon_si": 4401,
+   "ucore_si": 4401,
+   "verdict": "MATCH"
+  },
+  {
+   "tag": "P6",
+   "pre_bytes": "89 87 34 12",
+   "prose": "MOV [BW+1234h],AW",
+   "ea": 22136,
+   "predicted_si": 9029,
+   "silicon_si": 9029,
+   "ucore_si": 9029,
+   "verdict": "MATCH"
+  },
+  {
+   "tag": "P7",
+   "pre_bytes": "89 44 f0",
+   "prose": "MOV [IX-10h],AW",
+   "ea": 30567,
+   "predicted_si": 4353,
+   "silicon_si": 4353,
+   "ucore_si": 4353,
+   "verdict": "MATCH"
+  }
+ ],
+ "match": 21,
+ "diverge": 0,
+ "no_silicon": 0
+}
