@@ -18251,6 +18251,41 @@
     "ABSENT_and_SAME_SEED_DIFFERENT_RECORD": 1152,
     "PRESENT_IN_v0.3_AT_ANOTHER_INDEX": 5890
   },
+  "provenance": {
+    "files": {
+      ".gitignore": {
+        "original_bytes": 144,
+        "original_sha256": "9e074cef5a8e17fa030d193d49c2682bf2750063e91fef5dacd71ad433ca8634",
+        "stored_as": "provenance/.gitignore.gz",
+        "stored_sha256": "db77dddf1e7058b3390e02feab5a6da638e0be021f0e3113b92b0d8ee3a762f8"
+      },
+      "emit_log.txt": {
+        "original_bytes": 431633,
+        "original_sha256": "2cdec34621116b95ffd0a92c4adfb529abf1354e234727bbb127f4b28c30f68c",
+        "stored_as": "provenance/emit_log.txt.gz",
+        "stored_sha256": "a7b8b85f0d77f9e928fa6b65a5cf63266d6b3eb63908fb2774c3e201b4810e91"
+      },
+      "emit_run.log": {
+        "original_bytes": 226823,
+        "original_sha256": "c3e2815c94d42cc9779bf77c6757ad1e83529ba6d34c177348cce47177a77c3f",
+        "stored_as": "provenance/emit_run.log.gz",
+        "stored_sha256": "676cc8e387515602e856e3d9769ae0232d7c5429410c48f1b17cd37fcb3a1022"
+      },
+      "metadata.json": {
+        "original_bytes": 638,
+        "original_sha256": "5b192e1a88d3f0e48533e808c28a53fa31b2f589bc5c9eb67d6be945c912fb99",
+        "stored_as": "provenance/metadata.json.gz",
+        "stored_sha256": "83b40123bcea0b033562d6e6526f73c66256930c7f39749c2f3a39d9c0104043"
+      },
+      "run_manifest.json": {
+        "original_bytes": 638,
+        "original_sha256": "5b192e1a88d3f0e48533e808c28a53fa31b2f589bc5c9eb67d6be945c912fb99",
+        "stored_as": "provenance/run_manifest.json.gz",
+        "stored_sha256": "b0f625d617a9d028965c31d55483b03895c270d2b2afc1a06b4ed8102f2c8ecb"
+      }
+    },
+    "note": "tests/v30/v0.2's own provenance files, preserved verbatim (gzipped, mtime=0) before the suite was deleted.  emit_log.txt is the ONLY surviving record of v0.2's reroll history and is what the reroll-vs-different-draw classification was derived from; it exists nowhere else, in git or otherwise."
+  },
   "record_schema": "identical to tests/v30/v0.2 -- name, bytes, initial, final, cycles, hash, idx. `idx` is the case's ORIGINAL v0.2 output index.",
   "reproduced_positionally": 339873,
   "user_directive": "Remove v0.2, v0.3 supersedes it",

@@ -116,3 +116,28 @@ re-emissions, **two of them inside the compared prefix** (`36.6E` idx 517,
 `F26F` idx 743), and `docs/notes/v0.2_reemission_worklist.md` records a
 re-emission pass over `v0.2` itself.  **The ten-case gap is stated as
 unexplained; 7,127 is what this tree measures and 7,127 is what is archived.**
+
+## `provenance/` — the suite's own records, and the only copies that exist
+
+`v0.2`'s five non-case files, preserved verbatim (gzipped, `mtime=0`) with
+their original `sha256` in `manifest.json`:
+
+| file | bytes |
+|---|---:|
+| `metadata.json` | 638 |
+| `run_manifest.json` | 638 |
+| `emit_log.txt` | 431,633 |
+| `emit_run.log` | 226,823 |
+| `.gitignore` | 144 — *the one tracked file of the 352, and the reason the other 351 were not* |
+
+⚠ **`emit_log.txt` IS THE ONLY SURVIVING RECORD OF `v0.2`'s REROLL HISTORY**, and
+it is what the reroll-vs-different-draw classification above was derived from.
+It was never in git.  Without it the 85/1,152 split cannot be re-derived by
+anyone, ever.
+
+## The falsifier
+
+`python3 sw/w27_v02_archive_check.py` — needs only this directory and `v0.3`.
+It re-derives every claim above that survives `v0.2`'s deletion, and it carries
+a positive control that makes two of its four checks fail on a perturbed
+manifest.
