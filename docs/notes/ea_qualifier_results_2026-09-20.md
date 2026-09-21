@@ -488,10 +488,12 @@ the landed tree.  **No FPGA-side figure was taken in this session.**
 | **D-7** | `sw/chainflat_relocation_check.py` docstring | *"`--ref REV` … so this keeps working as a standing check long after the landing"* — it does **not**: it freezes the EU's `case (st_n)` and fails the first wave that edits an arm | **FIXED — §6.1**, with the reason written into the docstring so the next reader does not re-derive it |
 | **D-8** | `sw/lea_mod3_gate.py` L4's label, and WAVE 24 §11 W-8 | the leg is named **`KNOWN-RED`** and its two rows are no longer red | **LEFT WITH REASON, RECORDED HERE.**  The label is WAVE 23's and the leg is explicitly *not a bar*; renaming it in the wave that closed it would make the two waves' outputs incomparable — the same reason WAVE 24 gave for not touching it.  **The count printed beside it is derived (`0 of 2`), not the label, so the output is truthful as it stands** |
 
+| **D-9** | `sw/testdata/wave24/b2/b2_columns.json` | it is a **generated output of a LIVE scorer** (`sw/b2_ea_lane_ucore.py`) committed as WAVE 24's snapshot, so **running that scorer silently rewrites a prior wave's recorded evidence** — which this wave did, twice | **RESTORED BYTE-IDENTICAL** (`git checkout --`, by exact single path), and this wave's own columns live in files of their own: `sw/testdata/wave26/b2b/ucore_columns.json` (**21 / 21**, landed) and `…_before.json` (**7 / 21**, pre-landing).  **RECORDED, NOT FIXED**: making the scorer refuse to overwrite a committed snapshot is a change to WAVE 24's instrument and belongs to whoever next needs it |
+
 ⚠ **THE COUNT IS A FLOOR AND THE METHOD SAYS SO.**  D-1 … D-4 were found by a
 **measurement contradicting a sentence**; D-5 by checking the brief against the
 tree under the 2026-09-19 ruling; D-6 and D-7 by **a gate exiting non-zero**;
-D-8 by reading the output of a leg that moved.  **No gate enumerates claims of
+D-8 by reading the output of a leg that moved; D-9 by `git status` after a confirmation run.  **No gate enumerates claims of
 this kind**, and a sentence that is wrong in a way no number contradicts would
 not appear here.
 
