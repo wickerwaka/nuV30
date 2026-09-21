@@ -1,0 +1,54 @@
+quartus_gate: E1 qsf_lint --check -> PASS: qsf_lint: nec_test_ucore.qsf is CANONICAL (0 materialised assignments, one file list, one output directory)
+quartus_gate: sweep over 1 seed(s) [1], CONTROL/DEFAULT, inputs 98 files sha256 07796a3630faee56…
+quartus_gate: E11 build stamp -> ABSENT (98 files scanned, 0 hits)
+quartus_gate: [map] /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_map nec_test -c nec_test_ucore
+quartus_gate:   [map] rc=0 in 89s
+
+quartus_gate: === seed 1  (1/1) ===
+quartus_gate: [seed1:quartus_fit] /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_fit --seed=1 --recompile=off nec_test -c nec_test_ucore
+quartus_gate:   [seed1:quartus_fit] rc=0 in 260s
+quartus_gate: [seed1:quartus_asm] /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_asm nec_test -c nec_test_ucore
+quartus_gate:   [seed1:quartus_asm] rc=0 in 12s
+quartus_gate: [seed1:quartus_sta] /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta nec_test -c nec_test_ucore
+quartus_gate:   [seed1:quartus_sta] rc=0 in 6s
+quartus_gate: [seed1:truefmax] /home/wickerwaka/intelFPGA_lite/17.1/quartus/bin/quartus_sta -t /home/wickerwaka/src/nec_test/sw/sta_truefmax_probe.tcl nec_test nec_test_ucore /home/wickerwaka/src/nec_test/hdl/output_files_ucore/g6dist_seed1
+quartus_gate:   [seed1:truefmax] rc=0 in 16s
+quartus_gate: seed 1: PASS  Fmax 34.35  setup 2.135  ALMs 8,438 / 41,910 ( 20 % )  core-domain 34.35 (SAME)  receipt ed3a61f3ee0bc553…
+
+quartus_gate: E7 input stability -> PASS  (1 file(s) moved during the sweep; exempt ['hdl/nec_test_ucore.qsf'], OFFENDING [])
+
+  --- quartus_gate (G6) DISTRIBUTION ---
+  tool     : Version 17.1.0 Build 590 10/25/2017 SJ Lite Edition
+  config   : CONTROL/DEFAULT (no X1_AD_RETENTION) -- DERIVED from hdl/output_files_ucore/nec_test_ucore.flow.rpt, hdl/output_files_ucore/nec_test_ucore.map.rpt
+  inputs   : 98 files, sha256 07796a3630faee56…   E7 PASS
+  seeds    : [1]   (one shared quartus_map, 1 fits)
+    seed      Fmax     setup      ALMs   core-dom   class  verdict
+       1     34.35     2.135  8,438 / 41,910 ( 20 % )      34.35    SAME  PASS
+  Fmax     : min 34.35  median 34.35  max 34.35   SPREAD 0.0 MHz
+    class   DEFAULT (whole-design worst, expect k=1)       min 34.35  med 34.35  max 34.35  spread 0.0
+    class   ENABLE (not $v30u_ce) -> t1_half2   -- the ENA min 105.69  med 105.69  max 105.69  spread 0.0
+    class   INTO   $v30u_ce -> t1_half2                    min 70.61  med 70.61  max 70.61  spread 0.0
+    class   OUTOF  t1_half2 -> $v30u_ce                    min 113.96  med 113.96  max 113.96  spread 0.0
+    class   RUNG 1: not latching in an observation registe min 34.35  med 34.35  max 34.35  spread 0.0
+    class   RUNG 1a: ...and not t1_half2 either (the worst min 34.35  med 34.35  max 34.35  spread 0.0
+    class   RUNG 2: ...and not launching from c_int_q      min 34.35  med 34.35  max 34.35  spread 0.0
+    class   RUNG 3: ...and not latching in row_posted      min 34.35  med 34.35  max 34.35  spread 0.0
+    class   SAME   $v30u_ce -> $v30u_ce   (no exception si min 34.35  med 34.35  max 34.35  spread 0.0
+  binding cone distinct endpoint pairs over 1 draws: 1
+
+  *** THE QUOTABLE FIGURE IS A PAIR (standing_gates.md §A) ***
+  WHOLE-DESIGN : whole-design worst-of-1@seeds{1} = 34.35 MHz   (seed 1, k=1.0)
+                 bound by emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a6~PORT_A_WRITE_ENABLE_REG -> emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a9~porta_address_reg3
+                 ^ THE PROMOTION GATE.  E3/E4/E5 score this one.
+  CORE-DOMAIN  : core-domain worst-of-1@seeds{1} = 34.35 MHz (SAME, k=1.0)   (seed 1)
+                 bound by emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a6~PORT_A_WRITE_ENABLE_REG -> emu:emu|system_large:system_large|v30_core:u_core|v30u_eu:u_eu|v30u_ucrom:u_ucrom|altsyncram:ucdecode_rtl_0|altsyncram_t2f1:auto_generated|ram_block1a9~porta_address_reg3
+                 ^ what an integration inherits.  NOT a gate; no bar reads it.
+                   SAME   worst-of-1 34.35  med 34.35  best 34.35
+                   INTO   worst-of-1 70.61  med 70.61  best 70.61
+                   OUTOF  worst-of-1 113.96  med 113.96  best 113.96
+                 ^ AN UPPER BOUND: each class row is that collection's worst BY SLACK, not by slack/k.
+
+  (legacy single-figure line, unchanged: worst-of-1@seeds{1} = 34.35 MHz, worst seed 1)
+  ⚠ N = 1 < 5: this is an INTERMEDIATE-WAVE measurement and is NOT promotion evidence.
+  record   : sw/testdata/g6dist/FLASH#24 CONTROL draw@seed1/distribution.json  id f5e1d2ce4358542e…
+=== quartus_gate DISTRIBUTION: PASS   387s

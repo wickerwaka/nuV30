@@ -1,0 +1,25 @@
+  RTL leg hdl/tb/obj_dir_ucore/Vtb_v30_core  receipt 2d709c79dd6a3e09…
+tag  predecessor    prose                      EA   pred  SILICON   ucore  verdict
+C1   a3 34 12       MOV [1234h],AW           1234   1234     1234    1234  MATCH  pred=HIT
+C2   a3 ef be       MOV [BEEFh],AW           beef   beef     beef    beef  MATCH  pred=HIT
+C3   90             NOP (no EA)                 -      -     2222    2222  MATCH
+R1   88 26 10 30    MOV [3010h],AH           3010   4121     4121    4121  MATCH  pred=HIT
+R2   8b 0e 55 44    MOV CW,[4455h]           4455      -     1121    1121  MATCH
+M0   89 00          MOV [BW+IX],AW           bbbb   cccc     8888    8888  MATCH  pred=MISS
+M1   89 01          MOV [BW+IY],AW           cccc   dddd     9999    9999  MATCH  pred=MISS
+M2   89 02          MOV [BP+IX],AW           dddd   eeee     8888    8888  MATCH  pred=MISS
+M3   89 03          MOV [BP+IY],AW           eeee   ffff     9999    9999  MATCH  pred=MISS
+M4   89 04          MOV [IX],AW              7777   8888     1111    1111  MATCH  pred=MISS
+M5   89 05          MOV [IY],AW              8888   9999     1111    1111  MATCH  pred=MISS
+M6   89 06 34 12    MOV [1234h],AW           1234   2345     2345    2345  MATCH  pred=HIT
+M7   89 07          MOV [BW],AW              4444   5555     1111    1111  MATCH  pred=MISS
+P0   89 40 10       MOV [BW+IX+10h],AW       bbcb   1121     1121    1121  MATCH  pred=HIT
+P1   89 40 00       MOV [BW+IX+0],AW         bbbb   1111     1111    1111  MATCH  pred=HIT
+P2   89 46 10       MOV [BP+10h],AW          6676   1121     1121    1121  MATCH  pred=HIT
+P3   89 84 34 12    MOV [IX+1234h],AW        89ab   2345     2345    2345  MATCH  pred=HIT
+P4   89 81 34 12    MOV [BW+IY+1234h],AW     df00   2345     2345    2345  MATCH  pred=HIT
+P5   89 45 20       MOV [IY+20h],AW          88a8   1131     1131    1131  MATCH  pred=HIT
+P6   89 87 34 12    MOV [BW+1234h],AW        5678   2345     2345    2345  MATCH  pred=HIT
+P7   89 44 f0       MOV [IX-10h],AW          7767   1101     1101    1101  MATCH  pred=HIT
+
+MATCH 21   DIVERGE 0   NO-SILICON 0   (of 21)

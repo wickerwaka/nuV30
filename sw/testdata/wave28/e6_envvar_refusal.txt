@@ -1,0 +1,12 @@
+quartus_gate: REFUSING TO RUN.
+  X1_AD_RETENTION='1' is set in the environment, and THIS GATE HAS NEVER READ IT.
+  The macro reaches the compiler ONLY via --retention, which puts it on quartus_map's
+  command line.  Without that flag the variable reaches nothing and the build would be
+  a CONTROL build silently labelled by whatever you called it.  That happened at
+  FLASH #18 (receipt aa3ca3e028dff7d2…, label RETENTION / derived CONTROL/DEFAULT) and
+  it was caught by the derived label one step before the flash -- see
+  docs/notes/fz2_flash18_results_2026-08-11.md §1.2.
+  Do one of:
+    python3 sw/quartus_gate.py --retention     # the RETENTION build, macro passed on the command line
+    unset X1_AD_RETENTION; python3 sw/quartus_gate.py    # the CONTROL build
+  (this is exit 2 -- the gate could not run.  Not a PASS and not a RED.)
