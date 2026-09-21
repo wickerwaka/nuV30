@@ -1,0 +1,21 @@
+TOTAL v0.2 cases      : 347000
+forms missing in v0.3 : 0 []
+POSITIONAL DIFFERING  : 7127  (2.0539 %)
+  of which ABSENT from v0.3's 10,000 entirely : 1237
+  of which PRESENT in v0.3 at another index   : 5890
+KEY POSITIVE CONTROL  : 0 equal-hash pairs that are NOT byte-identical (want 0)
+REPRODUCED positionally: 339873
+
+per-form, forms with any difference:
+  HLT.INT    diff   924  absent   544  shifted   380  n03 10000
+  IE0.90     diff   907  absent     2  shifted   905  n03 10000
+  INT.8ED8   diff   903  absent    14  shifted   889  n03 10000
+  INT.9D     diff   897  absent    30  shifted   867  n03 10000
+  HLT.RES    diff   813  absent   569  shifted   244  n03 10000
+  INT.8ED0   diff   776  absent    17  shifted   759  n03 10000
+  INT.FB     diff   727  absent    13  shifted   714  n03 10000
+  INT.B8     diff   609  absent    26  shifted   583  n03 10000
+  INT.90     diff   564  absent    15  shifted   549  n03 10000
+  0F31       diff     5  absent     5  shifted     0  n03 10000
+  0F26       diff     1  absent     1  shifted     0  n03 10000
+  A6         diff     1  absent     1  shifted     0  n03 10000
