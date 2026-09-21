@@ -1,0 +1,24 @@
+G0 reference: FROZEN SNAPSHOT sw/testdata/g0-tables/v30sim_dump_tables.txt  sha256 23d0025bc72eff93...
+  taken from `v30sim dump-tables` at receipt 54cb8188bf7bff16... (the model is RETIRED -- invalidation_ledger.md RET-1)
+snapshot: 1028 rows, 8192 micro-addresses, 768 PLA entries
+
+LEG A -- independent re-parse of the dumps vs the reference
+  ucrom rows: 1028/1028 identical
+  decode (native): 8192/8192 identical
+  decode (emu): 8192/8192 identical
+  pla3 native: 256/256 identical
+  pla3 mode8080: 256/256 identical
+  pla3 ext: 256/256 identical
+  ambiguous micro-addresses: 1 (1C08)
+
+LEG B -- the emitted RTL artifacts vs the reference
+  ucrom.hex: 1028/1028 identical
+  ucdecode.hex: 8192/8192 identical
+  pla3_tables.svh native: 256/256 identical
+  pla3_tables.svh mode8080: 256/256 identical
+  pla3_tables.svh ext: 256/256 identical
+
+LEG C -- artifacts are current with the generator
+gen_ucore_tables --check: PASS (4 artifacts current)
+
+check_ucore_tables: PASS -- G0 GREEN (1028 rows + 8192 micro-addresses + 768 PLA entries = 9988 entries byte-identical to the frozen `v30sim dump-tables` reference, on both legs)

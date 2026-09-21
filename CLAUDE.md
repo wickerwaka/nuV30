@@ -201,9 +201,22 @@ declared.
   consults `EMIT_USE_CORE`**, so a core-leg emitter that used it would write a
   false provenance line.  `w28_ea_lane_fabric` stamps its own legs (results
   §10 D-1).
-* **THE OFFLINE LADDER IS ZERO-DELTA** against WAVE 27 — this wave edits **no
-  `hdl/`**; `sw/testdata/wave28/ladder/` with `sw/testdata/wave28/w28_ladder_cmp.py`
-  as its falsifier.
+* ⭐ **THE OFFLINE LADDER IS ZERO-DELTA — 38 LEGS, SAME 38 / MOVED 0 / GONE 0 /
+  NEW 0**, `sw/testdata/wave28/w28_ladder_cmp.py` exit 0
+  (`sw/testdata/wave28/ladder_cmp.txt`), **every `RC` identical to WAVE 27's**.
+  169,000 at `--ce-div` 2/3/4/8 with div 1 REFUSED · HLT sweeps **279/283** ·
+  `v0.3` **3,699,998 [2 excluded]** · `v20suite --arch-only` **ARCH
+  3,125,000/3,125,000** · `mod3_illegal` **0/128** · `check_boot` 220/400 ·
+  `check_ab_sim` 187 · `ghost_launch_law` 200/200 · `lea_mod3_gate` PASS with
+  **L4 `0 of 2`** (WAVE 26's moved leg HOLDS) · `chain_lfsr_gate` **four
+  signatures BYTE-IDENTICAL** · `chainflat_relocation_check` PASS (DEV-1: 9
+  arms, 7 byte-identical, 2 declared) · `demux_off_gate` · `r7_lint` ·
+  `ss_lint` **232 / 229 flops / 4 whitelist / 0 UNMAPPED** · `cutset_lint`
+  **81/0** · `phase_split_lint` **157/779/0** · `test_artifact` 45/45 ·
+  `test_quartus_gate` **302/302** · `qsf_lint --check` · `core_portlist_lint`
+  4 configs · `suitemeta --selfcheck` 14 checks · `ucrom_mif_check` ·
+  **G0 9,988** · `pla3_check` 21 · `w27_v02_archive_check` 7,127.
+  ⚠ `check_fuzz_bank` is RETIRED (RET-2) and is not a leg.
 
 
 ### ⚠⚠⚠⚠ READ FIRST — **`tests/v30/v0.2` IS GONE SINCE 2026-09-21 (WAVE 27), AND UNLIKE `sim/` AND `hdl/rtl/core/` IT IS NOT RECOVERABLE.**

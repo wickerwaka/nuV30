@@ -1,0 +1,23 @@
+suitemeta --selfcheck -- the dialect adapter's own falsifier
+  delegation target: tests/v30/v0.1
+
+  (1) DIALECT REACHABILITY
+      v0.1           sst      delegated=False 87 opcode entries
+      v20suite       sst      delegated=False 282 opcode entries
+      mod3_illegal   emitter  delegated=True  87 opcode entries
+      v0.3           absent   delegated=True  87 opcode entries
+      v0.1-w1        absent   delegated=True  87 opcode entries
+  (2) DELEGATION IS ANNOUNCED
+      v0.1           own map
+      v20suite       own map
+      mod3_illegal   announced
+      v0.3           announced
+      v0.1-w1        announced
+  (3) DELEGATED flags_mask == v0.1's, form for form
+      mod3_illegal   1 forms identical, NONE carrying a real mask -- for THIS suite the delegation is vacuous, and check (4) is what makes (3) non-vacuous overall
+      v0.3           370 forms identical, 16 carrying a real (non-0xFFFF) mask -- so the delegation CHANGES this suite's comparison
+      v0.1-w1        6 forms identical, 1 carrying a real (non-0xFFFF) mask -- so the delegation CHANGES this suite's comparison
+  (4) NON-VACUITY (the control must be able to fail)
+      fired: 16 of 370 v0.3 forms move when the target is emptied
+
+suitemeta --selfcheck: PASS -- 14 checks, 3 dialects reached, 0 skipped

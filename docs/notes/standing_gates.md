@@ -2047,6 +2047,30 @@ FIX, AND THE FIX IS CONFIRMED IN FABRIC.**
 * ⚠ **`mod3_illegal` STAYS `0 / 128` AND THAT IS CORRECT** — WAVE 23 proved it
   a TESTBENCH STIMULUS artefact; **`ea_residue` was NOT injected into the TB**
   (STOP S-4, carried forward verbatim).
+* **THE OFFLINE LADDER IS ZERO-DELTA AGAINST WAVE 27 — 38 LEGS, SAME 38 /
+  MOVED 0 / GONE 0 / NEW 0**, `python3 sw/testdata/wave28/w28_ladder_cmp.py`
+  exit 0, **every `RC` identical leg for leg** (this wave moved no `hdl/` byte):
+  169,000 at `--ce-div` 2 / 3 / 4 / 8 with **div 1 REFUSED** · the four HLT
+  sweeps **97 · 93 · 45 · 44 = 279 / 283** (⚠ run with `--waits 0/1/2/3`) ·
+  `v0.3` **3,699,998 / 3,699,998 [2 excluded]** · `v20suite --arch-only`
+  **ARCH 3,125,000 / 3,125,000** · `mod3_illegal` **0 / 128** · `v0.1-w1` /
+  `-w3` **1,200** · `EB` **200** · `f4a_boundary` **160** · `f0lock_tranche`
+  **400** · `check_boot --core ucore` **220** and **400** · `check_ab_sim
+  --core ucore` **187** · `ghost_launch_law score` **200 / 200 = 100.0 %** ·
+  `lea_mod3_gate` **PASS, L1 2/2 · L2 64/64 · L3 3/3 · L4 `0 of 2`** (WAVE 26's
+  moved leg HOLDS) · `chain_lfsr_gate` **PASS, the four signatures
+  BYTE-IDENTICAL** (`1d01c9b269ffaa94 · b39b040a98b28e5d · 0997b773cd99c030 ·
+  d05b6c3c3d9fbe78`) · `chainflat_relocation_check` **PASS — 9 arms, 7
+  byte-identical to `aba01feb07`, 2 DECLARED DEVIATIONS pinned by digest**
+  (DEV-1) · `demux_off_gate` **PASS, 3 legs** · `r7_lint` **PASS** · `ss_lint
+  --core ucore` **PASS — 232 / 229 flops / 4 whitelist / 0 UNMAPPED** ·
+  `cutset_lint` **81 / 0** · `phase_split_lint` **157 / 779 / 0** ·
+  `test_artifact` **45 / 45 NON-VACUOUS** · `test_quartus_gate` **302 / 302** ·
+  `qsf_lint --check` **CANONICAL** · `core_portlist_lint` **4 configurations** ·
+  `suitemeta --selfcheck` **14 checks** · `ucrom_mif_check` **1,028 words** ·
+  **G0 `check_ucore_tables` 9,988 entries** · `pla3_check` **21 checks** ·
+  `w27_v02_archive_check` **7,127 preserved records**.
+  ⚠ **`check_fuzz_bank` IS RETIRED (RET-2) AND IS NOT A LADDER LEG.**
 
 
 Standing ratchets. Monotone: never re-scored downward without a loud, itemised

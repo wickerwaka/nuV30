@@ -1,0 +1,14 @@
+w27_v02_archive_check -- RET-3's live falsifier
+  archive : tests/v30/v02-unique-archive
+  against : tests/v30/v0.3  (370 forms on disk)
+
+  A  INTEGRITY      12 form file(s), 7127 record(s), 0 bad hash field(s)
+  B  SHIFTED        5890 claimed present in v0.3 elsewhere
+  C  ABSENT         1237 claimed absent from v0.3 entirely
+  D  ARITHMETIC     5890 + 1237 = 7127 (manifest: 7127, on disk: 7127)
+
+  POSITIVE CONTROL -- each check made to fail on a perturbed manifest
+      B fires on a moved index : YES
+      C fires on a false ABSENT: YES
+
+w27_v02_archive_check: PASS -- 7127 preserved v0.2 record(s); 5890 re-found in v0.3 byte-identical, 1237 confirmed absent from all 12 v0.3 forms checked

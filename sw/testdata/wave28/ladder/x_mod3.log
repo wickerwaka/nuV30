@@ -1,0 +1,10 @@
+[suitemeta] mod3_illegal: dialect 'emitter' -- NO opcode map of its own; DELEGATING to tests/v30/v0.1/metadata.json
+  goldens idx 0 ('lea mod3 /0 rm0 s0'): arch diff regs=['ax'] ram=[] q_ok=True
+      ax: exp 0500 got 0000
+  goldens idx 1 ('lea mod3 /0 rm1 s0'): arch diff regs=['ax'] ram=[] q_ok=True
+      ax: exp 0500 got 0000
+  goldens idx 2 ('lea mod3 /0 rm2 s0'): arch diff regs=['ax'] ram=[] q_ok=True
+      ax: exp 0500 got 0000
+goldens: 0/128 full  (cycles 128, arch 0)
+
+TOTAL: 0/128 full (cycles 128, arch 0)

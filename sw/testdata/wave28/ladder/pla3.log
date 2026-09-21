@@ -1,0 +1,23 @@
+  ok  A: native opcodes (prefix 01): 256/256 output vectors reproduced by the 59 product terms
+  ok  A: 8080 opcodes (prefix 00): 256/256 output vectors reproduced by the 59 product terms
+  ok  A: ext opcodes (prefix 11): 256/256 output vectors reproduced by the 59 product terms
+  ok  B: native column  0 BYTE_ONLY       EXACT (16 opcodes, 1 declared exception(s))
+  ok  B: native column  1 W_FROM_BIT0     EXACT (102 opcodes, 2 declared exception(s))
+  ok  B: native column  2 ONE_BYTE_LOGIC  EXACT (19 opcodes, 1 declared exception(s))
+  ok  B: native column  3 ACC_W_OPERAND   EXACT (40 opcodes, 4 declared exception(s))
+  ok  B: native column  4 SREG_MOV        EXACT (2 opcodes, 0 declared exception(s))
+  ok  B: native column  5 HAS_MODRM       EXACT (76 opcodes, 1 declared exception(s))
+  ok  B: native column  6 MODRM_STORE     EXACT (7 opcodes, 1 declared exception(s))
+  ok  B: native column  7 DIR_FROM_BIT1   EXACT (42 opcodes, 4 declared exception(s))
+  ok  B: native column  8 NATIVE_HI       EXACT (128 opcodes, 0 declared exception(s))
+  ok  B: native column  9 INCDEC_NO_CY    EXACT (20 opcodes, 2 declared exception(s))
+  ok  C: 1BL hardware-op table complete: 16/16 field values, 19 native opcodes
+  ok  C: 8080-mode 1BL set matches (6 opcodes); the six ops present in both modes carry IDENTICAL XOP values
+  ok  C: native XOP[3:0] reconstructed for all 256 opcodes from the 1BL table + 8 non-1BL classes
+  ok  C: cross-mode XOP agreement holds for decimal-adjust / inc-dec / port-I/O
+  ok  D: 0F page decodes at BLOCK granularity; 22 documented ModR/M forms + 18 alias fill-ins (29, 2B, 2C, 2D, 2E, 2F, 30, 32, 34, 35, 36, 37, 38, 3A, 3C, 3D, 3E, 3F)
+  ok  D: 0F page asserts nothing outside 0F 10-3F (0F FF BRKEM is handled entirely by microcode, not by this PLA)
+  ok  E: pla_2 bank 0 == all 16 native conditions, 2048/2048 cells (cc = opcode bits 3..0, flags V/CY/Z/S/P, all inputs active-low)
+  ok  E: pla_2 bank 1 == all 8 8080 conditions, 2048/2048 cells (ccc = opcode bits 5..3; AC and V are not testable, as on the 8080)
+
+pla3_check: OK (21 checks passed)

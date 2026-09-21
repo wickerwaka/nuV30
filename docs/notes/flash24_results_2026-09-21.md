@@ -241,8 +241,8 @@ every one.**
 
 `fz2_w1 lint` → `control` → `preflight --board` → `capture` → `fz2_ledger`,
 scored against `fz2_failure_ledger_f23_2026-09-19.json`.  `fz2c`/`fz2e` were
-**archived by rename** to `*-F23-archive` (493 + 145 capture files retained
-beside the new 493 + 145) and the manifests re-pinned by `fuzz_campaign.py
+**archived by rename** to `*-F23-archive` (**495 + 149** capture files, 31 MB,
+retained beside the new **493 + 145**, 30 MB) and the manifests re-pinned by `fuzz_campaign.py
 new`; the four F23 era JSONs archived to `*_F23-archive.json` **before**
 anything overwrote them.  **Nothing was deleted.**
 
@@ -374,7 +374,7 @@ architectural registers and nothing else.
 | `use_core` | **passed EXPLICITLY on every probe.**  Socket legs `use_core=False`, core legs `use_core=True`, **each named in the rig's output and in its manifest**; board left `use_core=0` |
 | divider | **`div_guard` on every probe.**  `fz2_w1 bars` **C-8: `div_guards` 63, `unpinned` 0**; the capture's own 48 strata all PINNED; both EA-rig sessions ended `div=8 (4 MHz), commanded by this connection`.  ⭐ **ZERO UNPINNED ANYWHERE.  STOP S-2 did not fire** |
 | probes | **42 + 42** (the two EA runs) **+ 3,840** (the corpus) **+ 9 control legs / 51 checks** **+ 800 ×3 ×2** (first light, twice) **+ 800** (closing proof) **+ `board_idle`** |
-| retention | **full per-clock rows retained everywhere**, each column file's sha256 in its manifest; 493 + 145 corpus captures **and the FLASH #23 era retained beside them** at `*-F23-archive/captures/` |
+| retention | **full per-clock rows retained everywhere**, each column file's sha256 in its manifest; **493 + 145** corpus captures (30 MB) **and the FLASH #23 era retained beside them** — **495 + 149**, 31 MB — at `*-F23-archive/captures/` |
 | `fz2_w1 control` | **9 legs / 51 checks / 51 PASS / 0 FAIL**, holds `[2, 20, 300]` proved on `pin_int` and `pin_nmi`, **N1 negative control PASS**, 10 div guards / 0 unpinned |
 | `preflight --board` | **OK** — single writer, era pinned to receipt `8077ba946568…` **self-labelling RETENTION**, regeneration sample **192 seeds / 0 hits**, RBCHECK **8 registers**, MATCH 800 ×3 |
 | transport errors | **0** |
@@ -395,7 +395,61 @@ Driver `sw/testdata/wave28/w28_ladder.sh`, logs by value at
 This wave edits **no `hdl/`**, so the registered expectation is
 **zero-delta against WAVE 27**.
 
-<!-- LADDER-TABLE -->
+> ### ⭐ **38 LEGS · SAME 38 · MOVED 0 · GONE 0 · NEW 0.**
+> `python3 sw/testdata/wave28/w28_ladder_cmp.py` → **exit 0**
+> (`sw/testdata/wave28/ladder_cmp.txt`).  It compares each leg's **exit code**
+> AND its **scored lines**, with build chatter, absolute paths, receipts and
+> timings stripped.  **Every `RC` is identical to WAVE 27's, leg for leg.**
+
+| leg | command | **measured** | vs WAVE 27 |
+|---|---|---|---|
+| `v01_div4` | `check_core --core ucore --opcodes all --cases 0 --ce-div 4` | **169,000 / 169,000** | SAME (348 scored lines) |
+| `v01_div2` | `… --ce-div 2` | **169,000 / 169,000** | SAME |
+| `v01_div3` | `… --ce-div 3` | **169,000 / 169,000** | SAME |
+| `v01_div8` | `… --ce-div 8` | **169,000 / 169,000** | SAME |
+| `v01_div1` | `… --ce-div 1` | **exit 2, REFUSED**, clause C-a named | SAME |
+| `hlt_w0` | `s10-hltsweep-w0 --waits 0` | `HLT.INT` 48/48 · `HLT.RES` 49/49 = **97 / 97** | SAME |
+| `hlt_w1` | `s10-hltsweep-w1 --waits 1` | 44/46 · 49/49 = **93 / 95**, first-div `(10,'busstat')×2` | SAME |
+| `hlt_w2` | `s13-hltsweep-w2 --waits 2` | 20/21 · 25/25 = **45 / 46**, `(12,'busstat')×1` | SAME |
+| `hlt_w3` | `s13-hltsweep-w3 --waits 3` | 19/20 · 25/25 = **44 / 45**, `(14,'busstat')×1` | SAME |
+| *the four sweeps* | | ⭐ **279 / 283**, the same four family-D survivors | SAME |
+| **`v03`** | `--suite-dir tests/v30/v0.3` | ⭐ **3,699,998 / 3,699,998 [2 documented pre-existing excluded]** | SAME (372 scored lines) |
+| **`v20suite`** | `--suite-dir tests/v30/v20suite --arch-only` | ⭐ **TOTAL ARCH 3,125,000 / 3,125,000** | SAME (361) |
+| `x_mod3` | `--suite-dir tests/v30/mod3_illegal` | **0 / 128 full (cycles 128, arch 0)** | SAME — **M-1 MET** |
+| `x_w1` | `v0.1-w1 --waits 1` | **1,200 / 1,200** | SAME |
+| `x_w3` | `v0.1-w3 --waits 3` | **1,200 / 1,200** | SAME |
+| `x_w1_EB` | `v0.1-w1 --opcodes EB --waits 1` | **200 / 200** | SAME |
+| `x_f4a` | `f4a_boundary` | **160 / 160** | SAME |
+| `x_f0lock` | `f0lock_tranche` | **400 / 400** | SAME |
+| `boot220` | `check_boot --core ucore 220` | **BOOT REPLAY MATCHES over 220 rows** | SAME |
+| `boot400` | `check_boot --core ucore 400` | **MATCHES over 400 rows** | SAME |
+| `ab_sim` | `check_ab_sim --core ucore` | **MATCHES CHIP BOOT over 187 rows from RESET release** | SAME |
+| `ghost_law` | `ghost_launch_law score` | **ALL THREE POPULATIONS 200 / 200 = 100.0 %** | SAME |
+| **`lea_mod3`** | `lea_mod3_gate` | **PASS** — L1 2/2 · L2 64/64 · L3 3/3 · **L4 `0 of 2` DIVERGE** (both frozen 2026-07-27 silicon rows MATCH: `0x4121`, `0xd4e5`) | SAME — WAVE 26's moved leg **holds** |
+| `chainlfsr` | `chain_lfsr_gate` | **PASS** — `CHAIN_MAX` 7, depth [6], 0 overflows; ⭐ **the four signatures BYTE-IDENTICAL**: `1d01c9b269ffaa94 · b39b040a98b28e5d · 0997b773cd99c030 · d05b6c3c3d9fbe78`, with every `ce_clocks`/`g0`/`coincide` | SAME |
+| `chainflat` | `chainflat_relocation_check` | **PASS** — 9 arms, one copy each, **7 byte-identical to `aba01feb07`, 2 DECLARED DEVIATIONS pinned by digest** (DEV-1) | SAME |
+| `demux_off` | `demux_off_gate` | **PASS** — 3 legs; the define-OFF build runs, the ports are GONE, splicing one back in fails **naming `DATA_I`** | SAME |
+| `r7_lint` | | **PASS** — 0 undeclared carriers, 0 undeclared unresolved, 0 `stop` violations | SAME |
+| **`ss_lint`** | `--core ucore` | **PASS — 232** (109×2 BIU + 122×2 EU + tag), **229 architectural flops**, **4 whitelist**, **0 UNMAPPED** (BIU 91→91+0, EU 138→134+4) | SAME |
+| `cutset` | `cutset_lint` | **PASS — 81 members / 0 violations**, `live-tainted: none` | SAME |
+| `phasespl` | `phase_split_lint` | **PASS — 157 members / 779 bits / 0 violations**, `live-in-stage1: none` | SAME |
+| `artifact` | `test_artifact` | **45 / 45, NON-VACUOUS** | SAME |
+| `quartusg` | `test_quartus_gate` | **302 / 302 checks pass, PASS** | SAME |
+| `qsf_lint` | `--check` | **CANONICAL** | SAME |
+| `portlist` | `core_portlist_lint` | **PASS — 4 configurations** | SAME |
+| `ucrom_mif` | `ucrom_mif_check` | **PASS — every one of 1,028 words identical** | SAME |
+| **`g0_tables`** | `check_ucore_tables` | **PASS — G0 GREEN, 9,988 entries byte-identical on BOTH legs** | SAME |
+| `pla3` | `pla3_check` | **OK — 21 checks** | SAME |
+| `suitemeta` | `--selfcheck` | **PASS — 14 checks, 3 dialects, 0 skipped** | SAME |
+| `w27_archive` | `w27_v02_archive_check` | **PASS — 7,127 preserved `v0.2` records; 5,890 re-found byte-identical, 1,237 confirmed absent** | SAME |
+
+**ARCHITECTURAL CASES RE-SCORED THIS WAVE: 169,000 × 4 + 3,699,998 + 3,125,000
++ 283 + 128 + 2,600 + 560 = 7,504,569**, plus 42 directed fabric probes, 3,840
+corpus seeds, 247 + 252 + 7 offline `tb_sys` replays and 71 inside
+`lea_mod3_gate`.
+
+⚠ **`check_fuzz_bank` IS RETIRED (RET-2) AND IS NOT A LADDER LEG.**  It is not
+run and no figure is inferred from its absence.
 
 ---
 

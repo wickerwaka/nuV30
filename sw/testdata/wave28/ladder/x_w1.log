@@ -1,0 +1,9 @@
+[suitemeta] v0.1-w1: dialect 'absent' -- NO opcode map of its own; DELEGATING to tests/v30/v0.1/metadata.json
+89: 200/200 full  (cycles 200, arch 200)
+8B: 200/200 full  (cycles 200, arch 200)
+B8: 200/200 full  (cycles 200, arch 200)
+E8: 200/200 full  (cycles 200, arch 200)
+EB: 200/200 full  (cycles 200, arch 200)
+F7.6: 200/200 full  (cycles 200, arch 200)
+
+TOTAL: 1200/1200 full (cycles 1200, arch 1200)
