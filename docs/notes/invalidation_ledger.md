@@ -1969,3 +1969,44 @@ grounds to change another's denominator, and removing the `EDGE` entry would
 move `v0.3`'s published denominator on a single wave's authority.
 `sw/check_core.py --no-known-divergences` exists so the question can be re-asked
 by anyone, at any time, without editing a list.
+
+---
+
+# DECLARED GATE DEVIATIONS — **NOT** INVALIDATIONS, **NOT** SUPERSESSIONS, **NOT** EXCLUSIONS, **NOT** ERRATA, **NOT** RETIREMENTS
+
+**A SIXTH REGISTER, opened 2026-09-20 (WAVE 26).**  The five registers above
+are about DATA (`INV` / `SUP` / `EXC` / `ERR`) and about an INSTRUMENT THIS
+REPO DELETED (`RET`).  **`DEV-n` is about a LIVE instrument whose CLAIM
+narrowed** — a gate that pinned the tree to a historical artifact, where a
+later, measured, deliberate change to that artifact makes the old claim
+un-restatable without making the gate vacuous.
+
+Its load-bearing fields are **THE OLD CLAIM, VERBATIM**, **WHAT REPLACES IT**,
+and **THE CONTROLS THAT SHOW THE REPLACEMENT IS NOT A HOLE**.
+
+> ⚠ **A `DEV-n` IS NOT A LICENCE TO WIDEN A GATE ON SIGHT.**  It is filed only
+> when the deviation is (a) DELIBERATE, (b) MEASURED, and (c) PINNED — so that
+> any FURTHER deviation still fails.  A gate that is merely inconvenient is
+> not a `DEV-n`; it is a gate.
+
+## DEV-1 — `sw/chainflat_relocation_check.py`'s **G-12**, AS A FREEZE OF THE EU's `case (st_n)`
+
+| field | |
+|---|---|
+| **WHAT** | `sw/chainflat_relocation_check.py`, clause **G-12**: *"each body is BYTE-IDENTICAL to its pre-edit text — RELOCATED, never rewritten — and inlining the includes back reconstructs the pre-edit `case (st_n)` exactly"*, against `aba01feb07` (WAVE 7's pre-flattening tree, 2026-09-09) |
+| **WHY** | **Nothing is wrong with it and nothing is wrong with the tree.**  G-12 is WAVE 7's *relocation* falsifier and it did its job for four waves — because **no wave since WAVE 7 had changed an EU arm**.  WAVE 26 changes one (`S_EA_CALC`, the address adder's B rail) and two comments, so the clause as written can no longer hold, and there is no honest way to restate it that does not make the gate vacuous |
+| **WHICH RIG DEFECT** | **NONE.**  No capture is false, no golden moved, no number was re-derived.  The gate was RIGHT to fail |
+| **THE OLD CLAIM, VERBATIM** | `chainflat_relocation_check: PASS -- 9 arms, one copy each, byte-identical to aba01feb07, reconstruction exact` |
+| **WHAT REPLACES IT** | `chainflat_relocation_check: PASS -- 9 arms, one copy each, 7 byte-identical to aba01feb07, 2 DECLARED DEVIATION(S) pinned by digest`.  **G-11 is UNCHANGED IN MEANING** and now derives the nine bodies from the CURRENT arm files, so *"exactly one copy in `hdl/`"* keeps being checked however the bodies evolve — it never needed the frozen reference.  **G-12 still diffs the reconstruction against `aba01feb07`**; what changed is that a deviation is permitted only if it is DECLARED in the source and matches `DEVIATION['digest']`, **the sha256 of the unified diff itself** — `abb6954fe1a73655dddc57931f2b23bfb6694941c9df3eba94f391b26eaae503`.  **One further edited character anywhere in the EU's `case (st_n)` moves that digest and the gate FAILS** |
+| **WHAT THE DEVIATION IS** | arms `S_EA_CALC` and `S_BIND`, plus the step file's own `S_ROW` comment.  **1 code hunk of 3** — the other two are comment-only, and the declaration records that count |
+| **THE CONTROLS** | (a) the declaration in force on the landed tree → **PASS**, 7 byte-identical + 2 declared; (b) a synthetic line spliced into `S_ENTER`'s body → digest `abb6954fe1a7…` → `139da5f0a5b2…`, **CAUGHT** (`--positive-control`); (c) the same declaration against the **PRE-edit** tree → **FAIL, `STALE DECLARATION, remove it`** — so the entry cannot be left behind to excuse a future tree |
+| **THE ARCHIVE** | nothing to archive: the reference is a git commit and the pre-repair gate is its own commit history.  `git show 56bdf8d851:sw/chainflat_relocation_check.py` is the WAVE 25 text |
+| **GATE STATUS** | **LIVE and GREEN**, exit 0, ~2 s.  It was **RED for the duration of WAVE 26's AFTER ladder and that is reported as an UNREGISTERED MISS** in `docs/notes/ea_qualifier_results_2026-09-20.md` §6.1 — the pre-registration listed it among the zero-delta legs and that was wrong |
+| **WHAT A FUTURE WAVE OWES** | **its own `DEV` line, or a fail.**  A wave that edits an EU arm must re-derive `DEVIATION['digest']`, state which arms and how many CODE hunks, and append here.  It may **not** set `digest` to `None` while the tree deviates, and may **not** leave a stale declaration standing |
+
+> **WHY THIS IS NOT A `RET-n`**: nothing was retired — the gate runs, exits 0/1,
+> and still refuses every undeclared rewrite.  **WHY IT IS NOT AN `ERR-n`**: no
+> derived column was wrong; the gate computed the truth and said so.  **WHY IT
+> IS NOT A `SUP-n`**: no population was set aside.  It is a live instrument
+> whose claim is now narrower by exactly one recorded, pinned diff, and that is
+> what this register is for.

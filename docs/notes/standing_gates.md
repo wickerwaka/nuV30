@@ -93,6 +93,95 @@ suite's opcode map comes from its own `metadata.json` when that file has one,
 and from `v0.1`'s otherwise*), falsifier `python3 sw/suitemeta.py --selfcheck`
 (**PASS, 17 checks, 3 dialects reached**, non-vacuity fires).
 
+### ⚠⚠⚠ **WAVE 26 ADDENDUM, 2026-09-20 — THE RETAINED EA LANE TAKES THE ADDRESS ADDER'S SECOND ADDEND.  ONE MUX, `stale_ea_probe` 7/13 → 13/13, 21/21 AGAINST A FRESH SOCKET CAPTURE — AND THE BITSTREAM MOVED.**
+
+`docs/notes/ea_qualifier_prereg_2026-09-20.md` (`86b33eeebb`, before the first
+`hdl/` edit) · `..._board_prereg_...` (`a1e1d7a4d6`, before first board
+contact) · `..._results_...`; landing **`427a3f5a10`**.
+
+**THE LAW**: *the address adder's B rail is loaded on EVERY EA calculation
+with the SECOND ADDEND — the index register where the form has one and nothing
+is added after it, the displacement otherwise, and ZERO where there is nothing
+to add.*  `ea_pair_valid_n = 1'b1;` plus one conditional expression in
+`hdl/rtl/ucore/v30u_eu_arm_ea_calc.svh`; **7 lines of code, the rest comment.**
+
+| leg | registered | **measured** |
+|---|---|---|
+| `sw/b2_ea_lane_ucore.py` | 7 / 13 | ⭐ **13 / 13**, `M0`–`M3` UNMOVED |
+| **`sw/w26_ea_lane2_ucore.py --capture sw/testdata/wave26/b2b`** | **NEW** | ⭐ **21 / 21** — 13 WAVE 24 controls REPRO + **8 `mod=01/10` rows that did not select the rule**, every one on the POINT (`P0 1121 · P1 1111 · P2 1121 · P3 2345 · P4 2345 · P5 1131 · P6 2345 · P7 1101`) |
+| `lea_mod3_gate` L4 | `2 of 2 DIVERGE` | ⭐ **`0 of 2`** — `0x4121` and `0xD4E5` against the FROZEN 2026-07-27 artifact |
+| `mod3_illegal` | 0 / 128 arch | **0 / 128 arch, 128 / 128 cycles — UNMOVED, logs byte-identical** |
+| the rest of the ladder | 36 legs | **34 ZERO-DELTA, 1 MOVED (L4), 1 UNREGISTERED MISS (below)** |
+| `ss_lint --core ucore` | 232 / 229 / 4 / 0 UNMAPPED | **IDENTICAL — no flop, no address, NO `SS_VERSION` BUMP** |
+| `cutset_lint` · `phase_split_lint` · `r7_lint` | 81/0 · 157/779/0 · 41 sites 0 viol | **all three byte-identical** |
+| `chain_lfsr_gate` | four signatures | **ALL FOUR BYTE-IDENTICAL**, with every `ce_clocks` / `g0` / `coincide` count |
+| `v0.3` | 3,699,998 [2 excluded] | **byte-identical log `644a11c5e09f38ed…` — the same bytes as WAVE 24's and WAVE 25's** |
+
+**⚠ THE SOCKET CAPTURE IS THE SILICON BAR AND IT VALIDATED ON DISJOINT DATA.**
+The rule was fixed by WAVE 24's thirteen `mod = 00` rows; the RTL was written
+and built against those thirteen; **only then** were the eight `mod=01/10`
+rows composed, their values registered in `a1e1d7a4d6`, and the socket
+touched.  **`P1` (`89 40 00`, a ZERO displacement) separates *"the form
+carries a displacement"* from *"the displacement is non-zero"*** — silicon
+says the former, `1111` not `8888`.  **`P7` says the `disp8` arrives
+SIGN-EXTENDED**, `1101` not `1201`.  `CLAUDE.md`'s standing rule — *a refuted
+key's REPLACEMENT must be validated on data that was not used to select it* —
+is met, 8 of 8.
+
+**⚠ `chainflat_relocation_check` IS AN UNREGISTERED MISS AND ITS REPAIR IS
+LEDGERED AS `DEV-1`, A SIXTH REGISTER.**  Its **G-12** froze the EU's whole
+`case (st_n)` at `aba01feb07`, so the first wave to edit an arm turned a
+standing gate RED.  **G-11 is unchanged in meaning** and now derives the nine
+bodies from the CURRENT arm files; **G-12 still diffs against `aba01feb07` but
+allows only the DECLARED deviation, pinned by the sha256 of the diff itself**
+(`abb6954fe1a73655…`) — **one further edited character anywhere in the EU's
+`case (st_n)` fails it.**  Three controls: the declaration in force **PASSES**,
+a synthetic line in `S_ENTER` is **CAUGHT**, and the same declaration on the
+PRE-edit tree **FAILS as `STALE DECLARATION`**.  Run it as
+`python3 sw/chainflat_relocation_check.py --positive-control`.
+**A future wave that edits an EU arm owes its own `DEV` line, or a fail.**
+
+**G6 — FIVE SEEDS PER CONFIGURATION, 10 OF 10 PASS**, TNS 0.000 setup AND hold
+every domain every draw, 0 latches / 0 `lpm_divide`, `.rbf`s differing,
+configuration DERIVED (E-6/E-9):
+
+| | draws (seeds 1…5) | **`worst-of-5`** | ALMs | baseline | Δ |
+|---|---|---:|---|---:|---:|
+| **CONTROL** | 34.35 · 33.81 · 35.43 · **33.76** · 34.60 | **33.76 MHz** | 8,431–8,468 (20 %) | 34.48 | **−0.72** |
+| **RETENTION** | 34.59 · 34.87 · **34.16** · 34.58 · 34.33 | **34.16 MHz** | 8,495–8,528 | 34.41 | **−0.25** |
+
+Records `sw/testdata/g6dist/WAVE26 ea second-addend {CONTROL,RETENTION}/`,
+ids `d9da5f5bea833e45…` / `bbd1b0800a95a831…`.  **The floor was registered at
+33.00 both configurations BEFORE the sweep and both clear it.**  ⚠ **The minus
+signs are REPORTED, NOT EXPLAINED**; §A governs and one green build is not
+closure.  **The binding cone is the MICROCODE ROM on all ten draws of both
+configurations**, not the EU, and the CONTROL spread on one netlist is
+**1.67 MHz** — more than twice the CONTROL delta.  **`hdl/nec_test.sdc` is
+BYTE-UNTOUCHED; the anchored exception count is 0 and no exception was added,
+considered or needed.**
+
+⛔⛔ **FOUR SYNTHESIS INPUTS MOVED — `v30u_eu.sv`, `v30u_eu_arm_bind.svh`,
+`v30u_eu_arm_ea_calc.svh`, `v30u_eu_step.svh`.  FLASH #23 NO LONGER COVERS
+THIS TREE AND A RE-FLASH IS OWED.  NOTHING WAS FLASHED**; the board still
+carries FLASH #23 (`flash_log.jsonl` **26 entries, `13a81a43f30c380a…`**,
+verified before and after a CAPTURE-ONLY session: 22 probes, `div_guard`
+PINNED on every one, **0 UNPINNED**, `use_core=False` explicit, closing chip
+proof **MATCH over 800 rows**, `board_idle` clean, 0 transport errors).
+**NO FABRIC FIGURE TAKEN ON FLASH #23 OR EARLIER MAY BE QUOTED AGAINST THIS
+TREE.**
+
+⚠ **`mod3_illegal` WAS NOT RE-CAPTURED** — four reasons registered in
+`a1e1d7a4d6` §1 **before** the alternative was run, headed by *it is a FROZEN
+input to a LIVE gate* and *a declared-predecessor re-capture is a DIFFERENT
+suite, so the ratchet would be broken rather than raised*.  A deviation from
+the brief, and the coordinator's to reverse.
+
+⚠ **ERRATUM AGAINST THIS FILE AND `CLAUDE.md`: `sw/check_boot.py --timed 220`
+IS THE RETIRED C++ MODEL LEG** and exits 1 naming RET-1.  **The live RTL legs
+are `python3 sw/check_boot.py --core ucore 220` and `… 400`**, which the
+tool's own refusal message states.  WAVE 26's ladder ran the `--timed`
+spelling on both sides before noticing.
+
 ### ⚠⚠⚠ **WAVE 25 ADDENDUM, 2026-09-20 — `v20suite` IS `3,125,000 / 3,125,000 ARCH`.  THE EIGHT WERE ONE LINE OF TESTBENCH, AND THE OTHER 7.85 M CASES DID NOT MOVE.**
 
 `docs/notes/tb_relatch_prereg_2026-09-20.md` / `..._results_2026-09-20.md`.

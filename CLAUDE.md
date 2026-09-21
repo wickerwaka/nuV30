@@ -119,6 +119,100 @@ them).
 
 ## Gate quick reference
 
+### ⚠⚠⚠⚠ READ FIRST — **THE RETAINED EA LANE TAKES THE ADDRESS ADDER'S SECOND ADDEND SINCE WAVE 26 (2026-09-20).  ONE MUX.  AND THE BITSTREAM MOVED: FLASH #23 NO LONGER COVERS THIS TREE.**
+
+`docs/notes/ea_qualifier_prereg_2026-09-20.md` (`86b33eeebb`, committed
+**before the first `hdl/` edit**), `..._board_prereg_...` (`a1e1d7a4d6`,
+**before first board contact**), `..._results_...`; landing **`427a3f5a10`**.
+`standing_gates.md`'s **WAVE 26 ADDENDUM** carries the authoritative rows.
+
+**THE LAW IS ONE SENTENCE**: *the address adder's B rail is loaded on EVERY EA
+calculation with the SECOND ADDEND — the index register where the form has one
+and nothing is added after it, the displacement otherwise, and ZERO where
+there is nothing to add.*  **`ea_pair_valid_n = 1'b1;` plus one conditional
+expression in `hdl/rtl/ucore/v30u_eu_arm_ea_calc.svh` — SEVEN LINES OF CODE;
+the rest of the diff is comment.**  No opcode named, no per-form case, no
+`mod`-specific branch: `ld_disp_n` is already zero on a form with no
+displacement, so one mux covers all three readings.
+
+* ⭐ **`b2_ea_lane_ucore` 7 / 13 → 13 / 13**, and the four rows that already
+  matched (`M0`–`M3`) **did not move** — both clauses of WAVE 24 §6.3's
+  registered falsifier.
+* ⭐ **21 / 21 ON A FRESH DIRECTED SOCKET CAPTURE** (`sw/w26_ea_lane2.py`,
+  `sw/testdata/wave26/b2b/`, `8D.json.gz` `d0fea3a937fa83fb…`): WAVE 24's
+  thirteen probes kept VERBATIM as controls (**13 / 13 REPRO**, expected values
+  read out of WAVE 24's own capture) **plus EIGHT `mod=01/10` rows that CLOSE
+  WAVE 24's declared reference gap and DID NOT SELECT THE RULE** — registered
+  in `a1e1d7a4d6` before the socket was touched, every one hit on the point.
+  **`P1` (`89 40 00`, a ZERO displacement) is the sharpest**: it separates *"the
+  form carries a displacement"* from *"the displacement is non-zero"*, and
+  silicon says the former, which is what the RTL was written to do **before**
+  the probe existed.  **`P7` pins the sign**: a negative `disp8` reaches the
+  rail SIGN-EXTENDED.
+* ⭐ **AN UNPLANNED THIRD REFERENCE**: `lea_mod3_gate`'s **L4 went `2 of 2
+  DIVERGE` → `0 of 2`.**  A different rig, a different date, a different image
+  fill and a FROZEN artifact nobody touched — `0x4121` and `0xD4E5` exact.
+* ⚠ **THE BRIEF'S OWN SENTENCE WAS WRONG AND CHECKING IT IS HOW THE REAL RAIL
+  WAS FOUND.**  *"`ea_residue` is written under `ea_pair_valid`"* — it is not:
+  `ea_residue_n = ea` is unconditional and `ea_pair_valid` guards the OTHER
+  rail.  The `0x8100` in every diverging row was **`tmpb`**, the loader's
+  branch target; and the two-register forms were passing **with the roles
+  SWAPPED**, two wrongs summing to the right number, which is why the defect
+  survived.  *(2026-09-19 user ruling: treat documentation as hearsay.)*
+* **THE LADDER IS ZERO-DELTA — 36 LEGS, BOTH SIDES MEASURED** (the AFTER side
+  in a worktree whose Verilator **`build_key` is IDENTICAL**,
+  `340b3a9b7bd64523…`): `v0.1` 169,000 at div 2/3/4/8 with div 1 refused ·
+  sweeps **279 / 283** · `v0.2` 347,000 · **`v0.3` 3,699,998 [2 excluded], its
+  log byte-identical to WAVE 24's registered run `644a11c5e09f38ed…`** ·
+  `v20suite` **3,125,000 / 3,125,000** · `mod3_illegal` **UNMOVED 0/128 arch,
+  128/128 cycles** · `chain_lfsr`'s **four signatures and every `ce_clocks` /
+  `g0` count byte-identical** · `ss_lint` **232 / 229 flops / 4 whitelist /
+  0 UNMAPPED, UNMOVED, NO `SS_VERSION` BUMP** · `cutset_lint` 81/0 ·
+  `phase_split_lint` 157/779/0.  **ONE leg moved and it is `lea_mod3_gate`'s
+  L4, above.**
+* ⚠ **ONE UNREGISTERED MISS, REPORTED AS ONE: `chainflat_relocation_check`
+  FROZE THE EU's `case (st_n)` AT `aba01feb07`**, so the first wave to edit an
+  arm turned a standing gate RED.  **G-11 is unchanged in meaning** (and now
+  derives the bodies from the CURRENT files); **G-12 still diffs against
+  `aba01feb07` but allows exactly the DECLARED deviation, pinned by the sha256
+  of the diff itself** — one further edited character fails it.  Three
+  controls, including *"the same declaration on the PRE-edit tree FAILS as
+  STALE"*.  Ledger **DEV-1**, a SIXTH register.
+* **G6: FIVE SEEDS PER CONFIGURATION, 10 OF 10 PASS.**  **CONTROL
+  `worst-of-5` 33.76 MHz** (8,431–8,468 ALMs, 20 %) · **RETENTION 34.16 MHz**
+  (8,495–8,528), TNS **0.000 setup AND hold on every domain of every draw**,
+  0 latches / 0 `lpm_divide`, `.rbf`s differ, configuration DERIVED.  **The
+  floor was registered at 33.00 before the sweep and both clear it.**
+  ⚠ Against the no-exception baseline **34.48 / 34.41** that is **−0.72 /
+  −0.25: REPORTED, NOT EXPLAINED** — and **the binding cone is the MICROCODE
+  ROM on all ten draws of both configurations**, not the EU.  The CONTROL
+  spread on one netlist is **1.67 MHz**, more than twice the delta.
+  **`hdl/nec_test.sdc` IS BYTE-UNTOUCHED and its anchored exception count is
+  0.  No exception was added, considered or needed.**
+* ⚠ **`mod3_illegal` WAS NOT RE-CAPTURED**, and the four reasons were
+  registered **before** the alternative was run (`a1e1d7a4d6` §1): it is a
+  FROZEN input to a LIVE gate; a declared-predecessor re-capture is a
+  DIFFERENT suite, so the ratchet would be **broken, not raised**; the
+  information is what the eight `mod=01/10` rows bought in 30 s of board time;
+  and WAVE 24 §5's precedent refused exactly this trade.  **A deviation from
+  the brief, and the coordinator's to reverse.**
+* ⛔⛔ **THE FABRIC DEBT: FOUR SYNTHESIS INPUTS MOVED, SO FLASH #23 NO LONGER
+  COVERS THIS TREE AND A RE-FLASH IS OWED.  NOTHING WAS FLASHED.  NO FABRIC
+  FIGURE TAKEN ON FLASH #23 OR EARLIER MAY BE QUOTED AGAINST THIS TREE.**  The
+  board itself still carries FLASH #23 — `flash_log.jsonl` **26 entries,
+  sha256 `13a81a43f30c380a…`**, verified before and after a CAPTURE-ONLY board
+  session (**22 probes, div_guard PINNED on every one, 0 UNPINNED**,
+  `use_core=False` explicit, closing chip proof **MATCH over 800 rows**,
+  `board_idle` clean, 0 transport errors).
+* ⚠ **`sw/check_boot.py --timed 220` IN THE QUICK REFERENCE BELOW IS THE
+  RETIRED C++ MODEL LEG** and exits 1 naming RET-1.  **THE LIVE RTL LEGS ARE
+  `python3 sw/check_boot.py --core ucore 220` AND `… 400`.**  This wave's
+  ladder ran the `--timed` spelling on both sides before noticing.
+
+*The WAVE 25 banner follows, unsuperseded — its `v20suite` figure is
+re-registered above — and kept because a ratchet is only readable against its
+own history.*
+
 ### ⚠⚠⚠⚠ READ FIRST — **`v20suite` IS `3,125,000 / 3,125,000 ARCH` SINCE WAVE 25 (2026-09-20).  THE EIGHT WERE ONE LINE OF TESTBENCH.**
 
 `docs/notes/tb_relatch_prereg_2026-09-20.md` /
