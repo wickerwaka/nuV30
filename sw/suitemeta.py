@@ -8,7 +8,10 @@ year, and they do not carry their metadata the same way.  Four sites in `sw/`
 read `meta["opcodes"]` UNCONDITIONALLY, so a suite whose manifest has no such
 map dies with `KeyError: 'opcodes'` -- which is why `tests/v30/v0.2` (347,000
 cases) had never been scored by anything, and was recorded in
-`docs/notes/ucore_gaps_2026-08-04.md` §F.2 as a tooling defect.
+`docs/notes/ucore_gaps_2026-08-04.md` §F.2 as a tooling defect.  (⚠ `v0.2`
+itself was DELETED at WAVE 27, `docs/notes/invalidation_ledger.md` RET-3.  The
+rule below is unchanged: it was never about that one suite, and `mod3_illegal`
+still reaches the same dialect.)
 
 It is not a defect.  It is a DIALECT MISMATCH, and the rule that resolves it is
 ONE SENTENCE:
@@ -32,12 +35,15 @@ deliverable.*)
 
     emitter   metadata.json exists and carries NO `opcodes`
               -> DELEGATES to v0.1.
-              tests/v30/v0.2 (emitter manifest: forms / variants /
+              tests/v30/mod3_illegal (a directed freeze: experiment / finding /
+              n_goldens / stale_ea_probe).  ⚠ tests/v30/v0.2 carried this
+              dialect too (an emitter manifest: forms / variants /
               cases_per_form / waits / use_core / emitter_commit / seed_base)
-              and tests/v30/mod3_illegal (a directed freeze: experiment /
-              finding / n_goldens / stale_ea_probe).  These are ONE dialect --
-              both say "metadata, but not an opcode map" -- and treating them as
-              two would be the many-cased rule the principle forbids.
+              until WAVE 27 deleted the suite (RET-3); the two were ONE dialect
+              -- both say "metadata, but not an opcode map" -- and treating them
+              as two would have been the many-cased rule the principle forbids.
+              THE DIALECT IS NOT RETIRED WITH THE SUITE: mod3_illegal reaches
+              it, and the reachability control below proves that on every run.
 
     absent    no metadata.json at all
               -> DELEGATES to v0.1.
@@ -224,10 +230,15 @@ def dialect_of(suite):
 # --------------------------------------------------------------------------- #
 #: Every dialect must be REACHED by a real suite on disk, or the control cannot
 #: claim the dialect exists.  (suite, expected dialect).
+#:
+#: ⚠ `("v0.2", EMITTER)` stood here until WAVE 27 deleted that suite
+#: (`docs/notes/invalidation_ledger.md` RET-3).  The EMITTER dialect is still
+#: REACHED -- `mod3_illegal` is the other suite that has always carried it --
+#: so check (1) is unaffected.  What v0.2's departure DID break was check (4),
+#: and the repair is in check (4), not here: see the comment there.
 CONTROL_SUITES = (
     ("v0.1",         SST),
     ("v20suite",     SST),
-    ("v0.2",         EMITTER),
     ("mod3_illegal", EMITTER),
     ("v0.3",         ABSENT),
     ("v0.1-w1",      ABSENT),
@@ -322,15 +333,31 @@ def selfcheck(verbose=True):
     _tmp = tempfile.TemporaryDirectory(prefix="suitemeta_selfcheck_")
     empty = Path(_tmp.name)
     (empty / "metadata.json").write_text(json.dumps({"opcodes": {}}))
+    # ⚠ THE PROBE IS CHOSEN BY A PROPERTY, NOT BY POSITION IN THE LIST.
+    # Emptying the delegation target can only MOVE a mask that is not already
+    # 0xFFFF, so a probe suite none of whose forms carries a real mask makes
+    # this control UNABLE TO FIRE -- it would report "empty target changed
+    # nothing" and read as a failure of (3) when it is a failure of the
+    # choice of probe.  Until WAVE 27 the first delegating entry was `v0.2`,
+    # which happened to satisfy the property; when RET-3 removed that suite
+    # the probe fell through to `mod3_illegal`, whose one form is 0xFFFF, and
+    # the gate went RED for a reason that had nothing to do with the dialect
+    # rule.  So the requirement is stated: a delegating suite WITH AT LEAST
+    # ONE REAL MASK.  If no such suite is on disk the control CANNOT MEASURE
+    # and says so as a violation -- it is never silently passed.
     probe = None
     for name, want in CONTROL_SUITES:
         s = TESTS / name
-        if s.is_dir() and want != SST and any(s.glob("*.json.gz")):
+        if not (s.is_dir() and want != SST):
+            continue
+        forms = sorted(p.name[:-8] for p in s.glob("*.json.gz"))
+        if forms and any(base.flags_mask(f) != 0xFFFF for f in forms):
             probe = s
             break
     if probe is None:
-        skipped.append("non-vacuity: no delegating suite with forms on disk")
-        say("      SKIP (no delegating suite with forms on disk)")
+        fail.append("non-vacuity: NO delegating suite on disk carries a "
+                    "non-0xFFFF mask, so this control cannot be made to fire")
+        say("      FAIL (no delegating suite on disk carries a real mask)")
     else:
         m = load(probe, delegate_to=empty)
         forms = sorted(p.name[:-8] for p in probe.glob("*.json.gz"))

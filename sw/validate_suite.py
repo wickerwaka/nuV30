@@ -11,7 +11,7 @@ Checks per case:
   5. trace boundaries: first row is an F pop; queue-op column only F/S/E/-.
   6. unaligned: flag odd-address word accesses (informational count).
 
-  python3 sw/validate_suite.py [--dir tests/v30/v0.2] [--sample N]
+  python3 sw/validate_suite.py [--dir tests/v30/v0.3] [--sample N]
 """
 import sys, gzip, json, glob, os, argparse, hashlib
 from collections import Counter
@@ -58,7 +58,10 @@ def reconstruct_writes(cycles):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--dir", default="tests/v30/v0.2")
+    # ⚠ the default was `tests/v30/v0.2` until WAVE 27 deleted that suite
+    # (`docs/notes/invalidation_ledger.md` RET-3).  Repointed to the suite
+    # that supersedes it; the tool is suite-agnostic and takes `--dir`.
+    ap.add_argument("--dir", default="tests/v30/v0.3")
     ap.add_argument("--sample", type=int, default=0, help="0=all per form")
     a = ap.parse_args()
     fails = Counter()

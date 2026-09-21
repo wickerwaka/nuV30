@@ -1,3 +1,16 @@
+> # ⚠⚠ WAVE 27 HEADER, 2026-09-21 — **THE SUITE THIS DOCUMENT IS ABOUT NO LONGER EXISTS.**
+>
+> `tests/v30/v0.2/` was DELETED on user instruction (*"Remove v0.2, v0.3
+> supersedes it"*), `docs/notes/invalidation_ledger.md` **RET-3**.  **It was not
+> in git and it is not recoverable.**  Every case coordinate below (`INT.90/239`,
+> `INT.9D/44,62,954`, `INT.FB/142,368,730`) names an index in a suite that is
+> gone; the WAVE 24 re-measurement that closed them is unaffected, because a form
+> that scored 1000/1000 had no failing index in it and the same three forms are
+> scored 10,000 deep in `v0.3`.  **THE DOCUMENT IS RETAINED AND UNEDITED BELOW
+> THIS LINE.**
+>
+> ---
+>
 > # ⚠ WAVE 24 HEADER, 2026-09-20 — **THIS DOCUMENT IS FSM-ERA HISTORY. RETAINED, NOT DELETED.**
 >
 > **DATED 2026-07-18.**  `hdl/rtl/ucore/` — the only implementation this repo

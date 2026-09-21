@@ -119,6 +119,65 @@ them).
 
 ## Gate quick reference
 
+### ⚠⚠⚠⚠ READ FIRST — **`tests/v30/v0.2` IS GONE SINCE 2026-09-21 (WAVE 27), AND UNLIKE `sim/` AND `hdl/rtl/core/` IT IS NOT RECOVERABLE.**
+
+**USER INSTRUCTION 2026-09-21: *"Remove v0.2, v0.3 supersedes it"***.
+`docs/notes/invalidation_ledger.md` **RET-3**.
+
+* ⚠⚠ **`git checkout` WILL NOT BRING IT BACK.**  The suite held **352 files,
+  91,237,482 bytes**, and **exactly ONE was tracked** — `.gitignore`, whose whole
+  job was to keep the other 351 out of git.  **91,237,338 bytes of socket capture
+  taken from the user's uPD70116 on 2026-07-17 are in no commit, no branch and no
+  reflog.**  RET-1 and RET-2 could both say *"nothing was destroyed"*.  **RET-3
+  cannot, and says so in bold.**
+* **TWO LADDER LEGS DIED.**  `check_core --core ucore --suite-dir tests/v30/v0.2
+  --opcodes all --cases 0` = **347,000 / 347,000 full**, and the same under
+  **`--raw-flags`** = **347,000 / 347,000 full**.  Both **GREEN on the day they
+  went** (`sw/testdata/wave26/ladder/{before,after}/v02.log`).  **NEITHER MAY BE
+  QUOTED AS A LIVE FIGURE.**  What replaces the first is **`v0.3`
+  3,699,998/3,699,998 [2 excluded]**; what replaces the **`--raw-flags`** leg is
+  **NOTHING — `v0.3` has never been run under it.**
+* **THE SUPERSESSION IS MEASURED, NOT QUOTED.**  Full 347-form positional scan
+  before the deletion, key = the record's own `hash`: `v0.3`'s first-1,000
+  prefix reproduces **339,873 of the 347,000 BYTE FOR BYTE at the same index**;
+  **7,127 (2.0539 %), in 12 forms, do not**.  All 347 `v0.2` forms exist in
+  `v0.3` at **ten times the case count**, so **form coverage did not drop by one
+  form**.
+* **THE 7,127 ARE PRESERVED, TRACKED AND COMMITTED BEFORE THE FIRST DELETION** —
+  `tests/v30/v02-unique-archive/` (`f6bd939011`, `d060ee28b7`), with `v0.2`'s
+  five provenance files beside them.  ⚠ **`emit_log.txt` IS THE ONLY RECORD OF
+  `v0.2`'s REROLL HISTORY THAT HAS EVER EXISTED.**  Falsifier: **`python3
+  sw/w27_v02_archive_check.py`** — needs only the archive and `v0.3`, carries a
+  positive control that makes two of its four checks fail on a perturbed
+  manifest.
+* **REROLLED AWAY OR DRAWN DIFFERENTLY?  BOTH, AND THE SPLIT IS MEASURED** (the
+  `out_idx → seed attempt` reconstruction, positive-controlled by rebuilding
+  `v0.3`'s committed `XX.seeds.json` from its own `emit_log` on **370/370**
+  forms, **107 of them non-identity**): **5,890 present in `v0.3` at another
+  index byte-identical · 1,152 the SAME seed attempt drawn differently · 85 seed
+  attempts `v0.3`'s generator REROLLED AWAY.**  The 85 are preserved anyway and
+  flagged as such: a case the later generator calls *"implausible final PSW"* is
+  evidence about the generator.
+* ⚠ **ONE GATE BROKE, FOR A REASON WORTH REMEMBERING.**
+  `suitemeta --selfcheck` went RED: its non-vacuity probe was chosen by POSITION
+  in the control list, `v0.2` happened to be first **and** to carry real masks,
+  and with it gone the probe fell to `mod3_illegal`, whose one mask is `0xFFFF`,
+  so the control could not fire.  Repaired by stating the requirement — *a
+  delegating suite with at least one non-`0xFFFF` mask* — and **refusing rather
+  than passing** when none is on disk.  It now reads **PASS, 14 checks, 3
+  dialects reached, 0 skipped** (it was 17; three were `v0.2`'s own rows).
+  **The `EMITTER` dialect SURVIVES: `mod3_illegal` has always carried it too.**
+* ⚠ **`tests/v30/v0.3` AND `tests/v30/v20suite` ARE STILL NOT IN GIT** — 3
+  tracked files of 746 and 3 of 364, 916 MB between them.  **The sentence that
+  just came true about `v0.2` is true of both of them today.**
+* **NOTHING IN `hdl/` WAS EDITED.  NO QUARTUS.  NO BOARD.  NO FLASH.**  The
+  tree's WAVE 26 re-flash debt is unchanged and undischarged.
+* ⚠ **ERRATUM, REPORTED UNRESOLVED**: `tests/v30/v0.3/README.md` says **7,137**.
+  Four independent whole-record keys say **7,127** and no key tried reproduces
+  7,137.  It cannot be re-derived — **neither suite is in git** — and the
+  README is one of the user's own modified files and was not touched.
+
+
 ### ⚠⚠⚠⚠ READ FIRST — **THE RETAINED EA LANE TAKES THE ADDRESS ADDER'S SECOND ADDEND SINCE WAVE 26 (2026-09-20).  ONE MUX.  AND THE BITSTREAM MOVED: FLASH #23 NO LONGER COVERS THIS TREE.**
 
 `docs/notes/ea_qualifier_prereg_2026-09-20.md` (`86b33eeebb`, committed
@@ -525,6 +584,9 @@ audit is `docs/notes/staleness_audit_2026-09-19.md`.**
   Each now exits non-zero **naming RET-1**; none raises `FileNotFoundError`.
 * ⚠ **THE LARGEST LOSS: `v0.2` 347,000 + `v0.3` 3,699,998 + `v20suite`
   3,125,000 = 7.17 M ARCHITECTURAL CASES NOW HAVE NO SCORER AT ALL.**
+  ⚠ **SUPERSEDED TWICE: WAVE 22 gave all four a scorer, and WAVE 27 then
+  DELETED `v0.2` (RET-3), so the `347,000` term is gone from the sum rather than
+  re-scored.**
   `check_core --suite-dir` reaches the same goldens against the RTL, but
   `v0.2` raises `KeyError: 'opcodes'` and three of the four have never been run
   against the ucore (`ucore_gaps_2026-08-04.md`).
@@ -935,7 +997,8 @@ deleted; `--core fsm` still builds and runs. What changed:
   implements it (and it is **DEFERRED BY USER DECISION 2026-08-05** — not to be
   tested or considered until a later campaign); three of the four golden suites
   have never been run against the ucore (and `v0.2` cannot be,
-  `KeyError: 'opcodes'`) — ⚠ **BOTH HALVES CLOSED 2026-09-19 BY WAVE 22; the
+  `KeyError: 'opcodes'`) — ⚠ **AND `v0.2` NO LONGER EXISTS AT ALL: WAVE 27
+  DELETED IT, `invalidation_ledger.md` RET-3.**  ⚠ **BOTH HALVES CLOSED 2026-09-19 BY WAVE 22; the
   `KeyError` was a dialect mismatch and the line was 878, not the gap document's
   709.  `suite_scorer_results_2026-09-19.md` carries the four real totals.**  ⚠ **That document's residue headline is a 2026-08-04
   snapshot and is SUPERSEDED**: it said *"the ucore's own registered-fuzz residue
@@ -971,10 +1034,13 @@ Values are monotone: never re-scored downward without a loud, itemized entry.)
   scores `v0.3` without its FSM-provenanced residue list.
   **Measured totals and their failure taxonomies:
   `docs/notes/suite_scorer_results_2026-09-19.md`.**
-  ⚠ **`v0.2`, `v0.3` and `v20suite` ARE NOT IN GIT** (each suite's own
-  `.gitignore`), so these are figures against bytes that exist only on the
-  machine that measured them, recorded with per-suite sha256 manifests.  A
-  scorer is not a repo-reproducible gate.
+  ⚠ **`v0.3` and `v20suite` ARE NOT IN GIT** (each suite's own `.gitignore`),
+  so these are figures against bytes that exist only on the machine that
+  measured them, recorded with per-suite sha256 manifests.  A scorer is not a
+  repo-reproducible gate.  ⚠⚠ **`v0.2` WAS IN EXACTLY THAT POSITION AND IS NOW
+  DELETED AND UNRECOVERABLE** (WAVE 27, RET-3) — **its 347,000 is struck from
+  every live total, and the `7,341,126` above is a HISTORICAL figure of a
+  retired tool, not an available population.**
 - **Timed, per-suite** — `sw/timed_gate.py --suite tests/v30/<suite>
   --forms all [--waits N]`:
   `v0.1` **169,000/169,000** (3 collision-dependent under the 64K mirror;

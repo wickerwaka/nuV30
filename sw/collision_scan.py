@@ -5,7 +5,7 @@ index-targeted forms (feed to `emit_suite.py reemit --indices-file`), and a
 separate list of forms that must be FULLY re-emitted (idx != seed because the
 running emission logged a skip-to-next reroll for them).
 
-  python3 sw/collision_scan.py [--dir tests/v30/v0.2] [--out reemit_map.json]
+  python3 sw/collision_scan.py [--dir tests/v30/v0.3] [--out reemit_map.json]
 
 The collision criterion matches emit_suite._mirror_collision / check_core.mirror_
 collision exactly: two DISTINCT 20-bit footprint addresses that alias mod-64K.
@@ -44,7 +44,10 @@ def rerolled_forms(suite_dir):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--dir", default="tests/v30/v0.2")
+    # ⚠ the default was `tests/v30/v0.2` until WAVE 27 deleted that suite
+    # (`docs/notes/invalidation_ledger.md` RET-3).  Repointed to the suite
+    # that supersedes it; the tool is suite-agnostic and takes `--dir`.
+    ap.add_argument("--dir", default="tests/v30/v0.3")
     ap.add_argument("--out", default="")
     a = ap.parse_args()
     full = rerolled_forms(a.dir)

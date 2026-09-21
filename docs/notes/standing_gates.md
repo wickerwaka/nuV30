@@ -40,8 +40,7 @@ so neither is displaced.)*
 | suite | command addenda | cases | **ucore** |
 |---|---|---:|---:|
 | `v0.1` | — | 169,000 | **169,000 / 169,000 full** |
-| `v0.2` | `--waits 0` | 347,000 | **347,000 / 347,000 full** |
-| `v0.2` | `--waits 0 --raw-flags` | 347,000 | **347,000 / 347,000 full** |
+| ~~`v0.2`~~ | — | — | ⚠ **RETIRED 2026-09-21 (WAVE 27) — THE SUITE IS DELETED AND WAS NOT IN GIT.  `invalidation_ledger.md` RET-3.**  Its last registered figures were **347,000 / 347,000 full** and, under `--raw-flags`, **347,000 / 347,000 full**; both were GREEN on the day it went.  **NEITHER IS A LIVE LEG AND NEITHER MAY BE QUOTED AS ONE** |
 | `v0.3` | `--no-known-divergences` | 3,700,000 | **3,699,998 / 3,700,000 full** |
 | `v0.3` | list applied | 3,699,997 | **3,699,997 / 3,699,997 full** |
 | `v20suite` | **`--arch-only` (REQUIRED)** | 3,125,000 | ⭐ **3,125,000 / 3,125,000 ARCH** (WAVE 25; it was 3,124,992 until the testbench re-latch was fixed — `tb_relatch_results_2026-09-20.md`) |
@@ -75,8 +74,14 @@ measurement is booked.
 (b) `mod3_illegal`'s `0/128` is the honest ARCHITECTURAL number.  A
 confinement-style gate would score 128/128, and building one after seeing 0/128
 would be choosing a comparator after seeing a result.  **Booked, not taken.**
-(c) ⚠⚠ **`v0.2`, `v0.3` AND `v20suite` ARE NOT IN GIT** — 1 tracked file of 351,
-3 of 746, 3 of 364, deliberate per each suite's own `.gitignore` (916 MB).
+(c) ⚠⚠ **`v0.3` AND `v20suite` ARE NOT IN GIT** — 3 tracked files of 746 and 3
+of 364, deliberate per each suite's own `.gitignore` (916 MB).
+⚠⚠⚠ **`v0.2` WAS NOT IN GIT EITHER — 1 tracked file of 352 — AND IT IS NOW
+GONE.  THIS WARNING WAS NOT HYPOTHETICAL: 91,237,338 BYTES OF 2026-07-17 SOCKET
+CAPTURE ARE UNRECOVERABLE BY ANY `git checkout`** (WAVE 27, `invalidation_
+ledger.md` **RET-3**; what was preserved first is `tests/v30/v02-unique-archive/`
+and `sw/testdata/wave27/`).  **THE SAME SENTENCE IS STILL TRUE OF `v0.3` AND
+`v20suite` TODAY.**
 **7,172,000 of these 7,341,128 cases live only on the machine that measured
 them, so a SCORER IS NOT A REPO-REPRODUCIBLE GATE.**  Each leg is recorded beside
 its suite's per-file sha256 manifest digest
@@ -84,14 +89,29 @@ its suite's per-file sha256 manifest digest
 `cbc0fde9d9586996…` · `v0.3` `6abe383d34ac0fa5…` · `v20suite`
 `67b8c7d7c83e8af5…` · `mod3_illegal` `67161a0c409c7fc6…`.
 
-⚠ **`v0.2` IS ~97.9 % REDUNDANT WITH `v0.3`** (`v0.3/README.md`: *"supersedes
-v0.2 outright"*, same seed base, 2.1 % of the 347,000 prefix cases differing),
-so the historical **"7.17 M" headline DOUBLE-COUNTS**.
+⚠ **`v0.2` WAS ~97.9 % REDUNDANT WITH `v0.3`**, so the historical **"7.17 M"
+headline DOUBLE-COUNTED**.  **MEASURED AT WAVE 27 BEFORE THE DELETION**, on a
+full 347-form positional scan with the record's own `hash` as the key:
+`v0.3`'s prefix reproduces **339,873 of the 347,000 BYTE FOR BYTE at the same
+index**; **7,127 (2.0539 %) in 12 forms do not**, of which **5,890 are elsewhere
+in `v0.3` byte-identical**, **1,152 are the same seed attempt drawn differently**
+and **85 are seed attempts `v0.3`'s generator rerolled away**.  All 347 `v0.2`
+forms exist in `v0.3` at ten times the case count, so **form-level coverage did
+not drop by one form**.  The 7,127 are preserved, tracked, at
+`tests/v30/v02-unique-archive/`; falsifier `python3 sw/w27_v02_archive_check.py`.
 
 **THE DIALECT ADAPTER IS `sw/suitemeta.py`** — three dialects, one rule (*a
 suite's opcode map comes from its own `metadata.json` when that file has one,
 and from `v0.1`'s otherwise*), falsifier `python3 sw/suitemeta.py --selfcheck`
-(**PASS, 17 checks, 3 dialects reached**, non-vacuity fires).
+(**PASS, 14 checks, 3 dialects reached, 0 skipped**, non-vacuity fires on
+`v0.3`, 16 of 370 forms).  ⚠ **It read 17 checks until WAVE 27**: three were
+`v0.2`'s own rows.  **The `EMITTER` dialect is UNAFFECTED — `mod3_illegal` has
+always carried it too and the dialect table is NOT edited.**  ⚠ What the
+deletion DID break was check (4), whose non-vacuity probe was chosen by POSITION
+in the control list and fell through to a suite with no real mask; the probe is
+now chosen by the PROPERTY it needs (*a delegating suite with at least one
+non-`0xFFFF` mask*) and **refuses rather than passing** when none is on disk.
+`invalidation_ledger.md` RET-3, § THE GATE THAT BROKE.
 
 ### ⚠⚠⚠ **WAVE 26 ADDENDUM, 2026-09-20 — THE RETAINED EA LANE TAKES THE ADDRESS ADDER'S SECOND ADDEND.  ONE MUX, `stale_ea_probe` 7/13 → 13/13, 21/21 AGAINST A FRESH SOCKET CAPTURE — AND THE BITSTREAM MOVED.**
 

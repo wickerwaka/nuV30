@@ -843,7 +843,8 @@ def main():
     # THE DIALECT ADAPTER (sw/suitemeta.py).  Three dialects, one rule: a
     # suite's opcode map is its own metadata.json's when that file has one, and
     # v0.1's otherwise.  This used to be TWO lines that handled only the
-    # file-absent half, which is why `tests/v30/v0.2` (347,000 cases) and
+    # file-absent half, which is why `tests/v30/v0.2` (347,000 cases; the suite
+    # was deleted at WAVE 27, `docs/notes/invalidation_ledger.md` RET-3) and
     # `tests/v30/mod3_illegal` (128) died here with `KeyError: 'opcodes'` and
     # had never been scored by anything -- `ucore_gaps_2026-08-04.md` §F.2,
     # closed by WAVE 22.  Delegation is ANNOUNCED, never silent.

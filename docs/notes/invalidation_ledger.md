@@ -1972,6 +1972,258 @@ by anyone, at any time, without editing a list.
 
 ---
 
+## RET-3 — THE `v0.2` GOLDEN SUITE `tests/v30/v0.2/`
+
+**Retired 2026-09-21, branch `master`, WAVE 27.  No rig defect.**
+
+# ⚠ THIS ENTRY CANNOT SAY WHAT RET-1 AND RET-2 SAY.
+
+RET-1 (`sim/`) and RET-2 (`hdl/rtl/core/`) both close with *"nothing was
+destroyed — `git rm` keeps every byte in history, and the recovery command is in
+this entry."*  **That sentence is FALSE of this one, and it is the single most
+important fact in it.**
+
+**`tests/v30/v0.2/` held 352 files.  ONE was tracked.**  The one was
+`.gitignore`, whose entire content is `*` plus `!.gitignore` — **the file whose
+job was to keep the other 351 out of git.**  Those 351 files are **91,237,338
+bytes of socket captures taken from the user's own uPD70116 on 2026-07-17**, and
+**they are in no commit, on no branch, in no reflog.  `git checkout` will not
+bring them back.  They are gone.**
+
+**WHAT WAS DONE ABOUT THAT, BEFORE ANYTHING WAS DELETED**, is § THE ARCHIVE
+below: the 7,127 cases `v0.3` does not reproduce, and all five of the suite's
+own provenance files, were measured, copied, **committed** (`f6bd939011`,
+`d060ee28b7`) and verified by a falsifier that needs only the archive and
+`v0.3` — and only then was `rm -rf` run.
+
+### THE AUTHORITY
+
+**USER INSTRUCTION, 2026-09-21, verbatim:**
+
+> *"Remove v0.2, v0.3 supersedes it"*
+
+### WHAT WENT — measured, not estimated
+
+| | |
+|---|---|
+| the artifact | `tests/v30/v0.2/` — the **1,000-cases-per-form × 347-form** SingleStepTests-format V30 golden suite, emitted 2026-07-17 from the socketed chip (`emitter_commit` `6f1814a622`, `metadata.json`) |
+| the payload | **352 files, 91,237,482 bytes** — 347 `*.json.gz` form files, `emit_log.txt`, `emit_run.log`, `metadata.json`, `run_manifest.json`, `.gitignore` |
+| **TRACKED** | **1 file, 144 bytes** — `.gitignore` |
+| **UNTRACKED, AND THEREFORE DESTROYED** | **351 files, 91,237,338 bytes (91.24 MB)** |
+| identity at the moment of deletion | all 347 form files and all four provenance files hash **IDENTICALLY** to WAVE 22's frozen per-file manifest `sw/testdata/wave22/manifest-v0.2.txt` (sha256 `cbc0fde9d9586996…`, 351 lines, committed `946bcea689`).  **347 / 347 and 4 / 4.**  The suite that was deleted is byte for byte the suite every figure below was scored on |
+| **ARCHIVED, not deleted** | see § THE ARCHIVE |
+
+### WHY
+
+`tests/v30/v0.3/README.md`, written 2026-07 by the emission that replaced it:
+*"**supersedes v0.2 outright** (v0.2 was the 1,000-case predecessor; it is
+retained on disk for its historical role … but is obsolete)."*  Both suites
+share the seed base `v30-v0.2`, and `v0.2`'s own `metadata.json` says the
+1,000-case run is *"a strict prefix of a same-base 10k run."*
+
+**MEASURED IN THIS SESSION, BEFORE THE DELETION**, by a full 347-form positional
+scan (`sw/testdata/wave27/z1_scan.txt`, `z2_reproduction.txt`):
+
+| | |
+|---|---:|
+| `v0.2` total cases | **347,000** |
+| `v0.2` forms **absent** from `v0.3` | **0 of 347** |
+| cases per form: `v0.2` → `v0.3` | 1,000 → **10,000** |
+| reproduced by `v0.3`'s prefix **at the same index, byte for byte** | **339,873** |
+| **not** reproduced | **7,127  (2.0539 %)**, in **12 forms** |
+
+**COMPARISON KEY**: the record's own `hash` field = `SHA1` of
+`json.dumps([name,bytes,initial,final,cycles],separators=(",",":"))` — the whole
+record except `idx`, which is a position label.  *Positive control*: at all
+339,873 equal-hash positions the two records were asserted byte-identical modulo
+`idx` — **0 violations**.  Three further whole-record keys return the same
+7,127; **no key tried returns the 7,137 that `v0.3/README.md` quotes**, and that
+ten-case discrepancy is **reported unresolved** (§ THE ERRATUM below).
+
+**AND THE 7,127 ARE NOT UNCOVERED BEHAVIOUR.**  Every one of them is an
+alternative draw of a form `v0.3` carries **ten thousand cases deep**.
+Form-level coverage does not drop by one form.
+
+### WHICH RIG DEFECT
+
+# **NONE.**
+
+No rig defect is alleged, none is diagnosed, and none is fixed by this entry.
+No capture is false.  **Every `v0.2` capture that ever existed was true silicon
+and every figure ever scored against it stays true of it** — which is precisely
+why the 91 MB being unrecoverable is worth stating in bold rather than in a
+footnote.
+
+### REROLLED AWAY, OR DRAWN DIFFERENTLY?  **BOTH, AND THE SPLIT IS MEASURED.**
+
+`v0.3/README.md` says the prefix matches *"wherever the reroll history agrees"*,
+which leaves open whether the 7,127 are cases `v0.3`'s generator **rejected**
+(and so possibly ill-formed) or cases it simply **drew differently**.  The
+question was answered before the deletion, because after it the evidence would
+not exist.
+
+`emit_suite.py` draws case *i* of form *F* from seed attempts *k = 0,1,2,…* in
+order, skipping any attempt it rerolls, and logs every reroll.  So
+`out_idx → seed attempt` is the ordered attempts minus the rerolled set, and
+both suites shipped an `emit_log.txt`.
+
+> **POSITIVE CONTROL FOR THAT RECONSTRUCTION.**  `v0.3` also ships the true map
+> per form (`XX.seeds.json`).  Rebuilding it from `v0.3`'s **own** `emit_log`
+> reproduces the committed map on **370 of 370 forms exactly**, and **107 of the
+> 370 maps are non-identity**, so the equality is not trivial.
+
+| class | count | what it means |
+|---|---:|---|
+| **PRESENT IN `v0.3` AT ANOTHER INDEX** | **5,890** | `v0.3` holds the case **byte for byte**; a reroll earlier in the form shifted every later index.  **Nothing is lost.** |
+| **ABSENT, `SAME_SEED_DIFFERENT_RECORD`** | **1,152** | `v0.3` used the **same seed attempt** and built a **different case** from it — the emitter's placement logic moved between the emissions (flat-1 MB memory model; mirror-collision footprint-reject removed).  **A different draw, not a rejection.** |
+| **ABSENT, `REJECTED_BY_v0.3`** | **85** | `v0.3`'s generator **rerolled this exact seed attempt away** — *"implausible final PSW"*, *"PC push bytes not contiguous"*, *"footprint overlap"*, *"footprint intersects the reserved page"* |
+| | **7,127** | |
+
+**ONLY 85 OF 347,000 CASES ARE CONTENT THE LATER GENERATOR REFUSED.  THEY ARE
+PRESERVED ANYWAY AND THE MANIFEST SAYS SO**, each by form, index, `v0.2` seed
+attempt and class: a case the later generator calls implausible is **evidence
+about the generator**, and adjudicating it is not this wave's business.
+
+**7,120 of the 7,127 lie in the nine interrupt/HALT forms**, and they are
+exactly the positions where the two emissions used a **different seed attempt**
+(measured independently on a seed-attempt key: 7,120).  The other seven —
+`0F31` ×5, `0F26`, `A6` — use the **same** attempt in both, so they are emitter
+evolution with no reroll involved at all.
+
+### EVERY GATE THAT DIED — enumerated, with its last registered figure
+
+⚠ **This is the field that makes a retirement honest.**  **STATUS** is the
+gate's state at the moment it went.
+
+| gate, by command | last registered figure | GREEN when it went? | **WHAT REPLACES IT** |
+|---|---|---|---|
+| `check_core.py --core ucore --suite-dir tests/v30/v0.2 --opcodes all --cases 0` | **347,000 / 347,000 full** (cycles 347,000, arch 347,000) | **YES** — `sw/testdata/wave26/ladder/{before,after}/v02.log`, both sides, 2026-09-20 | **`v0.3`: 3,699,998 / 3,699,998 full [2 documented pre-existing excluded]**, same forms, ten times the cases.  339,873 of the 347,000 are literally inside it |
+| `check_core.py … --suite-dir tests/v30/v0.2 … --raw-flags` | **347,000 / 347,000 full** | **YES** — WAVE 22 §1, `suite_scorer_results_2026-09-19.md` | **NOTHING.**  ⚠ `--raw-flags` still exists and `v0.3` has never been run under it.  This leg is not replaced, it is **gone**, and no figure stands in its place |
+| WAVE 24 **A-1**, the seven *"genuine chip-vs-RTL"* `v0.2` cases (`INT.90`, `INT.9D`, `INT.FB`) | **3,000 / 3,000 full** | **YES** — `suite_divergence_results_2026-09-20.md` §3, `sw/testdata/wave24/a1_v02.log` | **NOTHING, and nothing is needed**: the verdict it produced (*"all seven pass; `v02_suspected_divergences.md` is FSM-era"*) is already recorded, and the same three forms are scored 10,000 deep in `v0.3` |
+| `suitemeta.py --selfcheck` | **PASS — 17 checks, 3 dialects reached, 0 skipped** (WAVE 22 W-4) | **YES** | **`PASS — 14 checks, 3 dialects reached, 0 skipped`.**  Three checks were `v0.2`'s own rows.  ⚠ **The `EMITTER` dialect SURVIVES** — `mod3_illegal` has always carried it too, and the dialect table is NOT edited.  See § THE GATE THAT BROKE |
+| `sw/testdata/wave22/manifest-v0.2.txt` as a re-verifiable digest | 351 files, manifest sha256 `cbc0fde9d9586996…` | **YES** | **NOTHING — and it is now UNVERIFIABLE FOREVER.**  The file stays committed as the record of what the bytes were; no future run can compare anything to it.  ⚠ **Cited one last time in this entry**, as the proof that what was deleted is what was scored: 347/347 form files and 4/4 provenance files identical |
+
+**NOT A GATE AND NOT AFFECTED**: `s15_census`, `s16_dispwin` and the other
+measurement tools this repo forbids quoting as passes.
+
+### WHAT REPLACED IT
+
+**`tests/v30/v0.3`**, on the standing ladder at
+**3,699,998 / 3,699,998 full [2 documented pre-existing excluded]** — 370 forms
+(all 347 of `v0.2`'s, plus 23), 10,000 cases each, the same seed base, the
+current emitter, and `flat-1 MB` validity established behaviourally rather than
+by footprint.
+
+⚠ **ONE LEG IS REPLACED BY NOTHING AND IT IS NAMED ABOVE**: `--raw-flags`.
+
+### THE ARCHIVE — `tests/v30/v02-unique-archive/`, **TRACKED AND COMMITTED FIRST**
+
+**Committed in `f6bd939011` and `d060ee28b7`, BOTH BEFORE THE FIRST DELETION.**
+19 files, ~3.1 MB, with `SHA256SUMS` and a `manifest.json`.
+
+| what | |
+|---|---|
+| **the 7,127 records** | twelve `<form>.json.gz`, the `v0.2` records **verbatim**, schema unchanged, `idx` carrying each case's **original `v0.2` output index** |
+| **the disposition of every one of them** | `manifest.json` — per index: shifted (and to which `v0.3` index) or absent (and which of the two absent classes, with its `v0.2` seed attempt) |
+| **`provenance/`** | all five of the suite's own files, gzipped at `mtime=0`, each with its original `sha256`: `metadata.json` · `run_manifest.json` · **`emit_log.txt` (431,633 B)** · `emit_run.log` · `.gitignore` |
+| ⚠ **why `emit_log.txt` is in there** | **it is the only record of `v0.2`'s reroll history that has ever existed**, it was never in git, and it is what the 85 / 1,152 split above was derived from.  Without it that split cannot be re-derived by anyone |
+| **the `v0.2` bytes the records came from** | each form's own `v0.2` file `sha256` is in the manifest, and all 347 match WAVE 22's frozen manifest |
+
+**WHAT THE ARCHIVE DOES NOT HOLD, STATED PLAINLY**: the **339,873** cases `v0.3`
+reproduces byte for byte.  They are not copied because they exist, at the same
+index, in a suite that is still on disk — and duplicating 90 MB to restate that
+would be a claim, not a preservation.  **If `v0.3` is ever lost, those 339,873
+`v0.2` captures are lost with it.**
+
+### HOW TO RECOVER IT
+
+# **YOU CANNOT.**
+
+```
+git checkout <any commit> -- tests/v30/v0.2/       # returns ONE file: .gitignore
+```
+
+There is no commit, branch, stash or reflog entry holding the 347 form files.
+What exists is:
+
+```
+tests/v30/v02-unique-archive/                 # the 7,127 + all five provenance files
+sw/testdata/wave22/manifest-v0.2.txt          # what the 351 bytes-on-disk hashed to
+sw/testdata/wave27/                           # the scans, by value, incl. the method
+tests/v30/v0.3/                               # 339,873 of the 347,000, at the same index
+```
+
+**Re-creating `v0.2` would mean a new socket emission from a chip, under an
+emitter that no longer behaves the way the 2026-07-17 one did.  It would not be
+`v0.2`.**
+
+### ⚠ THE GATE THAT BROKE, AND WHY IT IS RECORDED RATHER THAN QUIETLY FIXED
+
+Deleting the suite turned **`sw/suitemeta.py --selfcheck` RED**, and not for the
+reason anyone would guess.  Its check (4) — the non-vacuity control, which
+empties the delegation target and demands that some mask MOVE — picked its probe
+as *the first delegating suite in `CONTROL_SUITES` with forms on disk*.  That
+was `v0.2`, which happens to carry 16 real (non-`0xFFFF`) masks.  With `v0.2`
+gone the probe fell through to `mod3_illegal`, **whose one form's mask is
+`0xFFFF`**, so emptying the target changed nothing, and the gate reported
+
+> `NON-VACUOUS CONTROL DID NOT FIRE … so check (3) proves nothing`
+
+**The control was right and its probe selection was wrong.**  The repair states
+the requirement instead of relying on list order: *a delegating suite WITH AT
+LEAST ONE REAL MASK*, and **if none is on disk the gate records a violation
+rather than passing**.  Probe is now `v0.3`, fires 16 of 370.  Negative control
+run: restricted to `v0.1` + `mod3_illegal` the selfcheck **exits 1**, never a
+silent PASS.
+
+**This is the third time in three waves that a mechanical enumeration found the
+consumer and a manual disposition missed what it did.**  It is recorded here
+because the next retirement should expect it.
+
+### THE FALSIFIER, registered with the entry
+
+**`python3 sw/w27_v02_archive_check.py`** — needs only the archive and `v0.3`,
+so it stays runnable for as long as either does.  It re-derives every claim
+above that survives the deletion:
+
+* **A** `SHA256SUMS` and the manifest's per-file digests hold, and every archived
+  record's own `hash` field recomputes — **7,127 records, 0 bad**;
+* **B** each of the **5,890** cases called *present in `v0.3` elsewhere* IS at the
+  named `v0.3` index, **byte for byte**;
+* **C** each of the **1,237** cases called *absent* is at **no** index of
+  `v0.3`'s 10,000;
+* **D** the arithmetic closes against the manifest headline.
+
+**With a POSITIVE CONTROL that makes B and C each FAIL on a perturbed manifest**
+(one shifted index moved by one; one shifted case relabelled absent).  Measured:
+**PASS**, both controls fire.
+
+**FALSIFIED IF** that gate ever reports otherwise; **or if any figure in this
+entry is quoted against a `v0.2` that someone has re-emitted** — a new emission
+is a new suite and inherits none of these numbers.
+
+### ⚠ THE ERRATUM — `7,127` vs `v0.3/README.md`'s `7,137`.  **REPORTED, NOT RESOLVED.**
+
+`tests/v30/v0.3/README.md` says **7,137** of 347,000.  This session measured
+**7,127** on four independent whole-record keys and **no key tried reproduces
+7,137** (`sw/testdata/wave27/z1_keys.txt`: `cycles` alone gives 6,830,
+`name`+`bytes` 6,270, every whole-record key 7,127).
+
+**IT CANNOT BE RE-DERIVED, FOR THIS ENTRY'S OWN REASON: NEITHER SUITE IS IN
+GIT**, so no historical state of either can be checked out.  The `7,137` text
+was written at `24d6d78573`; `v0.3/reemit.log` records five confined per-index
+re-emissions, **two of them inside the compared prefix** (`36.6E` idx 517,
+`F26F` idx 743), and `docs/notes/v0.2_reemission_worklist.md` records a
+re-emission pass over `v0.2` itself.  Either would move the figure by a few
+cases.  ⚠ **What is ruled out is any drift between WAVE 22 and the deletion**:
+all 347 form files hash identically to WAVE 22's frozen manifest.
+
+**The ten-case gap is stated as unexplained.  7,127 is what was measured, and
+7,127 is what is archived.**  ⚠ `tests/v30/v0.3/README.md` is one of the USER's
+own modified files and **was not touched**; the erratum lives here instead.
+
+---
+
 # DECLARED GATE DEVIATIONS — **NOT** INVALIDATIONS, **NOT** SUPERSESSIONS, **NOT** EXCLUSIONS, **NOT** ERRATA, **NOT** RETIREMENTS
 
 **A SIXTH REGISTER, opened 2026-09-20 (WAVE 26).**  The five registers above

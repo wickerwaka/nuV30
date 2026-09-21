@@ -40,7 +40,15 @@ RTL = ROOT / "hdl" / "rtl" / "ucore"
 RAIL = re.compile(r"ea_pair_(?:valid|rhs)")
 WRITE = re.compile(r"ea_pair_\w+\s*(?:<=|=)(?!=)")
 PREFIXES = {0x26, 0x2E, 0x36, 0x3E, 0xF0, 0xF2, 0xF3, 0x64, 0x65}
-SUITES = ["v0.1", "v0.2", "v0.3", "v20suite"]
+SUITES = ["v0.1", "v0.3", "v20suite"]
+# ⚠ `"v0.2"` was in that list until WAVE 27 deleted the suite
+# (`docs/notes/invalidation_ledger.md` RET-3).  It is NOT silently
+# dropped: `mod3_cases()` would have found no `8D.json.gz` and reported
+# `0 cases / 0 mod==3`, which reads as "checked, and empty" for a suite
+# that no longer exists.  The retirement is PRINTED on every run instead.
+# WAVE 26's own committed run (four suites, 0 cases over all four) is
+# `sw/testdata/wave26/` and is not edited.
+RETIRED_SUITES = [("v0.2", "deleted at WAVE 27, invalidation_ledger.md RET-3")]
 
 EXEMPT_FILES = ("v30u_eu_ss_read.svh", "v30u_eu_ss_write.svh",
                 "v30u_eu_preload.svh")
@@ -175,6 +183,8 @@ def main():
     for s, (n, n3) in mod3_cases().items():
         print(f"  {s:9s} 8D cases {n:6d}   mod==3 {n3}")
         tot += n3
+    for s, why in RETIRED_SUITES:
+        print(f"  {s:9s} RETIRED -- {why}; NOT counted, NOT assumed empty")
     print(f"  -> {tot} case(s) over {len(SUITES)} suites")
     if tot:
         print("  FAIL: a golden reaches the changed rails")
