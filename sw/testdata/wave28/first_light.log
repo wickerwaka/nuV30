@@ -1,0 +1,6 @@
+== chip position (use_core=0): boot vs golden ==
+chip-vs-golden: MATCH over 800 rows
+
+== core position (use_core=1): boot ==
+core-vs-chip:   MATCH over 800 rows
+core-vs-golden: MATCH over 800 rows

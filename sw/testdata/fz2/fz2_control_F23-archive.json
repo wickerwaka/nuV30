@@ -1,0 +1,799 @@
+{
+ "stage": "fz2 C-6 control legs",
+ "host": "root@mister-nec",
+ "prereg": "\u00a76 C-6 (a)(b)(c); the legs are \u00a724",
+ "gen_git": "6de3e322b5",
+ "tree_dirty": [
+  {
+   "status": " M",
+   "path": "docs/notes/class5_8086_reopen.md",
+   "sha256": "abf906d3773c13f06339e65e3c9eec51dcd3c4aad8bc8ac742cf314c3146f284"
+  },
+  {
+   "status": " M",
+   "path": "docs/notes/class5_bandage_findings.md",
+   "sha256": "b0b94b524f1b34900ef314cc2dde369acee067208830de72a9013d6771ae539e"
+  },
+  {
+   "status": " M",
+   "path": "docs/notes/class5_path_unification_plan.md",
+   "sha256": "407d92773c1131bfe3242695ad603e031067b8f2d4c4be4bef293d85fed42651"
+  },
+  {
+   "status": " M",
+   "path": "docs/notes/class5_phase_s_plan.md",
+   "sha256": "1870a92436edc96448ace7a3b6fd6e3c95a8258ef317b470686f112427c95e8e"
+  },
+  {
+   "status": " M",
+   "path": "sw/_s14_ret_draw.sh",
+   "sha256": "264aa36b332d7e0eb2eea2dceb26133c5261e47b958b7c6efaa0550378636659"
+  },
+  {
+   "status": " M",
+   "path": "sw/char_divergence.py",
+   "sha256": "864bde121aeb1fb2e3f400ddf9a5ebbd65e4e7ca19de9969fb6d36830b1787f9"
+  },
+  {
+   "status": " M",
+   "path": "sw/fz2_a10_replay.py",
+   "sha256": "bf7e369aa20447e219d6372b902ebe79b18ca343b1fc97ec9de7fc9a3a643230"
+  },
+  {
+   "status": " M",
+   "path": "sw/fz2_a1_replay.py",
+   "sha256": "31b02f940975902cef0f231fff4c0588b5da7076cc3213c7a4504273e31633c7"
+  },
+  {
+   "status": " M",
+   "path": "sw/t7_sim_ab.py",
+   "sha256": "14f933a002aaa81e0132f273702107aee670ac09e4894d11d8845d061a4f8c04"
+  },
+  {
+   "status": " M",
+   "path": "sw/t7_sim_proof.py",
+   "sha256": "456eea880db74a52b24856c93c57b8e667ee7af478d695dbf8c5bae3c77f790b"
+  },
+  {
+   "status": " D",
+   "path": "sw/testdata/campaigns/fz2c/coverage.json",
+   "sha256": null
+  },
+  {
+   "status": " M",
+   "path": "sw/testdata/campaigns/fz2c/manifest.json",
+   "sha256": "ea8b0dce7d516378feab27e2a5e3583c6166012030e87cef9ed38592c271f93b"
+  },
+  {
+   "status": " D",
+   "path": "sw/testdata/campaigns/fz2c/results.jsonl",
+   "sha256": null
+  },
+  {
+   "status": " D",
+   "path": "sw/testdata/campaigns/fz2e/coverage.json",
+   "sha256": null
+  },
+  {
+   "status": " M",
+   "path": "sw/testdata/campaigns/fz2e/manifest.json",
+   "sha256": "5e82c897b9586d0f98c363eb7505eae3c30188cc7bb3ca59c4366306c7482ee9"
+  },
+  {
+   "status": " D",
+   "path": "sw/testdata/campaigns/fz2e/results.jsonl",
+   "sha256": null
+  },
+  {
+   "status": " M",
+   "path": "sw/testdata/flash_log.jsonl",
+   "sha256": "13a81a43f30c380ae63ead0e72b2c3069ce5d9d590de51ce8eed340df76d0c04"
+  },
+  {
+   "status": " M",
+   "path": "sw/testdata/receipts/quartus_bitstream.jsonl",
+   "sha256": "15f9b0440e99dda4a922caf71e4cfb770bfc5c517e1c106fa7191c7cbc119f88"
+  },
+  {
+   "status": " M",
+   "path": "sw/testdata/receipts/quartus_distribution.jsonl",
+   "sha256": "ff6c3fbae51c7478a94ff562bb759c58e748c43c4b8521578189955640344e89"
+  },
+  {
+   "status": " M",
+   "path": "sw/testdata/receipts/verilator_binary.jsonl",
+   "sha256": "dae0ec3812631d7c90cb5d9755ac72522fc7518d0bb0a7ba3f4314a44d004c76"
+  },
+  {
+   "status": " M",
+   "path": "sw/testdata/rep_cl0/modeldrive.py",
+   "sha256": "27a63167ca46ec2fe91a06b56d0a55d8eb805a747a7b8781d26204f67e6a9f9b"
+  },
+  {
+   "status": " M",
+   "path": "sw/testdata/rep_cl0/rep_cl0_repro.py",
+   "sha256": "c61ef30d3d32d5b1841bf02866b5789c872509adb373fbd3cfcb618021bb3bbd"
+  },
+  {
+   "status": " M",
+   "path": "sw/testdata/rep_cl0/repdrive.py",
+   "sha256": "9ae4c5720bc3e75f12b34214e0689eb04358952b1b77ce94cfae4c7d0a6b5dd3"
+  },
+  {
+   "status": " M",
+   "path": "tests/v30/rep_cl0/DIAGNOSTIC-UNREGISTERED/align_probe.py",
+   "sha256": "ce2bf14bf0edb5cd75929e98000332fab7d978ae477c637ddf6b57259ef3d043"
+  },
+  {
+   "status": " M",
+   "path": "tests/v30/rep_cl0/DIAGNOSTIC-UNREGISTERED/diag2.py",
+   "sha256": "de34842c2cc6df399d819174e5f35514480eb16ac4fc47246aab9dd9c55fa206"
+  },
+  {
+   "status": " M",
+   "path": "tests/v30/rep_cl0/DIAGNOSTIC-UNREGISTERED/diag3.py",
+   "sha256": "a564226db7bdcb4e77d1e4294e9bdaa74b9f9ffedda7e00919a80a10a5390a74"
+  },
+  {
+   "status": " M",
+   "path": "tests/v30/v0.1/README.md",
+   "sha256": "472825dc906098e7159b88a9dfcff2499a0c2bb137bed9cc3eb14f0f8a8e9e4f"
+  },
+  {
+   "status": " M",
+   "path": "tests/v30/v0.3/README.md",
+   "sha256": "ef8dc831ae4286a4f2dcd1c7e61082bc4536807480d739ec4107d158c739353c"
+  }
+ ],
+ "started": "2026-09-19T23:49:02Z",
+ "div_guards": [
+  {
+   "tag": "control-start",
+   "readback": "div=8 (4 MHz), commanded by this connection",
+   "state": "PINNED",
+   "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
+   "ts": "2026-09-19T23:49:03Z"
+  },
+  {
+   "tag": "control-P1",
+   "readback": "div=8 (4 MHz), commanded by this connection",
+   "state": "PINNED",
+   "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
+   "ts": "2026-09-19T23:49:03Z"
+  },
+  {
+   "tag": "control-P2",
+   "readback": "div=8 (4 MHz), commanded by this connection",
+   "state": "PINNED",
+   "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
+   "ts": "2026-09-19T23:49:03Z"
+  },
+  {
+   "tag": "control-P3",
+   "readback": "div=8 (4 MHz), commanded by this connection",
+   "state": "PINNED",
+   "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
+   "ts": "2026-09-19T23:49:03Z"
+  },
+  {
+   "tag": "control-P4",
+   "readback": "div=8 (4 MHz), commanded by this connection",
+   "state": "PINNED",
+   "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
+   "ts": "2026-09-19T23:49:03Z"
+  },
+  {
+   "tag": "control-P5",
+   "readback": "div=8 (4 MHz), commanded by this connection",
+   "state": "PINNED",
+   "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
+   "ts": "2026-09-19T23:49:03Z"
+  },
+  {
+   "tag": "control-V1",
+   "readback": "div=8 (4 MHz), commanded by this connection",
+   "state": "PINNED",
+   "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
+   "ts": "2026-09-19T23:49:04Z"
+  },
+  {
+   "tag": "control-V2",
+   "readback": "div=8 (4 MHz), commanded by this connection",
+   "state": "PINNED",
+   "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
+   "ts": "2026-09-19T23:49:04Z"
+  },
+  {
+   "tag": "control-N1",
+   "readback": "div=8 (4 MHz), commanded by this connection",
+   "state": "PINNED",
+   "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
+   "ts": "2026-09-19T23:49:04Z"
+  },
+  {
+   "tag": "control-end",
+   "readback": "div=8 (4 MHz), commanded by this connection",
+   "state": "PINNED",
+   "rig": "WRAND=0 replay=0 (commanded clean at connect, OK/OK)",
+   "ts": "2026-09-19T23:49:04Z"
+  }
+ ],
+ "legs": [
+  {
+   "leg": "R1",
+   "title": "clause (a): every fuzz-v2 register round-trips on the readback path (RBCHECK)",
+   "ok": true,
+   "checks": [
+    {
+     "check": "RBCHECK: two distinct values written and read back in every register",
+     "pass": true,
+     "detail": "8 registers: ['EVT_ADDR[0]', 'EVT_ADDR[1]', 'EVT_ADDR[2]', 'EVT_CFG[0]', 'EVT_CFG[1]', 'EVT_CFG[2]', 'TVEC', 'VECCTL']"
+    }
+   ],
+   "registers": [
+    "EVT_ADDR[0]",
+    "EVT_ADDR[1]",
+    "EVT_ADDR[2]",
+    "EVT_CFG[0]",
+    "EVT_CFG[1]",
+    "EVT_CFG[2]",
+    "TVEC",
+    "VECCTL"
+   ]
+  },
+  {
+   "leg": "P1",
+   "title": "clause (b) directed: pin_int x hold = 2",
+   "ok": true,
+   "checks": [
+    {
+     "check": "exactly ONE run on pin_int",
+     "pass": true,
+     "detail": "runs=[[547, 2]]"
+    },
+    {
+     "check": "its length is 2 +/- 1 clock",
+     "pass": true,
+     "detail": "measured 2"
+    },
+    {
+     "check": "0 runs on the other interrupt pin (pin_nmi)",
+     "pass": true,
+     "detail": "runs=[]"
+    },
+    {
+     "check": "the rig's own readback held the directive",
+     "pass": true,
+     "detail": "fired=1 vec_used=False"
+    },
+    {
+     "check": "scheduler 0's sticky FIRE bit is set",
+     "pass": true,
+     "detail": "fired=1"
+    }
+   ],
+   "pin": "pin_int",
+   "hold": 2,
+   "runs": [
+    [
+     547,
+     2
+    ]
+   ],
+   "all_runs": {
+    "pin_int": [
+     [
+      547,
+      2
+     ]
+    ],
+    "pin_nmi": [],
+    "pin_poll_n": [
+     [
+      0,
+      4063
+     ]
+    ]
+   },
+   "measured": 2,
+   "fired": 1,
+   "rows_file": "sw/testdata/campaigns/fz2ctl/captures/P1.json.gz",
+   "n_rows": 4063,
+   "sha256": "eb4032ca41175b2ea5b4f33439a8874d42fe398c16d5f05646468c888d283010"
+  },
+  {
+   "leg": "P2",
+   "title": "clause (b) directed: pin_int x hold = 300",
+   "ok": true,
+   "checks": [
+    {
+     "check": "exactly ONE run on pin_int",
+     "pass": true,
+     "detail": "runs=[[547, 300]]"
+    },
+    {
+     "check": "its length is 300 +/- 1 clock",
+     "pass": true,
+     "detail": "measured 300"
+    },
+    {
+     "check": "0 runs on the other interrupt pin (pin_nmi)",
+     "pass": true,
+     "detail": "runs=[]"
+    },
+    {
+     "check": "the rig's own readback held the directive",
+     "pass": true,
+     "detail": "fired=1 vec_used=False"
+    },
+    {
+     "check": "scheduler 0's sticky FIRE bit is set",
+     "pass": true,
+     "detail": "fired=1"
+    }
+   ],
+   "pin": "pin_int",
+   "hold": 300,
+   "runs": [
+    [
+     547,
+     300
+    ]
+   ],
+   "all_runs": {
+    "pin_int": [
+     [
+      547,
+      300
+     ]
+    ],
+    "pin_nmi": [],
+    "pin_poll_n": [
+     [
+      0,
+      4063
+     ]
+    ]
+   },
+   "measured": 300,
+   "fired": 1,
+   "rows_file": "sw/testdata/campaigns/fz2ctl/captures/P2.json.gz",
+   "n_rows": 4063,
+   "sha256": "2d88eccad948cc1de5da55769ee59824c2bd1b4d0350b2cb5124ce8fac6c22af"
+  },
+  {
+   "leg": "P3",
+   "title": "clause (b) directed: pin_nmi x hold = 2",
+   "ok": true,
+   "checks": [
+    {
+     "check": "exactly ONE run on pin_nmi",
+     "pass": true,
+     "detail": "runs=[[547, 2]]"
+    },
+    {
+     "check": "its length is 2 +/- 1 clock",
+     "pass": true,
+     "detail": "measured 2"
+    },
+    {
+     "check": "0 runs on the other interrupt pin (pin_int)",
+     "pass": true,
+     "detail": "runs=[]"
+    },
+    {
+     "check": "the rig's own readback held the directive",
+     "pass": true,
+     "detail": "fired=1 vec_used=False"
+    },
+    {
+     "check": "scheduler 0's sticky FIRE bit is set",
+     "pass": true,
+     "detail": "fired=1"
+    }
+   ],
+   "pin": "pin_nmi",
+   "hold": 2,
+   "runs": [
+    [
+     547,
+     2
+    ]
+   ],
+   "all_runs": {
+    "pin_int": [],
+    "pin_nmi": [
+     [
+      547,
+      2
+     ]
+    ],
+    "pin_poll_n": [
+     [
+      0,
+      4063
+     ]
+    ]
+   },
+   "measured": 2,
+   "fired": 1,
+   "rows_file": "sw/testdata/campaigns/fz2ctl/captures/P3.json.gz",
+   "n_rows": 4063,
+   "sha256": "3775fe9931f5f6121614315841e1e6f63c934310de76df36a0227bfaa634f71f"
+  },
+  {
+   "leg": "P4",
+   "title": "clause (b) directed: pin_nmi x hold = 300   [the cell the corpus CANNOT produce -- \u00a720.3]",
+   "ok": true,
+   "checks": [
+    {
+     "check": "exactly ONE run on pin_nmi",
+     "pass": true,
+     "detail": "runs=[[547, 300]]"
+    },
+    {
+     "check": "its length is 300 +/- 1 clock",
+     "pass": true,
+     "detail": "measured 300"
+    },
+    {
+     "check": "0 runs on the other interrupt pin (pin_int)",
+     "pass": true,
+     "detail": "runs=[]"
+    },
+    {
+     "check": "the rig's own readback held the directive",
+     "pass": true,
+     "detail": "fired=1 vec_used=False"
+    },
+    {
+     "check": "scheduler 0's sticky FIRE bit is set",
+     "pass": true,
+     "detail": "fired=1"
+    }
+   ],
+   "pin": "pin_nmi",
+   "hold": 300,
+   "runs": [
+    [
+     547,
+     300
+    ]
+   ],
+   "all_runs": {
+    "pin_int": [],
+    "pin_nmi": [
+     [
+      547,
+      300
+     ]
+    ],
+    "pin_poll_n": [
+     [
+      0,
+      4063
+     ]
+    ]
+   },
+   "measured": 300,
+   "fired": 1,
+   "rows_file": "sw/testdata/campaigns/fz2ctl/captures/P4.json.gz",
+   "n_rows": 4063,
+   "sha256": "eaf157ebfa53d672bad20722b5840f80f3e62a88ef1f41a64a615ed749a145b2"
+  },
+  {
+   "leg": "P5",
+   "title": "clause (b) directed: pin_nmi x hold = 20",
+   "ok": true,
+   "checks": [
+    {
+     "check": "exactly ONE run on pin_nmi",
+     "pass": true,
+     "detail": "runs=[[547, 20]]"
+    },
+    {
+     "check": "its length is 20 +/- 1 clock",
+     "pass": true,
+     "detail": "measured 20"
+    },
+    {
+     "check": "0 runs on the other interrupt pin (pin_int)",
+     "pass": true,
+     "detail": "runs=[]"
+    },
+    {
+     "check": "the rig's own readback held the directive",
+     "pass": true,
+     "detail": "fired=1 vec_used=False"
+    },
+    {
+     "check": "scheduler 0's sticky FIRE bit is set",
+     "pass": true,
+     "detail": "fired=1"
+    }
+   ],
+   "pin": "pin_nmi",
+   "hold": 20,
+   "runs": [
+    [
+     547,
+     20
+    ]
+   ],
+   "all_runs": {
+    "pin_int": [],
+    "pin_nmi": [
+     [
+      547,
+      20
+     ]
+    ],
+    "pin_poll_n": [
+     [
+      0,
+      4063
+     ]
+    ]
+   },
+   "measured": 20,
+   "fired": 1,
+   "rows_file": "sw/testdata/campaigns/fz2ctl/captures/P5.json.gz",
+   "n_rows": 4063,
+   "sha256": "d9232df58f61625f19933d005be9bfd3f099ff5f408a53223af74ff04bf87446"
+  },
+  {
+   "leg": "V1",
+   "title": "clause (c): interception at TVEC = 0000:bf00 -> 0bf00",
+   "ok": true,
+   "checks": [
+    {
+     "check": "MEMR at linear 0x00008 present",
+     "pass": true,
+     "detail": "1 reads"
+    },
+    {
+     "check": "0x00008 returns the TVEC IP half 0xbf00",
+     "pass": true,
+     "detail": "data=0xbf00"
+    },
+    {
+     "check": "MEMR at linear 0x0000A present",
+     "pass": true,
+     "detail": "1 reads"
+    },
+    {
+     "check": "0x0000A returns the TVEC CS half 0x0000",
+     "pass": true,
+     "detail": "data=0x0000"
+    },
+    {
+     "check": "vec_armed is high across the intercepted reads",
+     "pass": true,
+     "detail": "ip.vec=1 cs.vec=1"
+    },
+    {
+     "check": "the next CODE T1 is at 0x0bf00",
+     "pass": true,
+     "detail": "0x0bf00"
+    },
+    {
+     "check": "STATUS[6]: the overlay actually served a CS half",
+     "pass": true,
+     "detail": "vec_used=True"
+    },
+    {
+     "check": "the terminator's sticky FIRE bit is set",
+     "pass": true,
+     "detail": "fired=4"
+    },
+    {
+     "check": "the CPU did NOT reach the image's own wrong vector (0x0b000)",
+     "pass": true,
+     "detail": ""
+    }
+   ],
+   "tvec": [
+    0,
+    48896
+   ],
+   "next_code": 48896,
+   "dumped": true,
+   "done_marker": 61453,
+   "vec_used": true,
+   "fired": 4,
+   "rows_file": "sw/testdata/campaigns/fz2ctl/captures/V1.json.gz",
+   "n_rows": 4063,
+   "sha256": "00ad78e150f9d72abda84f942eeeb98c4345ddf86c22b62d6a868e1aaf8d8467"
+  },
+  {
+   "leg": "V2",
+   "title": "clause (c): interception at TVEC = 0bf0:0008 -> 0bf08",
+   "ok": true,
+   "checks": [
+    {
+     "check": "MEMR at linear 0x00008 present",
+     "pass": true,
+     "detail": "1 reads"
+    },
+    {
+     "check": "0x00008 returns the TVEC IP half 0x0008",
+     "pass": true,
+     "detail": "data=0x0008"
+    },
+    {
+     "check": "MEMR at linear 0x0000A present",
+     "pass": true,
+     "detail": "1 reads"
+    },
+    {
+     "check": "0x0000A returns the TVEC CS half 0x0bf0",
+     "pass": true,
+     "detail": "data=0x0bf0"
+    },
+    {
+     "check": "vec_armed is high across the intercepted reads",
+     "pass": true,
+     "detail": "ip.vec=1 cs.vec=1"
+    },
+    {
+     "check": "the next CODE T1 is at 0x0bf08",
+     "pass": true,
+     "detail": "0x0bf08"
+    },
+    {
+     "check": "STATUS[6]: the overlay actually served a CS half",
+     "pass": true,
+     "detail": "vec_used=True"
+    },
+    {
+     "check": "the terminator's sticky FIRE bit is set",
+     "pass": true,
+     "detail": "fired=4"
+    },
+    {
+     "check": "the CPU did NOT reach the image's own wrong vector (0x0b000)",
+     "pass": true,
+     "detail": ""
+    }
+   ],
+   "tvec": [
+    3056,
+    8
+   ],
+   "next_code": 48904,
+   "dumped": false,
+   "done_marker": 61453,
+   "vec_used": true,
+   "fired": 4,
+   "rows_file": "sw/testdata/campaigns/fz2ctl/captures/V2.json.gz",
+   "n_rows": 4063,
+   "sha256": "323efd9d317bac36cfcf2e88a7485743a2378d7080266b21ed1ce53f52724634"
+  },
+  {
+   "leg": "N1",
+   "title": "clause (c) NEGATIVE CONTROL: the same image and the same TVEC with vecsub_en = 0 must NOT terminate",
+   "ok": true,
+   "checks": [
+    {
+     "check": "the NMI still fired (the control differs in vecsub ONLY)",
+     "pass": true,
+     "detail": "fired=4"
+    },
+    {
+     "check": "vec_armed NEVER rises anywhere in the capture",
+     "pass": true,
+     "detail": "0 rows armed"
+    },
+    {
+     "check": "STATUS[6] clear: the overlay served nothing",
+     "pass": true,
+     "detail": "vec_used=False"
+    },
+    {
+     "check": "0x00008 returns the IMAGE's own wrong vector 0xb000",
+     "pass": true,
+     "detail": "data=0xb000"
+    },
+    {
+     "check": "0x0000A returns the image's own CS 0x0000",
+     "pass": true,
+     "detail": "data=0x0000"
+    },
+    {
+     "check": "the CPU DID reach the wrong vector 0x0b000",
+     "pass": true,
+     "detail": ""
+    },
+    {
+     "check": "it did NOT terminate: no 15-word dump and no done marker",
+     "pass": true,
+     "detail": "dump=no done=None"
+    }
+   ],
+   "tvec": [
+    0,
+    48896
+   ],
+   "dumped": false,
+   "vec_used": false,
+   "fired": 4,
+   "rows_file": "sw/testdata/campaigns/fz2ctl/captures/N1.json.gz",
+   "n_rows": 4063,
+   "sha256": "98dc07d3e671204f26d35c6b7bdc14ad3fffabb12ae4244dc400cce01fc588bb"
+  }
+ ],
+ "retained": {
+  "P1": {
+   "rows_file": "sw/testdata/campaigns/fz2ctl/captures/P1.json.gz",
+   "n_rows": 4063,
+   "sha256": "eb4032ca41175b2ea5b4f33439a8874d42fe398c16d5f05646468c888d283010"
+  },
+  "P2": {
+   "rows_file": "sw/testdata/campaigns/fz2ctl/captures/P2.json.gz",
+   "n_rows": 4063,
+   "sha256": "2d88eccad948cc1de5da55769ee59824c2bd1b4d0350b2cb5124ce8fac6c22af"
+  },
+  "P3": {
+   "rows_file": "sw/testdata/campaigns/fz2ctl/captures/P3.json.gz",
+   "n_rows": 4063,
+   "sha256": "3775fe9931f5f6121614315841e1e6f63c934310de76df36a0227bfaa634f71f"
+  },
+  "P4": {
+   "rows_file": "sw/testdata/campaigns/fz2ctl/captures/P4.json.gz",
+   "n_rows": 4063,
+   "sha256": "eaf157ebfa53d672bad20722b5840f80f3e62a88ef1f41a64a615ed749a145b2"
+  },
+  "P5": {
+   "rows_file": "sw/testdata/campaigns/fz2ctl/captures/P5.json.gz",
+   "n_rows": 4063,
+   "sha256": "d9232df58f61625f19933d005be9bfd3f099ff5f408a53223af74ff04bf87446"
+  },
+  "V1": {
+   "rows_file": "sw/testdata/campaigns/fz2ctl/captures/V1.json.gz",
+   "n_rows": 4063,
+   "sha256": "00ad78e150f9d72abda84f942eeeb98c4345ddf86c22b62d6a868e1aaf8d8467"
+  },
+  "V2": {
+   "rows_file": "sw/testdata/campaigns/fz2ctl/captures/V2.json.gz",
+   "n_rows": 4063,
+   "sha256": "323efd9d317bac36cfcf2e88a7485743a2378d7080266b21ed1ce53f52724634"
+  },
+  "N1": {
+   "rows_file": "sw/testdata/campaigns/fz2ctl/captures/N1.json.gz",
+   "n_rows": 4063,
+   "sha256": "98dc07d3e671204f26d35c6b7bdc14ad3fffabb12ae4244dc400cce01fc588bb"
+  }
+ },
+ "stimulus": {
+  "anchor_linear": 33024,
+  "delay": 400,
+  "sled": 64,
+  "wrong_at": 45056,
+  "spin_image_sha256": "d46a1d3bda3ece9a3617350993bff2a80ac607b8463770c7a8ed35794554621d",
+  "wrong_image_sha256": "4d3f53e0c31617964040ded8be8f0d1828abb70d8b2d5fbd314b2cf89dfca921"
+ },
+ "inta_vector_measured": 255,
+ "holds_proved": [
+  2,
+  20,
+  300
+ ],
+ "pins_proved": [
+  "pin_int",
+  "pin_nmi"
+ ],
+ "tvecs_proved": [
+  [
+   0,
+   48896
+  ],
+  [
+   3056,
+   8
+  ]
+ ],
+ "failing_legs": [],
+ "div_guards_unpinned": [],
+ "verdict": "MET",
+ "finished": "2026-09-19T23:49:04Z"
+}

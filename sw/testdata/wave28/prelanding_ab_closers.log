@@ -1,0 +1,59 @@
+  LEDGER   sw/testdata/fz2/fz2_failure_ledger_f23_2026-09-19.json   (fz2_replay fidelity reference)
+           2026-09-20T00:02:03Z   102 failures / denominator 3837   era sof 0f4fcfa5cd55…
+
+  --- FABRIC ERA GUARD ---
+    no bitstream receipt 5f686aeb054522e8… in sw/testdata/receipts/quartus_bitstream.jsonl
+    *** OVERRIDDEN by --no-fabric-era-guard ***
+
+  DUT tb_sys   hdl/tb/obj_dir_sys_ret/Vtb_sys
+               receipt 3ca720bf73bf3ed82ce00e08f445cc5f1cec87ce8dcf51dfd9fc99770d28cad6
+               tree    fa352669b52087d8…
+  git          56bdf8d851-dirty
+
+  population   6 seeds with banked socket rows (6 fabric-FAIL, 0 fabric-PASS)
+  ran in 1s, 0 errors
+
+=== THE FIDELITY TABLE: offline verdict vs FABRIC verdict ===
+
+  --- tb_sys REPLAY (both directives + overlay + the seed's own wait source) ---
+                            replay PASS  replay FAIL
+    fabric PASS                       0            0
+    fabric FAIL                       0            6
+    AGREEMENT 6 / 6 = 100.0 %
+    of the 6 both-FAIL seeds, first_bad IDENTICAL on 6
+
+  --- VERDICT agreement by WAIT MODE ---
+                            tb_sys
+    fixed              4 /   4  100%
+    wrand              1 /   1  100%
+    wvec               1 /   1  100%
+
+  --- VERDICT agreement by WHETHER THE SEED HAS A STIMULUS EVENT (the one-scheduler blindness) ---
+                                    tb_sys
+    no stimulus event          4 /   4  100%
+    stimulus event             2 /   2  100%
+
+  --- VERDICT agreement by LEDGER FAMILY ---
+                                                  tb_sys
+    A3 cycle-time slip (non-qs)              2 /   2  100%
+    D3 both fetched, different address       1 /   1  100%
+    E1 same-status data cycle, differe       3 /   3  100%
+
+  --- FIRST-BAD-ROW agreement by WAIT MODE ---
+                            tb_sys
+    fixed              4 /   4  100%
+    wrand              1 /   1  100%
+    wvec               1 /   1  100%
+
+  --- FIRST-BAD-ROW agreement by WHETHER THE SEED HAS A STIMULUS EVENT (the one-scheduler blindness) ---
+                                    tb_sys
+    no stimulus event          4 /   4  100%
+    stimulus event             2 /   2  100%
+
+  --- FIRST-BAD-ROW agreement by LEDGER FAMILY ---
+                                                  tb_sys
+    A3 cycle-time slip (non-qs)              2 /   2  100%
+    D3 both fetched, different address       1 /   1  100%
+    E1 same-status data cycle, differe       3 /   3  100%
+
+  wrote /home/wickerwaka/.cache/ucsimt-tmp/w28_wt_closers.json

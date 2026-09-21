@@ -1,0 +1,96 @@
+  LEDGER   sw/testdata/fz2/fz2_failure_ledger_f24_2026-09-21.json   (fz2_replay fidelity reference)
+           2026-09-21T18:32:39Z   97 failures / denominator 3839   era sof 3066d40a5584…
+
+  --- FABRIC ERA GUARD ---
+    bitstream   3066d40a558486c6…  flashed 2026-09-21T18:19:30Z  git eb3be735a1-dirty
+    receipt     8077ba94656880ef…  FLASH#24 RETENTION draw@seed1-seed1
+    its inputs  98/98 hash IDENTICAL in the tree at HEAD
+    FABRIC ERA GUARD: PASS
+
+  DUT tb_sys   hdl/tb/obj_dir_sys_ret/Vtb_sys
+               receipt 03c861175b6313d5bf08640fa0f00f97c80b4c7afd40018a6d5ca59e07bfc7b6
+               tree    111a4dfce5189e36…
+  git          eb3be735a1-dirty
+
+  population   247 seeds with banked socket rows (97 fabric-FAIL, 150 fabric-PASS)
+    25/247  (3s)
+    50/247  (5s)
+    75/247  (7s)
+    100/247  (9s)
+    125/247  (11s)
+    150/247  (13s)
+    175/247  (15s)
+    200/247  (17s)
+    225/247  (19s)
+  ran in 21s, 0 errors
+
+=== THE FIDELITY TABLE: offline verdict vs FABRIC verdict ===
+
+  --- tb_sys REPLAY (both directives + overlay + the seed's own wait source) ---
+                            replay PASS  replay FAIL
+    fabric PASS                     150            0
+    fabric FAIL                       0           97
+    AGREEMENT 247 / 247 = 100.0 %
+    of the 97 both-FAIL seeds, first_bad IDENTICAL on 97
+
+  --- VERDICT agreement by WAIT MODE ---
+                            tb_sys
+    fixed             94 /  94  100%
+    wrand             97 /  97  100%
+    wvec              56 /  56  100%
+
+  --- VERDICT agreement by WHETHER THE SEED HAS A STIMULUS EVENT (the one-scheduler blindness) ---
+                                    tb_sys
+    no stimulus event        107 / 107  100%
+    stimulus event           140 / 140  100%
+
+  --- VERDICT agreement by LEDGER FAMILY ---
+                                                  tb_sys
+    (fabric PASS)                          150 / 150  100%
+    A1 qs-pop one clock late                 5 /   5  100%
+    A2 qs-pop other offset                   4 /   4  100%
+    A3 cycle-time slip (non-qs)             13 /  13  100%
+    B1 HALT-cycle address                    1 /   1  100%
+    B2 HALT entry (one leg only)             2 /   2  100%
+    C1 vector-1 trap MISSED by core          1 /   1  100%
+    C2 INTA-vectored delivery                8 /   8  100%
+    C3 NMI(vec2) entry                       1 /   1  100%
+    C4 other-vector delivery                 1 /   1  100%
+    D1 chip fetched, core did not            8 /   8  100%
+    D2 core fetched, chip did not            7 /   7  100%
+    D3 both fetched, different address       3 /   3  100%
+    E1 same-status data cycle, differe      35 /  35  100%
+    E2 different-status data cycle           2 /   2  100%
+    NEW/UNCLASSIFIED                         6 /   6  100%
+
+  --- FIRST-BAD-ROW agreement by WAIT MODE ---
+                            tb_sys
+    fixed             48 /  48  100%
+    wrand             39 /  39  100%
+    wvec              10 /  10  100%
+
+  --- FIRST-BAD-ROW agreement by WHETHER THE SEED HAS A STIMULUS EVENT (the one-scheduler blindness) ---
+                                    tb_sys
+    no stimulus event         39 /  39  100%
+    stimulus event            58 /  58  100%
+
+  --- FIRST-BAD-ROW agreement by LEDGER FAMILY ---
+                                                  tb_sys
+    (fabric PASS)                            0 /   0      
+    A1 qs-pop one clock late                 5 /   5  100%
+    A2 qs-pop other offset                   4 /   4  100%
+    A3 cycle-time slip (non-qs)             13 /  13  100%
+    B1 HALT-cycle address                    1 /   1  100%
+    B2 HALT entry (one leg only)             2 /   2  100%
+    C1 vector-1 trap MISSED by core          1 /   1  100%
+    C2 INTA-vectored delivery                8 /   8  100%
+    C3 NMI(vec2) entry                       1 /   1  100%
+    C4 other-vector delivery                 1 /   1  100%
+    D1 chip fetched, core did not            8 /   8  100%
+    D2 core fetched, chip did not            7 /   7  100%
+    D3 both fetched, different address       3 /   3  100%
+    E1 same-status data cycle, differe      35 /  35  100%
+    E2 different-status data cycle           2 /   2  100%
+    NEW/UNCLASSIFIED                         6 /   6  100%
+
+  wrote sw/testdata/wave28/w28_replay_closing.json

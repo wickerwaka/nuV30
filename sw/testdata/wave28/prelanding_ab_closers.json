@@ -1,0 +1,161 @@
+{
+ "tool": "sw/fz2_replay.py",
+ "ts": "2026-09-21T18:36:40Z",
+ "ledger": "sw/testdata/fz2/fz2_failure_ledger_f23_2026-09-19.json",
+ "leg": "ret",
+ "tb_sys_receipt": "3ca720bf73bf3ed82ce00e08f445cc5f1cec87ce8dcf51dfd9fc99770d28cad6",
+ "tb_sys_tree": "fa352669b52087d8ae4146af57f284fe4459ddb3e77183293a1ab9c1ff277e14",
+ "git": {
+  "head": "56bdf8d85185cf00f5a42d214881a4ee92f666f0",
+  "describe": "56bdf8d851-dirty",
+  "dirty_tracked": true
+ },
+ "era_report": [
+  "no bitstream receipt 5f686aeb054522e8\u2026 in sw/testdata/receipts/quartus_bitstream.jsonl"
+ ],
+ "era_ok": false,
+ "tables": [
+  {
+   "name": "tb_sys REPLAY (both directives + overlay + the seed's own wait source)",
+   "n": 6,
+   "agree": 6,
+   "cells": {
+    "True_True": 6
+   },
+   "first_bad_same": 6,
+   "first_bad_both_fail": 6,
+   "disagreements": {
+    "fabric_pass_replay_fail": [],
+    "fabric_fail_replay_pass": []
+   }
+  }
+ ],
+ "rows": [
+  {
+   "seed": "fz2c/406054",
+   "cid": "fz2c",
+   "k": 406054,
+   "tier": "raw",
+   "fabric_bad": 3141,
+   "fabric_first": 470,
+   "win": 4000,
+   "wait_mode": "fixed",
+   "has_evt": false,
+   "sys": {
+    "n": 4000,
+    "nrows": 4063,
+    "bad": 3141,
+    "flick": 0,
+    "first": 470,
+    "fired": 4,
+    "vecused": 1
+   },
+   "family": "E1 same-status data cycle, different address"
+  },
+  {
+   "seed": "fz2c/408019",
+   "cid": "fz2c",
+   "k": 408019,
+   "tier": "raw",
+   "fabric_bad": 1086,
+   "fabric_first": 1617,
+   "win": 4000,
+   "wait_mode": "wvec",
+   "has_evt": false,
+   "sys": {
+    "n": 4000,
+    "nrows": 4063,
+    "bad": 1086,
+    "flick": 1,
+    "first": 1617,
+    "fired": 4,
+    "vecused": 1
+   },
+   "family": "E1 same-status data cycle, different address"
+  },
+  {
+   "seed": "fz2e/518038",
+   "cid": "fz2e",
+   "k": 518038,
+   "tier": "raw",
+   "fabric_bad": 194,
+   "fabric_first": 429,
+   "win": 4000,
+   "wait_mode": "fixed",
+   "has_evt": false,
+   "sys": {
+    "n": 4000,
+    "nrows": 4063,
+    "bad": 194,
+    "flick": 0,
+    "first": 429,
+    "fired": 4,
+    "vecused": 1
+   },
+   "family": "E1 same-status data cycle, different address"
+  },
+  {
+   "seed": "fz2e/520013",
+   "cid": "fz2e",
+   "k": 520013,
+   "tier": "raw",
+   "fabric_bad": 2615,
+   "fabric_first": 960,
+   "win": 4000,
+   "wait_mode": "fixed",
+   "has_evt": false,
+   "sys": {
+    "n": 4000,
+    "nrows": 4063,
+    "bad": 2615,
+    "flick": 0,
+    "first": 960,
+    "fired": 4,
+    "vecused": 1
+   },
+   "family": "D3 both fetched, different address"
+  },
+  {
+   "seed": "fz2e/529009",
+   "cid": "fz2e",
+   "k": 529009,
+   "tier": "raw",
+   "fabric_bad": 8,
+   "fabric_first": 908,
+   "win": 4000,
+   "wait_mode": "fixed",
+   "has_evt": true,
+   "sys": {
+    "n": 4000,
+    "nrows": 4063,
+    "bad": 8,
+    "flick": 0,
+    "first": 908,
+    "fired": 5,
+    "vecused": 1
+   },
+   "family": "A3 cycle-time slip (non-qs)"
+  },
+  {
+   "seed": "fz2e/531039",
+   "cid": "fz2e",
+   "k": 531039,
+   "tier": "raw",
+   "fabric_bad": 4,
+   "fabric_first": 1012,
+   "win": 4000,
+   "wait_mode": "wrand",
+   "has_evt": true,
+   "sys": {
+    "n": 4000,
+    "nrows": 4063,
+    "bad": 4,
+    "flick": 0,
+    "first": 1012,
+    "fired": 5,
+    "vecused": 1
+   },
+   "family": "A3 cycle-time slip (non-qs)"
+  }
+ ]
+}

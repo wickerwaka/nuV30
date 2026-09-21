@@ -119,6 +119,93 @@ them).
 
 ## Gate quick reference
 
+### ⚠⚠⚠⚠ READ FIRST — **THE BOARD CARRIES FLASH #24 SINCE 2026-09-21, AND IT IS THE FIRST BITSTREAM TO CARRY THE `ea_pair_valid` FIX.  A FABRIC FIGURE TAKEN ON FLASH #23 OR EARLIER MAY NOT BE QUOTED AGAINST THIS TREE.**
+
+Pre-registration `eb3be735a1` (`docs/notes/flash24_prereg_2026-09-21.md`),
+committed **before first board contact**; results
+`docs/notes/flash24_results_2026-09-21.md`.
+**USER AUTHORISATION 2026-09-21: *"Flash it"*** — it discharges the debt WAVE 26
+declared.
+
+    nec_test_ucore.sof 3066d40a558486c6…   .rbf 44cfd64791781752…
+    RETENTION (X1_AD_RETENTION=1) draw@seed1, receipt 8077ba94656880ef…
+    built from eb3be735a1; safe_flash VERIFY ok TRY 1
+    flash_log.jsonl 26 -> 27 entries, 13a81a43f30c380a… -> 7496b4be2d1771c9…
+
+* ⭐⭐⭐ **THE PRIMARY BAR IS MET ON THE POINT: THE EA LANE IS `21 / 21`
+  PAIRWISE IN FABRIC** — the FPGA core vs the socketed chip, **same composed
+  images, same session**, on the 21 directed `LEA SI,DI (mod=3)` probes
+  including all eight `mod = 01/10` rows.  `P1` (`[BW+IX+0]`, a `mod=01` form
+  whose displacement is ZERO) reads **`1111`** in fabric, which is silicon's
+  answer and not *"B = the index"*'s.  **`sw/w28_ea_lane_fabric.py`** is the
+  rig: it captures each image TWICE, `EMIT_USE_CORE=False` then `True`, and
+  scores **pairwise**.  **The F42 precedent did not repeat.**
+* ⭐⭐ **AND THE NON-VACUITY CONTROL, TAKEN BEFORE THE FLASH, READ `7 / 21`** —
+  the FPGA core's column on FLASH #23 was **value-for-value identical to the
+  PRE-LANDING Verilator column, 21 of 21**.  *A rig that reads 21/21 on both
+  bitstreams is measuring the socket twice.*  The registered cross-harness risk
+  did not materialise: **the FPGA core and `tb_bootrun` agree exactly, on both
+  trees.**
+* ⭐⭐ **THE CORPUS: SIX PREDICTED SEEDS CLOSED BY NAME, AND ONE UNREGISTERED
+  SEED OPENED.  THE FIX IS NET +5.**  Ledger **102 → 97 of 3,839**.  LEFT =
+  exactly `fz2c/406054 · fz2c/408019 · fz2e/518038 · fz2e/520013 ·
+  fz2e/529009 · fz2e/531039` — **three of them are three of FLASH #23's own
+  `C-14` "M10 LEA-mod3 six", registered there as NON-movers.**  The 96
+  survivors are **byte-identical seat for seat**, digest `9d89bb62b6507f3b…`,
+  **0 movers, 0 `first_bad` EARLIER anywhere**.
+* ⚠⚠ **`C-4` AND `C-6` ARE MISSED AND ARE REPORTED AS MISSED**: 97, not the
+  registered 96; **ENTERED 1, not 0 — `fz2e/527035`**, 1 of a 10-seed budget.
+  It was **outside the 252-seed offline population** (the sample is 150 of
+  ~3,738 passing seeds).  ⭐ **IT IS ATTRIBUTED, NOT GUESSED**: on a
+  PRE-LANDING worktree, same image and same banked socket rows, it scores
+  **`bad 0`**; on the landed tree **`753 / first_bad 431`**, reproducing fabric
+  to the row.  **The same A/B proves the six closures are the fix's too —
+  pre-landing core FAIL 6/6 with `first_bad` identical, landed core PASS 6/6.**
+* **Σ`diverging_rows` 94,014 → 87,718 RECONCILES EXACTLY**: 86,965 survivors +
+  753 the entrant, **ZERO unexplained rows**.  Row match 99.1705 % → 99.2263 %.
+  ⚠ Discards **3 → 1**, denominator **3,837 → 3,839** — `_ps3_8080` is a
+  SOCKET-leg predicate (A-2) no RTL change can reach, **tenth consecutive era
+  it has moved**; reported, not barred.
+* **`fz2_w1 bars` 11 / 11 MET — UP FROM FLASH #23's 10 / 11**, C-6
+  `hold_rows_exact` **4,638** / `hold_rows_off` **0**.
+* **THE ERA GUARD SAID IT TWICE**: **REFUSED** before the flash naming the six
+  moved files, **PASS with NO bypass and `98 / 98` inputs identical** after —
+  the `.qsf` exemption was not even needed.  Closing control
+  `fz2_replay --all-failures --pass-sample 150 --leg ret` = **247 / 247 =
+  100.0 %**, `first_bad` identical **97 / 97**.
+* **HYGIENE**: first light **MATCH 800 ×3** (twice) · **63 `div_guard` probes,
+  ZERO UNPINNED** · 0 `RigMismatch` · 0 quarantines · 0 transport errors ·
+  3,840 seeds in **10.9 min**, 48/48 strata `rc 0` · `fz2_w1 control` **9 legs
+  / 51 checks / 51 PASS** · closing chip proof **MATCH over 800 rows** ·
+  `board_idle` **clean and LAST**.  **The FLASH #23 corpus era is archived BY
+  RENAME and retained beside the new one.**
+* **G6, ONE DRAW PER CONFIGURATION (not an Fmax claim)**: **CONTROL 34.35 MHz /
+  +2.135 ns / 8,438 ALMs (20 %)**, receipt `ed3a61f3ee0bc553…`; **RETENTION
+  34.59 MHz / +2.337 ns / 8,495 ALMs**, receipt `8077ba94656880ef…`; TNS
+  **0.000 setup AND hold on all four domains of both**, 0 errors / 0 latches /
+  0 `lpm_divide`.  **E-6**: `configuration` DERIVED self-labels RETENTION and
+  `X1_AD_RETENTION=1 python3 sw/quartus_gate.py` **exits 2**.  **E-9**: the two
+  `.rbf`s DIFFER.  ⭐ **AND BOTH `.rbf`s ARE BYTE-IDENTICAL TO WAVE 26's OWN
+  seed-1 DRAWS** with Fmax reproducing to the hundredth — the fourth cross-wave
+  bitstream-payload reproduction.
+* ⚠ **`hdl/nec_test.sdc` IS EXCEPTION-FREE AND BYTE-UNTOUCHED**: anchored count
+  **0** (the unanchored 2 are the commented DO-NOT-RESTORE record).
+* ⚠ **`mod3_illegal` STAYS `0 / 128` AND A FLASH CANNOT MOVE IT** — WAVE 23
+  proved it a TESTBENCH STIMULUS artefact.  `ea_residue` was **NOT** injected.
+* ⚠ **`sw/fz2_ledger.py:89`'s `CURRENT` IS FOUR ERAS STALE** (still
+  `…_f20_2026-08-12.json`).  `fz2_replay` and `fz2_immaterial` BOTH defaulted to
+  it and REFUSED this sitting until `--ledger` was passed.  **Pass `--ledger`
+  explicitly.**  Recorded, not moved (results §10 D-2).
+* ⚠ **`sw/emit_suite.py::_truth_stamp()` CAN BE WRONG**: it returns *"SOCKET
+  (real chip, use_core=False)"* from `ENGINE == "chip"` alone and **never
+  consults `EMIT_USE_CORE`**, so a core-leg emitter that used it would write a
+  false provenance line.  `w28_ea_lane_fabric` stamps its own legs (results
+  §10 D-1).
+* **THE OFFLINE LADDER IS ZERO-DELTA** against WAVE 27 — this wave edits **no
+  `hdl/`**; `sw/testdata/wave28/ladder/` with `sw/testdata/wave28/w28_ladder_cmp.py`
+  as its falsifier.
+
+
 ### ⚠⚠⚠⚠ READ FIRST — **`tests/v30/v0.2` IS GONE SINCE 2026-09-21 (WAVE 27), AND UNLIKE `sim/` AND `hdl/rtl/core/` IT IS NOT RECOVERABLE.**
 
 **USER INSTRUCTION 2026-09-21: *"Remove v0.2, v0.3 supersedes it"***.

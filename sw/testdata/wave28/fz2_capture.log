@@ -1,0 +1,529 @@
+
+== cen/soup/noevt/fix0        k [400000,400080) n=80
+  [div guard] fz2c-00-cen/soup/noevt/fix0: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2c: seeds [400000,400080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'force_fixed': 0, 'no_evt': True}
+  keep-rows: every k % 2 == 0, un-quota'd (the frozen bank rule)
+fuzz_accept: rule type 'open_bus_escape' is RETIRED and is NOT loaded -- retired 2026-08-11 by user ruling -- there is no open bus on this rig (test_mem.sv mirrors the image across the 1 MB space) and the rule's `ad_data == addr & 0xFFFF` test is the address phase of a multiplexed bus, true on 140,741 of 140,741 chip CODE T1 rows.  The fuzz-v2 vocabulary is `escaped` (fuzz_classify.escaped_code_region).  See the tombstone in sw/fuzz_accept.py.
+  board left use_core=0
+
+=== run fz2c: 80 seeds in 13.6s
+  verdicts (80): {'SUCCESS': 80}
+  distinct signatures: 0
+  cen/soup/noevt/fix0: 80/80 in 13.7s rc=0
+
+== cen/soup/noevt/wrand3      k [401000,401080) n=80
+  [div guard] fz2c-01-cen/soup/noevt/wrand3: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2c: seeds [401000,401080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'no_evt': True, 'force_wrand': [3]}
+  keep-rows: every k % 2 == 0, un-quota'd (the frozen bank rule)
+  board left use_core=0
+
+=== run fz2c: 80 seeds in 13.7s
+  verdicts (160): {'SUCCESS': 160}
+  distinct signatures: 0
+  cen/soup/noevt/wrand3: 80/80 in 13.8s rc=0
+
+== cen/soup/noevt/wvec-uni    k [402000,402080) n=80
+  [div guard] fz2c-02-cen/soup/noevt/wvec-uni: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2c: seeds [402000,402080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'no_evt': True, 'wvec_shapes': ['uni']}
+  keep-rows: every k % 2 == 0, un-quota'd (the frozen bank rule)
+  board left use_core=0
+
+=== run fz2c: 80 seeds in 16.8s
+  verdicts (240): {'SUCCESS': 240}
+  distinct signatures: 0
+  cen/soup/noevt/wvec-uni: 80/80 in 16.9s rc=0
+
+== cen/soup/stim/fix0         k [403000,403080) n=80
+  [div guard] fz2c-03-cen/soup/stim/fix0: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2c: seeds [403000,403080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'force_fixed': 0, 'force_evt': True}
+  keep-rows: every k % 2 == 0, un-quota'd (the frozen bank rule)
+  board left use_core=0
+
+=== run fz2c: 80 seeds in 13.6s
+  verdicts (320): {'SUCCESS': 320}
+  distinct signatures: 0
+  cen/soup/stim/fix0: 80/80 in 13.7s rc=0
+
+== cen/soup/stim/wrand3       k [404000,404080) n=80
+  [div guard] fz2c-04-cen/soup/stim/wrand3: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2c: seeds [404000,404080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'force_evt': True, 'force_wrand': [3]}
+  keep-rows: every k % 2 == 0, un-quota'd (the frozen bank rule)
+  board left use_core=0
+
+=== run fz2c: 80 seeds in 14.4s
+  verdicts (400): {'SUCCESS': 398, 'KNOWN_ACCEPTED': 2}
+  rule hits: {'cadence': 2}
+  distinct signatures: 2
+  cen/soup/stim/wrand3: 80/80 in 14.5s rc=0
+
+== cen/soup/stim/wvec-uni     k [405000,405080) n=80
+  [div guard] fz2c-05-cen/soup/stim/wvec-uni: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2c: seeds [405000,405080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'force_evt': True, 'wvec_shapes': ['uni']}
+  keep-rows: every k % 2 == 0, un-quota'd (the frozen bank rule)
+  board left use_core=0
+
+=== run fz2c: 80 seeds in 17.3s
+  verdicts (480): {'SUCCESS': 474, 'KNOWN_ACCEPTED': 3, 'FUNCTIONAL': 3}
+  rule hits: {'cadence': 3}
+  distinct signatures: 6
+  cen/soup/stim/wvec-uni: 80/80 in 17.4s rc=0
+
+== cen/raw/noevt/fix0         k [406000,406080) n=80
+  [div guard] fz2c-06-cen/raw/noevt/fix0: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2c: seeds [406000,406080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'force_fixed': 0, 'no_evt': True}
+  keep-rows: every k % 2 == 0, un-quota'd (the frozen bank rule)
+  board left use_core=0
+
+=== run fz2c: 80 seeds in 15.3s
+  verdicts (560): {'SUCCESS': 550, 'KNOWN_ACCEPTED': 3, 'FUNCTIONAL': 6, 'TIMING': 1}
+  rule hits: {'cadence': 3}
+  distinct signatures: 10
+  cen/raw/noevt/fix0: 80/80 in 15.4s rc=0
+
+== cen/raw/noevt/wrand3       k [407000,407080) n=80
+  [div guard] fz2c-07-cen/raw/noevt/wrand3: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2c: seeds [407000,407080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'no_evt': True, 'force_wrand': [3]}
+  keep-rows: every k % 2 == 0, un-quota'd (the frozen bank rule)
+  board left use_core=0
+
+=== run fz2c: 80 seeds in 16.0s
+  verdicts (640): {'SUCCESS': 626, 'KNOWN_ACCEPTED': 5, 'FUNCTIONAL': 8, 'TIMING': 1}
+  rule hits: {'cadence': 5}
+  distinct signatures: 14
+  cen/raw/noevt/wrand3: 80/80 in 16.1s rc=0
+
+== cen/raw/noevt/wvec-uni     k [408000,408080) n=80
+  [div guard] fz2c-08-cen/raw/noevt/wvec-uni: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2c: seeds [408000,408080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'no_evt': True, 'wvec_shapes': ['uni']}
+  keep-rows: every k % 2 == 0, un-quota'd (the frozen bank rule)
+  board left use_core=0
+
+=== run fz2c: 80 seeds in 19.0s
+  verdicts (720): {'SUCCESS': 704, 'KNOWN_ACCEPTED': 5, 'FUNCTIONAL': 10, 'TIMING': 1}
+  rule hits: {'cadence': 5}
+  distinct signatures: 16
+  cen/raw/noevt/wvec-uni: 80/80 in 19.1s rc=0
+
+== cen/raw/stim/fix0          k [409000,409080) n=80
+  [div guard] fz2c-09-cen/raw/stim/fix0: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2c: seeds [409000,409080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'force_fixed': 0, 'force_evt': True}
+  keep-rows: every k % 2 == 0, un-quota'd (the frozen bank rule)
+  board left use_core=0
+
+=== run fz2c: 80 seeds in 15.4s
+  verdicts (800): {'SUCCESS': 781, 'KNOWN_ACCEPTED': 5, 'FUNCTIONAL': 13, 'TIMING': 1}
+  rule hits: {'cadence': 5}
+  distinct signatures: 19
+  cen/raw/stim/fix0: 80/80 in 15.5s rc=0
+
+== cen/raw/stim/wrand3        k [410000,410080) n=80
+  [div guard] fz2c-10-cen/raw/stim/wrand3: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2c: seeds [410000,410080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'force_evt': True, 'force_wrand': [3]}
+  keep-rows: every k % 2 == 0, un-quota'd (the frozen bank rule)
+  board left use_core=0
+
+=== run fz2c: 80 seeds in 15.8s
+  verdicts (880): {'SUCCESS': 858, 'KNOWN_ACCEPTED': 5, 'FUNCTIONAL': 16, 'TIMING': 1}
+  rule hits: {'cadence': 5}
+  distinct signatures: 22
+  cen/raw/stim/wrand3: 80/80 in 15.9s rc=0
+
+== cen/raw/stim/wvec-uni      k [411000,411080) n=80
+  [div guard] fz2c-11-cen/raw/stim/wvec-uni: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2c: seeds [411000,411080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'force_evt': True, 'wvec_shapes': ['uni']}
+  keep-rows: every k % 2 == 0, un-quota'd (the frozen bank rule)
+  board left use_core=0
+
+=== run fz2c: 80 seeds in 19.3s
+  verdicts (960): {'SUCCESS': 938, 'KNOWN_ACCEPTED': 5, 'FUNCTIONAL': 16, 'TIMING': 1}
+  rule hits: {'cadence': 5}
+  distinct signatures: 22
+  cen/raw/stim/wvec-uni: 80/80 in 19.4s rc=0
+
+== enr/soup/noevt/fix0        k [500000,500080) n=80
+  [div guard] fz2e-00-enr/soup/noevt/fix0: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [500000,500080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'force_fixed': 0, 'no_evt': True}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 7.8s
+  verdicts (80): {'SUCCESS': 80}
+  distinct signatures: 0
+  enr/soup/noevt/fix0: 80/80 in 7.9s rc=0
+
+== enr/soup/noevt/fix1        k [501000,501080) n=80
+  [div guard] fz2e-01-enr/soup/noevt/fix1: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [501000,501080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'force_fixed': 1, 'no_evt': True}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 8.0s
+  verdicts (160): {'SUCCESS': 159, 'FUNCTIONAL': 1}
+  distinct signatures: 1
+  enr/soup/noevt/fix1: 80/80 in 8.1s rc=0
+
+== enr/soup/noevt/fix2        k [502000,502080) n=80
+  [div guard] fz2e-02-enr/soup/noevt/fix2: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [502000,502080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'force_fixed': 2, 'no_evt': True}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 7.8s
+  verdicts (240): {'SUCCESS': 239, 'FUNCTIONAL': 1}
+  distinct signatures: 1
+  enr/soup/noevt/fix2: 80/80 in 7.9s rc=0
+
+== enr/soup/noevt/fix3        k [503000,503080) n=80
+  [div guard] fz2e-03-enr/soup/noevt/fix3: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [503000,503080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'force_fixed': 3, 'no_evt': True}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 7.8s
+  verdicts (320): {'SUCCESS': 319, 'FUNCTIONAL': 1}
+  distinct signatures: 1
+  enr/soup/noevt/fix3: 80/80 in 7.9s rc=0
+
+== enr/soup/noevt/wrand1      k [504000,504080) n=80
+  [div guard] fz2e-04-enr/soup/noevt/wrand1: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [504000,504080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'no_evt': True, 'force_wrand': [1]}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 8.0s
+  verdicts (400): {'SUCCESS': 399, 'FUNCTIONAL': 1}
+  distinct signatures: 1
+  enr/soup/noevt/wrand1: 80/80 in 8.1s rc=0
+
+== enr/soup/noevt/wrand3      k [505000,505080) n=80
+  [div guard] fz2e-05-enr/soup/noevt/wrand3: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [505000,505080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'no_evt': True, 'force_wrand': [3]}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 8.1s
+  verdicts (480): {'SUCCESS': 479, 'FUNCTIONAL': 1}
+  distinct signatures: 1
+  enr/soup/noevt/wrand3: 80/80 in 8.2s rc=0
+
+== enr/soup/noevt/wrand7      k [506000,506080) n=80
+  [div guard] fz2e-06-enr/soup/noevt/wrand7: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [506000,506080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'no_evt': True, 'force_wrand': [7]}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 8.2s
+  verdicts (560): {'SUCCESS': 559, 'FUNCTIONAL': 1}
+  distinct signatures: 1
+  enr/soup/noevt/wrand7: 80/80 in 8.3s rc=0
+
+== enr/soup/noevt/wrand15     k [507000,507080) n=80
+  [div guard] fz2e-07-enr/soup/noevt/wrand15: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [507000,507080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'no_evt': True, 'force_wrand': [15]}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 8.1s
+  verdicts (640): {'SUCCESS': 639, 'FUNCTIONAL': 1}
+  distinct signatures: 1
+  enr/soup/noevt/wrand15: 80/80 in 8.2s rc=0
+
+== enr/soup/noevt/wvec-uni    k [508000,508080) n=80
+  [div guard] fz2e-08-enr/soup/noevt/wvec-uni: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [508000,508080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'no_evt': True, 'wvec_shapes': ['uni']}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 11.0s
+  verdicts (720): {'SUCCESS': 719, 'FUNCTIONAL': 1}
+  distinct signatures: 1
+  enr/soup/noevt/wvec-uni: 80/80 in 11.1s rc=0
+
+== enr/soup/stim/fix0         k [509000,509080) n=80
+  [div guard] fz2e-09-enr/soup/stim/fix0: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [509000,509080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'force_fixed': 0, 'force_evt': True}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 8.3s
+  verdicts (800): {'SUCCESS': 797, 'FUNCTIONAL': 2, 'TIMING': 1}
+  distinct signatures: 3
+  enr/soup/stim/fix0: 80/80 in 8.4s rc=0
+
+== enr/soup/stim/fix1         k [510000,510080) n=80
+  [div guard] fz2e-10-enr/soup/stim/fix1: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [510000,510080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'force_fixed': 1, 'force_evt': True}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 8.4s
+  verdicts (880): {'SUCCESS': 875, 'FUNCTIONAL': 3, 'TIMING': 1, 'KNOWN_ACCEPTED': 1}
+  rule hits: {'cadence': 1}
+  distinct signatures: 5
+  enr/soup/stim/fix1: 80/80 in 8.5s rc=0
+
+== enr/soup/stim/fix2         k [511000,511080) n=80
+  [div guard] fz2e-11-enr/soup/stim/fix2: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [511000,511080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'force_fixed': 2, 'force_evt': True}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 8.0s
+  verdicts (960): {'SUCCESS': 954, 'FUNCTIONAL': 3, 'TIMING': 2, 'KNOWN_ACCEPTED': 1}
+  rule hits: {'cadence': 1}
+  distinct signatures: 6
+  enr/soup/stim/fix2: 80/80 in 8.1s rc=0
+
+== enr/soup/stim/fix3         k [512000,512080) n=80
+  [div guard] fz2e-12-enr/soup/stim/fix3: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [512000,512080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'force_fixed': 3, 'force_evt': True}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 8.4s
+  verdicts (1040): {'SUCCESS': 1031, 'FUNCTIONAL': 4, 'TIMING': 2, 'KNOWN_ACCEPTED': 3}
+  rule hits: {'cadence': 3}
+  distinct signatures: 9
+  enr/soup/stim/fix3: 80/80 in 8.5s rc=0
+
+== enr/soup/stim/wrand1       k [513000,513080) n=80
+  [div guard] fz2e-13-enr/soup/stim/wrand1: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [513000,513080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'force_evt': True, 'force_wrand': [1]}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 8.3s
+  verdicts (1120): {'SUCCESS': 1109, 'FUNCTIONAL': 4, 'TIMING': 2, 'KNOWN_ACCEPTED': 5}
+  rule hits: {'cadence': 5}
+  distinct signatures: 11
+  enr/soup/stim/wrand1: 80/80 in 8.4s rc=0
+
+== enr/soup/stim/wrand3       k [514000,514080) n=80
+  [div guard] fz2e-14-enr/soup/stim/wrand3: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [514000,514080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'force_evt': True, 'force_wrand': [3]}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 8.4s
+  verdicts (1200): {'SUCCESS': 1188, 'FUNCTIONAL': 4, 'TIMING': 2, 'KNOWN_ACCEPTED': 6}
+  rule hits: {'cadence': 6}
+  distinct signatures: 12
+  enr/soup/stim/wrand3: 80/80 in 8.5s rc=0
+
+== enr/soup/stim/wrand7       k [515000,515080) n=80
+  [div guard] fz2e-15-enr/soup/stim/wrand7: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [515000,515080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'force_evt': True, 'force_wrand': [7]}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 8.5s
+  verdicts (1280): {'SUCCESS': 1266, 'FUNCTIONAL': 4, 'TIMING': 2, 'KNOWN_ACCEPTED': 8}
+  rule hits: {'cadence': 8}
+  distinct signatures: 14
+  enr/soup/stim/wrand7: 80/80 in 8.6s rc=0
+
+== enr/soup/stim/wrand15      k [516000,516080) n=80
+  [div guard] fz2e-16-enr/soup/stim/wrand15: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [516000,516080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'force_evt': True, 'force_wrand': [15]}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 8.8s
+  verdicts (1360): {'SUCCESS': 1341, 'FUNCTIONAL': 4, 'TIMING': 3, 'KNOWN_ACCEPTED': 12}
+  rule hits: {'cadence': 12}
+  distinct signatures: 19
+  enr/soup/stim/wrand15: 80/80 in 8.9s rc=0
+
+== enr/soup/stim/wvec-uni     k [517000,517080) n=80
+  [div guard] fz2e-17-enr/soup/stim/wvec-uni: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [517000,517080) tb_only=False jobs=1 ov={'force_tier': 'soup', 'force_evt': True, 'wvec_shapes': ['uni']}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 11.3s
+  verdicts (1440): {'SUCCESS': 1420, 'FUNCTIONAL': 5, 'TIMING': 3, 'KNOWN_ACCEPTED': 12}
+  rule hits: {'cadence': 12}
+  distinct signatures: 20
+  enr/soup/stim/wvec-uni: 80/80 in 11.4s rc=0
+
+== enr/raw/noevt/fix0         k [518000,518080) n=80
+  [div guard] fz2e-18-enr/raw/noevt/fix0: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [518000,518080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'force_fixed': 0, 'no_evt': True}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 10.9s
+  verdicts (1520): {'SUCCESS': 1490, 'FUNCTIONAL': 13, 'TIMING': 5, 'KNOWN_ACCEPTED': 12}
+  rule hits: {'cadence': 12}
+  distinct signatures: 30
+  enr/raw/noevt/fix0: 80/80 in 11.0s rc=0
+
+== enr/raw/noevt/fix1         k [519000,519080) n=80
+  [div guard] fz2e-19-enr/raw/noevt/fix1: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [519000,519080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'force_fixed': 1, 'no_evt': True}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 9.4s
+  verdicts (1600): {'SUCCESS': 1569, 'FUNCTIONAL': 14, 'TIMING': 5, 'KNOWN_ACCEPTED': 12}
+  rule hits: {'cadence': 12}
+  distinct signatures: 31
+  enr/raw/noevt/fix1: 80/80 in 9.5s rc=0
+
+== enr/raw/noevt/fix2         k [520000,520080) n=80
+  [div guard] fz2e-20-enr/raw/noevt/fix2: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [520000,520080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'force_fixed': 2, 'no_evt': True}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 9.8s
+  verdicts (1680): {'SUCCESS': 1646, 'FUNCTIONAL': 16, 'TIMING': 5, 'KNOWN_ACCEPTED': 13}
+  rule hits: {'cadence': 12, 'lea-mod3': 1}
+  distinct signatures: 34
+  enr/raw/noevt/fix2: 80/80 in 9.9s rc=0
+
+== enr/raw/noevt/fix3         k [521000,521080) n=80
+  [div guard] fz2e-21-enr/raw/noevt/fix3: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [521000,521080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'force_fixed': 3, 'no_evt': True}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 9.9s
+  verdicts (1760): {'SUCCESS': 1722, 'FUNCTIONAL': 20, 'TIMING': 5, 'KNOWN_ACCEPTED': 13}
+  rule hits: {'cadence': 12, 'lea-mod3': 1}
+  distinct signatures: 38
+  enr/raw/noevt/fix3: 80/80 in 10.0s rc=0
+
+== enr/raw/noevt/wrand1       k [522000,522080) n=80
+  [div guard] fz2e-22-enr/raw/noevt/wrand1: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [522000,522080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'no_evt': True, 'force_wrand': [1]}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 9.9s
+  verdicts (1840): {'SUCCESS': 1799, 'FUNCTIONAL': 23, 'TIMING': 5, 'KNOWN_ACCEPTED': 13}
+  rule hits: {'cadence': 12, 'lea-mod3': 1}
+  distinct signatures: 41
+  enr/raw/noevt/wrand1: 80/80 in 10.0s rc=0
+
+== enr/raw/noevt/wrand3       k [523000,523080) n=80
+  [div guard] fz2e-23-enr/raw/noevt/wrand3: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [523000,523080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'no_evt': True, 'force_wrand': [3]}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 9.6s
+  verdicts (1920): {'SUCCESS': 1878, 'FUNCTIONAL': 23, 'TIMING': 5, 'KNOWN_ACCEPTED': 14}
+  rule hits: {'cadence': 13, 'lea-mod3': 1}
+  distinct signatures: 42
+  enr/raw/noevt/wrand3: 80/80 in 9.7s rc=0
+
+== enr/raw/noevt/wrand7       k [524000,524080) n=80
+  [div guard] fz2e-24-enr/raw/noevt/wrand7: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [524000,524080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'no_evt': True, 'force_wrand': [7]}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 10.2s
+  verdicts (2000): {'SUCCESS': 1954, 'FUNCTIONAL': 27, 'TIMING': 5, 'KNOWN_ACCEPTED': 14}
+  rule hits: {'cadence': 13, 'lea-mod3': 1}
+  distinct signatures: 46
+  enr/raw/noevt/wrand7: 80/80 in 10.3s rc=0
+
+== enr/raw/noevt/wrand15      k [525000,525080) n=80
+  [div guard] fz2e-25-enr/raw/noevt/wrand15: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [525000,525080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'no_evt': True, 'force_wrand': [15]}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 9.6s
+  verdicts (2080): {'SUCCESS': 2033, 'FUNCTIONAL': 28, 'TIMING': 5, 'KNOWN_ACCEPTED': 14}
+  rule hits: {'cadence': 13, 'lea-mod3': 1}
+  distinct signatures: 47
+  enr/raw/noevt/wrand15: 80/80 in 9.7s rc=0
+
+== enr/raw/noevt/wvec-uni     k [526000,526080) n=80
+  [div guard] fz2e-26-enr/raw/noevt/wvec-uni: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [526000,526080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'no_evt': True, 'wvec_shapes': ['uni']}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 13.1s
+  verdicts (2160): {'SUCCESS': 2112, 'FUNCTIONAL': 29, 'TIMING': 5, 'KNOWN_ACCEPTED': 14}
+  rule hits: {'cadence': 13, 'lea-mod3': 1}
+  distinct signatures: 48
+  enr/raw/noevt/wvec-uni: 80/80 in 13.2s rc=0
+
+== enr/raw/stim/fix0          k [527000,527080) n=80
+  [div guard] fz2e-27-enr/raw/stim/fix0: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [527000,527080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'force_fixed': 0, 'force_evt': True}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 10.3s
+  verdicts (2240): {'SUCCESS': 2187, 'FUNCTIONAL': 32, 'TIMING': 7, 'KNOWN_ACCEPTED': 14}
+  rule hits: {'cadence': 13, 'lea-mod3': 1}
+  distinct signatures: 53
+  enr/raw/stim/fix0: 80/80 in 10.4s rc=0
+
+== enr/raw/stim/fix1          k [528000,528080) n=80
+  [div guard] fz2e-28-enr/raw/stim/fix1: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [528000,528080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'force_fixed': 1, 'force_evt': True}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 9.5s
+  verdicts (2320): {'SUCCESS': 2265, 'FUNCTIONAL': 34, 'TIMING': 7, 'KNOWN_ACCEPTED': 14}
+  rule hits: {'cadence': 13, 'lea-mod3': 1}
+  distinct signatures: 55
+  enr/raw/stim/fix1: 80/80 in 9.6s rc=0
+
+== enr/raw/stim/fix2          k [529000,529080) n=80
+  [div guard] fz2e-29-enr/raw/stim/fix2: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [529000,529080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'force_fixed': 2, 'force_evt': True}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 9.8s
+  verdicts (2400): {'SUCCESS': 2342, 'FUNCTIONAL': 36, 'TIMING': 8, 'KNOWN_ACCEPTED': 14}
+  rule hits: {'cadence': 13, 'lea-mod3': 1}
+  distinct signatures: 58
+  enr/raw/stim/fix2: 80/80 in 10.0s rc=0
+
+== enr/raw/stim/fix3          k [530000,530080) n=80
+  [div guard] fz2e-30-enr/raw/stim/fix3: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [530000,530080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'force_fixed': 3, 'force_evt': True}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 10.2s
+  verdicts (2480): {'SUCCESS': 2417, 'FUNCTIONAL': 40, 'TIMING': 8, 'KNOWN_ACCEPTED': 15}
+  rule hits: {'cadence': 13, 'lea-mod3': 2}
+  distinct signatures: 63
+  enr/raw/stim/fix3: 80/80 in 10.3s rc=0
+
+== enr/raw/stim/wrand1        k [531000,531080) n=80
+  [div guard] fz2e-31-enr/raw/stim/wrand1: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [531000,531080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'force_evt': True, 'force_wrand': [1]}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 10.1s
+  verdicts (2560): {'SUCCESS': 2494, 'FUNCTIONAL': 43, 'TIMING': 8, 'KNOWN_ACCEPTED': 15}
+  rule hits: {'cadence': 13, 'lea-mod3': 2}
+  distinct signatures: 66
+  enr/raw/stim/wrand1: 80/80 in 10.2s rc=0
+
+== enr/raw/stim/wrand3        k [532000,532080) n=80
+  [div guard] fz2e-32-enr/raw/stim/wrand3: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [532000,532080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'force_evt': True, 'force_wrand': [3]}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 9.9s
+  verdicts (2640): {'SUCCESS': 2570, 'FUNCTIONAL': 45, 'TIMING': 8, 'KNOWN_ACCEPTED': 17}
+  rule hits: {'cadence': 15, 'lea-mod3': 2}
+  distinct signatures: 70
+  enr/raw/stim/wrand3: 80/80 in 10.0s rc=0
+
+== enr/raw/stim/wrand7        k [533000,533080) n=80
+  [div guard] fz2e-33-enr/raw/stim/wrand7: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [533000,533080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'force_evt': True, 'force_wrand': [7]}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 9.7s
+  verdicts (2720): {'SUCCESS': 2649, 'FUNCTIONAL': 46, 'TIMING': 8, 'KNOWN_ACCEPTED': 17}
+  rule hits: {'cadence': 15, 'lea-mod3': 2}
+  distinct signatures: 71
+  enr/raw/stim/wrand7: 80/80 in 9.9s rc=0
+
+== enr/raw/stim/wrand15       k [534000,534080) n=80
+  [div guard] fz2e-34-enr/raw/stim/wrand15: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [534000,534080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'force_evt': True, 'force_wrand': [15]}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 10.0s
+  verdicts (2800): {'SUCCESS': 2726, 'FUNCTIONAL': 49, 'TIMING': 8, 'KNOWN_ACCEPTED': 17}
+  rule hits: {'cadence': 15, 'lea-mod3': 2}
+  distinct signatures: 74
+  enr/raw/stim/wrand15: 80/80 in 10.2s rc=0
+
+== enr/raw/stim/wvec-uni      k [535000,535080) n=80
+  [div guard] fz2e-35-enr/raw/stim/wvec-uni: div=8 (4 MHz), commanded by this connection   -> PINNED
+run fz2e: seeds [535000,535080) tb_only=False jobs=1 ov={'force_tier': 'raw', 'force_evt': True, 'wvec_shapes': ['uni']}
+  board left use_core=0
+
+=== run fz2e: 80 seeds in 13.2s
+  verdicts (2880): {'SUCCESS': 2804, 'FUNCTIONAL': 51, 'TIMING': 8, 'KNOWN_ACCEPTED': 17}
+  rule hits: {'cadence': 15, 'lea-mod3': 2}
+  distinct signatures: 76
+  enr/raw/stim/wvec-uni: 80/80 in 13.3s rc=0
+
+FZ2 CAPTURE: 3840 seeds in 10.9 min

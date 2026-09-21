@@ -1953,6 +1953,102 @@ first edit) · `..._results_2026-08-13.md`; superseding
 
 ## B. THE STANDING SET — the `ucore`
 
+### ⚠⚠⚠ **THE BOARD CARRIES FLASH #24 SINCE 2026-09-21.  NO FABRIC FIGURE TAKEN ON FLASH #23 OR EARLIER MAY BE QUOTED AGAINST THIS TREE.**
+
+`docs/notes/flash24_prereg_2026-09-21.md` (`eb3be735a1`, committed **before
+first board contact**) and `docs/notes/flash24_results_2026-09-21.md`.
+**USER AUTHORISATION 2026-09-21: *"Flash it"***.
+
+    nec_test_ucore.sof 3066d40a558486c6…   .rbf 44cfd64791781752…
+    RETENTION (X1_AD_RETENTION=1) draw@seed1, receipt 8077ba94656880ef…
+    safe_flash VERIFY ok TRY 1;  flash_log.jsonl 26 -> 27,
+    13a81a43f30c380a… -> 7496b4be2d1771c9…
+
+**IT IS THE FIRST BITSTREAM TO CARRY WAVE 26's `ea_pair_valid` SECOND-ADDEND
+FIX, AND THE FIX IS CONFIRMED IN FABRIC.**
+
+* ⭐⭐⭐ **NEW STANDING ARTIFACT — `sw/w28_ea_lane_fabric.py`.**  It captures
+  each of the 21 directed `LEA SI,DI (mod=3)` probes **TWICE on the SAME
+  composed image**, `EMIT_USE_CORE=False` (the socketed chip) then `True` (the
+  in-FPGA `v30_core`), and scores them **PAIRWISE**.  On FLASH #24:
+  **PAIRWISE MATCH 21 / 21, DIVERGE 0**; socket positive control **REPRO
+  21 / 21, MOVED 0**.  `--expect before|after` scores the core column against
+  a registered reference.
+* ⭐⭐ **ITS NON-VACUITY CONTROL IS A MEASUREMENT, NOT AN ARGUMENT**: run on
+  the RESIDENT FLASH #23 bitstream **before** the flash it read **PAIRWISE
+  7 / 21**, with the FPGA core's column **value-for-value identical to the
+  PRE-LANDING Verilator column, 21 of 21**.  **A rig that reads 21/21 on both
+  bitstreams is measuring the socket twice.**  The FPGA core and
+  `tb_bootrun` agree exactly on BOTH trees — the registered cross-harness risk
+  did not materialise.
+* **THE CORPUS RATCHET MOVES: `fz2` ledger 102 → 97 of a denominator of
+  3,839.**  SIX seeds LEFT, **exactly the six derived offline and registered
+  before the board was touched** — `fz2c/406054 · fz2c/408019 · fz2e/518038 ·
+  fz2e/520013 · fz2e/529009 · fz2e/531039` — of which **three are three of
+  FLASH #23's own `C-14` "M10 LEA-mod3 six"**, registered there as non-movers.
+  The 96 survivors are **seat-for-seat byte-identical**, digest
+  `9d89bb62b6507f3b37d75e63eb3a291f7d45f7b321efc862747e4c4daea5d7cb`,
+  **0 movers and 0 `first_bad` EARLIER anywhere.**
+* ⚠⚠ **ONE UNREGISTERED SEED ENTERED AND IT IS REPORTED AS A MISS:
+  `fz2e/527035`** — 1 of a 10-seed budget; the registered point was 96 and the
+  measurement is 97.  It was **outside the 252-seed offline population** (150
+  sampled passes of ~3,738).  ⭐ **ATTRIBUTED BY A/B, NOT BY THE WINDOW
+  ALONE**: on a pre-landing worktree (`56bdf8d851`, `tb_sys` receipt
+  `3ca720bf73bf3ed8…`), same image and same banked socket rows, it scores
+  **`bad 0`**; on the landed tree **`753` with `first_bad 431`**, reproducing
+  fabric to the row.  **The same A/B shows the six closers FAIL 6/6 on the
+  pre-landing core with `first_bad` identical and PASS 6/6 on the landed one.
+  THE FIX IS NET +5.**
+* **Σ`diverging_rows` 94,014 → 87,718 reconciles EXACTLY** (86,965 survivors +
+  753 the entrant, **zero unexplained rows**); `rows_diverging` 93,955 →
+  87,660; row match **99.1705 % → 99.2263 %**; seed match **97.3417 % →
+  97.4733 %**.  ⚠ Discards **3 → 1**, denominator **3,837 → 3,839** —
+  `_ps3_8080` is a **SOCKET-leg predicate (A-2)** no RTL change can reach,
+  **tenth consecutive era it has moved**: reported, **not barred**.
+* **`fz2_w1 bars` 11 / 11 MET** (FLASH #23 was 10 / 11): C-6
+  `hold_rows_exact` **4,638** / `hold_rows_off` **0**, C-8 `div_guards`
+  **63** / `unpinned` **0**, C-5 `gen_drift` 0 / `wvec_mismatch` 0 over 3,840,
+  C-10 quarantines 0.
+* **THE FABRIC ERA GUARD IS NON-VACUOUS IN BOTH DIRECTIONS**: it **REFUSED**
+  at HEAD before the flash (`92 / 99`, naming `files_ucore.qip`,
+  `nec_test.qsf` and the four WAVE 26 `hdl/rtl/ucore/` files) and **PASSES with
+  NO bypass** after it, **`98 / 98` inputs identical — the `.qsf` exemption was
+  not even needed.**  Closing control `fz2_replay --all-failures --pass-sample
+  150 --leg ret` = **247 / 247 = 100.0 %**, `first_bad` identical **97 / 97**,
+  0 errors, 100 % in every wait mode and all fifteen families.
+* **BOARD HYGIENE**: first light **MATCH 800 ×3** (twice) · **63 `div_guard`
+  probes, ZERO UNPINNED** · **0** `RigMismatch` · **0** quarantines · **0**
+  transport errors · 3,840 seeds in **10.9 min**, 48/48 strata `rc 0` ·
+  `fz2_w1 control` **9 legs / 51 checks / 51 PASS**, N1 negative control PASS ·
+  closing `check_ab_hw chip 800` **MATCH over 800 rows** · `board_idle` **clean
+  and LAST**.  The FLASH #23 corpus era is **archived by rename** at
+  `sw/testdata/campaigns/{fz2c,fz2e}-F23-archive/` and retained beside the new
+  one; **nothing deleted.**
+* **G6, ONE DRAW PER CONFIGURATION — NOT AN Fmax CLAIM** (USER RULING
+  2026-08-13): **CONTROL 34.35 MHz / +2.135 ns / 8,438 ALMs (20 %)**, receipt
+  `ed3a61f3ee0bc553…`, `.rbf` `aa931892f7a69668…`; **RETENTION 34.59 MHz /
+  +2.337 ns / 8,495 ALMs**, receipt `8077ba94656880ef…`, `.rbf`
+  `44cfd64791781752…`.  TNS **0.000 setup AND hold on all four domains of
+  both**, 0 errors / 0 latches / 0 `lpm_divide`.  **E-6** the configuration is
+  DERIVED and self-labels RETENTION, and `X1_AD_RETENTION=1 python3
+  sw/quartus_gate.py` **exits 2**; **E-9** the two `.rbf`s DIFFER.  ⭐ **BOTH
+  `.rbf`s ARE BYTE-IDENTICAL TO WAVE 26's OWN seed-1 DRAWS**, Fmax reproducing
+  to the hundredth — the **fourth** cross-wave bitstream-payload reproduction
+  of the campaign.  ⚠ `hdl/nec_test.sdc` anchored exception count **0** and the
+  file is **byte-untouched**.
+* ⚠ **TWO INSTRUMENT DEFECTS RECORDED, NEITHER REPAIRED HERE**:
+  **`sw/fz2_ledger.py:89`'s `CURRENT` is FOUR ERAS STALE** (still the F20
+  ledger) and `fz2_replay` **and** `fz2_immaterial` both defaulted to it and
+  REFUSED this sitting until `--ledger` was passed — **pass `--ledger`
+  explicitly**; and **`sw/emit_suite.py::_truth_stamp()` returns *"SOCKET (real
+  chip, use_core=False)"* from `ENGINE == "chip"` alone and never consults
+  `EMIT_USE_CORE`**, so a core-leg emitter that used it would write a false
+  provenance line.  `flash24_results_2026-09-21.md` §10, D-2 and D-1.
+* ⚠ **`mod3_illegal` STAYS `0 / 128` AND THAT IS CORRECT** — WAVE 23 proved it
+  a TESTBENCH STIMULUS artefact; **`ea_residue` was NOT injected into the TB**
+  (STOP S-4, carried forward verbatim).
+
+
 Standing ratchets. Monotone: never re-scored downward without a loud, itemised
 entry. Figures are `ucore_provenance.md` §54.4's, re-run 2026-08-04.
 

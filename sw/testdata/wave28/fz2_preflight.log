@@ -1,0 +1,22 @@
+== capture-path preconditions (prereg §6)
+  all capture-path preconditions present
+== single-writer / reachability
+  uptime: 18:20:54  up 70 days 22:47,  0 users,  load average: 0.00, 0.00, 0.00
+  no v30/serve process on the board -> SINGLE WRITER
+== era / flash pin
+  resident bitstream carries this tree's rig RTL (receipt 8077ba946568…, 'FLASH#24 RETENTION draw@seed1-seed1')
+== generation / regeneration sample (4 per stratum)
+  192 seeds, hits=0
+== board health
+  [div guard] preflight: div=8 (4 MHz), commanded by this connection   -> PINNED
+  rig_readback_check: 8 registers round-tripped
+  == chip position (use_core=0): boot vs golden ==
+  chip-vs-golden: MATCH over 800 rows
+  
+  == core position (use_core=1): boot ==
+  core-vs-chip:   MATCH over 800 rows
+  core-vs-golden: MATCH over 800 rows
+  [div guard] preflight-end: div=8 (4 MHz), commanded by this connection   -> PINNED
+  board left use_core=0 (board_idle)
+
+FZ2 PREFLIGHT: OK  -> /home/wickerwaka/src/nec_test/sw/testdata/fz2/fz2_preflight.json

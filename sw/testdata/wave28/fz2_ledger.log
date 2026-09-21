@@ -1,0 +1,35 @@
+  corpus: 3840 seeds, 1 discards, denominator 3839
+  SEED MATCH  3,742 / 3,839 = 97.4733 %      failures 97
+  ROW  MATCH  11,242,570 / 11,330,230 = 99.2263 %  (DISCARDS EXCLUDED -- this is §38.4's registered row figure, md:5793, which has no field in the committed JSON)
+  families:
+    A1 qs-pop one clock late                         5
+    A2 qs-pop other offset                           4
+    A3 cycle-time slip (non-qs)                     13
+    B1 HALT-cycle address                            1
+    B2 HALT entry (one leg only)                     2
+    C1 vector-1 trap MISSED by core                  1
+    C2 INTA-vectored delivery                        8
+    C3 NMI(vec2) entry                               1
+    C4 other-vector delivery                         1
+    D1 chip fetched, core did not                    8
+    D2 core fetched, chip did not                    7
+    D3 both fetched, different address               3
+    E1 same-status data cycle, different address    35
+    E2 different-status data cycle                   2
+    NEW/UNCLASSIFIED                                 6
+  §38.9 overlay still failing: 4
+  *** 6 NEW FAILURE(S) -- itemized, not absorbed ***
+      fz2e/516077  first_bad 1214  rows 10  arch NODUMP
+      fz2e/521006  first_bad 369  rows 8  arch NODUMP
+      fz2e/527035  first_bad 431  rows 753  arch AW,BP,BW,CW,DS0,DS1,DW,IX,IY,PC,PS,PSW,SP
+      fz2e/529058  first_bad 1799  rows 4  arch NODUMP
+      fz2e/532032  first_bad 3029  rows 2  arch OK
+      fz2e/534041  first_bad 1090  rows 1402  arch CW,SP
+
+  LEFT the ledger : 6
+    A3 cycle-time slip (non-qs)                      2
+    D3 both fetched, different address               1
+    E1 same-status data cycle, different address     3
+  ENTERED the ledger: 1   ['fz2e/527035']
+
+  wrote sw/testdata/fz2/fz2_failure_ledger_f24_2026-09-21.json

@@ -1,0 +1,32 @@
+== leg SOCKET (use_core=False) -- the real chip ==
+== leg CORE (use_core=True) -- the FPGA v30_core ==
+
+tag  predecessor    prose                   SOCKET   CORE verdict   W26sock   pred
+C1   a3 34 12       MOV [1234h],AW            1234   1234 MATCH       REPRO    HIT
+C2   a3 ef be       MOV [BEEFh],AW            beef   beef MATCH       REPRO    HIT
+C3   90             NOP (no EA)               2222   2222 MATCH       REPRO    HIT
+R1   88 26 10 30    MOV [3010h],AH            4121   9211 DIVERGE     REPRO    HIT
+R2   8b 0e 55 44    MOV CW,[4455h]            1121   4dcc DIVERGE     REPRO    HIT
+M0   89 00          MOV [BW+IX],AW            8888   8888 MATCH       REPRO    HIT
+M1   89 01          MOV [BW+IY],AW            9999   9999 MATCH       REPRO    HIT
+M2   89 02          MOV [BP+IX],AW            8888   8888 MATCH       REPRO    HIT
+M3   89 03          MOV [BP+IY],AW            9999   9999 MATCH       REPRO    HIT
+M4   89 04          MOV [IX],AW               1111   9211 DIVERGE     REPRO    HIT
+M5   89 05          MOV [IY],AW               1111   9211 DIVERGE     REPRO    HIT
+M6   89 06 34 12    MOV [1234h],AW            2345   9211 DIVERGE     REPRO    HIT
+M7   89 07          MOV [BW],AW               1111   9211 DIVERGE     REPRO    HIT
+P0   89 40 10       MOV [BW+IX+10h],AW        1121   8888 DIVERGE     REPRO    HIT
+P1   89 40 00       MOV [BW+IX+0],AW          1111   8888 DIVERGE     REPRO    HIT
+P2   89 46 10       MOV [BP+10h],AW           1121   9211 DIVERGE     REPRO    HIT
+P3   89 84 34 12    MOV [IX+1234h],AW         2345   9211 DIVERGE     REPRO    HIT
+P4   89 81 34 12    MOV [BW+IY+1234h],AW      2345   9999 DIVERGE     REPRO    HIT
+P5   89 45 20       MOV [IY+20h],AW           1131   9211 DIVERGE     REPRO    HIT
+P6   89 87 34 12    MOV [BW+1234h],AW         2345   9211 DIVERGE     REPRO    HIT
+P7   89 44 f0       MOV [IX-10h],AW           1101   9211 DIVERGE     REPRO    HIT
+
+PAIRWISE (core vs socket, same images): MATCH 7 / 21   DIVERGE 14
+POSITIVE CONTROL (socket vs WAVE 26 banked socket): REPRO 21 / 21   MOVED 0
+CORE vs the registered `before` column: HIT 21 / 21   MISS 0
+DIVIDER READBACK: div=8 (4 MHz), commanded by this connection
+columns -> sw/testdata/wave28/ea_fabric_preflash/8D_socket.json.gz  sha256 320cecc565b0ff63…
+           sw/testdata/wave28/ea_fabric_preflash/8D_core.json.gz  sha256 1bc4662f1c37119c…

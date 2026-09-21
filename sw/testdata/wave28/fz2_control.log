@@ -1,0 +1,96 @@
+control: the C-6 board legs (>=2 TVEC values, >=2 hold values on >=2 pins, the vecsub_en=0 negative control)
+  [div guard] control-start: div=8 (4 MHz), commanded by this connection   -> PINNED
+
+=== LEG R1 -- clause (a): every fuzz-v2 register round-trips on the readback path (RBCHECK)
+    [PASS] RBCHECK: two distinct values written and read back in every register  8 registers: ['EVT_ADDR[0]', 'EVT_ADDR[1]', 'EVT_ADDR[2]', 'EVT_CFG[0]', 'EVT_CFG[1]', 'EVT_CFG[2]', 'TVEC', 'VECCTL']
+
+=== LEG P1 -- clause (b) directed: pin_int x hold = 2
+  [div guard] control-P1: div=8 (4 MHz), commanded by this connection   -> PINNED
+    [PASS] exactly ONE run on pin_int  runs=[[547, 2]]
+    [PASS] its length is 2 +/- 1 clock  measured 2
+    [PASS] 0 runs on the other interrupt pin (pin_nmi)  runs=[]
+    [PASS] the rig's own readback held the directive  fired=1 vec_used=False
+    [PASS] scheduler 0's sticky FIRE bit is set  fired=1
+    rows 4063  sha256 f0f03fd1637900bc…
+
+=== LEG P2 -- clause (b) directed: pin_int x hold = 300
+  [div guard] control-P2: div=8 (4 MHz), commanded by this connection   -> PINNED
+    [PASS] exactly ONE run on pin_int  runs=[[547, 300]]
+    [PASS] its length is 300 +/- 1 clock  measured 300
+    [PASS] 0 runs on the other interrupt pin (pin_nmi)  runs=[]
+    [PASS] the rig's own readback held the directive  fired=1 vec_used=False
+    [PASS] scheduler 0's sticky FIRE bit is set  fired=1
+    rows 4063  sha256 77d040e4944accb9…
+
+=== LEG P3 -- clause (b) directed: pin_nmi x hold = 2
+  [div guard] control-P3: div=8 (4 MHz), commanded by this connection   -> PINNED
+    [PASS] exactly ONE run on pin_nmi  runs=[[547, 2]]
+    [PASS] its length is 2 +/- 1 clock  measured 2
+    [PASS] 0 runs on the other interrupt pin (pin_int)  runs=[]
+    [PASS] the rig's own readback held the directive  fired=1 vec_used=False
+    [PASS] scheduler 0's sticky FIRE bit is set  fired=1
+    rows 4063  sha256 9735e5477b04786f…
+
+=== LEG P4 -- clause (b) directed: pin_nmi x hold = 300   [the cell the corpus CANNOT produce -- §20.3]
+  [div guard] control-P4: div=8 (4 MHz), commanded by this connection   -> PINNED
+    [PASS] exactly ONE run on pin_nmi  runs=[[547, 300]]
+    [PASS] its length is 300 +/- 1 clock  measured 300
+    [PASS] 0 runs on the other interrupt pin (pin_int)  runs=[]
+    [PASS] the rig's own readback held the directive  fired=1 vec_used=False
+    [PASS] scheduler 0's sticky FIRE bit is set  fired=1
+    rows 4063  sha256 14c8d19ac987e0d8…
+
+=== LEG P5 -- clause (b) directed: pin_nmi x hold = 20
+  [div guard] control-P5: div=8 (4 MHz), commanded by this connection   -> PINNED
+    [PASS] exactly ONE run on pin_nmi  runs=[[547, 20]]
+    [PASS] its length is 20 +/- 1 clock  measured 20
+    [PASS] 0 runs on the other interrupt pin (pin_int)  runs=[]
+    [PASS] the rig's own readback held the directive  fired=1 vec_used=False
+    [PASS] scheduler 0's sticky FIRE bit is set  fired=1
+    rows 4063  sha256 5817011aac4554f3…
+
+  the harness's INT vector, MEASURED off the INTA rows: 0xff  (this image composed a handler for 0xff)
+
+=== LEG V1 -- clause (c): interception at TVEC = 0000:bf00 -> 0bf00
+  [div guard] control-V1: div=8 (4 MHz), commanded by this connection   -> PINNED
+    [PASS] MEMR at linear 0x00008 present  1 reads
+    [PASS] 0x00008 returns the TVEC IP half 0xbf00  data=0xbf00
+    [PASS] MEMR at linear 0x0000A present  1 reads
+    [PASS] 0x0000A returns the TVEC CS half 0x0000  data=0x0000
+    [PASS] vec_armed is high across the intercepted reads  ip.vec=1 cs.vec=1
+    [PASS] the next CODE T1 is at 0x0bf00  0x0bf00
+    [PASS] STATUS[6]: the overlay actually served a CS half  vec_used=True
+    [PASS] the terminator's sticky FIRE bit is set  fired=4
+    [PASS] the CPU did NOT reach the image's own wrong vector (0x0b000)
+    dumped=True done_marker=0xf00d   rows 4063  sha256 d43beb35530d248f…
+
+=== LEG V2 -- clause (c): interception at TVEC = 0bf0:0008 -> 0bf08
+  [div guard] control-V2: div=8 (4 MHz), commanded by this connection   -> PINNED
+    [PASS] MEMR at linear 0x00008 present  1 reads
+    [PASS] 0x00008 returns the TVEC IP half 0x0008  data=0x0008
+    [PASS] MEMR at linear 0x0000A present  1 reads
+    [PASS] 0x0000A returns the TVEC CS half 0x0bf0  data=0x0bf0
+    [PASS] vec_armed is high across the intercepted reads  ip.vec=1 cs.vec=1
+    [PASS] the next CODE T1 is at 0x0bf08  0x0bf08
+    [PASS] STATUS[6]: the overlay actually served a CS half  vec_used=True
+    [PASS] the terminator's sticky FIRE bit is set  fired=4
+    [PASS] the CPU did NOT reach the image's own wrong vector (0x0b000)
+    dumped=False done_marker=0xf00d   rows 4063  sha256 d49641ce3d9a5501…
+
+=== LEG N1 -- clause (c) NEGATIVE CONTROL: the same image and the same TVEC with vecsub_en = 0 must NOT terminate
+  [div guard] control-N1: div=8 (4 MHz), commanded by this connection   -> PINNED
+    [PASS] the NMI still fired (the control differs in vecsub ONLY)  fired=4
+    [PASS] vec_armed NEVER rises anywhere in the capture  0 rows armed
+    [PASS] STATUS[6] clear: the overlay served nothing  vec_used=False
+    [PASS] 0x00008 returns the IMAGE's own wrong vector 0xb000  data=0xb000
+    [PASS] 0x0000A returns the image's own CS 0x0000  data=0x0000
+    [PASS] the CPU DID reach the wrong vector 0x0b000
+    [PASS] it did NOT terminate: no 15-word dump and no done marker  dump=no done=None
+  [div guard] control-end: div=8 (4 MHz), commanded by this connection   -> PINNED
+
+  holds proved on the pins: [2, 20, 300] on ['pin_int', 'pin_nmi']
+  TVEC values proved: (0, 48896) and (3056, 8)
+  div_guards 10, unpinned 0
+
+FZ2 CONTROL (C-6 board legs): MET  -> /home/wickerwaka/src/nec_test/sw/testdata/fz2/fz2_control.json
+  NOTE: this leg scores C-6's clauses (a) and (c) and re-proves (b) by directed probe.  C-6's own verdict is `bars`', and clause (b)'s corpus reading is 2 / 4,638 (§20.4), so a passing control leg makes C-6 READABLE -- MISSED -- and does not make it MET (§20.5, §24.3).
