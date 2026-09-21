@@ -1,0 +1,13 @@
+  RTL leg hdl/tb/obj_dir_ucore/Vtb_v30_core  receipt 2d709c79dd6a3e09…
+  L1b MOV[3010h],AH          silicon si_loaded 0x4121  match=False  (NOT SCORED -- prose `pre`, no certain encoding)
+  L1b MOV CW,[4455h]         silicon si_loaded 0xd4e5  match=False  (NOT SCORED -- prose `pre`, no certain encoding)
+  L4  MOV[3010h],AH          silicon 0x4121   ucore 0x4121  MATCH   (REPORTED, NOT A BAR)
+  L4  MOV CW,[4455h]         silicon 0xd4e5   ucore 0xd4e5  MATCH   (REPORTED, NOT A BAR)
+
+  L1  SILICON       2/2   (the `match: true` rows of mod3_illegal/metadata.json)
+  L1b OBSERVED      2 unscored row(s): MOV[3010h],AH si_loaded=0x4121 match=False; MOV CW,[4455h] si_loaded=0xd4e5 match=False
+  L4  KNOWN-RED     0 of 2 ModR/M-predecessor silicon row(s) DIVERGE -- REPORTED, NOT A BAR (results doc §4)
+  L2  ROUTING       64/64   (8 reg fields x 8 rm, confinement checked)
+  L3  NON-VACUITY   3/3
+  71 whole-program replays, from RESET, no backdoor injection
+PASS
