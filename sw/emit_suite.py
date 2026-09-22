@@ -385,7 +385,11 @@ def truth_stamp(use_core=_PIN, banked=None):
     not being consulted.  Concretely, this refuses when:
 
       * the position is `None` -- `cfg` sent '-' and the board's STICKY CFG
-        decided the A/B position, so no process can name it;
+        decided the A/B position, so no process can name it.  **`None` is the
+        only unstampable position**: every other value is normalised with
+        `bool()`, which is exactly `cfg`'s own `int(bool(use_core))`, so an
+        argparse `0`/`1` is the same claim as `False`/`True` and not a second
+        rule;
       * a board was commanded into a position this stamp does not claim (a
         mid-emission `EMIT_USE_CORE` mutation, which is exactly what
         `x1_fabric`, `u4_f42_fabric` and `w28_ea_lane_fabric` do on purpose --
@@ -440,10 +444,14 @@ def truth_stamp(use_core=_PIN, banked=None):
             "REFUSING to stamp a truth source: the A/B position is None, i.e. "
             "`cfg` left the board's STICKY CFG alone.  Which core produced "
             "these records is UNKNOWN -- pass use_core explicitly")
-    if not isinstance(pos, bool):
-        raise TruthSourceError(
-            f"truth_stamp: the A/B position must be True or False, not "
-            f"{pos!r}")
+    # `ServeRunner.cfg` sends `int(bool(use_core))` for every non-None value,
+    # so 0/1 and False/True are the SAME position to the board and there is no
+    # honest way to treat them as different claims here.  ONE normalisation,
+    # the board's own, applied to the claim AND to the witness -- so `x1_fabric`
+    # and `sm3_s16_fabric`, which pin the module to argparse INTS, are compared
+    # on the value the hardware received rather than on a Python type.
+    pos = bool(pos)
+    seen = frozenset(None if p is None else bool(p) for p in seen)
     if seen and pos not in seen:
         raise TruthSourceError(
             f"REFUSING to stamp use_core={pos!r}: the board was commanded "

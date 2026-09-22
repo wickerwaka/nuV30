@@ -1622,6 +1622,70 @@ non-vacuous on the exact state it was built to catch.
 > this design.** The gate's value is that it makes a 26 MHz swing VISIBLE at the
 > landing rather than three sittings later; it is not a proof of closure.
 
+### THE PROVENANCE-STAMP GATE — **NEW, 2026-09-21 (WAVE 29).  ALWAYS-ON, ~1 s, OFFLINE.**
+
+`python3 sw/truth_stamp_lint.py`  (exit 0 PASS / 1 FAIL, **23/23 checks**)
+
+**Why it exists.**  A provenance line is how this repo knows a golden came off
+SILICON, and **SILICON MATCH is the only correctness bar**, so a wrong
+provenance line is the worst class of instrument defect here.
+`emit_suite._truth_stamp()`'s own docstring had said since 2026-08 that **"a
+provenance line that cannot be wrong is not provenance"** — and **that repair
+was made in ONE file and NEVER PROPAGATED.**  As of WAVE 28 the same claim had
+**SEVEN writers** in `sw/` and only one derived it; three were hard-coded
+constants, and one of those three (`s12_census.py`, `cmd_regold`) **re-derives
+goldens OFFLINE from a banked capture, touches no board, and stamped them "real
+chip" anyway** (`invalidation_ledger.md` **PRV-1**).  ⭐ **The WAVE 28 census of
+FOUR writers was itself an UNDERCOUNT, and this gate is what found the
+remainder**: `sw/char_enter.py` writes the class twice in a DIFFERENT SPELLING,
+so the census grep missed both.  **A TYPED PROVENANCE CLAIM CANNOT BE AUDITED BY
+GREP.**
+
+**What it checks.**
+
+* **G1/G2 — the ONE-PLACE grep**, re-derived over every tracked `sw/*.py` (388
+  at registration): the socket class string and the FPGA-core class string each
+  occur **EXACTLY ONCE**, in `emit_suite.py`, **inside `truth_stamp()`**.  The
+  gate assembles both needles from fragments so that **it is not itself the
+  second writer it forbids**, and it checks that too.
+* **G3 — no second writer of a provenance VALUE**: no quoted-valued
+  `"truth_source"` key and no `TRUTH SOURCE:` prose line whose next token is not
+  a substitution, anywhere else in `sw/`.  **This is the leg that found
+  `char_enter`.**
+* **P-4 — the four truth classes and EIGHT refusals, by perturbation** of the
+  pin, the engine and the board witness: `SOCKET` · `FPGA CORE` · `VERILATOR TB`
+  · `BANKED REPLAY`, and a `TruthSourceError` for a `None` position (the board's
+  STICKY CFG decided, so no process can name it), a non-boolean position, an
+  unknown `ENGINE`, two truth classes claimed at once, and **any claim the board
+  witness CONTRADICTS**.
+* **P-4d — the three PRE-EXISTING emitter guards still fire** (`cmd_emit`,
+  `cmd_emit_boundary`, `cmd_reemit` all refuse a non-socket truth source).
+
+**THE DERIVATION IT GUARDS.**  `emit_suite.truth_stamp(use_core=<pin>,
+banked=None)` reads three inputs — `ENGINE`, the A/B position (`EMIT_USE_CORE`,
+or one named explicitly for a SINGLE LEG of a two-leg experiment), and
+**`v30run.board_witness()`, NEW: what the board was actually COMMANDED**, one
+record appended the instant `run_image`'s CFG is accepted.  ⚠ **`use_core=None`
+is recorded AS `None` and is not a synonym for `False`** — it is the case the
+stamp must refuse on.
+
+**WHAT IT DOES NOT ESTABLISH.**  ⚠ **The witness's scope is `run_image`, so it
+is ONE-SIDED: it can CONTRADICT a claim and it cannot CERTIFY one.**  A tool
+driving `ServeRunner` directly is invisible to it, and `v30run.py` says so in
+its own comment — **an empty witness is not evidence that no board was
+touched**, and `truth_stamp` never reads it that way.  ⚠ **And the golden
+emitters write their header stamp BEFORE the first capture**, so there the stamp
+is the pin; `cmd_emit` therefore writes a second `# TRUTH WITNESS:` line at the
+END of the emission, beside the `# DIVIDER:` line and for the identical reason
+already written there.
+
+**NON-VACUITY, MEASURED BOTH WAYS** (`sw/testdata/wave29/truth_stamp_nonvacuity.log`):
+a second socket literal spliced into `sw/b2_ea_lane.py` → **FAIL 21/23**, both
+the one-place and the no-second-writer legs firing **by path and line**; the
+derivation reverted to the WAVE 28 behaviour (the pin ignored) → **FAIL**, the
+FPGA-CORE class reading the socket string and **two refusals having stopped
+refusing**.
+
 ### THE R7′ STRUCTURAL LINT — **NEW.  IT IS ALWAYS-ON, AND IT IS NOT A TIMING GATE.**
 
 `python3 sw/r7_lint.py`  (exit 0 PASS / 1 VIOLATION / 2 could-not-run, 0.2 s)
@@ -2069,7 +2133,9 @@ FIX, AND THE FIX IS CONFIRMED IN FABRIC.**
   `qsf_lint --check` **CANONICAL** · `core_portlist_lint` **4 configurations** ·
   `suitemeta --selfcheck` **14 checks** · `ucrom_mif_check` **1,028 words** ·
   **G0 `check_ucore_tables` 9,988 entries** · `pla3_check` **21 checks** ·
-  `w27_v02_archive_check` **7,127 preserved records**.
+  `w27_v02_archive_check` **7,127 preserved records** ·
+  **`truth_stamp_lint` 23 / 23** (NEW, WAVE 29 — the ONE new leg of that
+  wave, and the only ladder movement it registered).
   ⚠ **`check_fuzz_bank` IS RETIRED (RET-2) AND IS NOT A LADDER LEG.**
 
 

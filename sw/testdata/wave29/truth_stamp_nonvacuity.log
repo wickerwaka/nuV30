@@ -1,0 +1,94 @@
+=== NV-1: a SECOND socket literal spliced into sw/b2_ea_lane.py (perturbation reverted after) ===
+G1/G2  the one-place grep over 388 tracked sw/*.py
+  FAIL  SOCKET literal occurs exactly once -- hits=['sw/b2_ea_lane.py:149', 'sw/emit_suite.py:461']
+  PASS  FPGA-CORE literal occurs exactly once -- hits=['sw/emit_suite.py:462']
+  PASS  this gate is not itself a writer
+  PASS  both literals live inside truth_stamp()
+G3  no second writer of a provenance value
+  FAIL  no literal-valued truth_source / TRUTH SOURCE in sw/ -- sw/b2_ea_lane.py:149: "truth_source": "SOCKET (real chip, use_core=False)",
+P-4  the four truth classes and the refusals, by perturbation
+  PASS  class SOCKET  (pin False)
+  PASS  class FPGA CORE  (pin True) is not the socket string -- FPGA v30_core inside system_large (use_core=True) -- THE DUT, NOT SILICON
+  PASS  class VERILATOR TB names the TB -- VERILATOR TB core=ucore -- NOT A GOLDEN, NOT SILICON
+  PASS  class BANKED REPLAY names itself and no board -- BANKED REPLAY, re-parsed offline -- NO BOARD CONTACT IN THIS PROCESS.  bank X
+  PASS  position None REFUSES -- REFUSING to stamp a truth source: the A/B position is None, i.e.
+  PASS  banked + a position REFUSES -- truth_stamp: banked= and use_core= are TWO truth classes; a reco
+  PASS  an int position normalises exactly as `cfg` does
+  PASS  unknown ENGINE REFUSES -- truth_stamp: no truth class for ENGINE='chippp'
+  PASS  socket claim contradicted by a use_core=True board command REFUSES -- REFUSING to stamp use_core=False: the board was commanded into [
+  PASS  the position the board WAS commanded into still stamps
+  PASS  banked claim with a board command on record REFUSES -- REFUSING to stamp BANKED REPLAY: this process commanded the boar
+  PASS  tb claim with a board command on record REFUSES -- REFUSING to stamp VERILATOR TB: this process commanded the board
+  PASS  a capture that left the board's STICKY CFG alone REFUSES -- REFUSING to stamp use_core=False: the board was commanded into [
+  PASS  truth_witness_stamp names an empty witness as empty
+  PASS  truth_witness_stamp counts what ran -- # TRUTH WITNESS: 1 board command(s), use_core position(s) commanded = [False] (v30run.board_witness; None = board's sticky CFG)
+P-4d  the pre-existing emitter guards
+  PASS  cmd_emit refuses a non-socket truth source -- REFUSING to emit goldens: truth source is not the socket (EM
+  PASS  cmd_emit_boundary refuses a non-socket truth source -- REFUSING to emit goldens: truth source is not the socket (EM
+  PASS  cmd_reemit refuses a non-socket truth source -- re-emit truth source is not the socket
+
+FAIL  21/23 checks  failed: ['SOCKET literal occurs exactly once', 'no literal-valued truth_source / TRUTH SOURCE in sw/']
+NV-1 rc=1
+
+=== NV-2: truth_stamp() reverted to the WAVE 28 behaviour -- the pin IGNORED (perturbation reverted after) ===
+G1/G2  the one-place grep over 388 tracked sw/*.py
+  PASS  SOCKET literal occurs exactly once -- hits=['sw/emit_suite.py:461']
+  PASS  FPGA-CORE literal occurs exactly once -- hits=['sw/emit_suite.py:462']
+  PASS  this gate is not itself a writer
+  PASS  both literals live inside truth_stamp()
+G3  no second writer of a provenance value
+  PASS  no literal-valued truth_source / TRUTH SOURCE in sw/
+P-4  the four truth classes and the refusals, by perturbation
+  PASS  class SOCKET  (pin False)
+  FAIL  class FPGA CORE  (pin True) is not the socket string -- SOCKET (real chip, use_core=False)
+  PASS  class VERILATOR TB names the TB -- VERILATOR TB core=ucore -- NOT A GOLDEN, NOT SILICON
+  PASS  class BANKED REPLAY names itself and no board -- BANKED REPLAY, re-parsed offline -- NO BOARD CONTACT IN THIS PROCESS.  bank X
+  FAIL  position None REFUSES -- returned 'SOCKET (real chip, use_core=False)'
+  PASS  banked + a position REFUSES -- truth_stamp: banked= and use_core= are TWO truth classes; a reco
+  FAIL  an int position normalises exactly as `cfg` does
+  PASS  unknown ENGINE REFUSES -- truth_stamp: no truth class for ENGINE='chippp'
+  PASS  socket claim contradicted by a use_core=True board command REFUSES -- REFUSING to stamp use_core=False: the board was commanded into [
+Traceback (most recent call last):
+  File "/home/wickerwaka/src/nec_test/sw/truth_stamp_lint.py", line 232, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/home/wickerwaka/src/nec_test/sw/truth_stamp_lint.py", line 182, in main
+    s = es.truth_stamp(use_core=True)
+  File "/home/wickerwaka/src/nec_test/sw/emit_suite.py", line 456, in truth_stamp
+    raise TruthSourceError(
+    ...<2 lines>...
+        f"{pos!r} -- the claim is contradicted by what ran")
+emit_suite.TruthSourceError: REFUSING to stamp use_core=False: the board was commanded into [True] in this process and never into False -- the claim is contradicted by what ran
+NV-2 rc=1
+
+=== RESTORED ===
+G1/G2  the one-place grep over 388 tracked sw/*.py
+  PASS  SOCKET literal occurs exactly once -- hits=['sw/emit_suite.py:461']
+  PASS  FPGA-CORE literal occurs exactly once -- hits=['sw/emit_suite.py:462']
+  PASS  this gate is not itself a writer
+  PASS  both literals live inside truth_stamp()
+G3  no second writer of a provenance value
+  PASS  no literal-valued truth_source / TRUTH SOURCE in sw/
+P-4  the four truth classes and the refusals, by perturbation
+  PASS  class SOCKET  (pin False)
+  PASS  class FPGA CORE  (pin True) is not the socket string -- FPGA v30_core inside system_large (use_core=True) -- THE DUT, NOT SILICON
+  PASS  class VERILATOR TB names the TB -- VERILATOR TB core=ucore -- NOT A GOLDEN, NOT SILICON
+  PASS  class BANKED REPLAY names itself and no board -- BANKED REPLAY, re-parsed offline -- NO BOARD CONTACT IN THIS PROCESS.  bank X
+  PASS  position None REFUSES -- REFUSING to stamp a truth source: the A/B position is None, i.e.
+  PASS  banked + a position REFUSES -- truth_stamp: banked= and use_core= are TWO truth classes; a reco
+  PASS  an int position normalises exactly as `cfg` does
+  PASS  unknown ENGINE REFUSES -- truth_stamp: no truth class for ENGINE='chippp'
+  PASS  socket claim contradicted by a use_core=True board command REFUSES -- REFUSING to stamp use_core=False: the board was commanded into [
+  PASS  the position the board WAS commanded into still stamps
+  PASS  banked claim with a board command on record REFUSES -- REFUSING to stamp BANKED REPLAY: this process commanded the boar
+  PASS  tb claim with a board command on record REFUSES -- REFUSING to stamp VERILATOR TB: this process commanded the board
+  PASS  a capture that left the board's STICKY CFG alone REFUSES -- REFUSING to stamp use_core=False: the board was commanded into [
+  PASS  truth_witness_stamp names an empty witness as empty
+  PASS  truth_witness_stamp counts what ran -- # TRUTH WITNESS: 1 board command(s), use_core position(s) commanded = [False] (v30run.board_witness; None = board's sticky CFG)
+P-4d  the pre-existing emitter guards
+  PASS  cmd_emit refuses a non-socket truth source -- REFUSING to emit goldens: truth source is not the socket (EM
+  PASS  cmd_emit_boundary refuses a non-socket truth source -- REFUSING to emit goldens: truth source is not the socket (EM
+  PASS  cmd_reemit refuses a non-socket truth source -- re-emit truth source is not the socket
+
+PASS  23/23 checks
+restored rc=0

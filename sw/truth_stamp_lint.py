@@ -161,7 +161,13 @@ def main():
         refuses("position None", lambda: es.truth_stamp(use_core=None))
         refuses("banked + a position",
                 lambda: es.truth_stamp(use_core=False, banked="b"))
-        refuses("non-boolean position", lambda: es.truth_stamp(use_core=1))
+        # NOT a refusal: `ServeRunner.cfg` sends int(bool(use_core)), so an
+        # argparse 0/1 is the SAME position to the board as False/True.  The
+        # control is that the normalisation is the board's own, not a second
+        # rule -- `x1_fabric` and `sm3_s16_fabric` pin the module to ints.
+        ck("an int position normalises exactly as `cfg` does",
+           es.truth_stamp(use_core=0) == SOCKET
+           and DUT in es.truth_stamp(use_core=1))
 
         es.ENGINE = "chippp"
         refuses("unknown ENGINE", es.truth_stamp)

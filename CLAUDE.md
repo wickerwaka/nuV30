@@ -119,6 +119,89 @@ them).
 
 ## Gate quick reference
 
+### ⚠⚠⚠⚠ READ FIRST — **THE PROVENANCE STAMP IS ONE DERIVATION SINCE 2026-09-21 (WAVE 29), IT CAN REFUSE, AND THERE IS A GATE ON IT.  SEVEN WRITERS OF ONE CLAIM BECAME ONE.**
+
+`docs/notes/truth_stamp_results_2026-09-21.md`; ledger
+`docs/notes/invalidation_ledger.md` **PRV-1** — a **SEVENTH register** whose
+disposition is the only one in this file that reads **ANNOTATE, NEVER REWRITE**.
+Landing `40642891fb`.  **USER INSTRUCTION 2026-09-21: *"Fix the `_truth_stamp`
+provenance bug"*.**
+
+* **THE LAW IS ONE SENTENCE**: *a provenance line is DERIVED by
+  `emit_suite.truth_stamp()` from the ENGINE, the A/B position, and what the
+  board was actually COMMANDED — and where it cannot be established it
+  RAISES.*  **FOUR honest classes**: `SOCKET (real chip, use_core=False)` (the
+  only class a golden may carry) · `FPGA v30_core inside system_large
+  (use_core=True) -- THE DUT, NOT SILICON` · `VERILATOR TB core=… -- NOT A
+  GOLDEN, NOT SILICON` · ⭐ **`BANKED REPLAY, re-parsed offline -- NO BOARD
+  CONTACT IN THIS PROCESS`, a THIRD truth class** for an offline re-derivation
+  from a bank, which is neither of the first two.  Plus `TruthSourceError`.
+* ⚠ **THE REPORTED DEFECT WAS REAL BUT LATENT, AND THAT WAS VERIFIED BEFORE THE
+  FIX WAS SIZED.**  `_truth_stamp()` returned the socket constant from `ENGINE
+  == "chip"` alone and never consulted `EMIT_USE_CORE` — **but both call sites
+  are guarded** (`emit_suite.py:2529`, `:2695`, and `cmd_reemit` at `:2475`),
+  all three measured firing.  **NO GOLDEN IN THE TREE CARRIES A FALSE STAMP BY
+  THAT PATH.**
+* ⭐⭐ **THE REAL DEFECT WAS SEVEN WRITERS AND THE CENSUS OF FOUR WAS AN
+  UNDERCOUNT — FOR THE SAME REASON THE WAVE IS ABOUT.**  `sw/char_enter.py`
+  writes the class TWICE spelled `"SOCKET (use_core=False)"`, so a grep for
+  `SOCKET (real chip` missed both; **the new gate found them on its first
+  run.**  **A TYPED PROVENANCE CLAIM CANNOT BE AUDITED BY GREP.**  The other
+  writers: `s10_board` · `s13_board` · `s12_census` · `char_mod3` · `exp_iret`
+  (RET-2-retired, its constant was dead code) · `w28_ea_lane_fabric` (×3,
+  manifest AND per-row).  **The string now exists in EXACTLY ONE PLACE in
+  `sw/`** — `sw/emit_suite.py:453` — proved by grep every run.
+* **`v30run.board_witness()` IS NEW AND IT IS THE ONLY EVIDENCE OF THE THREE.**
+  `run_image` appends one record the instant the CFG command is accepted,
+  carrying the `use_core` it actually sent — **before** the run, because a
+  capture that failed still touched the board.  ⚠ **`use_core=None` IS RECORDED
+  AS `None`, NOT AS `False`**: `cfg` sent `'-'` and the board's **STICKY CFG**
+  decided, so the position is UNKNOWN and the stamp **REFUSES** rather than
+  guessing socket.
+* ⚠ **THE WITNESS IS ONE-SIDED AND `v30run.py` SAYS SO: it can CONTRADICT a
+  claim, it cannot CERTIFY one.**  Its scope is `run_image`, so a tool driving
+  `ServeRunner` directly is invisible to it.  **An empty witness is not evidence
+  that no board was touched**, and nothing reads it that way.
+* ⚠ **ONE RESIDUAL, NAMED**: the golden emitters write their header stamp BEFORE
+  the first capture, so there it is the pin.  `cmd_emit` therefore writes a
+  SECOND line at the END of the emission, **`# TRUTH WITNESS:`**, beside the
+  `# DIVIDER:` line and for the identical reason already written there.
+* **NEW STANDING GATE: `python3 sw/truth_stamp_lint.py` — 23/23, ~1 s,
+  offline.**  The one-place grep over 388 tracked `sw/*.py` (it assembles the
+  needles from fragments so it is not the second writer it forbids), a
+  no-second-writer check, the four classes and **eight refusals** by
+  perturbation, and the three pre-existing emitter guards.  **Non-vacuous both
+  ways, measured**: a spliced second literal → FAIL 21/23 naming the path; the
+  derivation reverted to the WAVE 28 behaviour → FAIL, with **two refusals
+  having stopped refusing**.
+* ⭐ **P-5's AUDIT — 18 `emit_log.txt`/`capture.log` files, every per-suite
+  `metadata.json`, and `v0.2`'s preserved records READ.  NOTHING EDITED.  NO
+  RECORD IS FALSE.**  One is MISLABELLED — `tests/v30/s10-hltsweep-w1/emit_log.txt`
+  asserts `SOCKET (real chip, use_core=False)` **and** `No board contact` in the
+  SAME SENTENCE (its writer, `s12_census cmd_regold`, touches no board).  Every
+  FACT in it is true, so it is **a mislabelled CLASS, not a false CLAIM** — and
+  the ledger had no word for the difference, hence **PRV-1**.
+* ⚠ **AN ERRATUM AGAINST THE LEDGER'S OWN CONTROL SENTENCE**
+  (`invalidation_ledger.md:1696`): *"every `emit_log.txt` opens `# TRUTH SOURCE:
+  …`, and the four suites predating that header carry the equivalent in
+  `metadata.json`"* — **BOTH CLAUSES FALSE AS WRITTEN.**
+  `tests/v30/v0.1/emit_log.txt` is **7,168 lines with ZERO truth lines**, and
+  `v0.1`/`v20suite`'s `metadata.json` are the SingleStepTests dialect with **no
+  `truth_source`, no `use_core`, no `capture`** (only `v0.2` carries the
+  equivalent).  ⭐ **The conclusion SURVIVES and is STRONGER than a stamp** —
+  `v0.1` has none because **the `use_core` flag did not exist when it was
+  emitted** — **but it is an ARGUMENT, not a RECORD, and WAVE 29 is the first
+  document to say so.**  Recorded, **not rewritten**.
+* **THE LADDER IS ZERO-DELTA plus exactly ONE NEW LEG** (`truth_stamp_lint`),
+  pre-registered as the only movement: **38 SAME / 0 MOVED / 0 GONE / 1 NEW**,
+  `sw/testdata/wave29/ladder/` against `wave28/ladder/`.
+* ⚠ **NOTHING IN `hdl/`.  NO QUARTUS.  NO BOARD.  NO FLASH.**  FLASH #24 stands,
+  `flash_log.jsonl` **27 entries**, sha256 **`7496b4be2d1771c9…`**.
+* ⚠ **A `PRV-n` IS NOT A LICENCE TO RE-EMIT.**  Retroactively "correcting" a
+  provenance line destroys the evidence of what the tree believed when the
+  artifact was made — *"deleting a true record corrupts a truthful ledger
+  exactly as badly as inventing one."*
+
 ### ⚠⚠⚠⚠ READ FIRST — **THE BOARD CARRIES FLASH #24 SINCE 2026-09-21, AND IT IS THE FIRST BITSTREAM TO CARRY THE `ea_pair_valid` FIX.  A FABRIC FIGURE TAKEN ON FLASH #23 OR EARLIER MAY NOT BE QUOTED AGAINST THIS TREE.**
 
 Pre-registration `eb3be735a1` (`docs/notes/flash24_prereg_2026-09-21.md`),

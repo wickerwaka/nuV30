@@ -31,8 +31,11 @@ discarded from every gate set. Do not read a `SUP-n` entry as evidence of a
 defect, and do not file a defect as a `SUP-n`.
 
 **It carries a THIRD register, § EXCLUDED SEEDS (`EXC-n`), a FOURTH — opened
-2026-08-11 — § ERRATA AGAINST DERIVED COLUMNS (`ERR-n`), and a FIFTH, opened
-2026-09-19: § RETIRED INSTRUMENTS (`RET-n`). The first four are about DATA;
+2026-08-11 — § ERRATA AGAINST DERIVED COLUMNS (`ERR-n`), a FIFTH, opened
+2026-09-19: § RETIRED INSTRUMENTS (`RET-n`), a SIXTH, opened 2026-09-20:
+§ DECLARED GATE DEVIATIONS (`DEV-n`), and a SEVENTH, opened 2026-09-21:
+§ ERRATA AGAINST PROVENANCE RECORDS (`PRV-n`) — the only register whose
+disposition is *ANNOTATE, NEVER REWRITE*. The first four are about DATA;
 `RET-n` is the only one about an INSTRUMENT this repo deleted, and its
 load-bearing field is the enumeration of every gate that died with it.** The first
 three are all about **CAPTURES**. `ERR-n` is the only one about a **DERIVED
@@ -2282,3 +2285,122 @@ and **THE CONTROLS THAT SHOW THE REPLACEMENT IS NOT A HOLE**.
 > IS NOT A `SUP-n`**: no population was set aside.  It is a live instrument
 > whose claim is now narrower by exactly one recorded, pinned diff, and that is
 > what this register is for.
+
+---
+
+# ERRATA AGAINST PROVENANCE RECORDS — **NOT** INVALIDATIONS, **NOT** SUPERSESSIONS, **NOT** EXCLUSIONS, **NOT** ERRATA AGAINST DERIVED COLUMNS, **NOT** RETIREMENTS, **NOT** DEVIATIONS
+
+**A SEVENTH REGISTER, opened 2026-09-21 (WAVE 29).**  The six above are about
+DATA (`INV` / `SUP` / `EXC` / `ERR`), about an INSTRUMENT THIS REPO DELETED
+(`RET`), and about a LIVE INSTRUMENT WHOSE CLAIM NARROWED (`DEV`).  **`PRV-n`
+is about a PROVENANCE RECORD — the line in an artifact that says WHERE ITS
+BYTES CAME FROM.**
+
+A provenance record is the load-bearing artifact of this whole project:
+**SILICON MATCH is the only correctness bar** (`CLAUDE.md`), and the only thing
+that distinguishes a golden from a guess is the line that says it came off the
+socketed uPD70116.  So a wrong provenance line is the worst class of instrument
+defect here — and it is a class **none of the six registers can hold**:
+
+| | `INV-n` | `ERR-n` | **`PRV-n`** |
+|---|---|---|---|
+| what is wrong with the **capture** | something | nothing | **nothing** |
+| what is wrong with the **stored claim about where it came from** | — | — | **it is mislabelled, ambiguous, absent, or unverifiable** |
+| named **rig** defect | required | NONE | **NONE — and that field must read NONE** |
+| named **writer** defect | — | the instrument that computed the column | **the WRITER of the line, with its fix commit** |
+| **the disposition** | out of every gate set | **RECOMPUTED IN PLACE** | ⚠ **ANNOTATED HERE AND LEFT EXACTLY AS IT IS** |
+
+> ⚠⚠ **THE DISPOSITION IS THE WHOLE POINT, AND IT IS THE OPPOSITE OF `ERR-n`'s.**
+> `CLAUDE.md`: *"deleting a true record corrupts a truthful ledger exactly as
+> badly as inventing one."*  **RETROACTIVELY "CORRECTING" A PROVENANCE LINE IS
+> EXACTLY AS CORRUPTING AS WRITING A FALSE ONE** — it destroys the evidence of
+> what the tree actually believed when the artifact was made, which is the only
+> thing that lets a later reader find the defect at all.  A `PRV-n` therefore
+> **NEVER edits the artifact**.  It fixes the WRITER, so no future record
+> carries the defect, and it records the standing one here so every reader of
+> that artifact meets the correction.
+>
+> A `PRV-n` is **not** a licence to re-emit.  A re-emission is a new capture and
+> belongs to whatever wave takes it, on its own pre-registration.
+
+## PRV-1 — `tests/v30/s10-hltsweep-w1/emit_log.txt`, A BANKED RE-DERIVATION LABELLED `SOCKET`
+
+| field | |
+|---|---|
+| **WHAT** | `tests/v30/s10-hltsweep-w1/emit_log.txt`, its single line — the provenance record of the **46 of 49** `HLT.INT` goldens in `tests/v30/s10-hltsweep-w1/`, one of the four HLT delay sweeps on the standing ladder (`279/283`) |
+| **THE LINE, VERBATIM** | `# TRUTH SOURCE: SOCKET (real chip, use_core=False), RE-DERIVED OFFLINE from the BANKED S10 capture sw/testdata/s10/s2-hltsweep/HLT.INT_w1_d*.raw.hex.gz (div=8, 4 MHz; sha in that directory's manifest.json).  No board contact.  46/49 cases.  See ucsim_t_provenance.md 23.1` |
+| **WHY** | ⚠ **IT ASSERTS `SOCKET (real chip, use_core=False)` AND `No board contact` IN THE SAME SENTENCE.**  Both halves are TRUE — the bytes were taken off the socketed chip in an earlier S10 session, and this run re-parsed them from disk and touched nothing — but the **CLASS LABEL is the label of a capture that did not happen in this run.**  The writer, `sw/s12_census.py` `cmd_regold`, **touches no board at all** and stamped the socket constant unconditionally; that is precisely the defect `emit_suite.truth_stamp()`'s own docstring was written about (*"A provenance line that cannot be wrong is not provenance"*), and the repair had been made in `emit_suite.py` alone and **never propagated** |
+| **IS IT FALSE?** | ⚠ **NO — AND THAT DISTINCTION IS THE ENTRY.**  Every FACT in the line is true, the bank is named by path, its sha is in the named manifest, and the contradiction is visible **in the same sentence**.  What is wrong is that a reader (or a grep) taking the LEADING CLASS at face value reads it as a board sitting.  **A MISLABELLED CLASS, NOT A FALSE CLAIM** — and this ledger does not have one word for both |
+| **WHICH RIG DEFECT** | # **NONE.**  No capture is alleged defective.  The banked raw captures (`sw/testdata/s10/s2-hltsweep/HLT.INT_w1_d*.raw.hex.gz`, div=8, 4 MHz, sha in that directory's `manifest.json`) are **TRUE SILICON** and stay in every gate set.  **No golden moved, no score moved, nothing is discarded, nothing is re-captured** |
+| **NAMED WRITER DEFECT** | `sw/s12_census.py:364` — the socket string as a **HARD-CODED CONSTANT** in a command that re-derives goldens OFFLINE.  **FIXED in WAVE 29**: it now calls `emit_suite.truth_stamp(banked=…)`, whose `BANKED REPLAY` class **REFUSES if this process commanded the board at all**, so the *"No board contact"* clause is checked rather than typed |
+| **THE DISPOSITION** | ⚠ **THE FILE IS NOT EDITED.**  It stands byte-identical, and this entry is its annotation.  The corrected line a future `regold` would write is `# TRUTH SOURCE: BANKED REPLAY, re-parsed offline -- NO BOARD CONTACT IN THIS PROCESS.  Records are the BANKED S10 capture …` |
+| **THE ARCHIVE** | nothing to archive: **nothing was touched.**  That is the register's disposition, not an omission |
+| **GATE STATUS** | **UNMOVED.**  `check_core --suite-dir tests/v30/s10-hltsweep-w1 --waits 1` is **93/95** as it has been since SM3 sitting 21, and the four sweeps are **279/283** |
+| ⚠ **THE WRITER CANNOT WRITE TODAY** | **MEASURED 2026-09-21**: `python3 sw/s12_census.py regold --form HLT.INT --waits 1` re-derives **`0 of 49`** goldens, every delay failing `only 12 register words before the done marker`.  **PRE-EXISTING, not WAVE 29's** — `git diff` on that file touches only the write block, which an empty result never reaches — and it is a **§ E-class finding** (*the emitter and the scorer are in different image eras*).  **CONSEQUENCE, STATED: the corrected `BANKED REPLAY` line could NOT be exercised end-to-end through its own writer**; it is verified by `truth_stamp_lint`'s control P-4 (c) and by reading the line it would write.  A wave that repairs `regold` owes the end-to-end leg |
+| **WHAT A FUTURE WAVE OWES** | **nothing to this file.**  If the w1 sweep is ever re-derived or re-captured, the new line writes itself from `truth_stamp()` and this entry becomes history |
+
+### THE REST OF THE AUDIT — **EVERY PROVENANCE RECORD IN THE TREE READ, NOTHING ELSE MISLABELLED, AND FOUR FINDINGS THAT ARE NOT `PRV` ENTRIES**
+
+Every `emit_log.txt` / `capture.log` in the tree (**18 files**; plus
+`tests/v30/v0.3/reemit.log`, which carries **0** truth lines and claims
+nothing) plus the
+per-suite `metadata.json` provenance fields and the `v0.2` records WAVE 27
+preserved at `tests/v30/v02-unique-archive/provenance/` were read.  **NO
+RECORD IN THE TREE CLAIMS THE SOCKET FOR A RUN THAT USED THE FPGA CORE.**  That
+is a MEASURED result, not an assumption: every writer of a socket claim either
+sits behind a `use_core`-refusal guard (`emit_suite.cmd_emit`,
+`cmd_emit_boundary`, `cmd_reemit`; `s10_board`/`s13_board` assert at import) or
+passes `use_core=False` explicitly on every capture (`char_mod3`, `char_enter`,
+`exp_iret`), and the one writer that touches no board is PRV-1.
+
+Four findings that are **NOT** `PRV` entries, each with its reason:
+
+1. ⚠ **AN ERRATUM AGAINST THIS FILE'S OWN § AUDITED AND NOT INVALIDATED (the
+   composed-AD mask row, line 1696).**  It states: *"every `emit_log.txt` opens
+   `# TRUTH SOURCE: SOCKET (real chip, use_core=False)`, and the four suites
+   predating that header carry the equivalent in `metadata.json`."`*  **BOTH
+   CLAUSES ARE FALSE AS WRITTEN, MEASURED.**  `tests/v30/v0.1/emit_log.txt` is
+   **7,168 lines with ZERO `TRUTH SOURCE` lines** — it is a reroll log and
+   nothing else; and `tests/v30/v0.1/metadata.json` and
+   `tests/v30/v20suite/metadata.json` are the **SingleStepTests dialect** and
+   carry **no `truth_source`, no `use_core` and no `capture` field at all**.
+   Only `v0.2` carries the equivalent (`"use_core": false` +
+   `"capture": "socketed chip (use_core=False) = golden reference"`, in the
+   preserved `metadata.json` **and** `run_manifest.json`).
+   **NOT A `PRV-n`, AND THE CONCLUSION IT SUPPORTS SURVIVES**: `v0.1` has no
+   stamp because **the `use_core` flag did not exist when it was emitted** —
+   `sw/emit_suite.py`'s own pin comment records it (*"use_core was added AFTER
+   v0.1 emission (2035cce, post-8b5a7d7), so v0.1 always used the socket"*), and
+   an argument from the flag's non-existence is STRONGER than a stamp, not
+   weaker.  ⚠ **But it is an argument, not a record, and this is the first place
+   that says so.**  It is filed as an erratum against a DOCUMENT, so it is
+   recorded here and the sentence above is **NOT rewritten**.
+2. **FIVE SPELLINGS OF ONE CLAIM, across the goldens** — `SOCKET (real chip,
+   use_core=False)` (the emit path, `e1_iret_race`), `SOCKET (use_core=False,
+   EMIT_USE_CORE)` (`mod3_illegal`), `SOCKET (use_core=False)`
+   (`enter_nesting`, both files), `socketed chip (use_core=False) = golden
+   reference` (`v0.2`), and PRV-1's compound.  **This is the audit's own
+   evidence for why the repair had to be ONE WRITER**: a typed claim cannot be
+   audited by grep, and **the WAVE 28 census of four writers was an UNDERCOUNT
+   for exactly this reason** — `sw/char_enter.py`'s two constants spell the
+   class differently and were found by WAVE 29's gate, not by the brief's grep.
+   **Not a `PRV-n`**: no record is mislabelled; they are all true, in five
+   dialects.
+3. **`tests/v30/s10-hltsweep-w0/` HAS NO PROVENANCE RECORD AT ALL** (no
+   `emit_log.txt`; only the two `.json.gz`), while `w1` has PRV-1's and
+   `s13-hltsweep-w2`/`-w3` have board-written ones.  **Not a `PRV-n`**: an
+   ABSENT record makes no claim, so there is nothing to mislabel.  Recorded
+   because a reader comparing the four sweeps will notice the asymmetry.
+4. **`tests/v30/v0.3/emit_log.txt` stamps `seed_base=v30-v0.2` on all three of
+   its `TRUTH SOURCE` lines** while living in the `v0.3` directory.  **Not a
+   `PRV-n`**: `seed_base` is not a truth source, and it is the documented fixed
+   base the suite was emitted under.  Recorded so it is not read as a
+   misplacement.
+
+> **WHY PRV-1 IS NOT AN `ERR-n`**: `ERR-n`'s disposition is **RECOMPUTED IN
+> PLACE** and its subject is a column this tree *computes from* a capture.  A
+> provenance line is not computed from the capture — it is the *statement about
+> where the capture came from* — and recomputing it in place would destroy the
+> evidence.  **WHY NOT AN `INV-n`**: the **WHICH RIG DEFECT** field reads NONE
+> and every byte is true silicon.  **WHY NOT A `DEV-n`**: no gate's claim
+> narrowed; a gate was created.
