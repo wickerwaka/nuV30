@@ -361,12 +361,19 @@ def cmd_regold(args):
         with gzip.open(sd / f"{form}.json.gz", "wt") as f:
             json.dump(tests, f, separators=(",", ":"))
         with (sd / "emit_log.txt").open("a") as f:
-            f.write(f"# TRUTH SOURCE: SOCKET (real chip, use_core=False), "
-                    f"RE-DERIVED OFFLINE from the BANKED S10 capture "
-                    f"sw/testdata/s10/s2-hltsweep/{form}_w{waits}_d*.raw.hex.gz "
-                    f"(div=8, 4 MHz; sha in that directory's manifest.json).  "
-                    f"No board contact.  {len(tests)}/49 cases.  "
-                    f"See ucsim_t_provenance.md 23.1\n")
+            # WAVE 29: THIS IS THE BANKED-REPLAY TRUTH CLASS, AND IT IS NOW
+            # NAMED AS ONE.  This command writes goldens WITHOUT TOUCHING THE
+            # BOARD and used to stamp them with the socket constant -- the
+            # exact defect `emit_suite.truth_stamp()`'s own docstring was
+            # written about.  `banked=` REFUSES if this process commanded the
+            # board at all, so the "No board contact" clause is now checked.
+            f.write("# TRUTH SOURCE: " + es.truth_stamp(banked=(
+                f"Records are the BANKED S10 capture "
+                f"sw/testdata/s10/s2-hltsweep/{form}_w{waits}_d*.raw.hex.gz "
+                f"(taken off the SOCKETED CHIP at div=8, 4 MHz, in an earlier "
+                f"session; sha in that directory's manifest.json -- that "
+                f"manifest, not this line, is the silicon record).  "
+                f"{len(tests)}/49 cases.  See ucsim_t_provenance.md 23.1")) + "\n")
         print(f"  wrote {sd/f'{form}.json.gz'}")
     return 0
 

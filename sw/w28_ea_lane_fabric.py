@@ -28,13 +28,15 @@ back-to-back in one session:
 and scores them **PAIRWISE, probe by probe**.  `use_core` is passed
 EXPLICITLY on every capture because the board's CFG is sticky.
 
-⚠ `emit_suite._truth_stamp()` MAY NOT BE USED HERE.  It returns the constant
-string `"SOCKET (real chip, use_core=False)"` whenever `ENGINE == "chip"` and
-**never consults `EMIT_USE_CORE`** -- so on the core leg it would write a
-provenance line that is false.  (Its own docstring says *"A provenance line
-that cannot be wrong is not provenance."*  It can be wrong; see this wave's
-doc-discrepancy table.)  This file stamps each leg itself, from the value it
-actually passed.
+⚠ THE PROVENANCE STAMP.  This file used to stamp each leg with its own typed
+constant, because `emit_suite._truth_stamp()` returned the socket string from
+`ENGINE == "chip"` alone and **never consulted `EMIT_USE_CORE`** -- so on the
+core leg it would have written a provenance line that is false (WAVE 28
+doc-discrepancy D-1).  **WAVE 29 FIXED THE DERIVATION INSTEAD**:
+`emit_suite.truth_stamp(use_core=...)` derives the line from the engine, the
+position, and `v30run.board_witness()`, and it REFUSES a position the board was
+never actually commanded into.  So each leg is still stamped with the value it
+actually passed -- but now by the ONE writer, and now checked.
 
 THE POSITIVE CONTROL IS BUILT IN, AND IT IS NOT THE SAME AS THE RESULT
 -----------------------------------------------------------------------
@@ -102,8 +104,12 @@ def capture_leg(host, use_core, probes, tag):
             rec["b2_prose"] = prose
             rec["b2_ea"] = ea
             rec["b2_predicted_si"] = pred
-            rec["w28_leg"] = "core (FPGA v30_core, use_core=True)" if use_core \
-                else "socket (real chip, use_core=False)"
+            # WAVE 29: the PER-ROW leg label is the SAME derivation as the
+            # manifest's, so a row and the manifest it sits under cannot
+            # disagree about where the row came from.  It is evaluated AFTER
+            # `emit_case` has captured, so the board witness already carries
+            # this leg's position and the claim is cross-checked per row.
+            rec["w28_leg"] = es.truth_stamp(use_core=use_core)
             rec["w28_use_core"] = use_core
             out.append(rec)
         except (RunError, ComposeError) as e:
@@ -206,13 +212,15 @@ def main():
         "probe": "8D F7 = LEA SI,DI at mod==3",
         "regs": REGS,
         "legs": {
+            # WAVE 29: BOTH legs are now DERIVED by the ONE function, each
+            # naming its own position; es.truth_stamp() REFUSES a position the
+            # board was never commanded into (see the module docstring).
             "socket": {"use_core": False,
-                       "truth_source": "SOCKET (real chip, use_core=False)",
+                       "truth_source": es.truth_stamp(use_core=False),
                        "file": sp.name, "sha256": _h(sp), "n": len(sock),
                        "fails": sfail},
             "core": {"use_core": True,
-                     "truth_source": "FPGA v30_core inside system_large "
-                                     "(use_core=True) -- THE DUT",
+                     "truth_source": es.truth_stamp(use_core=True),
                      "file": cp.name, "sha256": _h(cp), "n": len(core),
                      "fails": cfail},
         },

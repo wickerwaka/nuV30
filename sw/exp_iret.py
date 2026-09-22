@@ -35,6 +35,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from v30run import run_test, RunError                  # noqa: E402
+import emit_suite as es                                # noqa: E402
 import exp_race as R                                   # noqa: E402
 from exp_int import txns, pushed_words                 # noqa: E402
 import gen_race_law as GRL                             # noqa: E402
@@ -312,7 +313,13 @@ def cmd_vsrtl(host, div, delay, score="steady"):
             out(f"  {i+1}/{len(cells)} ({(time.time()-t0)/(i+1):.2f}s/cell)")
     rig = getattr(_v30._runners.get(host), "rig_readback", "?")
     meta = {"experiment": "E1 IRET boundary race", "rig": "sw/exp_iret.py",
-            "truth_source": "SOCKET (real chip, use_core=False)",
+            # WAVE 29: DERIVED.  This experiment captures BOTH A/B positions
+            # (use_core=False at the socket leg, True at the core leg), so the
+            # position is named EXPLICITLY for the leg this field describes --
+            # the `socket_*` columns.  es.truth_stamp() REFUSES if the board
+            # was never actually commanded into it.  The `core_class` column
+            # is the DUT's and is not this field's claim.
+            "truth_source": es.truth_stamp(use_core=False),
             "wait_rig": rig, "div": div, "delay": delay, "waits": 0,
             "discriminant": "steady-state final live PSW 7 race flags "
                             "== frame/pop (A) or pre (B); ghost-repair scored A",

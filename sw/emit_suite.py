@@ -330,19 +330,144 @@ def _tb_core():
     return check_seq.CORE, False
 
 
-def _truth_stamp():
-    """The provenance line's truth source.  It must NAME THE ENGINE.
+class TruthSourceError(RunError):
+    """The truth source of a record could not be ESTABLISHED.
 
-    This used to be the constant string "SOCKET (real chip, use_core=False)",
-    written unconditionally -- so the first offline emission produced a suite
-    whose own log claimed it came off silicon.  A provenance line that cannot
-    be wrong is not provenance."""
-    if ENGINE == "chip":
+    Deliberately an exception and not a fallback string: every caller of
+    `truth_stamp()` is about to write a provenance line, and a provenance line
+    nobody can establish must stop the write, not decorate it."""
+
+
+_PIN = object()          # "use the module pin", distinct from None and False
+
+
+def truth_stamp(use_core=_PIN, banked=None):
+    """**THE** derivation of a provenance line's truth source.  ONE rule.
+
+    It must NAME WHAT PRODUCED THE RECORDS.  This used to be the constant
+    string SOCKET/real-chip/use_core=False, written unconditionally -- so the
+    first offline emission produced a suite whose own log claimed it came off
+    silicon.  A PROVENANCE LINE THAT CANNOT BE WRONG IS NOT PROVENANCE.
+
+    That repair was made HERE in 2026-08 and NEVER PROPAGATED: as of WAVE 28
+    the same claim had FOUR writers in `sw/` and only this one derived it --
+    `s10_board`, `s13_board` and `s12_census` each wrote the socket string as a
+    HARD-CODED CONSTANT, and `s12_census` re-derives goldens OFFLINE from a
+    banked capture and stamped them "real chip" anyway.  WAVE 29 makes this
+    function the only writer.  There are FOUR honest outcomes and one refusal,
+    and NO per-caller special case:
+
+        SOCKET         engine chip, position False -- the socketed uPD70116.
+                       The ONLY class a golden may carry.
+        FPGA CORE      engine chip, position True  -- the in-FPGA v30_core.
+                       THE DUT.  Never a reference.
+        VERILATOR TB   engine tb                   -- offline, no board.
+        BANKED REPLAY  `banked=` given             -- records re-parsed
+                       offline from a bank.  A THIRD truth class, and neither
+                       of the first two: the bytes came off silicon in some
+                       EARLIER session whose own manifest is the record, and
+                       THIS process touched nothing.
+        REFUSED        raises `TruthSourceError`.
+
+    THE THREE INPUTS, AND WHICH OF THEM IS EVIDENCE
+    -----------------------------------------------
+      * `ENGINE`            -- what this module's record source is.
+      * the A/B POSITION    -- `EMIT_USE_CORE` (the pin `_capture` actually
+                               passes to `run_image`) unless the caller names
+                               one for a SINGLE LEG of a two-leg experiment.
+      * `v30run.board_witness()` -- WHAT THE BOARD WAS ACTUALLY COMMANDED.
+                               This is the only one of the three that is
+                               EVIDENCE rather than intention.
+
+    The witness is used as a CONTRADICTION TEST, because that is all it can
+    honestly do (`v30run` documents why it is one-sided).  A claim the witness
+    contradicts is REFUSED; an empty witness certifies nothing and says so by
+    not being consulted.  Concretely, this refuses when:
+
+      * the position is `None` -- `cfg` sent '-' and the board's STICKY CFG
+        decided the A/B position, so no process can name it;
+      * a board was commanded into a position this stamp does not claim (a
+        mid-emission `EMIT_USE_CORE` mutation, which is exactly what
+        `x1_fabric`, `u4_f42_fabric` and `w28_ea_lane_fabric` do on purpose --
+        they must stamp PER LEG, and now they cannot fail to);
+      * `banked=` is claimed and a board WAS commanded;
+      * `engine=tb` and a board WAS commanded;
+      * both `banked=` and a position are claimed (two truth classes at once);
+      * `ENGINE` is a value this function has no class for.
+
+    ⚠ ONE RESIDUAL, NAMED: the golden emitters write their header stamp BEFORE
+    the first capture, so on that path the witness is EMPTY and the stamp is
+    the pin, uncross-checked.  `cmd_emit` therefore writes a SECOND line, `#
+    TRUTH WITNESS:`, at the END of the emission -- beside the `# DIVIDER:` line
+    and for the identical reason already written there: a line written at the
+    end records what the connection actually COMMANDED, not what this file
+    intended.
+    """
+    import v30run as _v30                                   # noqa: PLC0415
+    seen = _v30.witnessed_positions()
+    if banked is not None:
+        if use_core is not _PIN:
+            raise TruthSourceError(
+                "truth_stamp: banked= and use_core= are TWO truth classes; "
+                "a record has one")
+        if seen:
+            raise TruthSourceError(
+                f"REFUSING to stamp BANKED REPLAY: this process commanded the "
+                f"board {len(_v30.board_witness())} time(s), positions "
+                f"{sorted(seen, key=repr)} -- 'no board contact' is false")
+        return (f"BANKED REPLAY, re-parsed offline -- NO BOARD CONTACT IN THIS "
+                f"PROCESS.  {banked}")
+    if ENGINE == "tb":
+        if use_core is not _PIN:
+            raise TruthSourceError(
+                f"truth_stamp: engine=tb has no A/B position to claim "
+                f"(use_core={use_core!r})")
+        if seen:
+            raise TruthSourceError(
+                f"REFUSING to stamp VERILATOR TB: this process commanded the "
+                f"board {len(_v30.board_witness())} time(s) -- the records are "
+                f"not all offline")
+        core, explicit = _tb_core()
+        return (f"VERILATOR TB core={core}"
+                f"{'' if explicit else ' (check_seq.CORE pin)'} "
+                "-- NOT A GOLDEN, NOT SILICON")
+    if ENGINE != "chip":
+        raise TruthSourceError(
+            f"truth_stamp: no truth class for ENGINE={ENGINE!r}")
+    pos = EMIT_USE_CORE if use_core is _PIN else use_core
+    if pos is None:
+        raise TruthSourceError(
+            "REFUSING to stamp a truth source: the A/B position is None, i.e. "
+            "`cfg` left the board's STICKY CFG alone.  Which core produced "
+            "these records is UNKNOWN -- pass use_core explicitly")
+    if not isinstance(pos, bool):
+        raise TruthSourceError(
+            f"truth_stamp: the A/B position must be True or False, not "
+            f"{pos!r}")
+    if seen and pos not in seen:
+        raise TruthSourceError(
+            f"REFUSING to stamp use_core={pos!r}: the board was commanded "
+            f"into {sorted(seen, key=repr)} in this process and never into "
+            f"{pos!r} -- the claim is contradicted by what ran")
+    if pos is False:
         return "SOCKET (real chip, use_core=False)"
-    core, explicit = _tb_core()
-    return (f"VERILATOR TB core={core}"
-            f"{'' if explicit else ' (check_seq.CORE pin)'} "
-            "-- NOT A GOLDEN, NOT SILICON")
+    return ("FPGA v30_core inside system_large (use_core=True) "
+            "-- THE DUT, NOT SILICON")
+
+
+def truth_witness_stamp():
+    """The end-of-emission companion to `truth_stamp()`: what the board was
+    COMMANDED, counted, from `v30run`'s witness.  Never a claim -- if it is
+    empty it says so, which on a chip emission is itself a finding."""
+    import v30run as _v30                                   # noqa: PLC0415
+    w = _v30.board_witness()
+    if not w:
+        return ("# TRUTH WITNESS: NO run_image BOARD COMMAND IN THIS PROCESS "
+                f"(engine={ENGINE})")
+    pos = sorted({x["use_core"] for x in w}, key=repr)
+    return (f"# TRUTH WITNESS: {len(w)} board command(s), use_core "
+            f"position(s) commanded = {pos} "
+            f"(v30run.board_witness; None = board's sticky CFG)")
 
 
 def _capture(image, host, tag, waits=0, evt=None, iord=None, iords=None,
@@ -2404,7 +2529,7 @@ def cmd_emit(host, opcodes, n_cases, out_dir, seed_base, preload_n,
         raise RunError(
             "REFUSING to emit goldens: truth source is not the socket "
             f"(EMIT_USE_CORE={EMIT_USE_CORE!r}); goldens require use_core=False")
-    truth = _truth_stamp()
+    truth = truth_stamp()
     stamp = (f"# TRUTH SOURCE: {truth}  seed_base={seed_base}  "
              f"cases={n_cases}  waits={waits}  forms={len(opcodes)}  "
              f"div={EMIT_DIV}")
@@ -2540,7 +2665,13 @@ def cmd_emit(host, opcodes, n_cases, out_dir, seed_base, preload_n,
               f"in {time.time() - t0:.0f}s", flush=True)
     with log.open("a") as f:
         f.write(_div_readback() + "\n")      # 21.1 -- what was COMMANDED
+        # WAVE 29: the header's `# TRUTH SOURCE:` is written before the first
+        # capture, so it is the PIN.  This line is written after the last one,
+        # so it is the WITNESS -- exactly the reason the DIVIDER line above is
+        # here rather than in the header.
+        f.write(truth_witness_stamp() + "\n")
     print(_div_readback(), flush=True)
+    print(truth_witness_stamp(), flush=True)
     return 0
 
 
@@ -2564,7 +2695,7 @@ def cmd_emit_boundary(host, opcodes, n_cases, out_dir, seed_base, preload_n,
         raise RunError(
             "REFUSING to emit goldens: truth source is not the socket "
             f"(EMIT_USE_CORE={EMIT_USE_CORE!r}); goldens require use_core=False")
-    truth = _truth_stamp()
+    truth = truth_stamp()
     stamp = (f"# TRUTH SOURCE: {truth}  seed_base={seed_base}  "
              f"cases={n_cases}  waits={waits}  forms={len(opcodes)}  "
              f"div={EMIT_DIV}  "

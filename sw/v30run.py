@@ -576,6 +576,53 @@ class ServeRunner:
 _runners = {}
 
 
+# --------------------------------------------------------------------------- #
+# THE BOARD WITNESS (WAVE 29).
+#
+# A provenance line that is derived from a PIN is derived from an INTENTION.
+# This list is derived from what the board was actually COMMANDED: every
+# `run_image` call appends one record the instant the CFG command is accepted,
+# carrying the A/B position (`use_core`) it actually sent.  Nothing consults
+# it to decide what to do; `emit_suite.truth_stamp()` consults it to decide
+# whether a claim about the truth source is CONTRADICTED by what ran.
+#
+# `use_core=None` is recorded AS None and is not a synonym for False: it means
+# `ServeRunner.cfg` sent '-' and left the board's STICKY CFG alone, so the A/B
+# position of that capture is UNKNOWN to this process.  That is the case a
+# derived stamp must refuse on, and it is why the witness stores the value
+# rather than a boolean "touched".
+#
+# ⚠ ITS SCOPE IS `run_image`, WHICH IS THE ONE DOCUMENTED CAPTURE PATH -- it is
+# NOT a proof that no other code opened a session.  A tool that drives
+# `ServeRunner` directly (`v30run.cmd_profile`, `t11_clientpath_gate`) is
+# invisible here, and the witness is therefore a ONE-SIDED instrument: it can
+# CONTRADICT a claim, it cannot certify one.  Said here so no reader mistakes
+# an empty witness for "no board was touched".
+_board_witness = []
+
+
+def board_witness():
+    """Every `run_image` board command this process issued, in order.
+
+    Returns a tuple of dicts (copies): host, use_core, div, waits, path.
+    Read-only by construction -- a consumer that mutated it would be editing
+    a provenance record."""
+    return tuple(dict(w) for w in _board_witness)
+
+
+def witnessed_positions():
+    """The set of A/B positions (`use_core` values) actually commanded.
+
+    `frozenset()` = `run_image` was never called in this process.
+    A member that is `None` = a capture left the board's sticky CFG alone."""
+    return frozenset(w["use_core"] for w in _board_witness)
+
+
+def _witness(host, use_core, div, waits, path):
+    _board_witness.append({"host": host, "use_core": use_core, "div": div,
+                           "waits": waits, "path": path})
+
+
 def _run_image_legacy(image, host, tag="test", waits=0):
     """Original per-case scp+ssh path (fallback)."""
     with tempfile.TemporaryDirectory() as td:
@@ -630,6 +677,9 @@ def run_image(image, host, tag="test", waits=0, evt=None, iord=None,
         if serve_only:
             raise RunError("evt/evts/tvec/vecsub/iord/pins/use_core/wrand/"
                            "wvec/want_raw require serve")
+        # The legacy path CANNOT set use_core (its own docstring says so), so
+        # the position it ran in is whatever the board was left in: None.
+        _witness(host, None, None, waits, "legacy")
         return _run_image_legacy(image, host, tag, waits)
     r = _runners.get(host)
     if r is None:
@@ -638,6 +688,11 @@ def run_image(image, host, tag="test", waits=0, evt=None, iord=None,
         try:
             r.ensure()
             r.cfg(waits, use_core, div)
+            # THE BOARD IS NOW COMMANDED.  Recorded here and not after a
+            # successful run: a capture that failed still touched the board,
+            # and a provenance instrument that forgets the failures is not a
+            # witness.
+            _witness(host, use_core, div, waits, "serve")
             r.wrand(wrand if wvec is None else None)
             r.replay(wvec)
             got = r.run(image, evt=evt, iord=iord, pins=pins,
@@ -661,6 +716,7 @@ def run_image(image, host, tag="test", waits=0, evt=None, iord=None,
     if serve_only:
         raise RunError("serve path failed and evt/evts/tvec/vecsub/iord/pins/"
                        "use_core/wrand/wvec/want_raw have no legacy fallback")
+    _witness(host, None, None, waits, "legacy")
     return _run_image_legacy(image, host, tag, waits)
 
 

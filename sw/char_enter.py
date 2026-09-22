@@ -20,6 +20,7 @@ sys.path.insert(0, str(SW))
 import testimage                                        # noqa: E402
 import check_seq                                        # noqa: E402
 import fuzz_classify as fc                              # noqa: E402
+import emit_suite as es                                 # noqa: E402
 
 OUT = SW.parent / "tests" / "v30" / "enter_nesting"
 # BP/SP contexts: BP relative to the stack window so the frame-pointer walk reads
@@ -181,8 +182,12 @@ def main_waited(host, freeze):
             "experiment": "ENTER/PREPARE (0xC8) under WAIT states - the task #31 "
                           "PUSH-BP-drop fix. Nesting set x fixed waits {0,1,2,3,7} "
                           "+ a wrand slice x 2 BP/stack contexts.",
-            "rig": "sw/char_enter.py --waited", "truth_source": "SOCKET "
-                   "(use_core=False)",
+            # WAVE 29: DERIVED.  This was a HARD-CODED CONSTANT -- and it
+            # is one the WAVE 28 census MISSED, because it spells the class
+            # differently from the other five writers, which is exactly why a
+            # typed provenance claim cannot be audited by grep.
+            "rig": "sw/char_enter.py --waited",
+            "truth_source": es.truth_stamp(use_core=False),
             "finding": "The fabric ENTER dropped its initial PUSH BP under >=2 "
                        "waits (S_PREP_L consumed the level byte / started the walk "
                        "before the BP push was accepted). Fixed by gating pop_want "
@@ -246,7 +251,9 @@ def main():
         (OUT / "metadata.json").write_text(json.dumps({
             "experiment": "ENTER/PREPARE (0xC8) nesting 0..255 x 2 BP/stack "
                           "contexts - the full 8-bit stack-frame walk",
-            "rig": "sw/char_enter.py", "truth_source": "SOCKET (use_core=False)",
+            # WAVE 29: DERIVED -- see the sibling stamp above.
+            "rig": "sw/char_enter.py",
+            "truth_source": es.truth_stamp(use_core=False),
             "finding": "The V30 does NOT mask the ENTER nesting level: pushes = "
                        "nesting+1 for all 0..255 (BP + level-1 frame-pointer "
                        "copies + FrameTemp). The fabric core masked it mod 32 "

@@ -146,7 +146,7 @@ def main():
         json.dump(goldens, f)
     (out / "b2_manifest.json").write_text(json.dumps({
         "rig": "sw/b2_ea_lane.py",
-        "truth_source": es._truth_stamp(),
+        "truth_source": es.truth_stamp(),
         "divider_commanded": es.emit_div_stamp(),
         "divider_readback": divrb,
         "regs": REGS,

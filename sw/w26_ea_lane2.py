@@ -150,7 +150,7 @@ def main():
         json.dump(goldens, f)
     (out / "manifest.json").write_text(json.dumps({
         "rig": "sw/w26_ea_lane2.py",
-        "truth_source": es._truth_stamp(),
+        "truth_source": es.truth_stamp(),
         "divider_commanded": es.emit_div_stamp(),
         "divider_readback": divrb,
         "regs": REGS,

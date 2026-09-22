@@ -154,7 +154,8 @@ def main():
             "experiment": "task #30 illegal mod=11 (register operand) forms of "
                           "the memory-operand-required opcodes LEA/BOUND/LES/LDS",
             "rig": "sw/char_mod3.py",
-            "truth_source": "SOCKET (real chip, use_core=False; EMIT_USE_CORE pin)",
+            # WAVE 29: DERIVED from the pin + the board witness, not typed.
+            "truth_source": es.truth_stamp(),
             "opcodes": OPS,
             "modrm_range": "0xC0-0xFF (mod=11, all reg/rm)",
             "setups": SETUPS,

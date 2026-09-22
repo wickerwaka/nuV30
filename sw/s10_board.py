@@ -260,7 +260,10 @@ def cmd_s1(args):
         div = pin_div(waits=waits)              # THE DIVIDER PIN -- see above
         log = sd / "emit_log.txt"
         with log.open("a") as f:
-            f.write(f"# TRUTH SOURCE: SOCKET (real chip, use_core=False)  "
+            # WAVE 29: DERIVED, not a constant -- es.truth_stamp() reads the
+            # pin asserted at import above and REFUSES if this process has
+            # commanded the board into any other A/B position.
+            f.write(f"# TRUTH SOURCE: {es.truth_stamp()}  "
                     f"seed_base=v30-s10-w{waits}evt  cases={args.cases}  "
                     f"waits={waits}  forms={len(S1_FORMS)}  "
                     f"anchor=COLD-only  delay=wait-scaled x(4+N)/4  "

@@ -142,7 +142,10 @@ def cmd_ahsweep(args):
         sd.mkdir(parents=True, exist_ok=True)
         log = sd / "emit_log.txt"
         with log.open("a") as f:
-            f.write(f"# TRUTH SOURCE: SOCKET (real chip, use_core=False)  "
+            # WAVE 29: DERIVED -- see es.truth_stamp().  The socket-only
+            # convention this file has always run under is now CHECKED against
+            # what the board was commanded, not merely asserted at import.
+            f.write(f"# TRUTH SOURCE: {es.truth_stamp()}  "
                     f"seed_base=v30-s10-hlt (the S2 sweep's OWN fixed seed, so "
                     f"w2/w3 are the SAME program as w0/w1)  waits={waits}  "
                     f"div={DIV_OF_RECORD} ({32//DIV_OF_RECORD} MHz, PINNED)  "
